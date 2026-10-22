@@ -339,6 +339,31 @@ function validar(step){
 async function finalizar(){
   document.getElementById('saving').classList.add('show');
   try {
+    // Orden pensado para poder reintentar: primero datos privados y perfil; AL FINAL se marca el
+    // onboarding como completo (si algo falla antes, el usuario vuelve a ver las preguntas, no queda a medias).
+    const priv = {
+      owner_name: respuestas.nombre.slice(0, 120),
+      contact_email: (userEmail || '').slice(0, 254),
+      contact_phone: respuestas.telefono.slice(0, 30),
+      offer: respuestas.oferta.slice(0, 500),
+      goals: respuestas.metas.slice(0, 10),
+    };
+    // NO se usa upsert: el permiso de UPDATE de restaurant_private es por columnas y no incluye
+    // restaurant_id (a propósito, para que nadie mueva datos a otro negocio). upsert intenta
+    // actualizar restaurant_id y la base responde 42501. Se hace update y, si no existe la fila, insert.
+    let r2 = await sb.from('restaurant_private').update(priv).eq('restaurant_id', rid).select('restaurant_id');
+    if (r2.error) throw r2.error;
+    if (!r2.data || !r2.data.length) {
+      r2 = await sb.from('restaurant_private').insert({ restaurant_id: rid, ...priv });
+      if (r2.error) throw r2.error;
+    }
+
+    const r3 = await sb.from('profiles').update({
+      full_name: respuestas.nombre.slice(0, 120),
+      panel_name: respuestas.nombrePanel.slice(0, 80),
+    }).eq('id', uid);
+    if (r3.error) throw r3.error;
+
     // El restaurante se publica al terminar para que el QR y el menú público funcionen desde el primer día.
     const r1 = await sb.from('restaurants').update({
       name: respuestas.negocio,
@@ -351,22 +376,6 @@ async function finalizar(){
       is_published: true,
     }).eq('id', rid);
     if (r1.error) throw r1.error;
-
-    const r2 = await sb.from('restaurant_private').upsert({
-      restaurant_id: rid,
-      owner_name: respuestas.nombre.slice(0, 120),
-      contact_email: (userEmail || '').slice(0, 254),
-      contact_phone: respuestas.telefono.slice(0, 30),
-      offer: respuestas.oferta.slice(0, 500),
-      goals: respuestas.metas.slice(0, 10),
-    });
-    if (r2.error) throw r2.error;
-
-    const r3 = await sb.from('profiles').update({
-      full_name: respuestas.nombre.slice(0, 120),
-      panel_name: respuestas.nombrePanel.slice(0, 80),
-    }).eq('id', uid);
-    if (r3.error) throw r3.error;
 
     window.location.href = 'dashboard.html';
   } catch (e) {
