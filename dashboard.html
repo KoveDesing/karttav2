@@ -10,7 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module" src="supabase-init.js"></script>
-<script src="cookies.js" defer></script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="shortcut icon" href="/favicon.ico">
 <script>
@@ -487,7 +486,6 @@ async function subirBlob(blob, carpeta){
 async function borrarImagen(path){ if (!path) return; try { await sb.storage.from(BUCKET).remove([path]); } catch (e) { console.warn(e); } }
 
 /* ---------- tema y acento ---------- */
-function prefsLocalOK(){ try { return JSON.parse(localStorage.getItem('kartta_consent') || 'null')?.preferences === true; } catch { return false; } }
 function getPrefs(){ try { return JSON.parse(localStorage.getItem('kartta_prefs') || '{}'); } catch { return {}; } }
 function applyPrefs(p){
   document.documentElement.setAttribute('data-theme', p.theme === 'light' ? 'light' : 'dark');
@@ -497,7 +495,7 @@ function applyPrefs(p){
 }
 async function savePrefs(patch){
   const p = { ...getPrefs(), ...patch };
-  if (prefsLocalOK()) { try { localStorage.setItem('kartta_prefs', JSON.stringify(p)); } catch {} }
+  try { localStorage.setItem('kartta_prefs', JSON.stringify(p)); } catch {}
   applyPrefs(p);
   const { error } = await sb.from('profiles').update({ prefs: p }).eq('id', uid);
   if (error) console.warn(error);
@@ -582,7 +580,7 @@ async function iniciar(){
       perfil = pf.data || {}; rid = mem.data[0].restaurant_id;
       await cargarNegocio(true);
       if (!negocio.onboardingCompleted) { location.href = 'onboarding.html'; return; }
-      if (perfil.prefs && Object.keys(perfil.prefs).length) { if (prefsLocalOK()) { try { localStorage.setItem('kartta_prefs', JSON.stringify(perfil.prefs)); } catch {} } applyPrefs(perfil.prefs); } else applyPrefs(getPrefs());
+      if (perfil.prefs && Object.keys(perfil.prefs).length) { try { localStorage.setItem('kartta_prefs', JSON.stringify(perfil.prefs)); } catch {} applyPrefs(perfil.prefs); } else applyPrefs(getPrefs());
       $('helloName').textContent = (perfil.panel_name || perfil.full_name || user.displayName || user.email.split('@')[0]).split(' ')[0];
       booted = true;
       await Promise.all([cargarCategorias(), cargarProductos(), cargarMesas(), cargarPedidos()]);

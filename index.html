@@ -544,7 +544,6 @@ html.kd-js h2[data-words] .w{display:inline-block;opacity:0;transform:translateY
 html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
 </style>
 <script type="module" src="supabase-init.js"></script>
-<script src="cookies.js" defer></script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="shortcut icon" href="/favicon.ico">
 </head>
@@ -979,7 +978,7 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
       <div class="footer-col"><h5>Producto</h5><ul><li><a href="#">Menú digital</a></li><li><a href="#">Pedidos</a></li><li><a href="#">POS</a></li><li><a href="#">Cocina</a></li><li><a href="#">Pagos</a></li><li><a href="#">IA</a></li></ul></div>
       <div class="footer-col"><h5>Soluciones</h5><ul><li><a href="#">Restaurantes</a></li><li><a href="#">Cafeterías</a></li><li><a href="#">Bares</a></li><li><a href="#">Pizzerías</a></li><li><a href="#">Food trucks</a></li></ul></div>
       <div class="footer-col"><h5>Recursos</h5><ul><li><a href="#como-funciona">Cómo funciona</a></li><li><a href="#">Demo</a></li><li><a href="#">Ayuda</a></li><li><a href="#">Contacto</a></li></ul></div>
-      <div class="footer-col"><h5>Legal</h5><ul><li><a href="privacidad.html">Privacidad</a></li><li><a href="terminos.html">Términos</a></li><li><a href="cookies.html">Cookies</a></li><li><a href="#" data-cookie-settings>Configurar cookies</a></li></ul></div>
+      <div class="footer-col"><h5>Legal</h5><ul><li><a href="#">Privacidad</a></li><li><a href="terminos.html">Términos</a></li><li><a href="#">Cookies</a></li></ul></div>
     </div>
     <div class="footer-bottom"><span>© 2026 KARTTA</span><span>Hecho en Colombia</span><span>Hecho por <a href="https://koveweb.vercel.app" target="_blank" rel="noopener" style="color:#D8D8D8;text-decoration:underline;">Kove</a></span></div>
   </div>
@@ -989,6 +988,26 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
 document.addEventListener('DOMContentLoaded', function(){
 (function(){
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // cookies: aviso pequeño, consentimiento persistente (solo preferencia, sin datos sensibles)
+  (function(){
+    var KEY = 'kartta_cookies_ok';
+    function aceptado(){
+      try { if (localStorage.getItem(KEY) === '1') return true; } catch(e){}
+      return /(?:^|; )kartta_cookies=1/.test(document.cookie);
+    }
+    function guardar(){
+      try { localStorage.setItem(KEY, '1'); } catch(e){}
+      document.cookie = 'kartta_cookies=1; max-age=31536000; path=/; SameSite=Lax';
+    }
+    var cb = document.getElementById('cookieBanner');
+    if (cb && !aceptado()) {
+      cb.classList.add('show');
+      document.getElementById('cookieAccept').addEventListener('click', function(){
+        guardar(); cb.classList.remove('show');
+      });
+    }
+  })();
 
   // promo "1 mes gratis": solo visitantes sin cuenta, una vez por sesión (se dispara al resolver la sesión)
   window.__karttaShowPromo = function(){
@@ -1008,10 +1027,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
   // navbar dinámico según sesión (avatar + negocio + ir a mi panel)
   (function(){
-    function karttaInitialsAvatar(n){
-      var t = (String(n || 'K').trim().charAt(0) || 'K').toUpperCase().replace(/[<>&"']/g, 'K');
-      return 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="#FF3145"/><text x="32" y="43" font-size="30" font-family="Inter,Arial,sans-serif" font-weight="700" fill="#fff" text-anchor="middle">' + t + '</text></svg>');
-    }
     function esperarAuth(intentos){
       var t = setInterval(function(){
         intentos--;
@@ -1042,7 +1057,8 @@ document.addEventListener('DOMContentLoaded', function(){
             if (heroIn) heroIn.style.display = 'block';
             if (navCta) { navCta.textContent = 'Ir a mi panel'; navCta.href = 'dashboard.html'; navCta.removeAttribute('data-auth'); }
 
-            document.getElementById('navAvatar').src = user.photoURL || karttaInitialsAvatar(user.displayName || user.email);
+            document.getElementById('navAvatar').src = user.photoURL ||
+              ('https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(user.displayName || user.email || 'K') + '&backgroundColor=FF3145&textColor=ffffff');
             document.getElementById('navBizName').textContent = 'Tu negocio';
             var nombreLoggedIn = document.getElementById('heroLoggedInName');
             var primerNombre = (user.displayName || '').trim().split(' ')[0];
@@ -1314,10 +1330,13 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementById('authPassword').setAttribute('autocomplete', signup ? 'new-password' : 'current-password');
       authError.style.display = 'none';
     }
+    var termsBox = document.getElementById('authTerms');
     function syncTerms(){
-      document.getElementById('termsRow').style.display = authMode === 'signup' ? 'flex' : 'none';
-      authSubmit.disabled = false;
+      var signup = authMode === 'signup';
+      document.getElementById('termsRow').style.display = signup ? 'flex' : 'none';
+      authSubmit.disabled = signup && !termsBox.checked;
     }
+    termsBox.addEventListener('change', syncTerms);
     function openAuth(mode){ setAuthMode(mode); authModal.style.display = 'flex'; setTimeout(function(){ document.getElementById('authEmail').focus(); }, 60); }
     function closeAuth(){ authModal.style.display = 'none'; }
 
@@ -1329,9 +1348,10 @@ document.addEventListener('DOMContentLoaded', function(){
       if(code.indexOf('weak-password') > -1) return 'La contraseña necesita al menos 6 caracteres.';
       if(code.indexOf('wrong-password') > -1 || code.indexOf('invalid-credential') > -1) return 'Correo o contraseña incorrectos.';
       if(code.indexOf('user-not-found') > -1) return 'No encontramos una cuenta con ese correo.';
+      if(code.indexOf('terms-required') > -1) return 'Para crear tu cuenta acepta los términos y condiciones (usa "Crear cuenta").';
       if(code.indexOf('too-many-requests') > -1) return 'Demasiados intentos. Espera un momento.';
-      if(code.indexOf('signup-no-session') > -1) return 'Se creó la cuenta pero no pudimos abrir tu sesión. Intenta iniciar sesión.';
-      if(code.indexOf('account-not-active') > -1) return 'No pudimos activar esta cuenta. Escríbenos para ayudarte.';
+      if(code.indexOf('confirm-email') > -1) return 'Te enviamos un correo para confirmar tu cuenta. Ábrelo y vuelve a iniciar sesión.';
+      if(code.indexOf('email-not-confirmed') > -1) return 'Aún falta confirmar tu correo. Revisa tu bandeja de entrada.';
       if(code.indexOf('provider-disabled') > -1) return 'El ingreso con Google todavía no está activado. Usa tu correo y contraseña.';
       return 'No pudimos completar la acción. Intenta de nuevo.';
     }
@@ -1367,12 +1387,13 @@ document.addEventListener('DOMContentLoaded', function(){
       if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showAuthError('Escribe un correo válido.');
       if(pass.length < 6) return showAuthError('La contraseña necesita al menos 6 caracteres.');
       if(authMode === 'signup' && !name) return showAuthError('Ponle un nombre a tu negocio.');
+      if(authMode === 'signup' && !termsBox.checked) return showAuthError('Debes aceptar los términos y condiciones para crear tu cuenta.');
 
       authSubmit.disabled = true;
       authSubmit.textContent = 'Un momento...';
 
       var action = (window.KARTTA_AUTH)
-        ? (authMode === 'signup' ? window.KARTTA_AUTH.signup(email, pass, name) : window.KARTTA_AUTH.login(email, pass))
+        ? (authMode === 'signup' ? window.KARTTA_AUTH.signup(email, pass, name, termsBox.checked) : window.KARTTA_AUTH.login(email, pass))
         : new Promise(function(res){ setTimeout(res, 700); }); // modo demo sin Supabase
 
       Promise.resolve(action)
@@ -1387,7 +1408,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('authGoogle').addEventListener('click', function(){
       authError.style.display = 'none';
       var action = (window.KARTTA_AUTH)
-        ? window.KARTTA_AUTH.google()
+        ? window.KARTTA_AUTH.google(authMode === 'signup' && termsBox.checked)
         : new Promise(function(res){ setTimeout(res, 700); });
       Promise.resolve(action).then(afterAuth).catch(function(err){ showAuthError(friendlyError(err)); });
     });
@@ -1562,6 +1583,11 @@ document.addEventListener('DOMContentLoaded', function(){
 })();
 });
 </script>
+<div id="cookieBanner" class="cookie-card" role="dialog" aria-label="Aviso de cookies">
+  <p>Usamos cookies para mejorar tu experiencia en <b>KARTTA</b>.</p>
+  <button id="cookieAccept" type="button">Aceptar</button>
+</div>
+
 <div id="promoModal" style="position:fixed;inset:0;background:rgba(10,10,10,.65);backdrop-filter:blur(8px);z-index:420;display:none;align-items:center;justify-content:center;padding:20px;">
   <div style="background:#fff;border-radius:24px;padding:36px 32px;max-width:420px;width:100%;text-align:center;position:relative;box-shadow:0 40px 80px -20px rgba(0,0,0,.4);">
     <button id="promoClose" aria-label="Cerrar" style="position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:50%;background:var(--surface);font-size:16px;color:var(--gray);">✕</button>
@@ -1587,7 +1613,7 @@ document.addEventListener('DOMContentLoaded', function(){
       <input id="authEmail" name="email" type="email" autocomplete="email" required placeholder="tu@correo.com" style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:12px;font-size:14px;font-family:inherit;margin-bottom:14px;">
       <label for="authPassword" style="display:block;font-size:12px;font-weight:700;margin-bottom:6px;">Contraseña</label>
       <input id="authPassword" name="password" type="password" autocomplete="current-password" required minlength="6" placeholder="Mínimo 6 caracteres" style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:12px;font-size:14px;font-family:inherit;margin-bottom:8px;">
-      <div class="terms-row" id="termsRow"><span>Al continuar te pediremos confirmar que tienes 18 años o más y aceptar los <a href="terminos.html" target="_blank" rel="noopener">términos</a> y la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></div>
+      <label class="terms-row" id="termsRow"><input type="checkbox" id="authTerms"><span>Acepto los <a href="terminos.html" target="_blank" rel="noopener">términos y condiciones</a>.</span></label>
       <p id="authError" role="alert" style="display:none;font-size:12.5px;color:var(--red);margin:0 0 12px;"></p>
       <button id="authSubmit" type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:10px;">Crear mi cuenta</button>
     </form>
