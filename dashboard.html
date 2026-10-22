@@ -849,7 +849,7 @@ function aiBubble(t, who){ const b = document.createElement('div'); b.className 
 $('aiText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('aiForm').requestSubmit(); } });
 $('aiText').addEventListener('input', () => { $('aiText').style.height = 'auto'; $('aiText').style.height = Math.min(120, $('aiText').scrollHeight) + 'px'; });
 $('aiForm').addEventListener('submit', async e => {
-  e.preventDefault(); if (!isPro()) return openLock('PRO');
+  e.preventDefault();
   const msg = $('aiText').value.trim(); if (!msg) return;
   aiBubble(msg, 'me'); $('aiText').value = ''; $('aiText').style.height = 'auto'; $('aiSend').disabled = true;
   const typing = aiBubble('', 'typing'); let out;
