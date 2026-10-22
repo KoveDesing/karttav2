@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antes de entrar a Kartta — KARTTA</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="/favicon.png"><link rel="shortcut icon" href="/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="legal.css">
+<script type="module" src="supabase-init.js"></script>
+</head><body><main><div class="card" id="card" aria-live="polite">
+<a class="brand" href="/" aria-label="KARTTA">Kar<span>tt</span>a</a>
+<div id="loading"><p>Verificando tu cuenta…</p></div>
+
+<div id="retry" hidden><h1>No pudimos verificar tu cuenta</h1><p>Hubo un problema de conexión o del servidor. Tus datos no se perdieron.</p>
+<p><button class="btn" id="btnRetry" type="button" style="width:auto">Reintentar</button> <button class="btn ghost" data-logout type="button">Cerrar sesión</button></p></div>
+
+<div id="blocked" hidden><h1>No puedes usar Kartta por ahora</h1><p>Kartta es solo para personas de 18 años o más, por eso no podemos darte acceso. No guardamos más datos tuyos.</p>
+<p><button class="btn ghost" data-logout type="button">Cerrar sesión</button></p></div>
+
+<form id="form" hidden novalidate>
+<h1>Antes de entrar a Kartta</h1>
+<p>Queremos que utilices Kartta de forma segura y transparente. Antes de continuar, necesitamos comprobar que cumples los requisitos de edad y explicarte cómo tratamos tus datos y qué condiciones se aplican al uso de la plataforma.</p>
+<ul class="links">
+<li><a href="terminos.html" target="_blank" rel="noopener">Términos y condiciones</a></li>
+<li><a href="privacidad.html" target="_blank" rel="noopener">Privacidad y tratamiento de datos</a></li>
+<li><a href="cookies.html" target="_blank" rel="noopener">Política de cookies</a></li>
+<li><button type="button" data-cookie-settings>Configuración de cookies</button></li>
+<li><a href="privacidad.html#ubicacion" target="_blank" rel="noopener">Datos de ubicación</a></li>
+<li><a href="terminos.html#restaurantes" target="_blank" rel="noopener">Restaurantes, pedidos y servicios</a></li>
+<li><a href="terminos.html#normas" target="_blank" rel="noopener">Normas de uso</a></li>
+<li><a href="privacidad.html#seguridad" target="_blank" rel="noopener">Seguridad de la cuenta</a></li>
+</ul>
+
+<div id="ageBlock">
+<div class="fld"><label class="t" for="dob">Fecha de nacimiento</label><input type="date" id="dob" autocomplete="bday" aria-describedby="dobErr"><p class="err" id="dobErr" role="alert"></p><small>Solo la usamos para comprobar tu edad y no la guardamos.</small></div>
+<label class="chk"><input type="checkbox" id="chkAge"><span>Confirmo que tengo 18 años o más. <em>(obligatorio)</em></span></label><p class="err" id="ageErr" role="alert"></p>
+</div>
+<div id="termsBlock"><label class="chk"><input type="checkbox" id="chkTerms"><span>Acepto los <a href="terminos.html" target="_blank" rel="noopener">términos y condiciones</a>. <em>(obligatorio)</em></span></label><p class="err" id="termsErr" role="alert"></p></div>
+<div id="privBlock"><label class="chk"><input type="checkbox" id="chkPriv"><span>He leído la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y autorizo el tratamiento de mis datos como allí se explica. <em>(obligatorio)</em></span></label><p class="err" id="privErr" role="alert"></p></div>
+<label class="chk"><input type="checkbox" id="chkPrefs"><span>Permitir guardar en este dispositivo las preferencias de mi panel (tema y color). <em>(opcional; puedes cambiarlo cuando quieras)</em></span></label>
+
+<div class="errbox" id="formErr" role="alert"></div>
+<p style="margin-top:20px"><button class="btn" id="btnGo" type="submit">Continuar</button></p>
+<p style="text-align:center"><button class="btn ghost" data-logout type="button">Cerrar sesión</button></p>
+</form>
+</div></main>
+<script type="module">
+const $ = (id) => document.getElementById(id);
+const show = (id) => { ['loading','retry','blocked','form'].forEach(k => $(k).hidden = (k !== id)); };
+let req = null;
+
+document.querySelectorAll('[data-logout]').forEach(b => b.onclick = async () => { try { await window.KARTTA_AUTH.logout(); } catch {} location.href = 'index.html'; });
+$('btnRetry').onclick = () => cargar();
+
+async function cargar() {
+  show('loading');
+  try {
+    const user = await window.KARTTA_AUTH.currentUser();
+    if (!user) { location.replace('index.html'); return; }
+    req = await window.KARTTA_AUTH.requirements(true);
+  } catch (e) { console.error('[KARTTA] requisitos', e); show('retry'); return; }
+  if (req.blocked) { show('blocked'); return; }
+  if (req.ok) { location.replace('dashboard.html'); return; }
+  const miss = req.missing || [];
+  $('ageBlock').hidden = !!req.adult;
+  $('termsBlock').hidden = !miss.includes('terms');
+  $('privBlock').hidden = !miss.includes('privacy');
+  $('chkPrefs').checked = !!(window.KARTTA_COOKIES && window.KARTTA_COOKIES.allowed('preferences'));
+  show('form');
+}
+
+function limpiar() { ['dobErr','ageErr','termsErr','privErr'].forEach(i => $(i).textContent = ''); $('formErr').style.display = 'none'; }
+function validarFecha(v) {
+  if (!v) return 'Escribe tu fecha de nacimiento.';
+  const d = new Date(v + 'T00:00:00'), hoy = new Date();
+  if (isNaN(d) || d > hoy || d.getFullYear() < 1900) return 'Revisa la fecha: no parece válida.';
+  return '';
+}
+
+$('form').addEventListener('submit', async (e) => {
+  e.preventDefault(); limpiar();
+  let ok = true; const faltan = [];
+  const needAge = !req.adult, needT = (req.missing || []).includes('terms'), needP = (req.missing || []).includes('privacy');
+  if (needAge) {
+    const m = validarFecha($('dob').value); if (m) { $('dobErr').textContent = m; ok = false; }
+    if (!$('chkAge').checked) { $('ageErr').textContent = 'Debes confirmar que tienes 18 años o más.'; ok = false; faltan.push('la confirmación de edad'); }
+  }
+  if (needT && !$('chkTerms').checked) { $('termsErr').textContent = 'Falta aceptar los términos y condiciones.'; ok = false; faltan.push('los términos'); }
+  if (needP && !$('chkPriv').checked) { $('privErr').textContent = 'Falta confirmar la política de privacidad.'; ok = false; faltan.push('la privacidad'); }
+  if (!ok) { $('formErr').textContent = 'Para continuar falta completar los campos marcados.'; $('formErr').style.display = 'block'; return; }
+
+  $('btnGo').disabled = true; $('btnGo').textContent = 'Un momento…';
+  try {
+    const r = await window.KARTTA_AUTH.completeRequirements({
+      birthDate: needAge ? $('dob').value : null, ageConfirmed: $('chkAge').checked,
+      acceptTerms: $('chkTerms').checked, acceptPrivacy: $('chkPriv').checked,
+    });
+    if (window.KARTTA_COOKIES) window.KARTTA_COOKIES.set({ preferences: $('chkPrefs').checked });
+    if (r && r.reason === 'blocked') { show('blocked'); return; }
+    location.replace('dashboard.html');
+  } catch (err) {
+    console.error('[KARTTA] completar requisitos', err);
+    $('formErr').textContent = 'No pudimos guardar tu respuesta. Tus datos siguen aquí: intenta de nuevo.';
+    $('formErr').style.display = 'block';
+    $('btnGo').disabled = false; $('btnGo').textContent = 'Continuar';
+  }
+});
+cargar();
+</script>
+<script src="cookies.js" defer></script></body></html>

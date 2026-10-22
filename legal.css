@@ -1,0 +1,26 @@
+/* Estilo compartido de las páginas legales y de la tarjeta de consentimiento (tema oscuro tipo ChatGPT) */
+:root{--bg:#212121;--card:#2f2f2f;--line:rgba(255,255,255,.1);--tx:#ececec;--mut:#b4b4b4;--red:#FF3145}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tx);line-height:1.65;-webkit-font-smoothing:antialiased}
+main{max-width:760px;margin:0 auto;padding:40px 16px 80px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:0 20px 40px -24px rgba(0,0,0,.6)}
+.brand{font-family:'Mr Dafoe',cursive;font-size:30px;margin:0 0 14px;color:var(--tx);text-decoration:none;display:inline-block}.brand span{color:var(--red)}
+h1{font-size:26px;line-height:1.2;margin:0 0 6px}h2{font-size:16px;margin:26px 0 6px}
+p,li{font-size:14.5px;color:var(--mut)}p{margin:0 0 10px}ul{margin:0 0 10px;padding-left:20px}
+a{color:#ff6b79;font-weight:600}small{color:#8e8e8e}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0 14px;display:block;overflow-x:auto}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);color:var(--mut);vertical-align:top}th{color:var(--tx)}
+.pend{background:rgba(255,49,69,.14);color:#ff8a96;border-radius:6px;padding:0 6px;font-weight:600;font-size:13px}
+.back{margin-top:26px}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:13px 20px;font:700 14.5px Inter,system-ui,sans-serif;background:var(--red);color:#fff;cursor:pointer;width:100%}
+.btn:disabled{opacity:.55;cursor:not-allowed}.btn.ghost{background:transparent;color:var(--mut);border:1px solid var(--line);width:auto;padding:10px 16px;font-size:13px}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin:14px 0 4px;padding:0;list-style:none}.links li{font-size:13.5px}
+.links button{all:unset;color:#ff6b79;font-weight:600;cursor:pointer;text-decoration:underline;font-size:13.5px}
+.fld{margin:16px 0 0}.fld label.t{display:block;font-size:13px;font-weight:700;margin-bottom:6px;color:var(--tx)}
+input[type=date]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#212121;color:var(--tx);font:inherit;color-scheme:dark}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;font-size:13.5px;color:var(--mut);cursor:pointer}
+.chk input{margin-top:3px;width:18px;height:18px;accent-color:var(--red);flex-shrink:0}
+.chk em{font-style:normal;color:#8e8e8e;font-size:12px}
+.err{color:#ff8a96;font-size:13px;margin:6px 0 0}.errbox{display:none;background:rgba(255,49,69,.12);border:1px solid rgba(255,49,69,.35);border-radius:12px;padding:10px 12px;margin:16px 0 0;color:#ffb3bb;font-size:13px}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(max-width:560px){.card{padding:22px 18px}.links{grid-template-columns:1fr}h1{font-size:22px}}
