@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conoce a KARTTA</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --panel:#141414; --panel2:#1E1E1E; --border:#2A2A2A;
+  --white:#FFFFFF; --gray:#666666; --gray-dim:#9A9A9A; --red:#FF3145; --red-dim:#E22940;
+}
+*{box-sizing:border-box;}
+body{margin:0;min-height:100vh;background:var(--bg);color:#0A0A0A;font-family:'Inter',-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;padding:20px;}
+button,input,textarea{font-family:inherit;}
+
+#gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50;}
+#gate.hidden{display:none;}
+#gate .brand{font-family:Georgia,serif;font-style:italic;font-size:24px;color:#0A0A0A;}
+#gate .brand b{color:var(--red);font-style:normal;}
+
+.wrap{width:100%;max-width:480px;}
+.progress{height:3px;background:#EDEDED;border-radius:3px;overflow:hidden;margin-bottom:40px;}
+.progress-bar{height:100%;background:var(--red);width:0%;transition:width .4s cubic-bezier(.4,0,.2,1);}
+
+.step{display:none;}
+.step.active{display:block;animation:stepIn .45s cubic-bezier(.16,1,.3,1);}
+@keyframes stepIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+.hint{font-size:13px;color:var(--gray);margin:0 0 8px;font-weight:600;}
+.step h1{font-size:26px;font-weight:800;letter-spacing:-.01em;margin:0 0 26px;line-height:1.25;color:#0A0A0A;}
+.step h1 span{color:var(--red);}
+
+.field-wrap{margin-bottom:22px;}
+input[type=text],input[type=tel],textarea{
+  width:100%;background:var(--panel);border:1px solid var(--border);border-radius:14px;
+  padding:15px 17px;font-size:15px;color:#fff;outline:none;transition:border-color .2s ease,background .2s ease;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+}
+input::placeholder,textarea::placeholder{color:#777;}
+input:focus,textarea:focus{border-color:var(--red);background:var(--panel2);}
+textarea{resize:vertical;min-height:90px;line-height:1.5;}
+
+.chip-grid{display:flex;flex-wrap:wrap;gap:9px;}
+.chip{background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:11px 18px;font-size:13.5px;font-weight:600;color:#B8B8B8;transition:all .15s ease;box-shadow:0 2px 6px rgba(0,0,0,.06);}
+.chip:hover{border-color:#3A3A3A;color:#fff;}
+.chip.selected{background:var(--red);border-color:var(--red);color:#fff;}
+
+.check-row{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13.5px;color:var(--gray);}
+.check-row input{width:16px;height:16px;accent-color:var(--red);}
+
+.err{font-size:12.5px;color:var(--red);margin:8px 0 0;display:none;}
+.err.show{display:block;}
+
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:28px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border-radius:12px;font-size:14.5px;font-weight:700;border:none;cursor:pointer;transition:transform .15s ease,opacity .15s ease,background .15s ease;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--red);color:#fff;}
+.btn-primary:hover{background:var(--red-dim);}
+.btn-primary:disabled{opacity:.4;cursor:default;}
+.btn-ghost{background:none;color:var(--gray);padding:14px 8px;}
+.btn-ghost:hover{color:#0A0A0A;}
+
+.dots{display:flex;gap:5px;justify-content:center;margin-top:18px;}
+.dots span{width:5px;height:5px;border-radius:50%;background:#E4E4E2;}
+.dots span.on{background:var(--red);}
+
+#saving{position:fixed;inset:0;background:rgba(255,255,255,.92);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:60;}
+#saving.show{display:flex;}
+.spinner{width:26px;height:26px;border:3px solid #E4E4E2;border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#saving p{color:var(--gray);}
+</style>
+<script type="module" src="supabase-init.js"></script>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="shortcut icon" href="/favicon.ico">
+</head>
+<body>
+
+<div id="gate">
+  <div class="brand">Kar<b>tt</b>a</div>
+</div>
+
+<div class="wrap" id="wrap" style="display:none;">
+  <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+  <div class="step active" data-step="0">
+    <p class="hint">Empecemos</p>
+    <h1>Hola 👋 ¿cómo te llamas?</h1>
+    <div class="field-wrap">
+      <input type="text" id="q_nombre" placeholder="Tu nombre">
+      <p class="err" id="err_nombre">Cuéntanos cómo te llamas para continuar.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="1">
+    <p class="hint" id="greet1">Perfecto.</p>
+    <h1>¿Cómo se llama tu negocio?</h1>
+    <div class="field-wrap">
+      <input type="text" id="q_negocio" placeholder="Ej: Burger House">
+      <p class="err" id="err_negocio">Ponle un nombre a tu negocio para seguir.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="2">
+    <p class="hint" id="greet2">Genial.</p>
+    <h1>¿De qué es tu negocio?</h1>
+    <div class="field-wrap">
+      <div class="chip-grid" id="tipoChips">
+        <button type="button" class="chip" data-val="Restaurante">Restaurante</button>
+        <button type="button" class="chip" data-val="Cafetería">Cafetería</button>
+        <button type="button" class="chip" data-val="Bar">Bar</button>
+        <button type="button" class="chip" data-val="Pizzería">Pizzería</button>
+        <button type="button" class="chip" data-val="Food truck">Food truck</button>
+        <button type="button" class="chip" data-val="Barbería">Barbería</button>
+        <button type="button" class="chip" data-val="Tienda">Tienda</button>
+        <button type="button" class="chip" data-val="Agencia">Agencia</button>
+        <button type="button" class="chip" data-val="Otro">Otro</button>
+      </div>
+      <input type="text" id="q_tipoOtro" placeholder="¿De qué tipo exactamente?" style="display:none;margin-top:12px;">
+      <p class="err" id="err_tipo">Elige la opción que más se parezca a tu negocio.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="3">
+    <p class="hint">Cuéntanos un poco más</p>
+    <h1>¿Cómo describirías tu negocio en pocas palabras?</h1>
+    <div class="field-wrap">
+      <textarea id="q_descripcion" placeholder="Ej: Restaurante especializado en hamburguesas artesanales, ambiente casual..."></textarea>
+      <p class="err" id="err_descripcion">Escribe al menos una frase corta.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="4">
+    <p class="hint">Para que tus clientes te contacten</p>
+    <h1>¿Cuál es tu número de teléfono?</h1>
+    <div class="field-wrap">
+      <input type="tel" id="q_telefono" placeholder="Ej: 315 250 7850">
+      <label class="check-row"><input type="checkbox" id="q_mismoWpp" checked> Mi WhatsApp es el mismo número</label>
+      <input type="tel" id="q_whatsapp" placeholder="Número de WhatsApp" style="display:none;margin-top:12px;">
+      <p class="err" id="err_telefono">Necesitamos un número para tu negocio.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="5">
+    <p class="hint">Casi listo</p>
+    <h1>¿En qué ciudad está tu negocio?</h1>
+    <div class="field-wrap">
+      <input type="text" id="q_ciudad" placeholder="Ej: Bucaramanga">
+      <p class="err" id="err_ciudad">Cuéntanos la ciudad para ubicar tu negocio.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="6">
+    <p class="hint">Un detalle personal</p>
+    <h1>¿Cómo quieres que aparezca tu nombre dentro de tu panel?</h1>
+    <div class="field-wrap">
+      <input type="text" id="q_nombrePanel" placeholder="Ej: Erick, Don Erick, Chef Erick...">
+      <p class="err" id="err_nombrePanel">Elige cómo quieres que te saludemos.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="7">
+    <p class="hint">Tu catálogo</p>
+    <h1>¿Qué productos o servicios ofreces?</h1>
+    <div class="field-wrap">
+      <textarea id="q_oferta" placeholder="Ej: Hamburguesas, papas, bebidas, combos..."></textarea>
+      <p class="err" id="err_oferta">Cuéntanos qué vendes u ofreces.</p>
+    </div>
+  </div>
+
+  <div class="step" data-step="8">
+    <p class="hint">Última pregunta</p>
+    <h1>¿Qué te gustaría conseguir con KARTTA?</h1>
+    <div class="field-wrap">
+      <div class="chip-grid" id="metaChips">
+        <button type="button" class="chip" data-val="Conseguir más clientes">Conseguir más clientes</button>
+        <button type="button" class="chip" data-val="Organizar mis pedidos">Organizar mis pedidos</button>
+        <button type="button" class="chip" data-val="Vender por internet">Vender por internet</button>
+        <button type="button" class="chip" data-val="Verme más profesional">Verme más profesional</button>
+        <button type="button" class="chip" data-val="Ahorrar tiempo">Ahorrar tiempo</button>
+      </div>
+      <p class="err" id="err_meta">Elige al menos una opción.</p>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn btn-ghost" id="btnBack" style="visibility:hidden;">← Atrás</button>
+    <button class="btn btn-primary" id="btnNext">Siguiente →</button>
+  </div>
+  <div class="dots" id="dots"></div>
+</div>
+
+<div id="saving">
+  <div class="spinner"></div>
+  <p style="font-size:13.5px;color:var(--gray);margin:0;">Guardando tu información…</p>
+</div>
+
+<script type="module">
+import { sb } from "./supabase-init.js";
+
+const TOTAL_STEPS = 9;
+let current = 0;
+let rid, uid, userEmail;
+
+const respuestas = {
+  nombre: '', negocio: '', tipo: '', descripcion: '',
+  telefono: '', whatsapp: '', ciudad: '', nombrePanel: '', oferta: '', metas: []
+};
+
+async function iniciar(){
+  window.KARTTA_AUTH.onChange(async (user) => {
+    if (!user) { window.location.href = 'index.html'; return; }
+    if (uid === user.uid) return;
+    uid = user.uid;
+    userEmail = user.email;
+
+    const mem = await sb.from('restaurant_members').select('restaurant_id').eq('user_id', uid).order('created_at').limit(1);
+    if (!mem.data || !mem.data.length) { window.location.href = 'index.html'; return; }
+    rid = mem.data[0].restaurant_id;
+
+    const r = await sb.from('restaurants').select('name,onboarding_completed').eq('id', rid).single();
+    if (r.data && r.data.onboarding_completed) { window.location.href = 'dashboard.html'; return; }
+
+    // Prellenar con lo que ya sabemos
+    if (r.data) document.getElementById('q_negocio').value = r.data.name || '';
+    document.getElementById('q_nombre').value = user.displayName || '';
+
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('wrap').style.display = 'block';
+    renderDots();
+    updateProgress();
+  });
+}
+
+function renderDots(){
+  const dots = document.getElementById('dots');
+  dots.innerHTML = '';
+  for (let i = 0; i < TOTAL_STEPS; i++) {
+    const d = document.createElement('span');
+    dots.appendChild(d);
+  }
+}
+function updateProgress(){
+  document.getElementById('progressBar').style.width = `${((current + 1) / TOTAL_STEPS) * 100}%`;
+  document.querySelectorAll('.dots span').forEach((d, i) => d.classList.toggle('on', i <= current));
+  document.getElementById('btnBack').style.visibility = current === 0 ? 'hidden' : 'visible';
+  document.getElementById('btnNext').textContent = current === TOTAL_STEPS - 1 ? 'Terminar →' : 'Siguiente →';
+}
+
+// ---- chips ----
+function wireChips(containerId, multi){
+  const cont = document.getElementById(containerId);
+  cont.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      if (multi) {
+        chip.classList.toggle('selected');
+      } else {
+        cont.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        if (containerId === 'tipoChips') {
+          document.getElementById('q_tipoOtro').style.display = chip.dataset.val === 'Otro' ? 'block' : 'none';
+        }
+      }
+    });
+  });
+}
+wireChips('tipoChips', false);
+wireChips('metaChips', true);
+
+document.getElementById('q_mismoWpp').addEventListener('change', (e) => {
+  document.getElementById('q_whatsapp').style.display = e.target.checked ? 'none' : 'block';
+});
+
+// ---- validación por paso ----
+function validar(step){
+  const err = (id) => document.getElementById(id)?.classList.add('show');
+  const clearErr = (id) => document.getElementById(id)?.classList.remove('show');
+
+  if (step === 0) {
+    respuestas.nombre = document.getElementById('q_nombre').value.trim();
+    if (!respuestas.nombre) { err('err_nombre'); return false; }
+    clearErr('err_nombre');
+    document.getElementById('greet1').textContent = `Un gusto, ${respuestas.nombre}.`;
+  }
+  if (step === 1) {
+    respuestas.negocio = document.getElementById('q_negocio').value.trim();
+    if (!respuestas.negocio) { err('err_negocio'); return false; }
+    clearErr('err_negocio');
+    document.getElementById('greet2').textContent = `Perfecto, ${respuestas.negocio}.`;
+  }
+  if (step === 2) {
+    const sel = document.querySelector('#tipoChips .chip.selected');
+    if (!sel) { err('err_tipo'); return false; }
+    respuestas.tipo = sel.dataset.val === 'Otro' ? (document.getElementById('q_tipoOtro').value.trim() || 'Otro') : sel.dataset.val;
+    if (!respuestas.tipo) { err('err_tipo'); return false; }
+    clearErr('err_tipo');
+  }
+  if (step === 3) {
+    respuestas.descripcion = document.getElementById('q_descripcion').value.trim();
+    if (!respuestas.descripcion) { err('err_descripcion'); return false; }
+    clearErr('err_descripcion');
+  }
+  if (step === 4) {
+    respuestas.telefono = document.getElementById('q_telefono').value.trim();
+    if (!respuestas.telefono) { err('err_telefono'); return false; }
+    clearErr('err_telefono');
+    respuestas.whatsapp = document.getElementById('q_mismoWpp').checked
+      ? respuestas.telefono
+      : document.getElementById('q_whatsapp').value.trim();
+  }
+  if (step === 5) {
+    respuestas.ciudad = document.getElementById('q_ciudad').value.trim();
+    if (!respuestas.ciudad) { err('err_ciudad'); return false; }
+    clearErr('err_ciudad');
+  }
+  if (step === 6) {
+    respuestas.nombrePanel = document.getElementById('q_nombrePanel').value.trim() || respuestas.nombre;
+    clearErr('err_nombrePanel');
+  }
+  if (step === 7) {
+    respuestas.oferta = document.getElementById('q_oferta').value.trim();
+    if (!respuestas.oferta) { err('err_oferta'); return false; }
+    clearErr('err_oferta');
+  }
+  if (step === 8) {
+    respuestas.metas = [...document.querySelectorAll('#metaChips .chip.selected')].map(c => c.dataset.val);
+    if (!respuestas.metas.length) { err('err_meta'); return false; }
+    clearErr('err_meta');
+  }
+  return true;
+}
+
+async function finalizar(){
+  document.getElementById('saving').classList.add('show');
+  try {
+    // El restaurante se publica al terminar para que el QR y el menú público funcionen desde el primer día.
+    const r1 = await sb.from('restaurants').update({
+      name: respuestas.negocio,
+      business_type: respuestas.tipo.slice(0, 60),
+      description: respuestas.descripcion.slice(0, 1000),
+      public_phone: respuestas.telefono.slice(0, 30),
+      whatsapp: (respuestas.whatsapp || '').slice(0, 30) || null,
+      city: respuestas.ciudad.slice(0, 100),
+      onboarding_completed: true,
+      is_published: true,
+    }).eq('id', rid);
+    if (r1.error) throw r1.error;
+
+    const r2 = await sb.from('restaurant_private').upsert({
+      restaurant_id: rid,
+      owner_name: respuestas.nombre.slice(0, 120),
+      contact_email: (userEmail || '').slice(0, 254),
+      contact_phone: respuestas.telefono.slice(0, 30),
+      offer: respuestas.oferta.slice(0, 500),
+      goals: respuestas.metas.slice(0, 10),
+    });
+    if (r2.error) throw r2.error;
+
+    const r3 = await sb.from('profiles').update({
+      full_name: respuestas.nombre.slice(0, 120),
+      panel_name: respuestas.nombrePanel.slice(0, 80),
+    }).eq('id', uid);
+    if (r3.error) throw r3.error;
+
+    window.location.href = 'dashboard.html';
+  } catch (e) {
+    console.error(e);
+    document.getElementById('saving').classList.remove('show');
+    alert('No pudimos guardar tu información: ' + (e.code || e.message || 'error desconocido') + '. Revisa tu conexión e intenta de nuevo.');
+  }
+}
+
+document.getElementById('btnNext').addEventListener('click', () => {
+  if (!validar(current)) return;
+  if (current === TOTAL_STEPS - 1) { finalizar(); return; }
+  document.querySelector(`.step[data-step="${current}"]`).classList.remove('active');
+  current++;
+  document.querySelector(`.step[data-step="${current}"]`).classList.add('active');
+  updateProgress();
+});
+
+document.getElementById('btnBack').addEventListener('click', () => {
+  if (current === 0) return;
+  document.querySelector(`.step[data-step="${current}"]`).classList.remove('active');
+  current--;
+  document.querySelector(`.step[data-step="${current}"]`).classList.add('active');
+  updateProgress();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey && document.activeElement.tagName !== 'TEXTAREA') {
+    e.preventDefault();
+    document.getElementById('btnNext').click();
+  }
+});
+
+iniciar();
+</script>
+</body>
+</html>
