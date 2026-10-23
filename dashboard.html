@@ -614,7 +614,7 @@ function hydrate(){
   $('sumTokens').textContent = isPro() ? '—' : 'Bloqueado';
   $('sumTokensSub').textContent = isPro() ? 'Sin datos de uso' : 'Requiere PRO';
   $('aiTokens').textContent = isPro() ? '—' : 'PRO';
-  $('aiLock').style.display = isPro() ? 'none' : 'flex';
+  $('aiLock').style.display = 'none'; // La IA queda accesible también en el plan gratuito.
   const dom = negocio.dominio, okDom = dom && negocio.dominioEstado === 'verified';
   $('sumDom').textContent = okDom ? 'Conectado' : (dom ? 'Por verificar' : 'Pendiente');
   $('domPill').textContent = okDom ? 'Conectado' : (dom ? 'Por verificar' : 'Pendiente'); $('domPill').className = 'pill ' + (okDom ? 'ok' : 'pend');
@@ -939,3 +939,4 @@ iniciar();
 </script>
 </body>
 </html>
+
