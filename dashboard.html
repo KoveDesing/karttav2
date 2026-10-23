@@ -614,7 +614,7 @@ function hydrate(){
   $('sumTokens').textContent = isPro() ? '—' : 'Bloqueado';
   $('sumTokensSub').textContent = isPro() ? 'Sin datos de uso' : 'Requiere PRO';
   $('aiTokens').textContent = isPro() ? '—' : 'PRO';
-  $('aiLock').style.display = 'none'; // La IA queda accesible también en el plan gratuito.
+  $('aiLock').style.display = isPro() ? 'none' : 'flex';
   const dom = negocio.dominio, okDom = dom && negocio.dominioEstado === 'verified';
   $('sumDom').textContent = okDom ? 'Conectado' : (dom ? 'Por verificar' : 'Pendiente');
   $('domPill').textContent = okDom ? 'Conectado' : (dom ? 'Por verificar' : 'Pendiente'); $('domPill').className = 'pill ' + (okDom ? 'ok' : 'pend');
@@ -849,7 +849,7 @@ function aiBubble(t, who){ const b = document.createElement('div'); b.className 
 $('aiText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('aiForm').requestSubmit(); } });
 $('aiText').addEventListener('input', () => { $('aiText').style.height = 'auto'; $('aiText').style.height = Math.min(120, $('aiText').scrollHeight) + 'px'; });
 $('aiForm').addEventListener('submit', async e => {
-  e.preventDefault();
+  e.preventDefault(); if (!isPro()) return openLock('PRO');
   const msg = $('aiText').value.trim(); if (!msg) return;
   aiBubble(msg, 'me'); $('aiText').value = ''; $('aiText').style.height = 'auto'; $('aiSend').disabled = true;
   const typing = aiBubble('', 'typing'); let out;
@@ -939,4 +939,3 @@ iniciar();
 </script>
 </body>
 </html>
-
