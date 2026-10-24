@@ -9,7 +9,7 @@ function isAllowedOrigin(origin: string) {
   if (ALLOWED_ORIGINS.has(origin)) return true;
   try {
     const parsed = new URL(origin);
-    return parsed.protocol === "https:" && parsed.hostname.endsWith(".food") && parsed.hostname.split(".").length === 2;
+    return parsed.protocol === "https:" && (parsed.hostname === "kartta.food" || (parsed.hostname.startsWith("kartta.") && parsed.hostname.endsWith(".food")));
   } catch { return false; }
 }
 const BASE_HEADERS = {
