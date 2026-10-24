@@ -574,23 +574,50 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
 #como-funciona .c3d-progress b{color:#FFFFFF;}
 
 
-/* Solo cambiar el color del texto dentro de las miniinterfaces.
-   No modificar fondos, bordes, imágenes ni estructura de las cards internas. */
-#como-funciona .c3d-card .visual,
-#como-funciona .c3d-card .visual :is(div,span,p,b,strong,small,label){
-  color:#333333;
-}
-#como-funciona .c3d-card .visual :is([style*="color:#fff"],[style*="color: #fff"],[style*="color:white"],[style*="color: white"]){
-  color:#333333 !important;
-}
 
 
-/* Restaurar fondos blancos originales de las tarjetas internas de demostración.
-   Solo afecta a las mini-cards dentro de las visualizaciones de "Cómo funciona". */
-#como-funciona .c3d-card .visual > div{
-  background-color:#FFFFFF;
-  border-color:#E8E8E8;
-  box-shadow:0 8px 24px rgba(0,0,0,.06);
+
+
+/* COLORES PRECISOS DE TEXTO PARA LAS MINIINTERFACES
+   Solo se ajustan colores de texto. Los fondos, tamaños, bordes e imágenes originales se conservan. */
+/* Mini-cards originalmente blancas: texto oscuro y legible. */
+#como-funciona .c3d-card:is([data-i="3"],[data-i="4"],[data-i="7"],[data-i="8"]) .visual > div{
+  color:#171717;
+}
+#como-funciona .c3d-card:is([data-i="3"],[data-i="4"],[data-i="7"],[data-i="8"]) .visual > div :is(div,span,p,b,strong,small,label){
+  color:#222222;
+}
+/* Mantener el botón rojo de confirmar pedido con texto blanco y el icono de la notificación blanco. */
+#como-funciona .c3d-card[data-i="3"] .visual > div > div[style*="background:var(--red)"]{
+  color:#FFFFFF;
+}
+#como-funciona .c3d-card[data-i="7"] .visual > div > div:first-child{
+  color:#FFFFFF;
+}
+/* Miniinterfaces originalmente oscuras: texto claro para que contraste y se lea. */
+#como-funciona .c3d-card:is([data-i="5"],[data-i="6"],[data-i="9"]) .visual > div{
+  color:#FFFFFF;
+}
+#como-funciona .c3d-card:is([data-i="5"],[data-i="6"],[data-i="9"]) .visual > div :is(div,span,p,b,strong,small,label){
+  color:#F2F2F2;
+}
+/* Conservar tonos secundarios/estados ya definidos en las tarjetas oscuras. */
+#como-funciona .c3d-card[data-i="5"] .visual > div :is(span[style*="color:#8A8A8A"],span[style*="color:#B8B8B8"]){
+  color:#B8B8B8;
+}
+#como-funciona .c3d-card[data-i="6"] .visual > div > div:first-child{
+  color:#8A8A8A;
+}
+#como-funciona .c3d-card[data-i="9"] .visual > div > div:nth-child(3){
+  color:#7CD98A;
+}
+#como-funciona .c3d-card[data-i="7"] .visual > div{
+  align-items:center;
+}
+#como-funciona .c3d-card[data-i="7"] .visual > div > div:nth-child(2){
+  min-width:0;
+  text-align:left;
+  overflow-wrap:anywhere;
 }
 
 </style>
