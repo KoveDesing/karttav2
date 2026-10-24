@@ -574,36 +574,23 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
 #como-funciona .c3d-progress b{color:#FFFFFF;}
 
 
+/* Solo cambiar el color del texto dentro de las miniinterfaces.
+   No modificar fondos, bordes, imágenes ni estructura de las cards internas. */
+#como-funciona .c3d-card .visual,
+#como-funciona .c3d-card .visual :is(div,span,p,b,strong,small,label){
+  color:#333333;
+}
+#como-funciona .c3d-card .visual :is([style*="color:#fff"],[style*="color: #fff"],[style*="color:white"],[style*="color: white"]){
+  color:#333333 !important;
+}
 
 
-/* MINI-CARDS: estilos limitados a las interfaces dentro de las cards del carrusel.
-   Las imágenes y los títulos/descripciones exteriores no se modifican. */
+/* Restaurar fondos blancos originales de las tarjetas internas de demostración.
+   Solo afecta a las mini-cards dentro de las visualizaciones de "Cómo funciona". */
 #como-funciona .c3d-card .visual > div{
-  background:#292929 !important;
-  border:1px solid #3A3A3A !important;
-  color:#E6E6E6 !important;
-  box-shadow:0 12px 28px -18px rgba(0,0,0,.65) !important;
-}
-#como-funciona .c3d-card .visual > div :is(div,span,p,b,strong){
-  color:#E0E0E0 !important;
-  border-color:#414141;
-}
-/* Mantener contraste y significado de botones/estados de color */
-#como-funciona .c3d-card .visual > div [style*="background:var(--red)"],
-#como-funciona .c3d-card .visual > div [style*="background:#FF3145"]{
-  color:#FFFFFF !important;
-}
-#como-funciona .c3d-card .visual > div [style*="background:#E8F8EE"]{
-  background:#183A27 !important;
-}
-#como-funciona .c3d-card .visual > div [style*="color:#1EA35A"]{
-  color:#7FE0A0 !important;
-}
-#como-funciona .c3d-card .visual > div [style*="color:#7CD98A"]{
-  color:#7CD98A !important;
-}
-#como-funciona .c3d-card .visual > div svg{
-  color:inherit;
+  background-color:#FFFFFF;
+  border-color:#E8E8E8;
+  box-shadow:0 8px 24px rgba(0,0,0,.06);
 }
 
 </style>
