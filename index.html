@@ -1473,7 +1473,12 @@ document.addEventListener('DOMContentLoaded', function(){
       });
     }
 
-    kchatForm.addEventListener('submit', function(e){ e.preventDefault(); preguntar(kchatText.value.trim()); });
+    /* Al enviar un mensaje, pedir que la persona inicie sesión o se registre; no enviar el mensaje a la IA. */
+    kchatForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      var authTrigger = document.querySelector('[data-auth="signup"]');
+      if (authTrigger) authTrigger.click();
+    });
     document.querySelectorAll('.kchip').forEach(function(chip){
       chip.addEventListener('click', function(){ preguntar(chip.textContent.trim()); });
     });
