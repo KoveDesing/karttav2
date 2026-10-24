@@ -5,6 +5,13 @@ const ALLOWED_ORIGINS = new Set([
   "https://kartta.food",
   "https://www.kartta.food",
 ]);
+function isAllowedOrigin(origin: string) {
+  if (ALLOWED_ORIGINS.has(origin)) return true;
+  try {
+    const parsed = new URL(origin);
+    return parsed.protocol === "https:" && parsed.hostname.endsWith(".food") && parsed.hostname.split(".").length === 2;
+  } catch { return false; }
+}
 const BASE_HEADERS = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -14,7 +21,7 @@ const json = (body: unknown, status = 200, origin = "") => new Response(JSON.str
   status,
   headers: {
     ...BASE_HEADERS,
-    "Access-Control-Allow-Origin": origin && ALLOWED_ORIGINS.has(origin) ? origin : "https://karttafood.vercel.app",
+    "Access-Control-Allow-Origin": origin && isAllowedOrigin(origin) ? origin : "https://karttafood.vercel.app",
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
   },
@@ -24,7 +31,7 @@ const CATEGORIES = new Set(["menu", "product", "order", "payment", "other"]);
 
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get("origin") || "";
-  if (origin && !ALLOWED_ORIGINS.has(origin)) return json({ error: "origin_not_allowed" }, 403, origin);
+  if (origin && !isAllowedOrigin(origin)) return json({ error: "origin_not_allowed" }, 403, origin);
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: {
     ...BASE_HEADERS,
     "Access-Control-Allow-Origin": origin && ALLOWED_ORIGINS.has(origin) ? origin : "https://karttafood.vercel.app",
