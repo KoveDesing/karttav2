@@ -11,6 +11,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module" src="supabase-init.js"></script>
 <script src="cookies.js" defer></script>
+<script src="kartta-image-ai.js" defer></script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="shortcut icon" href="/favicon.ico">
 <script>
@@ -202,6 +203,32 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
   .pgrid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
   .hello{font-size:clamp(32px,9vw,44px);}
 }
+
+/* ===== Fase 2/4/5: subdominio, Images AI, adjuntos, volver arriba, skeleton ===== */
+.subd{display:flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:12px;background:var(--panel2);overflow:hidden;max-width:520px;}
+.subd:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.subd-fix{padding:0 12px;min-height:46px;display:flex;align-items:center;font-weight:700;color:var(--muted);background:var(--panel);user-select:none;white-space:nowrap;}
+.subd input{flex:1;min-width:0;border:0;background:transparent;padding:0 10px;min-height:46px;font-size:15px;font-weight:700;color:var(--strong);}
+.subd input:focus{outline:none;}
+.fmsg{font-size:12.5px;margin:8px 0 0;min-height:18px;color:var(--muted);}.fmsg.ok{color:var(--ok);}.fmsg.bad{color:#E5484D;}
+.styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:16px;}
+.stylec{text-align:left;padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--panel2);transition:border-color .15s,transform .15s var(--ease),background .15s;}
+.stylec:hover{border-color:var(--accent);transform:translateY(-2px);}
+.stylec[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);}
+.stylec b{display:block;font-size:13.5px;color:var(--strong);margin-bottom:4px;}.stylec span{font-size:12px;color:var(--muted);line-height:1.45;}
+.notice{padding:12px 14px;border-radius:12px;background:var(--panel2);border:1px solid var(--border);font-size:13px;color:var(--text);margin-bottom:14px;}
+.iares{margin-top:16px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;}
+.iares img{width:100%;max-width:420px;border-radius:16px;border:1px solid var(--border);aspect-ratio:1/1;object-fit:cover;background:var(--panel2);}
+.attach{display:flex;align-items:center;gap:10px;padding:10px 14px 0;}
+.attach img{width:48px;height:48px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
+.attach span{font-size:12.5px;color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cin .clip{background:var(--panel2);color:var(--text);border:1px solid var(--border);}
+.skel{background:linear-gradient(90deg,var(--panel2) 25%,var(--border) 50%,var(--panel2) 75%);background-size:200% 100%;animation:sk 1.2s linear infinite;border-radius:10px;min-height:18px;}
+@keyframes sk{to{background-position:-200% 0}}
+#toTop{position:fixed;right:16px;bottom:calc(88px + env(safe-area-inset-bottom));width:46px;height:46px;border-radius:50%;background:var(--panel);border:1px solid var(--border);color:var(--strong);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .2s,transform .2s var(--ease);z-index:400;}
+#toTop.show{opacity:1;pointer-events:auto;transform:none;}
+.btn:active:not(:disabled){transform:scale(.98);}.btn[aria-busy="true"]{opacity:.7;pointer-events:none;}
+@media (prefers-reduced-motion:reduce){.skel{animation:none}}
 </style>
 </head>
 <body>
@@ -241,7 +268,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
         <div class="sum link" data-goto="productos"><div class="l">Productos</div><div class="n" id="sumProd">0 <small>/ 20</small></div><div class="bar"><i id="sumProdBar" style="width:0%"></i></div></div>
         <div class="sum link" data-goto="ia"><div class="l">Tokens IA</div><div class="n" id="sumTokens">—</div><div class="s" id="sumTokensSub">Plan PRO</div></div>
         <div class="sum link" data-goto="menu"><div class="l">Menú</div><div class="n" id="sumMenu" style="font-size:17px">—</div></div>
-        <div class="sum link" data-goto="dominio"><div class="l">Dominio</div><div class="n" id="sumDom" style="font-size:17px">—</div></div>
+        <div class="sum link" data-goto="dominio"><div class="l">Dirección</div><div class="n" id="sumDom" style="font-size:17px">—</div></div>
         <div class="sum link" data-goto="configuracion"><div class="l">Perfil</div><div class="n" id="sumPerfil">0%</div><div class="bar"><i id="sumPerfilBar" style="width:0%"></i></div></div>
       </div>
       <div class="grid-sum">
@@ -313,6 +340,24 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
             <input type="file" id="bannerFile" accept="image/*" hidden>
             <p class="sub" style="margin:12px 0 0">Tu logo, nombre y dirección se editan en <a href="#" data-goto="configuracion" style="color:var(--accent);font-weight:700">Configuración</a>.</p>
           </div>
+          <div class="card" id="imgAiCard">
+            <div class="row between"><div><h3>Fotos de producto con IA</h3><p class="sub">Mejora la foto de un producto con 6 estilos. El resultado es una propuesta: revísalo antes de usarlo.</p></div><span class="pill pend" id="iaQuotaPill" role="status">—</span></div>
+            <div class="notice" id="iaLock" hidden></div>
+            <div class="styles" id="iaStyles" role="group" aria-label="Estilo de imagen"></div>
+            <div class="field"><label>Foto de referencia</label>
+              <div class="imgbox"><div class="imgprev" id="iaPrev">Sin foto</div><div class="row"><button type="button" class="btn btn-ghost btn-sm" id="iaPick">Subir foto</button><button type="button" class="btn btn-ghost btn-sm" id="iaClear">Quitar</button></div></div>
+              <input type="file" id="iaFile" accept="image/jpeg,image/png,image/webp" hidden>
+            </div>
+            <div class="field"><label for="iaInstr">Indicaciones (opcional)</label><textarea id="iaInstr" maxlength="500" placeholder="Ej: que se vea en una mesa de madera clara"></textarea></div>
+            <button type="button" class="btn btn-accent" id="iaGen">Generar imagen</button>
+            <p class="fmsg" id="iaMsg" role="status" aria-live="polite"></p>
+            <div class="iares" id="iaRes" hidden>
+              <img id="iaOut" alt="Imagen generada por IA, pendiente de tu revisión">
+              <p class="sub" style="margin:0">Los modelos de IA pueden cambiar textos o logos del empaque. Revisa bien antes de usarla. Tu imagen actual no se reemplaza hasta que confirmes.</p>
+              <div class="row"><button type="button" class="btn btn-ghost" id="iaAgain">Generar otra</button><button type="button" class="btn btn-ghost" id="iaDown">Descargar</button><button type="button" class="btn btn-accent" id="iaUse">Usar en producto</button><button type="button" class="btn btn-ghost" id="iaCancel">Cancelar</button></div>
+              <div id="iaPickProd" hidden class="field"><label for="iaProd">¿En qué producto la usamos?</label><select id="iaProd"></select><div class="row" style="margin-top:10px"><button type="button" class="btn btn-accent" id="iaConfirm">Confirmar y usar</button></div></div>
+            </div>
+          </div>
           <button class="lockrow" data-lock="PREMIUM"><span>Personalización avanzada (tipografías, secciones, CSS)</span><span class="badge-lock">🔒 PREMIUM</span></button>
         </div>
         <div class="pvpanel">
@@ -357,7 +402,8 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
         <div class="lockov" id="aiLock" style="display:none"><div class="lock-ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><h3>El asistente de KARTTA es PRO</h3><p>Actualiza tu plan para utilizar el asistente.</p><button class="btn btn-accent" data-lock="PRO">Ver planes</button></div>
         <div class="chat">
           <div class="msgs" id="msgs"><div class="bub bot" id="aiHello">Hola 👋 Soy tu asistente de KARTTA. ¿En qué te ayudo hoy?</div></div>
-          <form class="cin" id="aiForm"><textarea id="aiText" rows="1" placeholder="Pregunta lo que quieras…" aria-label="Mensaje"></textarea><button type="submit" id="aiSend" aria-label="Enviar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+          <div class="attach" id="aiAttach" hidden><img id="aiAttachImg" alt="Foto adjunta"><span id="aiAttachName"></span><button type="button" class="btn btn-ghost btn-sm" id="aiAttachDel" aria-label="Quitar foto adjunta">Quitar</button></div>
+          <form class="cin" id="aiForm"><button type="button" class="clip" id="aiClip" aria-label="Adjuntar foto" title="Adjuntar foto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12l-8.5 8.5a5 5 0 0 1-7-7L14 5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 8"/></svg></button><input type="file" id="aiFile" accept="image/jpeg,image/png,image/webp" hidden><textarea id="aiText" rows="1" placeholder="Pregunta lo que quieras…" aria-label="Mensaje"></textarea><button type="submit" id="aiSend" aria-label="Enviar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
         </div>
       </div>
     </section>
@@ -371,10 +417,14 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
         <div class="card"><div class="row between"><h3>Mi administración</h3><span class="pill ok">Activo</span></div><p class="sub">Este panel.</p><div class="urlbox"><span id="urlAdmin">—</span></div></div>
       </div>
       <div class="card">
-        <div class="row between"><h3>Dominio propio</h3><span class="pill pend" id="domPill">Pendiente</span></div>
-        <p class="sub">Cuando tengas tu dominio (ej. mirestaurante.co), agrégalo primero en Vercel → Settings → Domains y escríbelo aquí.</p>
-        <div class="field"><label>Tu dominio (sin https://)</label><input type="text" id="cfgDominio" placeholder="mirestaurante.co"></div>
-        <button class="btn btn-accent" id="btnDominio">Conectar dominio</button>
+        <div class="row between"><h3>Dirección de tu menú</h3><span class="pill ok">Oficial KARTTA</span></div>
+        <p class="sub">Solo puedes cambiar el nombre del centro. “kartta.” y “.food” son fijos y no se pueden modificar.</p>
+        <div class="field"><label for="cfgSlug">Nombre de tu negocio en la dirección</label>
+          <div class="subd"><span class="subd-fix" aria-hidden="true">kartta.</span><input type="text" id="cfgSlug" maxlength="30" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="url" placeholder="laesquina" aria-describedby="slugMsg"><span class="subd-fix" aria-hidden="true">.food</span></div>
+          <p class="fmsg" id="slugMsg" role="status" aria-live="polite">3 a 30 caracteres: letras minúsculas, números y guiones.</p>
+        </div>
+        <div class="row"><button class="btn btn-ghost" id="btnSlugCheck">Comprobar disponibilidad</button><button class="btn btn-accent" id="btnSlug">Guardar cambios</button></div>
+        <p class="sub" style="margin:14px 0 0">Enlace activo de tu menú: <strong id="slugReal" style="color:var(--strong)">—</strong>. Si cambias el nombre, los QR y enlaces anteriores siguen funcionando.</p>
       </div>
     </section>
 
@@ -438,7 +488,7 @@ import { sb, imageUrl } from "./supabase-init.js";
    ESTRUCTURA DE DATOS (Supabase) — ver docs/ARQUITECTURA.md
    restaurants / restaurant_private / restaurant_members / subscriptions
    categories / products / menu_designs (borrador + publicado)
-   restaurant_tables / orders / order_items / restaurant_domains
+   restaurant_tables / orders / order_items / restaurant_slug_history / image_generations
    Imágenes: Storage bucket "kartta-media" → {restaurant_id}/{carpeta}/{archivo}.jpg
    Toda la seguridad real está en las políticas RLS; este código solo es la interfaz.
    ====================================================================== */
@@ -514,7 +564,7 @@ function irA(view){
   document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view || (view === 'menu' && b.dataset.view === 'personalizar' && b.closest('#tabbar'))));
   $('sidebar').classList.remove('open'); $('scrim').classList.remove('show');
   if (location.hash !== '#' + view) history.replaceState(null, '', '#' + view);
-  if (view === 'personalizar') renderPreview();
+  if (view === 'personalizar') { renderPreview(); if (rid && window.KARTTA_IMAGE_AI) iaLoad(); }
   window.scrollTo({ top: 0 });
 }
 document.addEventListener('click', e => {
@@ -542,22 +592,21 @@ $('lockClose').onclick = closeLock; $('lockModal').onclick = e => { if (e.target
 
 /* ---------- carga de datos ---------- */
 async function cargarNegocio(first){
-  const [r, pr, su, dm, dz] = await Promise.all([
+  const [r, pr, su, dz] = await Promise.all([
     sb.from('restaurants').select('*').eq('id', rid).single(),
     sb.from('restaurant_private').select('*').eq('restaurant_id', rid).maybeSingle(),
     sb.from('subscriptions').select('plan_id,status,current_period_end').eq('restaurant_id', rid).maybeSingle(),
-    sb.from('restaurant_domains').select('hostname,status').eq('restaurant_id', rid).order('created_at').limit(1),
     sb.from('menu_designs').select('config').eq('restaurant_id', rid).eq('status', 'draft').maybeSingle(),
   ]);
   if (r.error) throw r.error;
-  const x = r.data, s = su.data, d = (dm.data || [])[0];
+  const x = r.data, s = su.data;
   const vigente = s && ['active', 'trialing'].includes(s.status) && (!s.current_period_end || new Date(s.current_period_end) > new Date());
   slug = x.slug;
   negocio = {
     nombre: x.name, descripcion: x.description || '', telefono: x.public_phone || pr.data?.contact_phone || '',
     whatsapp: x.whatsapp || '', direccion: x.address || '', ciudad: x.city || '',
     logoPath: x.logo_path, bannerPath: x.cover_path, logo: imageUrl(x.logo_path), banner: imageUrl(x.cover_path),
-    plan: vigente ? s.plan_id : 'free', dominio: d?.hostname || '', dominioEstado: d?.status || '',
+    plan: vigente ? s.plan_id : 'free',
     menuConfigured: x.menu_configured, onboardingCompleted: x.onboarding_completed, publicado: x.is_published,
   };
   if (first) ms = { ...MS_DEFAULT, ...(dz.data?.config || {}) };
@@ -582,7 +631,7 @@ async function iniciar(){
       perfil = pf.data || {}; rid = mem.data[0].restaurant_id;
       await cargarNegocio(true);
       if (!negocio.onboardingCompleted) { location.href = 'onboarding.html'; return; }
-      if (perfil.prefs && Object.keys(perfil.prefs).length) { if (prefsLocalOK()) { try { localStorage.setItem('kartta_prefs', JSON.stringify(perfil.prefs)); } catch {} } applyPrefs(perfil.prefs); } else applyPrefs(getPrefs());
+      if (perfil.prefs && Object.keys(perfil.prefs).length) { if (prefsLocalOK()) { try { localStorage.setItem('kartta_prefs', JSON.stringify(perfil.prefs)); } catch {} } applyPrefs(perfil.prefs); } else applyPrefs({});
       $('helloName').textContent = (perfil.panel_name || perfil.full_name || user.displayName || user.email.split('@')[0]).split(' ')[0];
       booted = true;
       await Promise.all([cargarCategorias(), cargarProductos(), cargarMesas(), cargarPedidos()]);
@@ -593,10 +642,9 @@ async function iniciar(){
     } catch (e) { console.error(e); $('gateMsg').textContent = 'Tu cuenta no tiene un negocio asociado todavía.'; }
   });
 }
-$('btnLogout').onclick = async () => { await window.KARTTA_AUTH.logout(); location.href = 'index.html'; };
+$('btnLogout').onclick = async () => { try { localStorage.removeItem('kartta_prefs'); } catch {} await window.KARTTA_AUTH.logout(); location.href = 'index.html'; };
 
 function menuURL(){
-  if (negocio.dominio && negocio.dominioEstado === 'verified') return 'https://' + negocio.dominio;
   return location.origin + '/m/' + encodeURIComponent(slug);
 }
 function perfilPct(){
@@ -615,10 +663,7 @@ function hydrate(){
   $('sumTokensSub').textContent = isPro() ? 'Sin datos de uso' : 'Requiere PRO';
   $('aiTokens').textContent = isPro() ? '—' : 'PRO';
   $('aiLock').style.display = 'none'; // La IA queda accesible también en el plan gratuito.
-  const dom = negocio.dominio, okDom = dom && negocio.dominioEstado === 'verified';
-  $('sumDom').textContent = okDom ? 'Conectado' : (dom ? 'Por verificar' : 'Pendiente');
-  $('domPill').textContent = okDom ? 'Conectado' : (dom ? 'Por verificar' : 'Pendiente'); $('domPill').className = 'pill ' + (okDom ? 'ok' : 'pend');
-  if (dom) $('cfgDominio').value = dom;
+  $('sumDom').textContent = 'kartta.' + slug + '.food'; $('slugReal').textContent = menuURL(); if (document.activeElement !== $('cfgSlug')) $('cfgSlug').value = slug;
   $('urlMenu').textContent = menuURL(); $('urlAdmin').textContent = location.href.split('#')[0];
   $('homeMenuLink').href = $('menuOpen').href = menuURL();
   updateMenuState(); fillConfig(); fillEditor(); updateProdSummary();
@@ -668,18 +713,44 @@ function wireImage(pickId, fileId, delId, tipo, col, pathKey){
 wireImage('logoPick', 'logoFile', 'logoDel', 'logo', 'logo_path', 'logoPath');
 wireImage('bannerPick', 'bannerFile', 'bannerDel', 'banner', 'cover_path', 'bannerPath');
 
-/* ---------- dominio ---------- */
-const HOST_RE = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/;
-$('btnDominio').onclick = async () => {
-  const d = $('cfgDominio').value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-  if (!HOST_RE.test(d) || d.length > 253) return toast('Escribe un dominio válido, ej: mirestaurante.co');
+/* ---------- dirección oficial: kartta.IDENTIFICADOR.food (solo se edita el centro) ---------- */
+const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const SLUG_TXT = { empty:'Escribe un nombre.', length:'Debe tener entre 3 y 30 caracteres.', format:'Usa solo letras minúsculas, números y guiones (sin espacios ni guion al inicio o final).', reserved:'Ese nombre está reservado por KARTTA. Elige otro.', taken:'Ese nombre ya está en uso. Prueba con otro.' };
+function slugLocal(v){
+  if (/[./:\\@\s]/.test(v)) return 'Escribe solo el nombre, sin https://, puntos, barras ni “.com”.';
+  if (v.length < 3 || v.length > 30) return SLUG_TXT.length;
+  if (!SLUG_RE.test(v)) return SLUG_TXT.format;
+  return null;
+}
+function slugMsg(t, kind){ const m = $('slugMsg'); m.textContent = t; m.className = 'fmsg ' + (kind || ''); }
+async function slugCheck(){
+  const v = $('cfgSlug').value.trim().toLowerCase(); $('cfgSlug').value = v;
+  const bad = slugLocal(v); if (bad) { slugMsg(bad, 'bad'); return false; }
+  if (v === slug) { slugMsg('Este es tu nombre actual.', 'ok'); return true; }
+  const { data, error } = await sb.rpc('check_slug_available', { p_restaurant_id: rid, p_slug: v });
+  if (error) { console.warn(error); slugMsg('No pudimos comprobarlo ahora. Intenta de nuevo.', 'bad'); return false; }
+  if (!data?.available) { slugMsg(SLUG_TXT[data?.reason] || SLUG_TXT.format, 'bad'); return false; }
+  slugMsg('Disponible ✓', 'ok'); return true;
+}
+let slugTimer; $('cfgSlug').addEventListener('input', () => { clearTimeout(slugTimer); const v = $('cfgSlug').value.trim().toLowerCase(); const bad = v ? slugLocal(v) : null; if (bad) return slugMsg(bad, 'bad'); slugMsg('Comprobando…'); slugTimer = setTimeout(slugCheck, 450); });
+$('btnSlugCheck').onclick = slugCheck;
+$('btnSlug').onclick = async () => {
+  const btn = $('btnSlug'); const v = $('cfgSlug').value.trim().toLowerCase();
+  if (v === slug) return slugMsg('No hay cambios para guardar.');
+  btn.setAttribute('aria-busy', 'true');
   try {
-    await sb.from('restaurant_domains').delete().eq('restaurant_id', rid);
-    const { error } = await sb.from('restaurant_domains').insert({ restaurant_id: rid, hostname: d });
-    if (error) { if (error.code === '23505') return toast('Ese dominio ya está registrado en otro negocio.'); throw error; }
-    await cargarNegocio(false); hydrate();
-    toast('Dominio guardado. Queda “por verificar” hasta agregarlo en Vercel y confirmar el DNS.');
-  } catch (e) { console.error(e); toast('No se pudo guardar el dominio.'); }
+    if (!(await slugCheck())) return;
+    const { error } = await sb.rpc('change_restaurant_slug', { p_restaurant_id: rid, p_slug: v });
+    if (error) {
+      const m = String(error.message || '');
+      if (m.includes('invalid_slug:')) return slugMsg(SLUG_TXT[m.split('invalid_slug:')[1].trim()] || SLUG_TXT.format, 'bad');
+      if (m.includes('too_many_changes')) return slugMsg('Hiciste demasiados cambios hoy. Intenta mañana.', 'bad');
+      if (error.code === '42501') return slugMsg('Solo el dueño o un administrador puede cambiarlo.', 'bad');
+      throw error;
+    }
+    await cargarNegocio(false); hydrate(); renderMesas(); slugMsg('Guardado. Tu nuevo enlace ya está activo.', 'ok'); toast('Dirección actualizada.');
+  } catch (e) { console.error(e); slugMsg('No se pudo guardar. Intenta de nuevo.', 'bad'); }
+  finally { btn.removeAttribute('aria-busy'); }
 };
 const copy = async (t) => { try { await navigator.clipboard.writeText(t); toast('Enlace copiado.'); } catch { toast('No se pudo copiar.'); } };
 $('copyMenu').onclick = $('menuCopy').onclick = () => copy(menuURL());
@@ -844,25 +915,143 @@ function renderPreview(){
     : `<div class="pv-phone"><div class="scr">${html}</div></div>`;
 }
 
+let aiImg = null, aiImgUrl = null;
+function clearAiImg(){ aiImg = null; if (aiImgUrl) URL.revokeObjectURL(aiImgUrl); aiImgUrl = null; $('aiAttach').hidden = true; $('aiFile').value = ''; }
+$('aiClip').onclick = () => $('aiFile').click();
+$('aiAttachDel').onclick = clearAiImg;
+$('aiFile').onchange = async () => {
+  const f = $('aiFile').files[0]; if (!f) return;
+  if (!['image/jpeg','image/png','image/webp'].includes(f.type)) { toast('Usa una imagen JPG, PNG o WEBP.'); $('aiFile').value = ''; return; }
+  try {
+    aiImg = new File([await refBlob(f, 1280, .85)], 'foto.jpg', { type: 'image/jpeg' });
+    if (aiImgUrl) URL.revokeObjectURL(aiImgUrl); aiImgUrl = URL.createObjectURL(aiImg);
+    $('aiAttachImg').src = aiImgUrl; $('aiAttachName').textContent = f.name; $('aiAttach').hidden = false;
+  } catch { toast('No se pudo leer esa imagen.'); $('aiFile').value = ''; }
+};
 /* ---------- IA (función segura en el servidor: la clave de Gemini nunca llega al navegador) ---------- */
 function aiBubble(t, who){ const b = document.createElement('div'); b.className = 'bub ' + who; if (who === 'typing') { b.className = 'bub bot typing'; b.innerHTML = '<i></i><i></i><i></i>'; } else b.textContent = t; $('msgs').appendChild(b); $('msgs').scrollTop = $('msgs').scrollHeight; return b; }
 $('aiText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('aiForm').requestSubmit(); } });
 $('aiText').addEventListener('input', () => { $('aiText').style.height = 'auto'; $('aiText').style.height = Math.min(120, $('aiText').scrollHeight) + 'px'; });
 $('aiForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const msg = $('aiText').value.trim(); if (!msg) return;
-  aiBubble(msg, 'me'); $('aiText').value = ''; $('aiText').style.height = 'auto'; $('aiSend').disabled = true;
+  const msg = $('aiText').value.trim() || (aiImg ? 'Analiza esta foto de mi producto y dime cómo mejorarla.' : ''); if (!msg) return;
+  const foto = aiImg; aiBubble(foto ? '📷 ' + msg : msg, 'me'); $('aiText').value = ''; $('aiText').style.height = 'auto'; $('aiSend').disabled = true;
   const typing = aiBubble('', 'typing'); let out;
   try {
-    const { data, error } = await sb.functions.invoke('ai-assistant', { body: { restaurant_id: rid, message: msg } });
-    if (error) throw error;
-    out = data?.reply || 'No obtuve una respuesta. Intenta de nuevo.';
+    if (foto) {
+      const r = await window.KARTTA_IMAGE_AI.askWithPhoto({ restaurantId: rid, image: foto, message: msg });
+      out = r?.reply || 'No obtuve una respuesta para esa foto.'; clearAiImg();
+    } else {
+      const { data, error } = await sb.functions.invoke('ai-assistant', { body: { restaurant_id: rid, message: msg } });
+      if (error) throw error;
+      out = data?.reply || 'No obtuve una respuesta. Intenta de nuevo.';
+    }
   } catch (err) {
     console.warn(err);
-    out = 'El asistente aún no está activo en el servidor. Cuando se configure la clave de IA, responderá aquí con los datos de tu negocio.';
+    out = foto ? (err?.message || 'No pude analizar la foto ahora. Intenta de nuevo.') : 'El asistente aún no está activo en el servidor. Cuando se configure la clave de IA, responderá aquí con los datos de tu negocio.';
   }
   typing.remove(); aiBubble(out, 'bot'); $('aiSend').disabled = false; $('aiText').focus();
 });
+
+/* ---------- referencia: reduce y aplana (fondo blanco) para enviar al servidor ---------- */
+function refBlob(file, maxSide, q){
+  return new Promise((resolve, reject) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, maxSide / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); c.toBlob(b => b ? resolve(b) : reject(new Error('bad')), 'image/jpeg', q);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('bad')); }; img.src = url;
+  });
+}
+
+/* ---------- KARTTA Images AI (Pro: 5 imágenes exitosas por día y restaurante) ---------- */
+let iaStyle = null, iaFile = null, iaGen = null, iaQuota = null, iaBusy = false;
+const IAI = () => window.KARTTA_IMAGE_AI;
+function iaMsg(t, kind){ const m = $('iaMsg'); m.textContent = t || ''; m.className = 'fmsg ' + (kind || ''); }
+function iaRender(){
+  const st = IAI()?.STYLES || [];
+  $('iaStyles').innerHTML = st.map(x => `<button type="button" class="stylec" data-style="${x.id}" aria-pressed="${iaStyle === x.id}"><b>${esc(x.name)}</b><span>${esc(x.desc)}</span></button>`).join('');
+  const ok = iaQuota?.plan_ok === true, left = iaQuota?.remaining ?? 0;
+  $('iaQuotaPill').textContent = iaQuota ? (ok ? `Imágenes de hoy: ${iaQuota.used} de ${iaQuota.limit} · quedan ${left}` : 'Plan Pro') : '—';
+  $('iaGen').disabled = iaBusy || !ok || left <= 0 || !iaStyle || !iaFile;
+  $('iaGen').textContent = iaBusy ? 'Generando… puede tardar hasta 1 minuto' : 'Generar imagen';
+  $('iaAgain').disabled = iaBusy || left <= 0;
+  const lock = $('iaLock');
+  if (iaQuota && !ok) { lock.hidden = false; lock.innerHTML = `La generación de imágenes con IA es exclusiva del plan Pro${iaPrice ? ' (' + esc(iaPrice) + ' / mes)' : ''}. Tus demás herramientas del menú siguen disponibles. <button type="button" class="btn btn-accent btn-sm" data-lock="PRO" style="margin-left:6px">Mejorar plan</button>`; }
+  else if (iaQuota && left <= 0) { lock.hidden = false; lock.textContent = 'Ya usaste tus 5 imágenes de hoy. Se reinician a medianoche (hora de Colombia).'; }
+  else lock.hidden = true;
+}
+let iaPrice = '';
+async function iaLoad(){
+  try { iaQuota = await IAI().quota(rid); } catch (e) { console.warn(e); iaQuota = null; }
+  try { // precio real desde la tabla de planes (no se escribe a mano)
+    const { data } = await sb.from('plans').select('*').eq('id', 'pro').maybeSingle();
+    const v = data && (data.price_cop ?? data.price_monthly ?? data.price); if (Number(v) > 0) iaPrice = money(v);
+  } catch {}
+  iaRender();
+}
+$('iaStyles').addEventListener('click', e => { const b = e.target.closest('[data-style]'); if (!b) return; iaStyle = b.dataset.style; iaRender(); });
+$('iaPick').onclick = () => $('iaFile').click();
+function iaClearFile(){ iaFile = null; $('iaPrev').textContent = 'Sin foto'; $('iaFile').value = ''; iaRender(); }
+$('iaClear').onclick = iaClearFile;
+$('iaFile').onchange = async () => {
+  const f = $('iaFile').files[0]; if (!f) return;
+  if (!['image/jpeg','image/png','image/webp'].includes(f.type)) { iaMsg('Usa una imagen JPG, PNG o WEBP.', 'bad'); $('iaFile').value = ''; return; }
+  try {
+    iaFile = new File([await refBlob(f, 1536, .9)], 'referencia.jpg', { type: 'image/jpeg' });
+    const u = URL.createObjectURL(iaFile); $('iaPrev').innerHTML = `<img src="${u}" alt="Foto de referencia seleccionada">`; iaMsg('');
+  } catch { iaMsg('No se pudo leer esa imagen.', 'bad'); iaFile = null; }
+  iaRender();
+};
+async function iaGenerate(){
+  if (iaBusy || !iaStyle || !iaFile) return;
+  iaBusy = true; iaMsg(''); iaRender(); $('iaPickProd').hidden = true;
+  try {
+    const r = await IAI().generate({ restaurantId: rid, image: iaFile, style: iaStyle, instructions: $('iaInstr').value.trim() });
+    if (!r?.url) throw new Error('Sin imagen');
+    iaGen = r; if (r.quota) iaQuota = r.quota;
+    $('iaOut').src = r.url; $('iaRes').hidden = false; iaMsg('Imagen lista. Revísala antes de usarla.', 'ok');
+  } catch (e) {
+    iaMsg(e.message || 'No se pudo generar la imagen.', 'bad');
+    try { iaQuota = await IAI().quota(rid); } catch {}
+  } finally { iaBusy = false; iaRender(); }
+}
+$('iaGen').onclick = iaGenerate; $('iaAgain').onclick = iaGenerate;
+$('iaCancel').onclick = () => { iaGen = null; $('iaRes').hidden = true; $('iaOut').removeAttribute('src'); $('iaPickProd').hidden = true; iaMsg(''); };
+$('iaDown').onclick = async () => {
+  if (!iaGen?.url) return;
+  try { const b = await (await fetch(iaGen.url)).blob(); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'kartta-imagen-ia.png'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+  catch { window.open(iaGen.url, '_blank', 'noopener'); }
+};
+$('iaUse').onclick = () => {
+  if (!productos.length) return iaMsg('Primero crea un producto para poder usarla.', 'bad');
+  $('iaProd').innerHTML = '<option value="">Elige un producto…</option>' + productos.map(p => `<option value="${esc(p.id)}">${esc(p.nombre)}</option>`).join('');
+  $('iaPickProd').hidden = false; $('iaProd').focus();
+};
+$('iaConfirm').onclick = async () => {
+  const pid = $('iaProd').value; if (!pid) return iaMsg('Elige el producto donde la quieres usar.', 'bad');
+  const nombre = productos.find(p => p.id === pid)?.nombre || 'ese producto';
+  if (!confirm(`¿Usar esta imagen en “${nombre}”? La imagen actual se conserva guardada.`)) return;
+  const btn = $('iaConfirm'); btn.setAttribute('aria-busy', 'true');
+  try {
+    await IAI().applyToProduct({ restaurantId: rid, generationId: iaGen.generation_id, productId: pid });
+    await refrescarProductos(); iaMsg(`Listo: “${nombre}” ya usa la nueva imagen.`, 'ok'); toast('Imagen aplicada al producto.');
+    $('iaPickProd').hidden = true;
+  } catch (e) { iaMsg(e.message || 'No se pudo aplicar la imagen.', 'bad'); }
+  finally { btn.removeAttribute('aria-busy'); }
+};
+
+/* ---------- volver arriba ---------- */
+(function(){
+  const b = document.createElement('button'); b.id = 'toTop'; b.type = 'button'; b.setAttribute('aria-label', 'Volver arriba');
+  b.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 15l6-6 6 6"/></svg>';
+  document.body.appendChild(b);
+  b.onclick = () => window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' });
+  let t; addEventListener('scroll', () => { clearTimeout(t); t = setTimeout(() => b.classList.toggle('show', scrollY > 700), 80); }, { passive: true });
+})();
 
 /* ---------- mesas y QR ---------- */
 const urlMesa = (n) => `${location.origin}/m/${encodeURIComponent(slug)}?mesa=${encodeURIComponent(n)}`;

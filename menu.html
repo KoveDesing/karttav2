@@ -211,7 +211,14 @@ async function cargarMenu(){
     mostrarError('No pudimos conectar con el servidor. Intenta de nuevo en un momento.');
     return;
   }
-  if (!menu) { mostrarError(); return; }
+  if (!menu) {
+    // Enlace viejo: si el restaurante cambió su identificador, redirige al actual (los QR anteriores siguen sirviendo).
+    try {
+      const { data: nuevo } = await sb.rpc('resolve_slug_alias', { p_slug: slug });
+      if (nuevo && nuevo !== slug) { location.replace('/m/' + encodeURIComponent(nuevo) + (mesa ? '?mesa=' + encodeURIComponent(mesa) : '')); return; }
+    } catch (e) { console.warn(e); }
+    mostrarError(); return;
+  }
 
   const negocio = menu.restaurant;
   const logo = imageUrl(negocio.logo_path), banner = imageUrl(negocio.cover_path);
