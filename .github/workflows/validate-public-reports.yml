@@ -20,3 +20,4 @@ jobs:
         with:
           deno-version: v2.x
       - run: deno check supabase/functions/submit-menu-report/index.ts
+      - run: deno check supabase/functions/ai-assistant/index.ts
