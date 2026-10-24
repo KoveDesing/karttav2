@@ -53,9 +53,10 @@ Deno.serve(async (req: Request) => {
   if (productId && !UUID.test(productId)) return json({ error: "invalid_product" }, 400, origin);
   if (contact && contact.length > 254) return json({ error: "invalid_contact" }, 400, origin);
 
-  const forwarded = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  const ip = forwarded || req.headers.get("cf-connecting-ip") || "unknown";
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip + "|" + url));
+  const chain = (req.headers.get("x-forwarded-for") || "").split(",").map((x) => x.trim()).filter(Boolean);
+  const ip = chain[chain.length - 1] || req.headers.get("cf-connecting-ip") || "unknown";
+  const hmacKey = await crypto.subtle.importKey("raw", new TextEncoder().encode(serviceKey), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const digest = await crypto.subtle.sign("HMAC", hmacKey, new TextEncoder().encode(ip));
   const fingerprint = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("");
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 
