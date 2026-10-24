@@ -13,9 +13,7 @@ create table if not exists public.menu_reports (
   notes text check (notes is null or char_length(notes) <= 8000),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  resolved_at timestamptz,
-  constraint menu_reports_product_same_restaurant_fk
-    foreign key (product_id, restaurant_id) references public.products(id, restaurant_id) on delete set null
+  resolved_at timestamptz
 );
 create index if not exists menu_reports_status_created_idx on public.menu_reports(status, created_at desc);
 create index if not exists menu_reports_restaurant_created_idx on public.menu_reports(restaurant_id, created_at desc);
