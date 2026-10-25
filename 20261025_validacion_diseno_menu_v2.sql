@@ -1,0 +1,6 @@
+-- YA APLICADA en Supabase como «validacion_diseno_menu_v2».
+-- Trigger public.validate_menu_design (BEFORE INSERT/UPDATE OF config en menu_designs):
+--  * solo claves y valores permitidos (colores #RRGGBB, listas cerradas, textos con longitud máxima, blocks sin duplicados con header e items);
+--  * claves avanzadas (fontHeading/fontBody ≠ Inter, blocks reordenado, announcement, footerText) exigen plan con limits.rank >= 3
+--    (constante adv_min_rank dentro de la función; cambiar ahí si se decide otro plan).
+-- Ver la definición vigente: select pg_get_functiondef('public.validate_menu_design()'::regprocedure);

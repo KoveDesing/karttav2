@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Editor visual — KARTTA</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+:root{--bg:#F6F6F4;--panel:#fff;--panel2:#F0F0EE;--text:#3C3C3C;--strong:#0A0A0A;--muted:#7A7A76;--border:#E4E4E0;--accent:#FF3145;--accent-soft:rgba(255,49,69,.12);--ok:#1EA35A;--warn:#B45309;--r:12px;}
+@media (prefers-color-scheme:dark){:root{--bg:#0B0B0C;--panel:#151517;--panel2:#1E1E21;--text:#C8C8C4;--strong:#fff;--muted:#8D8D88;--border:#2A2A2E;--accent-soft:rgba(255,49,69,.2);--warn:#F59E0B;}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:Inter,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#gate{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;background:var(--bg);z-index:50;text-align:center;padding:24px}
+#gate.hidden{display:none}
+#app{height:100%;display:none;flex-direction:column}
+#app.ready{display:flex}
+.top{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.top .back{font-weight:700;color:var(--muted);padding:8px 10px;border-radius:10px;text-decoration:none}
+.top .back:hover{background:var(--panel2);color:var(--strong)}
+.top h1{font-size:15px;margin:0;color:var(--strong);font-weight:800;margin-right:auto}
+.top h1 small{color:var(--muted);font-weight:600;margin-left:6px}
+.ib{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);display:inline-flex;align-items:center;justify-content:center;color:var(--strong)}
+.ib:disabled{opacity:.35;cursor:default}
+.seg{display:inline-flex;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:3px;gap:2px}
+.seg button{min-height:32px;padding:0 11px;border-radius:8px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.seg button[aria-pressed="true"],.seg button.on{background:var(--accent);color:#fff}
+.btn{min-height:38px;padding:0 14px;border-radius:10px;font-weight:700;font-size:13px;border:1px solid var(--border);background:var(--panel2);color:var(--strong)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:disabled{opacity:.5;cursor:default}
+#saveState{font-size:12.5px;color:var(--muted);min-width:170px;text-align:right}
+#saveState.err{color:#E5484D;font-weight:700}
+#saveState b{color:var(--ok)}
+.wrap{flex:1;display:flex;min-height:0}
+.panel{width:360px;max-width:100%;overflow-y:auto;background:var(--panel);border-right:1px solid var(--border);padding:8px 0 40px}
+.stage{flex:1;min-width:0;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:18px 12px;gap:10px}
+.frame{background:#fff;border-radius:26px;box-shadow:0 18px 50px rgba(0,0,0,.22);border:8px solid #111;overflow:hidden;transform-origin:top center;flex-shrink:0}
+.frame iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+.hint{font-size:12.5px;color:var(--muted);margin:0}
+details.g{border-bottom:1px solid var(--border)}
+details.g>summary{list-style:none;cursor:pointer;padding:14px 18px;font-weight:800;color:var(--strong);display:flex;align-items:center;gap:8px}
+details.g>summary::-webkit-details-marker{display:none}
+details.g>summary::after{content:"+";margin-left:auto;color:var(--muted);font-size:18px;line-height:1}
+details.g[open]>summary::after{content:"–"}
+details.g.flash{background:var(--accent-soft)}
+.gb{padding:0 18px 18px}
+.lock{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:99px;background:var(--panel2);color:var(--muted)}
+.fld{margin-bottom:14px}
+.fld>label,.fld>.lb{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:var(--text)}
+.fld input[type=text],.fld select,.fld textarea{width:100%;min-height:40px;padding:9px 11px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--strong);font:inherit}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.fld .seg{display:flex;flex-wrap:wrap}.fld .seg button{flex:1;white-space:nowrap}
+.colors{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cw{display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);padding:4px 8px 4px 4px}
+.cw input[type=color]{width:34px;height:34px;border:0;padding:0;background:none;border-radius:8px;cursor:pointer}
+.cw span{font-size:12px;font-weight:700;color:var(--strong)}.cw small{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--border);font-weight:600;color:var(--strong)}
+.sw input{width:20px;height:20px;accent-color:var(--accent)}
+.tpl{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tpl button{text-align:left;border:1px solid var(--border);border-radius:12px;padding:10px;background:var(--panel2)}
+.tpl button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.tpl b{display:block;color:var(--strong);font-size:13px}.tpl span{font-size:11.5px;color:var(--muted)}
+.tpl i{display:flex;gap:3px;margin-bottom:7px}.tpl i em{width:16px;height:16px;border-radius:50%;border:1px solid rgba(0,0,0,.15)}
+.warn{font-size:12px;color:var(--warn);margin:6px 0 0;font-weight:600}
+.note{font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.5}
+ul.bl{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px}
+ul.bl li{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);font-weight:700;color:var(--strong);cursor:grab}
+ul.bl li.off{opacity:.55}ul.bl li.drag{opacity:.4}
+ul.bl li .mv{margin-left:auto;display:flex;gap:4px}
+ul.bl li .mv button{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:var(--panel)}
+ul.bl li .mv button:disabled{opacity:.3}
+.banner{padding:10px 14px;background:var(--accent-soft);color:var(--strong);font-size:13px;display:none;align-items:center;gap:10px;flex-wrap:wrap}
+.banner.show{display:flex}
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--strong);color:var(--bg);padding:11px 18px;border-radius:12px;font-weight:700;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:80;max-width:90vw}
+#toast.show{opacity:1}
+@media (max-width:900px){
+  .wrap{flex-direction:column}.panel{width:100%;max-height:46vh;border-right:0;border-top:1px solid var(--border);order:2}
+  .stage{order:1;flex:1;padding:8px}#saveState{min-width:0;text-align:left;flex-basis:100%;order:9;font-size:12px}
+  .top{gap:6px;padding:8px 10px}.top h1 small,.hint,#dev{display:none}.panel{max-height:40vh}.btn{padding:0 10px;min-height:36px}.top h1{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+<div id="gate"><strong style="color:var(--strong);font-size:18px">Cargando el editor…</strong><span id="gateMsg" style="color:var(--muted)"></span></div>
+
+<div id="app">
+  <header class="top">
+    <a class="back" href="/dashboard.html#personalizar">← Panel</a>
+    <h1>Editor visual<small id="bizTitle"></small></h1>
+    <button class="ib" id="undo" aria-label="Deshacer (Ctrl+Z)" title="Deshacer (Ctrl+Z)" disabled><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+    <button class="ib" id="redo" aria-label="Rehacer (Ctrl+Shift+Z)" title="Rehacer (Ctrl+Shift+Z)" disabled><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+    <div class="seg" id="dev" role="group" aria-label="Tamaño de pantalla"><button data-d="mobile" aria-pressed="true">Móvil</button><button data-d="tablet" aria-pressed="false">Tablet</button><button data-d="desktop" aria-pressed="false">PC</button></div>
+    <div id="saveState" role="status" aria-live="polite">—</div>
+    <button class="btn" id="discard">Descartar cambios</button>
+    <button class="btn primary" id="publish">Publicar</button>
+  </header>
+  <div class="banner" id="pubBanner"><span>Tu menú todavía no está publicado: los clientes no lo verán aunque publiques el diseño.</span><button class="btn primary" id="pubMenu">Publicar mi menú</button></div>
+  <main class="wrap">
+    <aside class="panel" id="panel" aria-label="Opciones de diseño"></aside>
+    <section class="stage">
+      <div class="frame" id="frame"><iframe id="pv" title="Vista previa de tu menú" src="/menu.html?preview=1"></iframe></div>
+      <p class="hint">Haz clic en una parte del menú para editarla. Esta es la vista real: así lo verán tus clientes.</p>
+    </section>
+  </main>
+</div>
+<div id="toast" role="status"></div>
+
+<script src="/menu-design.js"></script>
+<script type="module">
+import { sb, imageUrl } from "/supabase-init.js";
+const D = window.KARTTA_DESIGN;
+const $ = (id) => document.getElementById(id);
+let rid = null, rank = 0, cfg = D.normalize({}), published = D.normalize({}), restaurant = {}, menuData = null;
+let lastSaved = JSON.stringify(D.compact(cfg)), saveTimer = null, saving = false, saveErr = null, hasDraftRow = true, menuPublished = true;
+let hist = [], hi = -1, lastKey = null, lastAt = 0, device = 'mobile', previewReady = false;
+const ADV = rank => rank >= 3;
+const isLocked = () => rank < 3;
+
+function toast(t){ const el = $('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 2600); }
+
+/* ---------------------------- definición de controles ---------------------------- */
+const SEG = {
+  headerStyle: ['Estilo del encabezado', [['banner', 'Banner'], ['compact', 'Compacto'], ['centered', 'Centrado'], ['minimal', 'Minimal']]],
+  navStyle: ['Estilo de categorías', [['pills', 'Botones'], ['underline', 'Subrayado']]],
+  itemLayout: ['Disposición de productos', [['list', 'Lista'], ['cards', 'Tarjetas'], ['grid', 'Cuadrícula']]],
+  imageShape: ['Forma de las fotos', [['square', 'Cuadrada'], ['rounded', 'Redondeada'], ['circle', 'Círculo']]],
+  imagePosition: ['Posición de la foto', [['left', 'Izquierda'], ['right', 'Derecha']]],
+  density: ['Espaciado', [['compact', 'Compacto'], ['normal', 'Normal'], ['airy', 'Amplio']]],
+  cardStyle: ['Esquinas', [['round', 'Redondas'], ['soft', 'Suaves'], ['square', 'Rectas']]],
+  buttonStyle: ['Botón agregar', [['solid', 'Relleno'], ['outline', 'Borde']]],
+  size: ['Tamaño del texto', [['s', 'Pequeño'], ['m', 'Normal'], ['l', 'Grande']]],
+};
+const COLORS = [['primary', 'Principal', 'botones y acentos'], ['secondary', 'Encabezado', 'fondo del encabezado'], ['background', 'Fondo', 'de la página'], ['textColor', 'Texto', 'principal'], ['surface', 'Tarjetas', 'fondo de productos']];
+const SWITCH = { showAddress: 'Mostrar “Ver ubicación”', showCategoriesNav: 'Mostrar categorías', showImages: 'Mostrar fotos', showDescriptions: 'Mostrar descripciones', showPrices: 'Mostrar precios' };
+const BLOCK_LABEL = { header: 'Encabezado', announcement: 'Anuncio', categories: 'Categorías', items: 'Productos', footer: 'Pie de página' };
+
+const panel = $('panel'), refs = {};
+function group(id, title, adv){
+  const d = document.createElement('details'); d.className = 'g'; d.dataset.g = id; if (id === 'templates') d.open = true;
+  const s = document.createElement('summary'); s.textContent = title;
+  if (adv) { const l = document.createElement('span'); l.className = 'lock'; l.dataset.lock = '1'; s.appendChild(l); }
+  const b = document.createElement('div'); b.className = 'gb'; d.append(s, b); panel.appendChild(d); return b;
+}
+function seg(key, host, lockable){
+  const [label, opts] = SEG[key]; const f = document.createElement('div'); f.className = 'fld';
+  const lb = document.createElement('span'); lb.className = 'lb'; lb.textContent = label;
+  const sg = document.createElement('div'); sg.className = 'seg'; sg.setAttribute('role', 'group'); sg.setAttribute('aria-label', label);
+  opts.forEach(([v, t]) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = t; b.dataset.v = v; b.addEventListener('click', () => set(key, v)); sg.appendChild(b); });
+  f.append(lb, sg); host.appendChild(f); refs[key] = { type: 'seg', el: sg };
+}
+function sw(key, host){
+  const l = document.createElement('label'); l.className = 'sw'; const t = document.createElement('span'); t.textContent = SWITCH[key];
+  const i = document.createElement('input'); i.type = 'checkbox'; i.addEventListener('change', () => set(key, i.checked)); l.append(t, i); host.appendChild(l); refs[key] = { type: 'sw', el: i };
+}
+function txt(key, host, label, max, ph, adv, multi){
+  const f = document.createElement('div'); f.className = 'fld'; const l = document.createElement('label'); l.textContent = label;
+  const i = document.createElement(multi ? 'textarea' : 'input'); if (!multi) i.type = 'text'; i.maxLength = max; i.placeholder = ph || ''; if (multi) i.rows = 2;
+  l.htmlFor = i.id = 'f_' + key; i.addEventListener('input', () => set(key, i.value, true)); f.append(l, i); host.appendChild(f); refs[key] = { type: 'txt', el: i, adv };
+}
+function build(){
+  // Plantillas
+  let g = group('templates', 'Plantillas');
+  g.innerHTML = '<p class="note">Un punto de partida con un clic. Conserva tus textos y lo que muestras en cada producto.</p>';
+  const tp = document.createElement('div'); tp.className = 'tpl'; g.appendChild(tp); refs.tpl = tp;
+  D.TEMPLATES.forEach(t => {
+    const b = document.createElement('button'); b.type = 'button'; b.dataset.t = t.id; b.setAttribute('aria-pressed', 'false');
+    const c = D.applyTemplate(D.normalize({}), t); const i = document.createElement('i');
+    [c.primary, c.secondary, c.background, c.surface].forEach(col => { const e = document.createElement('em'); e.style.background = col; i.appendChild(e); });
+    const n = document.createElement('b'); n.textContent = t.name; const s = document.createElement('span'); s.textContent = t.desc; b.append(i, n, s);
+    b.addEventListener('click', () => { if (!confirm('¿Aplicar la plantilla “' + t.name + '”? Podrás deshacerlo.')) return; replace(D.applyTemplate(cfg, t), 'Plantilla aplicada'); });
+    tp.appendChild(b);
+  });
+  // Colores
+  g = group('colors', 'Colores'); const cg = document.createElement('div'); cg.className = 'colors'; g.appendChild(cg);
+  COLORS.forEach(([k, n, sub]) => {
+    const w = document.createElement('label'); w.className = 'cw'; const i = document.createElement('input'); i.type = 'color'; i.setAttribute('aria-label', 'Color ' + n.toLowerCase());
+    i.addEventListener('input', () => set(k, i.value.toUpperCase(), true)); const s = document.createElement('span'); s.innerHTML = ''; s.append(n); const sm = document.createElement('small'); sm.textContent = sub; s.appendChild(sm);
+    w.append(i, s); cg.appendChild(w); refs[k] = { type: 'color', el: i };
+  });
+  const w = document.createElement('div'); w.id = 'warns'; g.appendChild(w); refs.warns = w;
+  // Encabezado
+  g = group('header', 'Encabezado'); seg('headerStyle', g); txt('tagline', g, 'Frase bajo el nombre', 140, 'Ej: Buen sabor, siempre.'); sw('showAddress', g);
+  const bn = document.createElement('p'); bn.className = 'note'; bn.style.marginTop = '12px'; bn.innerHTML = 'El banner, el logo y el nombre se cambian en el panel (<a href="/dashboard.html#personalizar" style="color:var(--accent);font-weight:700">Personalizar</a> y <a href="/dashboard.html#configuracion" style="color:var(--accent);font-weight:700">Configuración</a>).'; g.appendChild(bn);
+  // Categorías
+  g = group('nav', 'Categorías'); sw('showCategoriesNav', g); seg('navStyle', g);
+  // Productos
+  g = group('items', 'Productos'); seg('itemLayout', g); seg('imageShape', g); seg('imagePosition', g); seg('density', g); seg('cardStyle', g);
+  const rf = document.createElement('div'); rf.className = 'fld'; const rl = document.createElement('label'); rl.htmlFor = 'f_radius'; rl.id = 'radLbl';
+  const ri = document.createElement('input'); ri.type = 'range'; ri.min = 0; ri.max = 28; ri.id = 'f_radius'; ri.style.width = '100%'; ri.addEventListener('input', () => set('radius', Number(ri.value), true));
+  rf.append(rl, ri); g.appendChild(rf); refs.radius = { type: 'range', el: ri, lbl: rl };
+  seg('buttonStyle', g); seg('size', g); sw('showImages', g); sw('showDescriptions', g); sw('showPrices', g);
+  // Tipografía (avanzado)
+  g = group('type', 'Tipografía', true);
+  [['fontHeading', 'Títulos'], ['fontBody', 'Texto']].forEach(([k, n]) => {
+    const f = document.createElement('div'); f.className = 'fld'; const l = document.createElement('label'); l.textContent = n; l.htmlFor = 'f_' + k;
+    const s = document.createElement('select'); s.id = 'f_' + k; D.FONTS.forEach(ft => { const o = document.createElement('option'); o.value = ft; o.textContent = ft; s.appendChild(o); });
+    s.addEventListener('change', () => set(k, s.value)); f.append(l, s); g.appendChild(f); refs[k] = { type: 'sel', el: s, adv: true };
+  });
+  // Secciones (avanzado)
+  g = group('sections', 'Secciones y textos', true);
+  g.insertAdjacentHTML('beforeend', '<p class="note">Arrastra para cambiar el orden o usa las flechas. Encabezado y Productos siempre se muestran.</p>');
+  const ul = document.createElement('ul'); ul.className = 'bl'; ul.id = 'bl'; g.appendChild(ul); refs.bl = ul;
+  txt('announcement', g, 'Anuncio destacado', 160, 'Ej: 2x1 en postres hoy', true);
+  txt('footerText', g, 'Texto del pie', 160, 'Ej: Abierto de 8am a 8pm', true, true);
+  panel.querySelectorAll('[data-lock]').forEach(l => { l.textContent = '🔒 Plan Personalizado'; });
+}
+
+/* ---------------------------- sincronizar controles con cfg ---------------------------- */
+function sync(){
+  Object.entries(refs).forEach(([k, r]) => {
+    if (!r || !r.type) return;
+    const locked = r.adv && isLocked();
+    if (r.type === 'seg') r.el.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(cfg[k] === b.dataset.v)));
+    else if (r.type === 'sw') r.el.checked = !!cfg[k];
+    else if (r.type === 'color') r.el.value = cfg[k];
+    else if (r.type === 'range') { r.el.value = D.radiusOf(cfg); r.lbl.textContent = 'Redondeo de esquinas: ' + D.radiusOf(cfg) + ' px'; }
+    else if (r.type === 'txt' || r.type === 'sel') { if (document.activeElement !== r.el) r.el.value = cfg[k]; r.el.disabled = !!locked; }
+  });
+  renderBlocks();
+  const w = [];
+  if (D.contrast(cfg.textColor, cfg.background) < 4.5) w.push('El texto se leerá con dificultad sobre el fondo. Aumenta el contraste.');
+  if (D.contrast('#FFFFFF', cfg.primary) < 3) w.push('Los botones “+” usan texto blanco: con este color principal casi no se verá.');
+  if (cfg.headerStyle !== 'minimal' && D.contrast('#FFFFFF', cfg.secondary) < 4.5) w.push('El texto blanco del encabezado se leerá con dificultad sobre ese color.');
+  refs.warns.innerHTML = ''; w.forEach(t => { const p = document.createElement('p'); p.className = 'warn'; p.textContent = '⚠ ' + t; refs.warns.appendChild(p); });
+  panel.querySelectorAll('[data-lock]').forEach(l => { l.style.display = isLocked() ? '' : 'none'; });
+  $('undo').disabled = hi <= 0; $('redo').disabled = hi >= hist.length - 1;
+}
+function renderBlocks(){
+  const ul = refs.bl, locked = isLocked(); ul.innerHTML = '';
+  const vis = cfg.blocks, all = vis.concat(D.BLOCKS.filter(b => !vis.includes(b)));
+  all.forEach((b, i) => {
+    const on = vis.includes(b), req = b === 'header' || b === 'items';
+    const li = document.createElement('li'); li.draggable = !locked && on; li.dataset.b = b; if (!on) li.className = 'off';
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = on; cb.disabled = req || locked; cb.setAttribute('aria-label', 'Mostrar ' + BLOCK_LABEL[b]);
+    cb.addEventListener('change', () => {
+      let n; if (!cb.checked) n = vis.filter(x => x !== b);
+      else { n = vis.slice(); const di = D.BLOCKS.indexOf(b), at = n.findIndex(x => D.BLOCKS.indexOf(x) > di); n.splice(at < 0 ? n.length : at, 0, b); }
+      set('blocks', n);
+    });
+    const nm = document.createElement('span'); nm.textContent = BLOCK_LABEL[b];
+    const mv = document.createElement('div'); mv.className = 'mv';
+    const up = document.createElement('button'); up.type = 'button'; up.textContent = '↑'; up.setAttribute('aria-label', 'Subir ' + BLOCK_LABEL[b]); up.disabled = locked || !on || i === 0;
+    const dn = document.createElement('button'); dn.type = 'button'; dn.textContent = '↓'; dn.setAttribute('aria-label', 'Bajar ' + BLOCK_LABEL[b]); dn.disabled = locked || !on || i >= vis.length - 1;
+    up.addEventListener('click', () => moveBlock(b, -1)); dn.addEventListener('click', () => moveBlock(b, 1)); mv.append(up, dn);
+    li.append(cb, nm, mv); ul.appendChild(li);
+    li.addEventListener('dragstart', e => { li.classList.add('drag'); e.dataTransfer.setData('text/plain', b); e.dataTransfer.effectAllowed = 'move'; });
+    li.addEventListener('dragend', () => li.classList.remove('drag'));
+    li.addEventListener('dragover', e => { if (!locked && on) e.preventDefault(); });
+    li.addEventListener('drop', e => { e.preventDefault(); const from = e.dataTransfer.getData('text/plain'); if (!from || from === b || !on || !vis.includes(from)) return; const n = vis.filter(x => x !== from); n.splice(n.indexOf(b) + (vis.indexOf(from) < vis.indexOf(b) ? 1 : 0), 0, from); set('blocks', n); });
+  });
+}
+function moveBlock(b, d){ const n = cfg.blocks.slice(), i = n.indexOf(b), j = i + d; if (j < 0 || j >= n.length) return; [n[i], n[j]] = [n[j], n[i]]; set('blocks', n); }
+
+/* ---------------------------- estado, historial y vista previa ---------------------------- */
+function pushHist(key){
+  const snap = JSON.stringify(cfg), now = Date.now();
+  if (key && key === lastKey && now - lastAt < 900 && hi >= 0) hist[hi] = snap;
+  else { hist = hist.slice(0, hi + 1); hist.push(snap); if (hist.length > 100) hist.shift(); hi = hist.length - 1; }
+  lastKey = key; lastAt = now;
+}
+function afterChange(){ sync(); sendDesign(); scheduleSave(); }
+function set(key, value, coalesce){
+  if (ADV_KEYS.includes(key) && isLocked()) { toast('Esta opción es del plan Personalizado.'); sync(); return; }
+  const next = D.normalize({ ...cfg, [key]: value });
+  if (JSON.stringify(next) === JSON.stringify(cfg)) return;
+  cfg = next; pushHist(coalesce ? key : null); afterChange();
+}
+const ADV_KEYS = D.ADVANCED;
+function replace(next, msg){ cfg = D.normalize(next); if (isLocked()) ADV_KEYS.forEach(k => { cfg[k] = D.DEFAULTS[k]; }); pushHist(null); afterChange(); if (msg) toast(msg); }
+function undo(){ if (hi > 0) { hi--; cfg = JSON.parse(hist[hi]); lastKey = null; afterChange(); } }
+function redo(){ if (hi < hist.length - 1) { hi++; cfg = JSON.parse(hist[hi]); lastKey = null; afterChange(); } }
+$('undo').onclick = undo; $('redo').onclick = redo;
+addEventListener('keydown', e => {
+  const mod = e.ctrlKey || e.metaKey, tag = (e.target.tagName || '').toLowerCase(), typing = tag === 'input' && ['text'].includes(e.target.type) || tag === 'textarea';
+  if (mod && e.key.toLowerCase() === 's') { e.preventDefault(); saveNow(); }
+  else if (mod && !typing && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
+  else if (mod && !typing && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
+});
+
+const pv = $('pv');
+function sendDesign(){ if (previewReady) pv.contentWindow.postMessage({ type: 'kartta-design', design: D.compact(cfg) }, location.origin); }
+function sendData(){ if (!menuData) return; pv.contentWindow.postMessage({ type: 'kartta-data', menu: { ...menuData, design: D.compact(cfg) } }, location.origin); }
+addEventListener('message', e => {
+  if (e.origin !== location.origin || e.source !== pv.contentWindow) return;
+  const m = e.data || {};
+  if (m.type === 'kartta-ready') { previewReady = true; sendData(); fit(); }
+  else if (m.type === 'kartta-click') selectEl(m.el);
+});
+const EL_GROUP = { header: 'header', announcement: 'sections', categories: 'nav', items: 'items', footer: 'sections' };
+function selectEl(el){
+  pv.contentWindow.postMessage({ type: 'kartta-select', el }, location.origin);
+  const g = panel.querySelector('details[data-g="' + EL_GROUP[el] + '"]'); if (!g) return;
+  panel.querySelectorAll('details.g').forEach(d => { if (d !== g && d.dataset.g !== 'templates') d.open = false; d.classList.remove('flash'); });
+  g.open = true; g.classList.add('flash'); g.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); setTimeout(() => g.classList.remove('flash'), 900);
+}
+
+/* ---------------------------- dispositivo ---------------------------- */
+const DEV = { mobile: [390, 780], tablet: [768, 900], desktop: [1100, 760] };
+function fit(){
+  const [w, h] = DEV[device], st = document.querySelector('.stage'), frame = $('frame');
+  const avail = st.clientWidth - 24, sc = Math.min(1, avail / (w + 16));
+  frame.style.width = (w + 16) + 'px'; frame.style.height = (h + 16) + 'px';
+  frame.style.transform = 'scale(' + sc + ')'; frame.style.marginBottom = (-(h + 16) * (1 - sc)) + 'px';
+}
+$('dev').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; device = b.dataset.d; $('dev').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); fit(); });
+addEventListener('resize', fit);
+
+/* ---------------------------- guardado (borrador) y publicación ---------------------------- */
+const snapJSON = () => JSON.stringify(D.compact(cfg));
+function renderState(){
+  const el = $('saveState'); el.className = ''; el.textContent = '';
+  if (saveErr) { el.className = 'err'; el.textContent = saveErr + ' '; const b = document.createElement('button'); b.className = 'btn'; b.style.minHeight = '28px'; b.textContent = 'Reintentar'; b.onclick = saveNow; el.appendChild(b); return; }
+  if (saving) { el.textContent = 'Guardando…'; return; }
+  const dirty = snapJSON() !== lastSaved, unpub = snapJSON() !== JSON.stringify(D.compact(published));
+  $('publish').disabled = !unpub;
+  if (dirty) { el.textContent = 'Cambios sin guardar…'; return; }
+  const b = document.createElement('b'); b.textContent = 'Borrador guardado'; el.appendChild(b); el.append(unpub ? ' · sin publicar' : ' · publicado');
+}
+function scheduleSave(){ clearTimeout(saveTimer); saveErr = null; renderState(); saveTimer = setTimeout(saveNow, 1200); }
+async function saveNow(){
+  clearTimeout(saveTimer); if (saving) { saveTimer = setTimeout(saveNow, 400); return; }
+  const payload = D.compact(cfg), json = JSON.stringify(payload);
+  if (json === lastSaved && !saveErr) { renderState(); return; }
+  saving = true; saveErr = null; renderState();
+  try {
+    let r = await sb.from('menu_designs').update({ config: payload }).eq('restaurant_id', rid).eq('status', 'draft').select('id');
+    if (r.error) throw r.error;
+    if (!r.data || !r.data.length) { r = await sb.from('menu_designs').insert({ restaurant_id: rid, status: 'draft', config: payload }).select('id'); if (r.error) throw r.error; }
+    lastSaved = json;
+  } catch (e) {
+    console.error(e); const m = String(e.message || '');
+    saveErr = m.includes('Premium') ? 'Esa opción requiere el plan Personalizado.' : m.includes('invalid design') ? 'El diseño tiene un valor no válido.' : 'No se pudo guardar.';
+  } finally { saving = false; renderState(); }
+}
+addEventListener('beforeunload', e => { if (snapJSON() !== lastSaved) { e.preventDefault(); e.returnValue = ''; } });
+
+$('publish').onclick = async () => {
+  if (!confirm('¿Publicar este diseño? Se verá en tu menú público ahora mismo.')) return;
+  const b = $('publish'); b.disabled = true;
+  try {
+    await saveNow(); if (saveErr) throw new Error('save');
+    const pub = await sb.rpc('publish_design', { p_restaurant: rid }); if (pub.error) throw pub.error;
+    await sb.from('restaurants').update({ menu_configured: true }).eq('id', rid);
+    published = D.normalize(cfg); renderState(); toast('Diseño publicado. Ya se ve en tu menú.');
+  } catch (e) { console.error(e); toast('No se pudo publicar. Revisa tu conexión e intenta de nuevo.'); b.disabled = false; }
+};
+$('discard').onclick = () => {
+  if (snapJSON() === JSON.stringify(D.compact(published))) return toast('No hay cambios sin publicar.');
+  if (!confirm('¿Volver al diseño publicado? Perderás los cambios del borrador (puedes deshacerlo con Ctrl+Z).')) return;
+  replace(published, 'Volviste al diseño publicado');
+};
+$('pubMenu').onclick = async () => {
+  const { error } = await sb.from('restaurants').update({ is_published: true }).eq('id', rid);
+  if (error) return toast('No se pudo publicar tu menú.');
+  menuPublished = false; $('pubBanner').classList.remove('show'); toast('Tu menú ya está publicado.');
+};
+
+/* ---------------------------- arranque ---------------------------- */
+async function boot(user){
+  try {
+    const mem = await sb.from('restaurant_members').select('restaurant_id,role').eq('user_id', user.uid).order('created_at').limit(1);
+    if (!mem.data || !mem.data.length) throw new Error('sin_negocio');
+    if (!['owner', 'admin'].includes(mem.data[0].role)) throw new Error('sin_permiso');
+    rid = mem.data[0].restaurant_id;
+    const [r, sub, ds, cats, prods] = await Promise.all([
+      sb.from('restaurants').select('name,address,logo_path,cover_path,is_published').eq('id', rid).single(),
+      sb.from('subscriptions').select('plan_id,status,current_period_end').eq('restaurant_id', rid).maybeSingle(),
+      sb.from('menu_designs').select('status,config').eq('restaurant_id', rid),
+      sb.from('categories').select('id,name,sort_order').eq('restaurant_id', rid).order('sort_order'),
+      sb.from('products').select('id,category_id,name,description,price,discount_percent,image_path,is_available,sort_order').eq('restaurant_id', rid).eq('is_active', true).order('sort_order'),
+    ]);
+    if (r.error) throw r.error;
+    restaurant = r.data; $('bizTitle').textContent = '· ' + (restaurant.name || '');
+    const s = sub.data, vigente = s && ['active', 'trialing'].includes(s.status) && (!s.current_period_end || new Date(s.current_period_end) > new Date());
+    if (vigente) { const p = await sb.from('plans').select('limits').eq('id', s.plan_id).maybeSingle(); rank = Number(p.data?.limits?.rank || 0); }
+    const rows = ds.data || [], draft = rows.find(x => x.status === 'draft'), pub = rows.find(x => x.status === 'published');
+    hasDraftRow = !!draft; published = D.normalize(pub ? pub.config : {});
+    cfg = D.normalize(draft ? draft.config : (pub ? pub.config : {}));
+    lastSaved = JSON.stringify(D.compact(draft ? draft.config : {})); if (!draft) lastSaved = '';
+    menuData = { restaurant: { name: restaurant.name, address: restaurant.address, logo_path: restaurant.logo_path, cover_path: restaurant.cover_path },
+      categories: cats.data || [], products: prods.data || [] };
+    menuPublished = !!restaurant.is_published; $('pubBanner').classList.toggle('show', !menuPublished);
+    build(); hist = [JSON.stringify(cfg)]; hi = 0; sync(); renderState();
+    $('gate').classList.add('hidden'); $('app').classList.add('ready'); fit(); if (previewReady) sendData();
+  } catch (e) {
+    console.error(e);
+    $('gateMsg').textContent = e.message === 'sin_permiso' ? 'Solo el dueño o un administrador puede usar el editor.' : e.message === 'sin_negocio' ? 'Tu cuenta no tiene un negocio asociado todavía.' : 'No pudimos cargar el editor. Revisa tu conexión.';
+  }
+}
+let started = false;
+window.KARTTA_AUTH.onChange(user => { if (!user) { location.href = '/index.html'; return; } if (started) return; started = true; boot(user); });
+</script>
+</body>
+</html>

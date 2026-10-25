@@ -116,3 +116,12 @@ grant execute on function public.resolve_slug_alias(text) to anon, authenticated
 -- (ver la definición vigente con: select pg_get_functiondef('public.reserve_kartta_image_generation(uuid,uuid)'::regprocedure);)
 -- También se creó public.image_quota(p_restaurant_id) -> {plan_ok, used, limit, remaining} para el panel,
 -- y se fijó plans.monthly_price_cop = 84900 para el plan 'pro' (si estaba vacío).
+
+-- ---------------------------------------------------------------------
+-- 3) Migración «endurecimiento_pagos_pedidos_eventos» (YA APLICADA)
+--    revoke all on public.payment_events from anon, authenticated;
+--    revoke insert on public.restaurant_domains from authenticated;
+--    place_order: rechaza ítems no disponibles ('some items unavailable'), antiduplicado de 20 s.
+--    track_event: tope de 600 eventos/min por restaurante + índice menu_events_rest_time_idx.
+--    Definiciones vigentes: select pg_get_functiondef('public.place_order(text,text,text,text,jsonb)'::regprocedure);
+-- ---------------------------------------------------------------------

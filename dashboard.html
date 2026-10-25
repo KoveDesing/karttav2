@@ -313,20 +313,21 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 
     <!-- PERSONALIZAR -->
     <section class="view" data-panel="personalizar">
-      <div class="vhead row between"><div><h2>Personalizar mi menú</h2><p>Cada cambio se ve de inmediato en la vista previa.</p></div><button class="btn btn-accent" id="btnSaveMenu">Guardar diseño</button></div>
-      <div class="editor">
+      <div class="vhead row between"><div><h2>Personalizar mi menú</h2><p>Diseña tu menú con vista previa real: plantillas, colores, disposición y más.</p></div><a class="btn btn-accent" id="btnSaveMenu" href="editor.html">Abrir editor visual</a></div>
+      <div class="card"><h3>Editor visual</h3><p class="sub">Elige una plantilla, cambia colores, la disposición de tus productos y mira el resultado real antes de publicar. Tus cambios se guardan como borrador.</p><a class="btn btn-accent" href="editor.html">Abrir editor visual</a></div>
+      <div class="editor" style="grid-template-columns:minmax(0,720px)">
         <div>
-          <div class="card">
+          <div class="card" hidden>
             <h3>Colores</h3><p class="sub">Dale la identidad de tu negocio.</p>
             <div class="f2"><div class="field"><label>Color principal</label><input type="color" id="msPrimary"></div><div class="field"><label>Color secundario</label><input type="color" id="msSecondary"></div></div>
           </div>
-          <div class="card">
+          <div class="card" hidden>
             <h3>Estilo</h3><p class="sub">Tarjetas, botones y tamaño.</p>
             <div class="field"><label>Tarjetas</label><div class="seg" data-seg="cardStyle"><button data-v="round">Redondas</button><button data-v="soft">Suaves</button><button data-v="square">Rectas</button></div></div>
             <div class="field"><label>Botón agregar</label><div class="seg" data-seg="buttonStyle"><button data-v="solid">Relleno</button><button data-v="outline">Borde</button></div></div>
             <div class="field"><label>Tamaño de elementos</label><div class="seg" data-seg="size"><button data-v="s">Pequeño</button><button data-v="m">Normal</button><button data-v="l">Grande</button></div></div>
           </div>
-          <div class="card">
+          <div class="card" hidden>
             <h3>Contenido</h3><p class="sub">Qué se muestra en cada producto.</p>
             <div class="field"><label>Frase bajo el nombre</label><input type="text" id="msTagline" maxlength="80" placeholder="Ej: Buen sabor, siempre."></div>
             <label class="sw">Mostrar imágenes<input type="checkbox" id="msImgs"></label>
@@ -358,9 +359,9 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
               <div id="iaPickProd" hidden class="field"><label for="iaProd">¿En qué producto la usamos?</label><select id="iaProd"></select><div class="row" style="margin-top:10px"><button type="button" class="btn btn-accent" id="iaConfirm">Confirmar y usar</button></div></div>
             </div>
           </div>
-          <button class="lockrow" data-lock="PREMIUM"><span>Personalización avanzada (tipografías, secciones, CSS)</span><span class="badge-lock">🔒 PREMIUM</span></button>
+          <button class="lockrow" data-lock="PREMIUM" hidden><span>Personalización avanzada (tipografías, secciones, CSS)</span><span class="badge-lock">🔒 PREMIUM</span></button>
         </div>
-        <div class="pvpanel">
+        <div class="pvpanel" hidden>
           <div class="pvbar"><strong style="color:var(--strong)">Vista previa</strong><div class="seg" id="pvDevice"><button data-v="pc">PC</button><button data-v="mobile" class="on">Celular</button></div></div>
           <div class="pvstage" id="pvStage"></div>
         </div>
@@ -878,17 +879,7 @@ function fillEditor(){
   .forEach(([id, key, prop]) => $(id).addEventListener('input', () => { ms[key] = $(id)[prop]; renderPreview(); }));
 document.querySelectorAll('[data-seg]').forEach(s => s.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; ms[s.dataset.seg] = b.dataset.v; s.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); renderPreview(); }));
 $('pvDevice').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pvDevice = b.dataset.v; fillEditor(); renderPreview(); });
-$('btnSaveMenu').onclick = async () => {
-  try {
-    // 1) guarda el borrador  2) lo publica (copia a la versión pública)  3) marca el menú como configurado
-    const up = await sb.from('menu_designs').update({ config: { ...ms } }).eq('restaurant_id', rid).eq('status', 'draft');
-    if (up.error) throw up.error;
-    const pub = await sb.rpc('publish_design', { p_restaurant: rid });
-    if (pub.error) throw pub.error;
-    await guardarNegocio({ menu_configured: true, is_published: true });
-    toast('Diseño guardado. Ya se ve en tu menú.');
-  } catch (e) { console.error(e); toast('No se pudo guardar.'); }
-};
+/* El diseño se edita y publica en editor.html (borrador + publicar). El editor antiguo quedó retirado para no pisar tus cambios. */
 
 function mapsURL(){ return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(negocio.direccion || ''); }
 function renderPreview(){
@@ -1105,10 +1096,10 @@ function suscribirPedidos(){
 }
 function renderPedidos(){
   const list = $('pedList'); list.innerHTML = ''; $('pedEmpty').style.display = pedidos.length ? 'none' : 'block';
-  const hoy = new Date(); hoy.setHours(0, 0, 0, 0); let ventas = 0, nHoy = 0; const cli = new Map();
+  const diaCO = d => new Date(d).toLocaleDateString('en-CA', { timeZone: 'America/Bogota' }); const hoyCO = diaCO(Date.now()); let ventas = 0, nHoy = 0; const cli = new Map();
   pedidos.forEach(o => {
     const est = o.status || 'nuevo', sig = ESTADOS[ESTADOS.indexOf(est) + 1], f = new Date(o.created_at), total = Number(o.total || 0);
-    if (f >= hoy) { nHoy++; if (o.paid) ventas += total; }
+    if (diaCO(f) === hoyCO) { nHoy++; if (o.paid) ventas += total; } /* «hoy» = día calendario de Colombia; ventas = solo pedidos marcados como pagados */
     const k = (o.customer_phone || o.customer_name || 'anon').toLowerCase(); if (!cli.has(k)) cli.set(k, { n: o.customer_name || 'Cliente', t: o.customer_phone || '', c: 0, s: 0 }); const c = cli.get(k); c.c++; if (o.paid) c.s += total;
     const el = document.createElement('div'); el.className = 'ped';
     el.innerHTML = `<div class="top"><div><div class="mesa">Mesa ${esc(o.table_label || '—')}</div><div class="cli">${esc(o.customer_name || 'Cliente')}${o.customer_phone ? ' · ' + esc(o.customer_phone) : ''}</div></div><span class="st ${est}">${ELABEL[est] || est}</span></div>

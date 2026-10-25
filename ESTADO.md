@@ -1,19 +1,23 @@
-# Estado de funcionalidades
+# Estado (24-oct-2026)
 
-Leyenda: ✅ comprobado · 🟡 implementado en el código, falta desplegar/probar · ⏳ pendiente
+Leyenda: ✅ implementado y probado (local/SQL) · 🚀 desplegado en Supabase · 🟡 implementado, NO probado · ⚙️ bloqueado por configuración · ⏳ no implementado
 
 | Función | Estado | Nota |
 |---|---|---|
-| Esquema, RLS, límites de plan | ✅ | 56 pruebas SQL de aislamiento entre restaurantes (revertidas). |
-| Registro / login con correo | 🟡 | Sin confirmación por correo. Requiere desactivar «Confirm email» en Supabase Auth. |
-| Login con Google | ⏳ | Activar el proveedor en Supabase y registrar las URL de retorno. |
-| Edad 18+ y consentimientos | 🟡 | `consentimiento.html` + migración `20261022_edad_consentimientos.sql` (falta ejecutarla y probar). |
-| Páginas legales y cookies | 🟡 | Campos [PENDIENTE] del responsable legal. |
-| Subdominio oficial `kartta.IDENTIFICADOR.food` | 🟡 | Editor en Dominio (solo el centro). Migración aplicada en Supabase. Dominios propios eliminados del panel. **El DNS de `*.food` no está resuelto: ver CAMBIOS_FASES.md.** |
-| KARTTA Images AI (6 estilos, Pro, 5/día) | ✅ base de datos / 🟡 prueba real | Cuota y plan verificados en Supabase con pruebas revertidas. Falta una generación real con OpenAI y Pro activo. |
-| KARTTA AI con fotos (visión) | 🟡 | `ai-assistant-vision` desplegada (Groq). Falta probar con una foto real. |
-| KARTTA AI con acciones (editar productos por chat) | ⏳ | No implementado: requiere ver la función `ai-assistant` desplegada. |
-| i18n (ES/EN/DE) | ⏳ | No implementado. |
-| Asistente de IA (texto) | ⏳ | Función desplegada; falta el secreto de IA. |
-| Pagos (Wompi / Mercado Pago) | ⏳ | Tablas listas; falta proveedor y webhooks. |
-| Panel de administración global | ⏳ | `platform_admins` listo; falta la interfaz. |
+| RLS y aislamiento por restaurante | ✅🚀 revisado | Prueba negativa con 2 usuarios reales: NO EJECUTADA |
+| Privilegios de pagos/dominios | ✅🚀 | `payment_events` cerrado; INSERT en `restaurant_domains` revocado |
+| Pedidos (`place_order`) | ✅🚀 | Precio en servidor, rechaza ítems no disponibles, antiduplicado 20 s |
+| Cuota de imágenes IA (Pro, 5/día, owner/admin) | ✅🚀 | Generación real con OpenAI: NO probada |
+| Generar/aplicar imagen (funciones) | 🚀 ⚙️ | Falta confirmar OPENAI_API_KEY y modelo |
+| Panel de imágenes IA en dashboard | 🟡 | Sin desplegar el frontend |
+| Editor de identificador (slug) + redirección de enlaces viejos | ✅🚀 (BD) · 🟡 (UI) | Formato `kartta.X.food` pendiente de decisión de dominio |
+| Chat IA texto | 🚀 ⚙️ | Groq |
+| Chat IA con foto (visión) | 🚀 🟡 | Sin probar con foto real |
+| Chat IA con historial/memoria, acciones, importar menú | ⏳ | |
+| Editor visual (editor.html): plantillas, colores, encabezado, categorías, productos, tipografía, secciones, deshacer/rehacer, borrador + publicar, vista previa real | ✅ probado en navegador con datos simulados · 🚀 validación en BD · 🟡 sin probar con sesión real de Supabase ni desplegado | Tipografía y secciones: solo plan Personalizado (rank ≥ 3) — decisión pendiente |
+| Métricas del dashboard | 🟡 | Reales (pedidos pagados); «hoy» en hora de Colombia; sin filtros 24h/7/30/90 |
+| Marketing / fidelización / correo | ⏳ | |
+| Pagos y suscripciones (Wompi/MP) | ⏳ | Sin proveedor |
+| Panel del propietario | 🚀 separado | Proyecto «Kartta Admin» (solo lectura); UI fuera de este repo |
+| i18n ES/EN/DE | ⏳ | |
+| Precios unificados | ⚙️ | Decisión pendiente |

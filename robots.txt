@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /dashboard.html
+Disallow: /onboarding
+Disallow: /onboarding.html
+Disallow: /consentimiento
+Disallow: /consentimiento.html
+Disallow: /editor
+Disallow: /editor.html

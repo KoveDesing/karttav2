@@ -13,7 +13,7 @@ Qué se hizo en el código, qué NO, y qué pasos manuales faltan. Nada de esto 
 ## Landing (index.html)
 - Reemplazado por tu versión nueva (modo oscuro en «Cómo funciona», favicons, ejemplo `kartta.mirestaurante.food`). Se verificó que todos los archivos que referencia existen en el repo.
 - Ajustes: las cifras de la maqueta del panel ahora dicen «ejemplo»; la respuesta sobre la IA ya no promete editar el menú por chat (hoy responde y analiza fotos).
-- Precios de la landing sincronizados con la tabla `plans` (KARTTA 43.900, Pro 84.900, Personalizado 249.000).
+- Precios: solo `pro = 84.900` está en la tabla `plans`; KARTTA y Personalizado quedan sin precio hasta que decidas (ver DECISIONES_PENDIENTES.md).
 
 ## NO hecho (pendiente real)
 - Acciones del chat (cambiar precio, agotar, asociar imagen) y confirmaciones: requiere ver el código de `ai-assistant` desplegado.
@@ -40,3 +40,11 @@ Qué se hizo en el código, qué NO, y qué pasos manuales faltan. Nada de esto 
 
 ## Rollback
 Los cambios del frontend se revierten volviendo al commit anterior. La migración solo añade tablas/funciones; no modifica ni borra datos existentes.
+
+## Editor visual (nuevo)
+- `editor.html`: panel de opciones + vista previa real (iframe del propio `menu.html`), plantillas, colores con avisos de contraste, encabezado, categorías, productos, tipografía y secciones (plan Personalizado), deshacer/rehacer (Ctrl+Z / Ctrl+Shift+Z), autoguardado de borrador, Publicar y Descartar cambios, pantalla móvil/tablet/PC, clic en el menú para editar esa parte.
+- `menu-design.js`: modelo de diseño único y sanitizado (compartido por editor y menú público).
+- `menu.html` ahora obedece el diseño completo (antes ignoraba estilo de tarjetas, botón y tamaño aunque la vista previa los mostraba).
+- Validación en servidor: trigger `validate_menu_design`.
+- El editor antiguo del panel quedó retirado (se pisaba con el nuevo); el panel enlaza a `editor.html`.
+- No incluido todavía: arrastrar elementos libremente por un lienzo (el menú sigue una estructura fija por secciones, por diseño: garantiza que funcione en todos los celulares), subir banner/logo desde el editor, historial de versiones publicadas, programar publicación.
