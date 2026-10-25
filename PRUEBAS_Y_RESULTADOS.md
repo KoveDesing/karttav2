@@ -44,3 +44,7 @@ Reproducir 1–4: restaurante con suscripción `pro/active`, llamar `select publ
 | E12 | Validación en BD (trigger) con 12 casos: válidos, color inválido, clave desconocida, radio fuera de rango, enum inválido, premium requerido, bloques sin header | PASS (transacción revertida) |
 | E13 | Con sesión real de Supabase (RLS, plan real), en Vercel, con fuentes de Google y fotos reales | **NO EJECUTADA** |
 | E14 | Safari/Firefox, lector de pantalla, arrastrar y soltar con ratón real, tablet | **NO EJECUTADA** |
+
+## Editor visual v2 (Canva) — 28 comprobaciones en Chromium real, Supabase simulado
+Barra lateral (6 herramientas) · vista previa real · plantillas · deshacer/rehacer · tarjetas visuales · color rápido y paleta · candado de tipografía en plan básico · frase en vivo · tamaño de letra · **subir logo (Storage + ruta guardada)** · lista de productos · «Agregar productos» navega al panel · estado sin productos · autoguardado · vista del cliente · clic en menú abre herramienta · publicar · premium (tipografía, anuncio, reordenar, guardado) · error de guardado con Reintentar · móvil (barra inferior y panel) · inyección de código → **28/28 PASS**.
+No ejecutado: sesión real de Supabase (permisos/RLS reales), Safari/Firefox, arrastrar con ratón real, subida con foto real grande, fuentes de Google en producción.

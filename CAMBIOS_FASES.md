@@ -48,3 +48,11 @@ Los cambios del frontend se revierten volviendo al commit anterior. La migració
 - Validación en servidor: trigger `validate_menu_design`.
 - El editor antiguo del panel quedó retirado (se pisaba con el nuevo); el panel enlaza a `editor.html`.
 - No incluido todavía: arrastrar elementos libremente por un lienzo (el menú sigue una estructura fija por secciones, por diseño: garantiza que funcione en todos los celulares), subir banner/logo desde el editor, historial de versiones publicadas, programar publicación.
+
+## Editor visual v2 — estilo Canva (más fácil)
+- Barra lateral de iconos: **Diseño · Colores · Texto · Imágenes · Productos · Secciones**. Cada una abre su panel; en celular la barra va abajo y el panel sube como hoja.
+- Opciones **visuales** (tarjetas con dibujo) en vez de listas técnicas; plantillas con muestra de colores; 12 colores rápidos y 8 paletas completas.
+- **Imágenes:** sube/cambia/quita el logo y el banner desde el editor (misma carpeta de Storage y compresión que el panel).
+- **Productos:** lista tus productos reales; si no hay, invita a agregarlos; «＋ Agregar productos» guarda el diseño y te lleva al panel de productos; al volver al editor se actualizan solos.
+- **Vista del cliente:** casilla que oculta los recuadros azules para ver el menú exactamente igual que el público (es el mismo `menu.html`, no una copia).
+- Clic en el menú abre la herramienta correspondiente.

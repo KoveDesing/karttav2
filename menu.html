@@ -148,9 +148,9 @@ html[data-bs="outline"] .madd{background:transparent;color:var(--red);border:2px
 #footText{font-weight:600;color:var(--tx);margin-bottom:10px;white-space:pre-line;}
 #footText:empty{display:none;}
 /* vista previa dentro del editor */
-html.pv [data-el]{cursor:pointer;}
-html.pv [data-el]:hover{outline:2px dashed #2D7FF9;outline-offset:-2px;}
-html.pv [data-el].sel{outline:2px solid #2D7FF9;outline-offset:-2px;}
+html.pv:not(.clean) [data-el]{cursor:pointer;}
+html.pv:not(.clean) [data-el]:hover{outline:2px dashed #2D7FF9;outline-offset:-2px;}
+html.pv:not(.clean) [data-el].sel{outline:2px solid #2D7FF9;outline-offset:-2px;}
 html.pv .cart-bar{display:none !important;}
 </style>
 <link rel="icon" type="image/png" href="/favicon.png">
@@ -414,12 +414,14 @@ function initPreview(){
     const m = e.data || {};
     if (m.type === 'kartta-data' && m.menu) { mostrarMenu(); paint(m.menu); }
     else if (m.type === 'kartta-design' && MENU) { MENU.design = m.design; paint(MENU); }
+    else if (m.type === 'kartta-clean') document.documentElement.classList.toggle('clean', !!m.on);
     else if (m.type === 'kartta-select') {
       document.querySelectorAll('[data-el].sel').forEach(n => n.classList.remove('sel'));
       if (m.el) document.querySelectorAll('[data-el="' + String(m.el).replace(/[^a-z]/g, '') + '"]').forEach(n => n.classList.add('sel'));
     }
   });
   document.addEventListener('click', (e) => {
+    if (document.documentElement.classList.contains('clean')) return;
     const t = e.target.closest('[data-el]'); if (!t) return;
     e.preventDefault(); e.stopPropagation();
     window.parent.postMessage({ type: 'kartta-click', el: t.dataset.el }, location.origin);
