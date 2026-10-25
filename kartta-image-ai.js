@@ -10,7 +10,17 @@
   async function parseError(error) {
     let p = null;
     try { p = await error.context.json(); } catch (_) {}
-    const e = new Error(p?.message || 'No se pudo completar la acción. Intenta de nuevo.');
+    const MSG = {
+      plan_required: 'La generación de imágenes con IA es exclusiva del plan Pro.',
+      subscription_inactive: 'Tu plan no está activo. Revisa tu suscripción.',
+      forbidden: 'Solo el dueño o un administrador puede usar esta función.',
+      daily_limit: 'Ya usaste tus 5 imágenes de hoy. Se reinician a medianoche (hora de Colombia).',
+      unsupported_image_type: 'Usa una imagen JPG, PNG o WEBP.',
+      image_size_invalid: 'La imagen debe pesar menos de 10 MB.',
+      openai_not_configured: 'La generación de imágenes aún no está activada en el servidor.',
+      unauthorized: 'Tu sesión expiró. Vuelve a iniciar sesión.'
+    };
+    const e = new Error(MSG[p?.error] || p?.message || 'No se pudo completar la acción. Intenta de nuevo.');
     e.code = p?.error || 'unknown';
     return e;
   }
@@ -22,11 +32,11 @@
   }
   window.KARTTA_IMAGE_AI = {
     STYLES: [
-      { id: 'estudio_blanco', name: 'Estudio blanco', desc: 'Fotografía sobre fondo blanco puro, luz neutra y colores fieles.' },
-      { id: 'ilustracion_2d', name: 'Ilustración 2D', desc: 'Ilustración publicitaria limpia. Es un dibujo, no una foto real.' },
+      { id: 'estudio-blanco', name: 'Estudio blanco', desc: 'Fotografía sobre fondo blanco puro, luz neutra y colores fieles.' },
+      { id: 'ilustracion-2d', name: 'Ilustración 2D', desc: 'Ilustración publicitaria limpia. Es un dibujo, no una foto real.' },
       { id: 'cinematografico', name: 'Cinematográfico', desc: 'Luz direccional, contraste elegante y profundidad.' },
-      { id: 'publicidad_premium', name: 'Publicidad premium', desc: 'Composición comercial de alta gama con foco en el producto.' },
-      { id: 'lujo_minimalista', name: 'Lujo minimalista', desc: 'Fondo neutro refinado, luz suave y mucho espacio limpio.' },
+      { id: 'publicidad-premium', name: 'Publicidad premium', desc: 'Composición comercial de alta gama con foco en el producto.' },
+      { id: 'lujo-minimalista', name: 'Lujo minimalista', desc: 'Fondo neutro refinado, luz suave y mucho espacio limpio.' },
       { id: 'editorial', name: 'Fotografía editorial', desc: 'Calidad de revista gastronómica, luz natural y texturas reales.' },
     ],
     async quota(restaurantId) {
@@ -40,7 +50,7 @@
       fd.append('style', style);
       fd.append('image', image);
       if (instructions) fd.append('instructions', instructions);
-      return call('generate-product-image', fd); // { generation_id, url, expires_in, quota }
+      return call('generate-product-image', fd); // { generation_id, image_url, remaining_today, daily_limit }
     },
     async applyToProduct({ restaurantId, generationId, productId }) {
       return call('apply-generated-product-image', { restaurant_id: restaurantId, generation_id: generationId, product_id: productId });

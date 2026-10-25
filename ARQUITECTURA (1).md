@@ -7,8 +7,8 @@
 | Supabase Auth | Cuentas (correo/contraseña y Google cuando se active). |
 | Supabase Postgres | Todos los datos, protegidos con RLS. |
 | Supabase Storage | Bucket `kartta-media` (público para leer; escritura solo del dueño). Ruta: `{restaurant_id}/{logo\|cover\|products\|categories\|design}/{archivo}.jpg`. |
-| Edge Functions `generate-product-image`, `apply-generated-product-image` | Imágenes IA (secreto `OPENAI_API_KEY`). Cuota atómica en la base de datos. |
-| Edge Function `ai-assistant-vision` | Análisis de fotos en el chat (secreto `GEMINI_API_KEY`). Solo lectura. |
+| Edge Functions `generate-product-image`, `apply-generated-product-image` | Imágenes IA (secreto `OPENAI_API_KEY`). Cuota atómica en la base de datos (`reserve_kartta_image_generation`). |
+| Edge Function `ai-assistant-vision` | Análisis de fotos en el chat (secreto `GROQ_API_KEY`). Solo lectura. |
 | Edge Function `ai-assistant` | Asistente de IA. Usa el secreto `GEMINI_API_KEY` (solo servidor). |
 | Firebase | **Ya no se usa en el código.** Pendiente: poner reglas "denegar todo" y luego cerrar el proyecto. |
 
@@ -21,7 +21,6 @@
 - `restaurant_domains` — **en desuso**: el panel ya no permite dominios propios (los datos existentes no se borran).
 - `restaurant_slug_history` — identificadores anteriores (los enlaces/QR viejos redirigen al actual).
 - `image_generations` — registro de imágenes IA (pending/succeeded/failed, cuota diaria). Bucket privado `kartta-ai-images`.
-- `ai_vision_log` — conteo diario de análisis de fotos en el chat.
 - `plans`, `subscriptions`, `coupons`, `payments`, `ai_usage` — planes y facturación (escritura solo con `service_role` en el servidor).
 - `menu_events` — visitas medidas del menú público.
 - `platform_admins` — administradores de la plataforma (solo servidor).

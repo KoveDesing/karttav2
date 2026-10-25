@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" data-theme="dark">
 <head>
-  <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="shortcut icon" href="/favicon.ico">
-  <link rel="apple-touch-icon" href="/favicon.png">
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Panel — KARTTA</title>
@@ -17,6 +12,8 @@
 <script type="module" src="supabase-init.js"></script>
 <script src="cookies.js" defer></script>
 <script src="kartta-image-ai.js" defer></script>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="shortcut icon" href="/favicon.ico">
 <script>
 /* aplica tema y acento guardados ANTES de pintar (evita parpadeo) */
 (function(){try{var p=JSON.parse(localStorage.getItem('kartta_prefs')||'{}');
@@ -992,7 +989,7 @@ async function iaLoad(){
   try { iaQuota = await IAI().quota(rid); } catch (e) { console.warn(e); iaQuota = null; }
   try { // precio real desde la tabla de planes (no se escribe a mano)
     const { data } = await sb.from('plans').select('*').eq('id', 'pro').maybeSingle();
-    const v = data && (data.price_cop ?? data.price_monthly ?? data.price); if (Number(v) > 0) iaPrice = money(v);
+    const v = data && data.monthly_price_cop; if (Number(v) > 0) iaPrice = money(v);
   } catch {}
   iaRender();
 }
@@ -1014,9 +1011,10 @@ async function iaGenerate(){
   iaBusy = true; iaMsg(''); iaRender(); $('iaPickProd').hidden = true;
   try {
     const r = await IAI().generate({ restaurantId: rid, image: iaFile, style: iaStyle, instructions: $('iaInstr').value.trim() });
-    if (!r?.url) throw new Error('Sin imagen');
-    iaGen = r; if (r.quota) iaQuota = r.quota;
-    $('iaOut').src = r.url; $('iaRes').hidden = false; iaMsg('Imagen lista. Revísala antes de usarla.', 'ok');
+    if (!r?.image_url) throw new Error('Sin imagen');
+    iaGen = { ...r, url: r.image_url };
+    if (iaQuota && r.daily_limit != null) iaQuota = { ...iaQuota, limit: r.daily_limit, remaining: r.remaining_today, used: r.daily_limit - r.remaining_today };
+    $('iaOut').src = r.image_url; $('iaRes').hidden = false; iaMsg('Imagen lista. Revísala antes de usarla.', 'ok');
   } catch (e) {
     iaMsg(e.message || 'No se pudo generar la imagen.', 'bad');
     try { iaQuota = await IAI().quota(rid); } catch {}
