@@ -8,7 +8,7 @@
 <meta name="description" content="Menú digital, pide desde tu celular.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
 <style>
 :root{
   --white:#FFFFFF; --black:#0A0A0A; --red:#FF3145;
@@ -19,8 +19,8 @@ img{max-width:100%;display:block;}
 
 /* ---- estados de carga / error ---- */
 #loading,#errorState{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;}
-#loading .brand{font-family:Georgia,serif;font-style:italic;font-size:24px;}
-#loading .brand b{color:var(--red);font-style:normal;}
+#loading .brand{font-family:'Mr Dafoe',cursive;font-style:normal;font-weight:400;font-size:42px;line-height:1;color:var(--black);letter-spacing:0;}
+#loading .brand span{color:var(--red);}
 #loading p,#errorState p{font-size:13.5px;color:var(--gray);margin:0;max-width:38ch;}
 #errorState h2{font-size:18px;font-weight:800;margin:0;}
 #errorState{display:none;}
@@ -201,7 +201,7 @@ html.pv .cart-bar{display:none !important;}
 <div id="phone">
 
 <div id="loading">
-  <div class="brand">Kar<b>tt</b>a</div>
+  <div class="brand" aria-label="Kartta">Kar<span>tt</span>a</div>
   <p>Cargando el menú…</p>
 </div>
 

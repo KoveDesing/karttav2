@@ -9,7 +9,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#121212; --panel:#202020; --panel2:#292929; --border:#303030;
@@ -21,8 +21,8 @@ button,input,textarea{font-family:inherit;}
 
 #gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50;}
 #gate.hidden{display:none;}
-#gate .brand{font-family:Georgia,serif;font-style:italic;font-size:24px;color:#FFFFFF;}
-#gate .brand b{color:var(--red);font-style:normal;}
+#gate .brand{font-family:'Mr Dafoe',cursive;font-weight:400;font-style:normal;font-size:42px;line-height:1;color:#FFFFFF;letter-spacing:0;}
+#gate .brand span{color:var(--red);}
 
 .wrap{width:100%;max-width:480px;}
 .progress{height:3px;background:#292929;border-radius:3px;overflow:hidden;margin-bottom:40px;}
@@ -90,7 +90,7 @@ input[type=text]:focus,input[type=tel]:focus,textarea:focus{background:#2d2d2d;b
 .check-row{color:#D0D0D0}
 .btn-ghost{color:#B6B6B6}.btn-ghost:hover{color:#fff}
 .dots span{background:#383838}.dots span.on{background:var(--red)}
-#saving{background:rgba(18,18,18,.97)}#saving p{color:#ddd}
+#saving{background:rgba(18,18,18,.97)}#saving p{color:#ddd}#saving .loading-brand{font-family:'Mr Dafoe',cursive;font-size:42px;line-height:1;color:#fff}#saving .loading-brand span{color:var(--red)}
 .kicker{display:inline-flex;align-items:center;gap:8px;color:#FF6B79;background:rgba(255,49,69,.10);border:1px solid rgba(255,49,69,.22);padding:7px 11px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}
 .wrap:before{content:"KARTTA";display:block;font-size:11px;font-weight:800;letter-spacing:.18em;color:#8E8E8E;margin-bottom:22px}
 .nav-row{margin-top:30px}.btn{min-height:46px}.btn-primary{box-shadow:0 7px 22px rgba(255,49,69,.14)}
@@ -124,7 +124,7 @@ input[type=text]:focus,input[type=tel]:focus,textarea:focus{background:#2d2d2d;b
 <body>
 
 <div id="gate">
-  <div class="brand">Kar<b>tt</b>a</div>
+  <div class="brand" aria-label="Kartta">Kar<span>tt</span>a</div>
 </div>
 
 <div class="wrap" id="wrap" style="display:none;">
@@ -271,6 +271,7 @@ input[type=text]:focus,input[type=tel]:focus,textarea:focus{background:#2d2d2d;b
 </div>
 
 <div id="saving">
+  <div class="brand loading-brand" aria-label="Kartta">Kar<span>tt</span>a</div>
   <div class="spinner"></div>
   <p style="font-size:13.5px;color:var(--gray);margin:0;">Guardando tu información…</p>
 </div>

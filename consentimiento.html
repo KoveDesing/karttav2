@@ -24,7 +24,7 @@ html{background:#121212}body{background:#121212;color:#f7f7f7;min-height:100vh}
 /* Ajuste minimalista compacto — solo consentimiento */
 main{max-width:540px;padding:16px 12px 28px}
 .card{padding:20px;background:#171717;border-color:#242424;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.42)}
-.brand{margin-bottom:14px}
+.brand{margin-bottom:14px}.loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px 0}.loading-state[hidden]{display:none}.loading-brand{font-family:'Mr Dafoe',cursive;font-size:42px;line-height:1;color:#f7f7f7}.loading-brand span{color:#ff3145}.loading-state p{margin:0;color:#929292;font-size:12.5px}
 h1{font-size:21px;letter-spacing:-.035em;margin-bottom:5px}
 #form>p:first-of-type{font-size:12.5px;line-height:1.45;color:#929292;margin-bottom:8px}
 .links{grid-template-columns:1fr 1fr;gap:5px;margin:9px 0 2px}
@@ -108,7 +108,7 @@ h1{font-size:22px;line-height:1.2;margin-bottom:7px}
 </style>
 </head><body><main><div class="card" id="card" aria-live="polite">
 <a class="brand" href="/" aria-label="KARTTA">Kar<span>tt</span>a</a>
-<div id="loading"><p>Verificando tu cuenta…</p></div>
+<div id="loading" class="loading-state"><div class="loading-brand" aria-label="Kartta">Kar<span>tt</span>a</div><p>Verificando tu cuenta…</p></div>
 
 <div id="retry" hidden><h1>No pudimos verificar tu cuenta</h1><p>Hubo un problema de conexión o del servidor. Tus datos no se perdieron.</p>
 <p><button class="btn" id="btnRetry" type="button" style="width:auto">Reintentar</button> <button class="btn ghost" data-logout type="button">Cerrar sesión</button></p></div>
