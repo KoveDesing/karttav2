@@ -21,6 +21,42 @@ html{background:#121212}body{background:#121212;color:#f7f7f7;min-height:100vh}
 .wheel-hint{font-size:11px;color:#858585;margin:9px 2px 0;display:flex;gap:7px;align-items:center}.wheel-hint i{width:6px;height:6px;border-radius:50%;background:#ff3145;display:inline-block;flex-shrink:0}
 .chk{color:#d0d0d0}.chk em{color:#929292}.chk input{appearance:none;-webkit-appearance:none;display:grid;place-content:center;background:#292929;border:1px solid #555;border-radius:5px;transition:background .18s,border-color .18s,transform .18s,box-shadow .18s}.chk input:before{content:"";width:9px;height:5px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) scale(0);transition:transform .16s ease}.chk input:checked{background:#ff3145;border-color:#ff3145;box-shadow:0 0 0 3px rgba(255,49,69,.12)}.chk input:checked:before{transform:rotate(-45deg) scale(1)}.chk input:active{transform:scale(.9)}.btn{background:#ff3145;box-shadow:0 7px 22px rgba(255,49,69,.15);transition:transform .18s,filter .18s,box-shadow .18s}.btn:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 10px 26px rgba(255,49,69,.22)}.btn.ghost{box-shadow:none}.errbox{background:rgba(255,49,69,.09);border-color:rgba(255,49,69,.28)}
 @media(max-width:420px){.date-wheel-wrap{padding:10px}.date-wheels{gap:5px}.wheel{height:132px;padding-top:42px;padding-bottom:42px}.wheel:before{top:-42px;height:39px;margin-bottom:-39px}.wheel:after{bottom:-42px;height:39px;margin-top:-39px}.wheel-option{height:42px;font-size:13px}}
+/* Ajuste minimalista compacto — solo consentimiento */
+main{max-width:540px;padding:16px 12px 28px}
+.card{padding:20px;background:#171717;border-color:#242424;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.42)}
+.brand{margin-bottom:14px}
+h1{font-size:21px;letter-spacing:-.035em;margin-bottom:5px}
+#form>p:first-of-type{font-size:12.5px;line-height:1.45;color:#929292;margin-bottom:8px}
+.links{grid-template-columns:1fr 1fr;gap:5px;margin:9px 0 2px}
+.links li{padding:7px 8px;border-radius:7px;background:#1c1c1c;border-color:#292929;font-size:11.5px}
+.links a,.links button{font-size:11.5px}
+.fld{margin-top:12px}
+.fld label.t{font-size:12px;margin-bottom:5px}
+.date-wheel-wrap{margin-top:6px;padding:7px;background:#191919;border:1px solid #272727;border-radius:9px}
+.date-wheels{grid-template-columns:.75fr 1.25fr .95fr;gap:5px}
+.wheel-label{font-size:9px;letter-spacing:.06em;margin-bottom:3px;color:#777}
+.wheel{height:76px;padding:25px 3px;border-radius:7px;background:#141414;border-color:#242424;scrollbar-width:none;scroll-snap-type:y mandatory}
+.wheel::-webkit-scrollbar{display:none}
+.wheel:before,.wheel:after{height:23px}
+.wheel:before{top:-25px;margin-bottom:-23px;background:linear-gradient(#141414,rgba(20,20,20,0))}
+.wheel:after{bottom:-25px;margin-top:-23px;background:linear-gradient(rgba(20,20,20,0),#141414)}
+.wheel-option{height:25px;font-size:12px;border-radius:5px;color:#777}
+.wheel-option:hover{background:#202020}
+.wheel-option.selected{background:rgba(255,49,69,.09);border:1px solid rgba(255,49,69,.28);color:#f3f3f3;transform:none}
+.chk{gap:8px;margin-top:10px;font-size:12px;line-height:1.4;color:#b0b0b0}
+.chk em{font-size:10.5px}
+.chk input{width:15px;height:15px;border-radius:4px}
+.chk input:checked{box-shadow:none}
+small{font-size:10.5px;color:#777}
+.err{font-size:11px;margin:4px 0}
+.btn{padding:10px 14px;border-radius:8px;font-size:13px;box-shadow:none}
+.btn:hover:not(:disabled){box-shadow:none;transform:none}
+.btn.ghost{padding:8px 12px}
+#btnGo{max-width:100%}
+#form>p[style*="margin-top:20px"]{margin-top:12px!important;margin-bottom:8px}
+#form>p[style*="text-align:center"]{margin-bottom:0}
+.errbox{font-size:12px;padding:8px}
+@media(max-width:420px){main{padding:10px 9px 20px}.card{padding:16px 13px}.links{gap:4px}.links li{padding:6px}.wheel{height:72px;padding-top:23px;padding-bottom:23px}.wheel-option{height:24px}.wheel:before{top:-23px}.wheel:after{bottom:-23px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head><body><main><div class="card" id="card" aria-live="polite">
@@ -35,7 +71,7 @@ html{background:#121212}body{background:#121212;color:#f7f7f7;min-height:100vh}
 
 <form id="form" hidden novalidate>
 <h1>Antes de entrar a Kartta</h1>
-<p>Queremos que utilices Kartta de forma segura y transparente. Antes de continuar, necesitamos comprobar que cumples los requisitos de edad y explicarte cómo tratamos tus datos y qué condiciones se aplican al uso de la plataforma.</p>
+<p>Confirma tu edad y acepta las condiciones para continuar.</p>
 <ul class="links">
 <li><a href="terminos.html" target="_blank" rel="noopener">Términos y condiciones</a></li>
 <li><a href="privacidad.html" target="_blank" rel="noopener">Privacidad y tratamiento de datos</a></li>
@@ -51,13 +87,12 @@ html{background:#121212}body{background:#121212;color:#f7f7f7;min-height:100vh}
 <div class="fld"><label class="t" for="dob">Fecha de nacimiento</label>
 <input type="date" id="dob" autocomplete="bday" aria-describedby="dobErr" tabindex="-1" aria-hidden="true" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
 <div class="date-wheel-wrap" id="dateWheelWrap">
-  <div class="date-wheel-head"><strong>Selecciona tu fecha</strong><span>DD / MM / AAAA</span></div>
+  
   <div class="date-wheels" aria-label="Fecha de nacimiento">
     <div class="wheel-col"><span class="wheel-label">Día</span><div class="wheel" id="dayWheel" role="listbox" tabindex="0" aria-label="Día de nacimiento"></div></div>
     <div class="wheel-col"><span class="wheel-label">Mes</span><div class="wheel" id="monthWheel" role="listbox" tabindex="0" aria-label="Mes de nacimiento"></div></div>
     <div class="wheel-col"><span class="wheel-label">Año</span><div class="wheel" id="yearWheel" role="listbox" tabindex="0" aria-label="Año de nacimiento"></div></div>
   </div>
-  <div class="wheel-hint"><i></i>Desliza la rueda del ratón o desplázate para elegir.</div>
 </div>
 <p class="err" id="dobErr" role="alert"></p><small>Solo la usamos para comprobar tu edad y no la guardamos.</small></div>
 <label class="chk"><input type="checkbox" id="chkAge"><span>Confirmo que tengo 18 años o más. <em>(obligatorio)</em></span></label><p class="err" id="ageErr" role="alert"></p>
