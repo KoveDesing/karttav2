@@ -95,6 +95,16 @@ input[type=text]:focus,input[type=tel]:focus,textarea:focus{background:#2d2d2d;b
 .wrap:before{content:"KARTTA";display:block;font-size:11px;font-weight:800;letter-spacing:.18em;color:#8E8E8E;margin-bottom:22px}
 .nav-row{margin-top:30px}.btn{min-height:46px}.btn-primary{box-shadow:0 7px 22px rgba(255,49,69,.14)}
 .product-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
+.product-image-box{display:flex;align-items:center;gap:14px;padding:12px;background:#202020;border:1px solid #383838;border-radius:14px;margin:12px 0 14px}
+.product-image-preview{width:88px;height:88px;flex:0 0 88px;border-radius:11px;background:#292929;border:1px dashed #555;display:grid;place-items:center;overflow:hidden;color:#aaa;font-size:11px;text-align:center;padding:6px}
+.product-image-preview img{width:100%;height:100%;object-fit:cover}
+.product-image-actions{display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.product-image-actions button{background:#303030;color:#fff;border:1px solid #484848;border-radius:9px;padding:9px 12px;font-weight:650;cursor:pointer}
+.product-image-actions small{color:#aaa;font-size:11px;line-height:1.4}
+#q_productoCat{margin-top:0}
+#q_productoDisponible{accent-color:var(--red);width:16px;height:16px}
+.product-available{display:flex;align-items:center;gap:9px;color:#eee;font-size:13px;margin:12px 0 4px}
+@media(max-width:520px){.product-choice{grid-template-columns:1fr}.product-image-box{align-items:flex-start}}
 .choice-card{background:#202020;border:1px solid #353535;border-radius:16px;padding:17px 14px;text-align:left;color:#fff;cursor:pointer;transition:.18s}
 .choice-card:hover,.choice-card.selected{border-color:var(--red);background:#262020}
 .choice-card .choice-icon{font-size:23px;display:block;margin-bottom:12px}
@@ -228,10 +238,21 @@ input[type=text]:focus,input[type=tel]:focus,textarea:focus{background:#2d2d2d;b
       <button type="button" class="choice-card" id="skipProduct" aria-pressed="false"><span class="choice-icon">↗</span><strong>Lo haré después</strong><small>Continúa sin producto y agrégalo cuando quieras.</small></button>
     </div>
     <div id="productFields">
-      <div class="field-wrap"><input type="text" id="q_producto" placeholder="Nombre del producto · Ej. Hamburguesa clásica"></div>
-      <div class="field-wrap"><input type="text" inputmode="decimal" id="q_precio" placeholder="Precio en COP · Ej. 18900"></div>
-      <div class="field-wrap"><textarea id="q_productoDesc" placeholder="Descripción breve (opcional)"></textarea></div>
-      <p class="err" id="err_producto">Escribe el nombre y un precio válido para guardar tu producto, o elige hacerlo después.</p>
+      <div class="product-image-box">
+        <div class="product-image-preview" id="q_productoPreview">Sin imagen</div>
+        <div class="product-image-actions">
+          <button type="button" id="q_productoPick">＋ Subir foto del producto</button>
+          <button type="button" id="q_productoRemove" style="display:none">Quitar foto</button>
+          <small>JPG, PNG o WEBP. La foto se guardará con tu producto.</small>
+        </div>
+        <input type="file" id="q_productoImagen" accept="image/*" hidden>
+      </div>
+      <div class="field-wrap"><input type="text" id="q_producto" maxlength="70" placeholder="Nombre del producto · Ej. Hamburguesa clásica"></div>
+      <div class="field-wrap"><input type="number" id="q_precio" min="1" step="1" inputmode="numeric" placeholder="Precio en COP · Ej. 18900"></div>
+      <div class="field-wrap"><input type="text" id="q_productoCat" maxlength="40" placeholder="Categoría · Ej. Hamburguesas (opcional)"></div>
+      <div class="field-wrap"><textarea id="q_productoDesc" maxlength="200" placeholder="Descripción y detalles · ingredientes, tamaño, acompañamientos…"></textarea></div>
+      <label class="product-available"><input type="checkbox" id="q_productoDisponible" checked> Disponible en el menú</label>
+      <p class="err" id="err_producto">Escribe el nombre y un precio válido. La foto, categoría y descripción son opcionales.</p>
     </div>
   </div>
 
@@ -257,10 +278,42 @@ input[type=text]:focus,input[type=tel]:focus,textarea:focus{background:#2d2d2d;b
 <script type="module">
 import { sb } from "./supabase-init.js";
 
+const MEDIA_BUCKET = 'kartta-media';
+let productoImageFile = null;
+let productoImagePreviewUrl = null;
+function limpiarPreviewProducto(){ if (productoImagePreviewUrl) URL.revokeObjectURL(productoImagePreviewUrl); productoImagePreviewUrl = null; }
+function comprimirFotoProducto(file){
+  return new Promise((resolve,reject)=>{
+    if (!file || !file.type.startsWith('image/')) return reject(new Error('Selecciona un archivo de imagen válido.'));
+    const url=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{ const scale=Math.min(1,1200/Math.max(img.width,img.height)); const canvas=document.createElement('canvas'); canvas.width=Math.round(img.width*scale); canvas.height=Math.round(img.height*scale); canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height); URL.revokeObjectURL(url); canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('No se pudo procesar la foto.')),'image/jpeg',.82); };
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('No se pudo abrir esa imagen.'));}; img.src=url;
+  });
+}
+
 const TOTAL_STEPS = 10;
 let current = 0;
 let rid, uid, userEmail;
 let quiereProducto = true;
+
+const productoInputImagen = document.getElementById('q_productoImagen');
+document.getElementById('q_productoPick').addEventListener('click', () => productoInputImagen.click());
+productoInputImagen.addEventListener('change', () => {
+  const file = productoInputImagen.files && productoInputImagen.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { err('err_producto'); return; }
+  if (file.size > 12 * 1024 * 1024) { document.getElementById('err_producto').textContent = 'La imagen debe pesar menos de 12 MB.'; err('err_producto'); return; }
+  productoImageFile = file;
+  limpiarPreviewProducto(); productoImagePreviewUrl = URL.createObjectURL(file);
+  document.getElementById('q_productoPreview').innerHTML = `<img src="${productoImagePreviewUrl}" alt="Vista previa de la foto del producto">`;
+  document.getElementById('q_productoRemove').style.display = 'inline-block';
+  clearErr('err_producto');
+});
+document.getElementById('q_productoRemove').addEventListener('click', () => {
+  productoImageFile = null; productoInputImagen.value = ''; limpiarPreviewProducto();
+  document.getElementById('q_productoPreview').textContent = 'Sin imagen';
+  document.getElementById('q_productoRemove').style.display = 'none';
+});
 
 const respuestas = {
   nombre: '', negocio: '', tipo: '', descripcion: '',
@@ -435,19 +488,40 @@ async function finalizar(){
     // Usa el mismo esquema que el panel y el menú público. La consulta previa evita duplicados
     // si el producto se guardó, pero una operación posterior falló y el usuario reintenta.
     if (quiereProducto) {
-      const nombre = document.getElementById('q_producto').value.trim().slice(0, 120);
+      const nombre = document.getElementById('q_producto').value.trim().slice(0, 70);
       const precio = Number(document.getElementById('q_precio').value.trim().replace(/[^\d]/g, ''));
-      const descripcion = document.getElementById('q_productoDesc').value.trim().slice(0, 1000) || null;
+      const descripcion = document.getElementById('q_productoDesc').value.trim().slice(0, 200) || null;
+      const categoriaNombre = document.getElementById('q_productoCat').value.trim().slice(0, 40);
       const existente = await sb.from('products').select('id')
         .eq('restaurant_id', rid).eq('name', nombre).eq('price', precio).limit(1);
       if (existente.error) throw existente.error;
       if (!existente.data || !existente.data.length) {
+        let categoryId = null;
+        if (categoriaNombre) {
+          const cat = await sb.from('categories').select('id').eq('restaurant_id', rid).ilike('name', categoriaNombre).limit(1);
+          if (cat.error) throw cat.error;
+          if (cat.data && cat.data.length) categoryId = cat.data[0].id;
+          else {
+            const createdCat = await sb.from('categories').insert({ restaurant_id: rid, name: categoriaNombre }).select('id').single();
+            if (createdCat.error) throw createdCat.error;
+            categoryId = createdCat.data.id;
+          }
+        }
+        let imagePath = null;
+        if (productoImageFile) {
+          const blob = await comprimirFotoProducto(productoImageFile);
+          imagePath = `${rid}/products/${crypto.randomUUID()}.jpg`;
+          const uploaded = await sb.storage.from(MEDIA_BUCKET).upload(imagePath, blob, { contentType: 'image/jpeg', cacheControl: '31536000', upsert: false });
+          if (uploaded.error) throw uploaded.error;
+        }
         const producto = {
           restaurant_id: rid,
           name: nombre,
           description: descripcion,
           price: precio,
-          is_available: true,
+          category_id: categoryId,
+          image_path: imagePath,
+          is_available: document.getElementById('q_productoDisponible').checked,
           is_active: true
         };
         const rp = await sb.from('products').insert(producto);
