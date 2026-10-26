@@ -6,6 +6,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="legal.css">
 <script type="module" src="supabase-init.js"></script>
+<style>
+/* Identidad oscura KARTTA — solo esta pantalla */
+:root{--bg:#121212;--card:#202020;--field:#292929;--line:rgba(255,255,255,.085);--tx:#f7f7f7;--mut:#b9b9b9;--red:#ff3145}
+html{background:#121212}body{background:#121212;color:#f7f7f7;min-height:100vh}
+.card{background:#202020;border:1px solid #2b2b2b;box-shadow:0 24px 70px rgba(0,0,0,.32)}
+.links li{background:#292929;border:1px solid #333;border-radius:10px;padding:9px 11px;transition:background .18s,border-color .18s,transform .18s}.links li:hover{background:#303030;border-color:#484848;transform:translateY(-1px)}
+.links a,.links button{color:#ff6878}.fld{margin-top:20px}.fld label.t{color:#f7f7f7}.date-wheel-wrap{margin-top:10px;padding:14px;background:#292929;border:1px solid #383838;border-radius:16px}
+.date-wheel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.date-wheel-head strong{font-size:12px;color:#c9c9c9;font-weight:600}.date-wheel-head span{font-size:11px;color:#858585}
+.date-wheels{display:grid;grid-template-columns:.8fr 1.35fr 1fr;gap:8px}.wheel-col{min-width:0}.wheel-label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:#898989;text-align:center;margin:0 0 6px}
+.wheel{height:142px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#555 transparent;border-radius:11px;position:relative;background:#202020;border:1px solid #333;scroll-snap-type:y proximity;padding:47px 5px;outline:none}
+.wheel:before,.wheel:after{content:"";position:sticky;left:0;right:0;height:44px;display:block;pointer-events:none;z-index:2}.wheel:before{top:-47px;margin-bottom:-44px;background:linear-gradient(#202020,rgba(32,32,32,0))}.wheel:after{bottom:-47px;margin-top:-44px;background:linear-gradient(rgba(32,32,32,0),#202020)}
+.wheel-option{height:46px;display:flex;align-items:center;justify-content:center;border-radius:9px;color:#999;font-size:14px;cursor:pointer;scroll-snap-align:center;transition:color .18s,background .18s,transform .18s;user-select:none}.wheel-option:hover{color:#fff;background:#292929}.wheel-option.selected{background:rgba(255,49,69,.13);color:#fff;border:1px solid rgba(255,49,69,.4);font-weight:700;transform:scale(1.015)}
+.wheel-hint{font-size:11px;color:#858585;margin:9px 2px 0;display:flex;gap:7px;align-items:center}.wheel-hint i{width:6px;height:6px;border-radius:50%;background:#ff3145;display:inline-block;flex-shrink:0}
+.chk{color:#d0d0d0}.chk em{color:#929292}.chk input{appearance:none;-webkit-appearance:none;display:grid;place-content:center;background:#292929;border:1px solid #555;border-radius:5px;transition:background .18s,border-color .18s,transform .18s,box-shadow .18s}.chk input:before{content:"";width:9px;height:5px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) scale(0);transition:transform .16s ease}.chk input:checked{background:#ff3145;border-color:#ff3145;box-shadow:0 0 0 3px rgba(255,49,69,.12)}.chk input:checked:before{transform:rotate(-45deg) scale(1)}.chk input:active{transform:scale(.9)}.btn{background:#ff3145;box-shadow:0 7px 22px rgba(255,49,69,.15);transition:transform .18s,filter .18s,box-shadow .18s}.btn:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 10px 26px rgba(255,49,69,.22)}.btn.ghost{box-shadow:none}.errbox{background:rgba(255,49,69,.09);border-color:rgba(255,49,69,.28)}
+@media(max-width:420px){.date-wheel-wrap{padding:10px}.date-wheels{gap:5px}.wheel{height:132px;padding-top:42px;padding-bottom:42px}.wheel:before{top:-42px;height:39px;margin-bottom:-39px}.wheel:after{bottom:-42px;height:39px;margin-top:-39px}.wheel-option{height:42px;font-size:13px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head><body><main><div class="card" id="card" aria-live="polite">
 <a class="brand" href="/" aria-label="KARTTA">Kar<span>tt</span>a</a>
 <div id="loading"><p>Verificando tu cuenta…</p></div>
@@ -31,7 +48,18 @@
 </ul>
 
 <div id="ageBlock">
-<div class="fld"><label class="t" for="dob">Fecha de nacimiento</label><input type="date" id="dob" autocomplete="bday" aria-describedby="dobErr"><p class="err" id="dobErr" role="alert"></p><small>Solo la usamos para comprobar tu edad y no la guardamos.</small></div>
+<div class="fld"><label class="t" for="dob">Fecha de nacimiento</label>
+<input type="date" id="dob" autocomplete="bday" aria-describedby="dobErr" tabindex="-1" aria-hidden="true" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
+<div class="date-wheel-wrap" id="dateWheelWrap">
+  <div class="date-wheel-head"><strong>Selecciona tu fecha</strong><span>DD / MM / AAAA</span></div>
+  <div class="date-wheels" aria-label="Fecha de nacimiento">
+    <div class="wheel-col"><span class="wheel-label">Día</span><div class="wheel" id="dayWheel" role="listbox" tabindex="0" aria-label="Día de nacimiento"></div></div>
+    <div class="wheel-col"><span class="wheel-label">Mes</span><div class="wheel" id="monthWheel" role="listbox" tabindex="0" aria-label="Mes de nacimiento"></div></div>
+    <div class="wheel-col"><span class="wheel-label">Año</span><div class="wheel" id="yearWheel" role="listbox" tabindex="0" aria-label="Año de nacimiento"></div></div>
+  </div>
+  <div class="wheel-hint"><i></i>Desliza la rueda del ratón o desplázate para elegir.</div>
+</div>
+<p class="err" id="dobErr" role="alert"></p><small>Solo la usamos para comprobar tu edad y no la guardamos.</small></div>
 <label class="chk"><input type="checkbox" id="chkAge"><span>Confirmo que tengo 18 años o más. <em>(obligatorio)</em></span></label><p class="err" id="ageErr" role="alert"></p>
 </div>
 <div id="termsBlock"><label class="chk"><input type="checkbox" id="chkTerms"><span>Acepto los <a href="terminos.html" target="_blank" rel="noopener">términos y condiciones</a>. <em>(obligatorio)</em></span></label><p class="err" id="termsErr" role="alert"></p></div>
@@ -69,6 +97,34 @@ async function cargar() {
 }
 
 function limpiar() { ['dobErr','ageErr','termsErr','privErr'].forEach(i => $(i).textContent = ''); $('formErr').style.display = 'none'; }
+// Selectores de fecha estilo rueda: funcionan con rueda del ratón, scroll, teclado y toque.
+const wheelData = {
+  day: {el:$('dayWheel'), values:Array.from({length:31},(_,i)=>({value:i+1,label:String(i+1).padStart(2,'0')})), selected:null},
+  month: {el:$('monthWheel'), values:['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'].map((label,i)=>({value:i+1,label})), selected:null},
+  year: {el:$('yearWheel'), values:Array.from({length:new Date().getFullYear()-1899},(_,i)=>({value:new Date().getFullYear()-i,label:String(new Date().getFullYear()-i)})), selected:null}
+};
+function updateDateInput(){
+  const {day,month,year}=wheelData;
+  if(!day.selected||!month.selected||!year.selected){$('dob').value='';return;}
+  const maxDay=new Date(year.selected,month.selected,0).getDate();
+  if(day.selected>maxDay){day.selected=maxDay;renderWheel('day',false);}
+  $('dob').value=`${year.selected}-${String(month.selected).padStart(2,'0')}-${String(day.selected).padStart(2,'0')}`;
+  $('dob').dispatchEvent(new Event('change',{bubbles:true}));
+}
+function renderWheel(name,center=true){
+  const w=wheelData[name], el=w.el; el.innerHTML='';
+  w.values.forEach(item=>{
+    const opt=document.createElement('div'); opt.className='wheel-option'+(item.value===w.selected?' selected':'');opt.textContent=item.label;opt.setAttribute('role','option');opt.setAttribute('aria-selected',String(item.value===w.selected));opt.dataset.value=item.value;
+    opt.addEventListener('click',()=>{w.selected=item.value;renderWheel(name);updateDateInput();});el.appendChild(opt);
+  });
+  if(center&&w.selected!==null){const active=el.querySelector('.selected');if(active)active.scrollIntoView({block:'center',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
+}
+function chooseWheel(name,delta){const w=wheelData[name],idx=w.values.findIndex(x=>x.value===w.selected),next=Math.max(0,Math.min(w.values.length-1,(idx<0?0:idx)+delta));w.selected=w.values[next].value;renderWheel(name);updateDateInput();}
+Object.entries(wheelData).forEach(([name,w])=>{
+  w.el.addEventListener('wheel',e=>{e.preventDefault();chooseWheel(name,e.deltaY>0?1:-1);},{passive:false});
+  w.el.addEventListener('keydown',e=>{if(['ArrowDown','ArrowRight','PageDown'].includes(e.key)){e.preventDefault();chooseWheel(name,e.key==='PageDown'?10:1);}else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();chooseWheel(name,e.key==='PageUp'?-10:-1);}else if(e.key==='Home'){e.preventDefault();w.selected=w.values[0].value;renderWheel(name);updateDateInput();}else if(e.key==='End'){e.preventDefault();w.selected=w.values[w.values.length-1].value;renderWheel(name);updateDateInput();}});
+  let touchY=null;w.el.addEventListener('touchstart',e=>{touchY=e.touches[0].clientY;},{passive:true});w.el.addEventListener('touchend',e=>{if(touchY===null)return;const diff=touchY-e.changedTouches[0].clientY;if(Math.abs(diff)>18)chooseWheel(name,Math.round(diff/35));touchY=null;},{passive:true});
+});
 function validarFecha(v) {
   if (!v) return 'Escribe tu fecha de nacimiento.';
   const d = new Date(v + 'T00:00:00'), hoy = new Date();
@@ -104,6 +160,7 @@ $('form').addEventListener('submit', async (e) => {
     $('btnGo').disabled = false; $('btnGo').textContent = 'Continuar';
   }
 });
+Object.keys(wheelData).forEach(name=>renderWheel(name,false));
 cargar();
 </script>
 <script src="cookies.js" defer></script></body></html>
