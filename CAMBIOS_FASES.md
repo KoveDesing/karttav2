@@ -56,3 +56,22 @@ Los cambios del frontend se revierten volviendo al commit anterior. La migració
 - **Productos:** lista tus productos reales; si no hay, invita a agregarlos; «＋ Agregar productos» guarda el diseño y te lleva al panel de productos; al volver al editor se actualizan solos.
 - **Vista del cliente:** casilla que oculta los recuadros azules para ver el menú exactamente igual que el público (es el mismo `menu.html`, no una copia).
 - Clic en el menú abre la herramienta correspondiente.
+
+## Corrección: menú público «Este enlace no incluye el negocio»
+- Causa reproducida: si el servidor entrega `menu.html` en `/m/<negocio>` **sin pasar el parámetro `?r=`** (regla de reescritura no aplicada), el menú no sabía de qué negocio era. Ahora lo toma también de la propia ruta `/m/<negocio>` (y de un subdominio `negocio.dominio.tld` como último recurso).
+- Probado con un servidor que simula ese fallo: `/m/slug`, `/m/slug?mesa=4`, mayúsculas y `?r=` → menú correcto. Con tu menú publicado real (`erick-kove-604e`, diseño cuadrícula) se ve bien.
+- El editor ahora tiene «Ver menú público ↗» y avisa claramente cuando hay cambios sin publicar: **el público solo ve lo que pulsaste «Publicar»**.
+
+## Prompts «Constructor visual / experiencia social» y «Transformación completa» — Bloque 1 (hecho)
+- **Menú = app móvil siempre (sección 4):** en celular ocupa toda la pantalla; en computador se muestra centrado dentro de un marco de teléfono (≤430 px de ancho, alto ajustado a la ventana, scroll interno, carrito y ficha dentro del marco, sin deformar ni estirar). El editor usa el mismo `menu.html`, así que es idéntico.
+- **Ficha de producto a pantalla completa (sección 6):** foto grande arriba, nombre, precio (y descuento), estado Disponible/Agotado, descripción con scroll, selector de cantidad y botón «Agregar · total». Producto agotado = compra deshabilitada. Cierra con ←, Esc o al agregar; accesible por teclado; respeta «reducir movimiento».
+- **Guía interactiva del panel (sección 2):** bienvenida con el nombre real, tiempo estimado y progreso; 9 pasos con foco oscureciendo el resto, tarjeta que se ubica sola (y en celular abajo), Atrás/Continuar/Omitir/Salir, acciones reales (abrir formulario de producto, ir al editor, copiar enlace…). Un paso solo se marca completo con datos reales. El progreso se guarda por usuario y restaurante (`profiles.prefs.tour`), y el panel muestra «Tareas pendientes» con barra de progreso y «Ver la guía desde el inicio».
+- Seguridad/DB: sin cambios nuevos de tablas en este bloque (la guía usa `profiles.prefs`, que ya existe y valida ≤4000 bytes).
+
+## Pendiente de estos prompts (siguientes bloques, en este orden)
+1. **Etiquetas** de productos/categorías (predefinidas y personalizadas, con color; requiere tablas nuevas con RLS) y mostrarlas en tarjetas y ficha.
+2. **Foto con IA con autorización al subir la imagen** (hoy existe en Personalizar → «Fotos de producto con IA», solo Pro): flujo original/mejorada, aceptar/reintentar/cancelar y conservar la original.
+3. **Barra de navegación inferior** en el menú, buscador, destacados/promociones, favoritos.
+4. **Pedidos con estados**, variantes y adicionales; mesas con QR; métricas por pedido; fidelización; email marketing; planes y límites.
+5. Exportar HTML del menú; ordenar productos arrastrando.
+6. Tipografía, colores y logo ya se guardan por restaurante (no se comparten entre cuentas).

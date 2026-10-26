@@ -24,7 +24,7 @@ a{color:inherit}:focus-visible{outline:2px solid var(--accent);outline-offset:2p
 .seg button{min-height:32px;padding:0 11px;border-radius:8px;font-size:12.5px;font-weight:700;color:var(--muted)}.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
 .btn{min-height:40px;padding:0 16px;border-radius:10px;font-weight:800;font-size:13px;border:1px solid var(--border);background:var(--panel2);color:var(--strong);display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;white-space:nowrap}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.block{width:100%}.btn:disabled{opacity:.5;cursor:default}
-#saveState{font-size:12px;color:var(--muted);white-space:nowrap}#saveState.err{color:#E5484D;font-weight:700}#saveState b{color:var(--ok)}
+#saveState{font-size:12px;color:var(--muted);max-width:260px;line-height:1.25;text-align:right}#saveState.err{color:#E5484D;font-weight:700}#saveState b{color:var(--ok)}
 .clean{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap}.clean input{accent-color:var(--accent);width:16px;height:16px}
 .banner{padding:9px 14px;background:var(--accent-soft);color:var(--strong);font-size:13px;display:none;align-items:center;gap:10px;flex-wrap:wrap}.banner.show{display:flex}
 .wrap{flex:1;display:flex;min-height:0}
@@ -99,6 +99,7 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
     <label class="clean" title="Oculta los recuadros azules para ver el menú exactamente como lo ve el cliente"><input type="checkbox" id="clean"><span>Vista del cliente</span></label>
     <div class="seg" id="dev" role="group" aria-label="Tamaño de pantalla"><button data-d="mobile" aria-pressed="true">Móvil</button><button data-d="tablet" aria-pressed="false">Tablet</button><button data-d="desktop" aria-pressed="false">PC</button></div>
     <div id="saveState" role="status" aria-live="polite">—</div>
+    <a class="btn" id="viewPub" href="#" target="_blank" rel="noopener" title="Abre tu menú tal como lo ven los clientes">Ver menú público ↗</a>
     <button class="btn" id="discard" title="Volver al diseño que está publicado">Descartar</button>
     <button class="btn primary" id="publish">Publicar</button>
   </header>
@@ -323,7 +324,7 @@ function renderState(){
   if (saveErr) { el.className = 'err'; el.append(saveErr + ' ', h('button', { class: 'btn', style: 'min-height:28px;padding:0 10px', onclick: saveNow }, 'Reintentar')); return; }
   if (saving) { el.textContent = 'Guardando…'; return; }
   if (snapJSON() !== lastSaved) { el.textContent = 'Cambios sin guardar…'; return; }
-  el.append(h('b', {}, 'Guardado'), unpub ? ' · falta publicar' : ' · publicado');
+  el.append(h('b', {}, 'Guardado'), unpub ? ' · tus clientes aún NO ven estos cambios: toca Publicar' : ' · ya está en tu menú público');
 }
 function scheduleSave(){ clearTimeout(saveTimer); saveErr = null; renderState(); saveTimer = setTimeout(saveNow, 1200); }
 async function saveNow(){
@@ -359,8 +360,8 @@ async function boot(user){
     const mem = await sb.from('restaurant_members').select('restaurant_id,role').eq('user_id', user.uid).order('created_at').limit(1);
     if (!mem.data || !mem.data.length) throw new Error('sin_negocio'); if (!['owner', 'admin'].includes(mem.data[0].role)) throw new Error('sin_permiso');
     rid = mem.data[0].restaurant_id;
-    const [r, sub, ds] = await Promise.all([sb.from('restaurants').select('name,address,logo_path,cover_path,is_published').eq('id', rid).single(), sb.from('subscriptions').select('plan_id,status,current_period_end').eq('restaurant_id', rid).maybeSingle(), sb.from('menu_designs').select('status,config').eq('restaurant_id', rid)]);
-    if (r.error) throw r.error; restaurant = r.data; $('bizTitle').textContent = '· ' + (restaurant.name || '');
+    const [r, sub, ds] = await Promise.all([sb.from('restaurants').select('name,slug,address,logo_path,cover_path,is_published').eq('id', rid).single(), sb.from('subscriptions').select('plan_id,status,current_period_end').eq('restaurant_id', rid).maybeSingle(), sb.from('menu_designs').select('status,config').eq('restaurant_id', rid)]);
+    if (r.error) throw r.error; restaurant = r.data; $('viewPub').href = location.origin + '/m/' + encodeURIComponent(restaurant.slug); $('bizTitle').textContent = '· ' + (restaurant.name || '');
     const s = sub.data, vig = s && ['active', 'trialing'].includes(s.status) && (!s.current_period_end || new Date(s.current_period_end) > new Date());
     if (vig) { const p = await sb.from('plans').select('limits').eq('id', s.plan_id).maybeSingle(); rank = Number(p.data?.limits?.rank || 0); }
     const rows = ds.data || [], draft = rows.find(x => x.status === 'draft'), pub = rows.find(x => x.status === 'published');

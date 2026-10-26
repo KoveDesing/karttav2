@@ -48,3 +48,10 @@ Reproducir 1–4: restaurante con suscripción `pro/active`, llamar `select publ
 ## Editor visual v2 (Canva) — 28 comprobaciones en Chromium real, Supabase simulado
 Barra lateral (6 herramientas) · vista previa real · plantillas · deshacer/rehacer · tarjetas visuales · color rápido y paleta · candado de tipografía en plan básico · frase en vivo · tamaño de letra · **subir logo (Storage + ruta guardada)** · lista de productos · «Agregar productos» navega al panel · estado sin productos · autoguardado · vista del cliente · clic en menú abre herramienta · publicar · premium (tipografía, anuncio, reordenar, guardado) · error de guardado con Reintentar · móvil (barra inferior y panel) · inyección de código → **28/28 PASS**.
 No ejecutado: sesión real de Supabase (permisos/RLS reales), Safari/Firefox, arrastrar con ratón real, subida con foto real grande, fuentes de Google en producción.
+
+## Bloque 1 — marco de teléfono, ficha de producto y guía (Chromium real, Supabase simulado)
+- Marco de teléfono: 1366×768, 1920×1080 y 1366×500 → ancho ≤430, centrado, alto ≤ ventana, sin scroll de página, scroll interno; móvil 390 → sin marco y ficha a pantalla completa. Ficha: nombre/precio, cantidad×total, agregar → carrito dentro del marco, Esc, agotado deshabilitado. **20/20 PASS**.
+- Guía del panel: bienvenida con nombre real, 0 de 9 con restaurante vacío, spotlight + 4 bloqueadores, tarjeta dentro de pantalla (escritorio y móvil), navegación entre pasos, acción real abre el formulario de producto y pausa la guía, **no marca completo un paso sin producto guardado**, vuelve sola al cerrar el formulario, guardar progreso por restaurante en el perfil, retomar en el primer pendiente, Esc, dueño avanzado no recibe el recorrido forzado. **17/17 PASS**.
+- Editor (28/28) y XSS (PASS) se repitieron tras los cambios.
+- Hallazgo corregido durante la prueba visual: en el marco, la barra de categorías se aplastaba (flex-shrink); ya no.
+- NO ejecutado: sesión real de Supabase, Safari/Firefox, lector de pantalla, dispositivos táctiles reales.

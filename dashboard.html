@@ -12,6 +12,7 @@
 <script type="module" src="supabase-init.js"></script>
 <script src="cookies.js" defer></script>
 <script src="kartta-image-ai.js" defer></script>
+<script src="kartta-tour.js" defer></script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="shortcut icon" href="/favicon.ico">
 <script>
@@ -277,6 +278,12 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
         <div class="sum"><div class="l">Clientes</div><div class="n" id="statClientes">0</div></div>
         <div class="sum"><div class="l">Plan</div><div class="n" id="statPlan" style="font-size:17px">—</div></div>
       </div>
+      <div class="card" id="tourCard">
+        <div class="row between"><div><h3 id="tourTitle">Prepara tu menú</h3><p class="sub" id="tourSub" style="margin:0">Sigue estos pasos para dejarlo listo.</p></div><button class="btn btn-accent" id="tourGo">Continuar la guía</button></div>
+        <div class="bar" style="margin:14px 0 8px"><i id="tourBar" style="width:0%"></i></div>
+        <ul id="tourList" style="list-style:none;margin:0;padding:0;display:grid;gap:6px"></ul>
+        <div class="row" style="margin-top:12px"><button class="btn btn-ghost btn-sm" id="tourRestart">Ver la guía desde el inicio</button></div>
+      </div>
       <div class="card">
         <h3>Siguientes pasos</h3><p class="sub">Lo esencial para dejar tu menú listo.</p>
         <div class="row">
@@ -468,6 +475,15 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 </div>
 
 <!-- modal producto -->
+<div class="modal-bg" id="tourWelcome" role="dialog" aria-modal="true" aria-labelledby="twTitle">
+  <div class="modal">
+    <h3 id="twTitle">¡Hola! Bienvenido a KARTTA</h3>
+    <p class="sub" id="twText">Vamos a preparar tu menú digital para que puedas compartirlo con tus clientes.</p>
+    <div class="bar" style="margin:0 0 6px"><i id="twBar" style="width:0%"></i></div>
+    <p class="sub" id="twMeta" style="margin:0 0 18px"></p>
+    <div class="row"><button class="btn btn-accent" id="twStart">Comenzar</button><button class="btn btn-ghost" id="twLater">Hacerlo más tarde</button></div>
+  </div>
+</div>
 <div class="modal-bg" id="prodModal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
   <div class="modal lg">
     <h3 id="pmTitle">Nuevo producto</h3><p class="sub">Lo básico para publicarlo en tu menú.</p>
@@ -618,8 +634,85 @@ async function guardarNegocio(cols){
   await cargarNegocio(false); hydrate(); renderPreview();
 }
 
+/* =====================================================================================
+   GUÍA INTERACTIVA (visita guiada). El progreso se guarda por USUARIO y por RESTAURANTE
+   en profiles.prefs.tour; un paso solo se marca como completo con datos reales.
+   ===================================================================================== */
+const KT_STEPS = [
+  { id: 'info', title: 'Cuéntanos de tu restaurante', text: 'Escribe el nombre comercial, una descripción corta y la dirección. También puedes subir tu logo aquí mismo; aparecen en tu menú y en el enlace que compartas.',
+    view: 'configuracion', target: () => $('cfgNombre').closest('.field'), done: () => !!(negocio.nombre && negocio.descripcion && negocio.direccion), btn: 'Completar mis datos',
+    run: (t) => { t.pause(); setTimeout(() => { const f = !negocio.nombre ? $('cfgNombre') : !negocio.descripcion ? $('cfgDesc') : $('cfgDir'); f.focus(); }, 80); } },
+  { id: 'productos', title: 'Agrega tu primer producto', text: 'Pon el nombre, el precio, una descripción y una foto. Es lo que verán tus clientes en el menú. Se guarda al instante.',
+    view: 'productos', target: '#btnNuevoProducto', done: () => productos.length > 0, btn: 'Agregar mi primer producto', run: (t) => { t.pause(); openProd(); } },
+  { id: 'categorias', title: 'Organiza por categorías', text: 'Al crear un producto escribe su categoría (por ejemplo: Hamburguesas, Bebidas o Postres). Se crean solas y tu menú queda agrupado y fácil de recorrer.',
+    view: 'productos', target: '#btnNuevoProducto', done: () => categorias.length > 0, btn: 'Agregar un producto con categoría', run: (t) => { t.pause(); openProd(); } },
+  { id: 'fotos', title: 'Fotos que se antojan', text: 'Sube una foto en cada producto. Si tienes plan Pro, en Personalizar → «Fotos de producto con IA» puedes generar una versión mejorada: tú decides si la usas, y tu foto original no se reemplaza hasta que confirmes.',
+    view: 'personalizar', target: '#imgAiCard', done: () => productos.some(p => p.imagenPath), btn: 'Ir a mis productos', run: (t) => { t.pause(); irA('productos'); } },
+  { id: 'personalizar', title: 'Personaliza tu menú', text: 'En el editor visual eliges plantilla, colores, forma de las fotos, logo y banner, y ves el resultado real antes de publicar.',
+    view: 'personalizar', target: '#btnSaveMenu', done: () => !!negocio.menuConfigured, doneLabel: 'Ya publicaste un diseño', btn: 'Abrir el editor visual', run: () => { location.href = 'editor.html'; } },
+  { id: 'contacto', title: 'Contacto y pedidos', text: 'Agrega tu WhatsApp y teléfono para que tus clientes te encuentren. Los pedidos que hagan desde tu menú llegan a la sección «Pedidos» del panel.',
+    view: 'configuracion', target: () => $('cfgWpp').closest('.field'), done: () => !!(negocio.whatsapp || negocio.telefono), btn: 'Configurar mi WhatsApp', run: (t) => { t.pause(); setTimeout(() => $('cfgWpp').focus(), 80); } },
+  { id: 'qr', title: 'Tu código QR', text: 'Crea tus mesas y descarga el QR de cada una para imprimirlo. Al escanearlo, tu cliente llega directo a tu menú.',
+    view: 'mesas', target: () => document.querySelector('[data-panel="mesas"] .vhead button'), done: () => mesas.length > 0, btn: 'Crear mi primera mesa', run: (t) => { t.pause(); document.querySelector('[data-panel="mesas"] .vhead button')?.click(); } },
+  { id: 'publicar', title: 'Publica tu menú', text: 'Revisa cómo se ve en un teléfono y publícalo. Necesitas al menos un producto y un diseño publicado desde el editor.',
+    view: 'menu', target: '#menuStatePill', done: () => !!(negocio.publicado && negocio.menuConfigured && productos.length), doneLabel: 'Tu menú está publicado',
+    btn: () => !productos.length ? 'Primero agrega un producto' : !negocio.menuConfigured ? 'Abrir el editor y publicar' : !negocio.publicado ? 'Publicar mi menú' : 'Ver mi menú',
+    run: async (t) => { if (!productos.length) return t.goto(1); if (!negocio.menuConfigured) { location.href = 'editor.html'; return; } if (!negocio.publicado) { await guardarNegocio({ is_published: true }); toast('Tu menú ya está publicado.'); t.refresh(); return; } window.open(menuURL(), '_blank', 'noopener'); } },
+  { id: 'compartir', title: 'Comparte tu menú', text: 'Copia el enlace y envíalo por WhatsApp o ponlo en tu Instagram. Cuando tengas visitas y pedidos, verás los resultados en tu panel.',
+    view: 'inicio', target: '#homeMenuLink', done: () => !!ktState().seen?.includes('compartir'), doneLabel: 'Ya copiaste tu enlace', btn: 'Copiar enlace de mi menú',
+    run: async (t) => { await copy(menuURL()); ktSeen('compartir'); toast('Enlace copiado.'); t.refresh(); } },
+];
+const ktKey = () => String(rid || '').slice(0, 8);
+function ktState(){ const all = (perfil.prefs && perfil.prefs.tour) || {}; return all[ktKey()] || {}; }
+async function ktSave(patch){
+  const all = { ...((perfil.prefs && perfil.prefs.tour) || {}) }; all[ktKey()] = { ...(all[ktKey()] || {}), ...patch };
+  const keys = Object.keys(all); if (keys.length > 3) keys.filter(k => k !== ktKey()).slice(0, keys.length - 3).forEach(k => delete all[k]);
+  perfil.prefs = { ...(perfil.prefs || {}), tour: all };
+  const { error } = await sb.from('profiles').update({ prefs: perfil.prefs }).eq('id', uid); if (error) console.warn(error);
+}
+function ktSeen(id){ const s = new Set(ktState().seen || []); s.add(id); ktSave({ seen: [...s] }); }
+const ktDone = () => KT_STEPS.map(s => { try { return !!s.done(); } catch { return false; } });
+const ktFirstPending = () => { const d = ktDone(); const i = d.findIndex(x => !x); return i < 0 ? 0 : i; };
+let ktTour = null;
+function ktBuild(){
+  ktTour = window.KARTTA_TOUR.create({
+    steps: KT_STEPS.map(st => ({ id: st.id, title: st.title, text: st.text, canSkip: true, target: st.target, done: st.done, doneLabel: st.doneLabel,
+      before: async () => { if (st.view) irA(st.view); await new Promise(r => setTimeout(r, 120)); },
+      primary: { get label(){ return typeof st.btn === 'function' ? st.btn() : st.btn; }, run: (t) => st.run(t) } })),
+    onStep: (i) => { ktSave({ st: i }); },
+    onExit: (why) => { ktSave(why === 'done' ? { x: 2 } : { x: 1 }); ktRender(); },
+  });
+}
+function ktStart(i){ if (!window.KARTTA_TOUR) return toast('La guía no está disponible ahora.'); if (!ktTour) ktBuild(); $('tourWelcome').classList.remove('show'); ktTour.start(i); }
+function ktAfter(){ if (ktTour && ktTour.active && ktTour.paused) setTimeout(() => ktTour.resume(), 250); }
+function ktRender(){
+  if (!$('tourList')) return; const d = ktDone(), n = d.filter(Boolean).length, tot = KT_STEPS.length;
+  $('tourBar').style.width = Math.round(n / tot * 100) + '%';
+  $('tourTitle').textContent = n === tot ? '¡Tu menú está listo!' : 'Prepara tu menú · ' + n + ' de ' + tot;
+  $('tourSub').textContent = n === tot ? 'Completaste todos los pasos. Puedes repetir la guía cuando quieras.' : 'Te falta poco: ' + (tot - n) + (tot - n === 1 ? ' paso' : ' pasos') + '.';
+  $('tourGo').textContent = n === tot ? 'Repetir la guía' : (n === 0 ? 'Comenzar la guía' : 'Continuar la guía');
+  $('tourList').innerHTML = KT_STEPS.map((s, i) => `<li><button type="button" data-kt="${i}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 10px;border-radius:10px;background:var(--panel2);color:var(--text);font-weight:600"><span aria-hidden="true" style="width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;${d[i] ? 'background:#1EA35A;color:#fff' : 'border:2px solid var(--border)'}">${d[i] ? '✓' : ''}</span><span style="${d[i] ? 'text-decoration:line-through;color:var(--muted)' : 'color:var(--strong)'}">${esc(s.title)}</span><span class="sr-only" style="position:absolute;left:-9999px">${d[i] ? 'completado' : 'pendiente'}</span></button></li>`).join('');
+}
+$('tourList').addEventListener('click', (e) => { const b = e.target.closest('[data-kt]'); if (b) ktStart(Number(b.dataset.kt)); });
+$('tourGo').onclick = () => ktStart(ktDone().every(Boolean) ? 0 : ktFirstPending());
+$('tourRestart').onclick = () => ktStart(0);
+$('twStart').onclick = () => ktStart(ktFirstPending());
+$('twLater').onclick = () => { $('tourWelcome').classList.remove('show'); ktSave({ x: 1 }); };
+function ktInit(){
+  ktRender(); const d = ktDone(), n = d.filter(Boolean).length, st = ktState();
+  if (st.x || n >= 5) return; // ya la vio/pospuso, o ya tiene casi todo: solo se ofrece la lista de tareas
+  const nombre = (perfil.panel_name || perfil.full_name || 'por aquí').split(' ')[0], pend = KT_STEPS.length - n;
+  $('twTitle').textContent = '¡Hola, ' + nombre + '! Bienvenido a KARTTA';
+  $('twText').textContent = n ? 'Ya avanzaste ' + n + ' de ' + KT_STEPS.length + ' pasos. Te acompañamos con lo que falta para que puedas compartir tu menú con tus clientes.' : 'Vamos a preparar tu menú digital para que puedas compartirlo con tus clientes. Te guiamos paso a paso y puedes salir cuando quieras.';
+  $('twBar').style.width = Math.round(n / KT_STEPS.length * 100) + '%';
+  $('twMeta').textContent = pend + (pend === 1 ? ' paso pendiente' : ' pasos pendientes') + ' · unos ' + Math.max(2, pend) + ' minutos';
+  $('tourWelcome').classList.add('show'); setTimeout(() => $('twStart').focus(), 60);
+}
+
 async function iniciar(){
-  window.KARTTA_AUTH.onChange(async (user) => {
+  
+
+window.KARTTA_AUTH.onChange(async (user) => {
     if (!user) { location.href = 'index.html'; return; }
     if (booted && user.uid === uid) return;
     try {
@@ -637,7 +730,7 @@ async function iniciar(){
       booted = true;
       await Promise.all([cargarCategorias(), cargarProductos(), cargarMesas(), cargarPedidos()]);
       hydrate(); renderProductos(); renderMesas(); renderPedidos(); updateProdSummary(); updateMenuState();
-      suscribirPedidos();
+      suscribirPedidos(); ktInit();
       $('gate').classList.add('hidden'); $('app').classList.add('ready');
       irA(location.hash.slice(1) || 'inicio');
     } catch (e) { console.error(e); $('gateMsg').textContent = 'Tu cuenta no tiene un negocio asociado todavía.'; }
@@ -667,6 +760,7 @@ function hydrate(){
   $('sumDom').textContent = 'kartta.' + slug + '.food'; $('slugReal').textContent = menuURL(); if (document.activeElement !== $('cfgSlug')) $('cfgSlug').value = slug;
   $('urlMenu').textContent = menuURL(); $('urlAdmin').textContent = location.href.split('#')[0];
   $('homeMenuLink').href = $('menuOpen').href = menuURL();
+  if (typeof ktRender === 'function') ktRender();
   updateMenuState(); fillConfig(); fillEditor(); updateProdSummary();
 }
 function updateMenuState(){
@@ -822,7 +916,7 @@ function openProd(id){
       : `<button type="button" class="lockrow" data-lock="PREMIUM"><span>Personalización avanzada</span><span class="badge-lock">🔒 PREMIUM</span></button>`);
   $('prodModal').classList.add('show'); setTimeout(() => $('pmNombre').focus(), 50);
 }
-function closeProd(){ $('prodModal').classList.remove('show'); }
+function closeProd(){ $('prodModal').classList.remove('show'); if (typeof ktAfter === 'function') ktAfter(); }
 $('btnNuevoProducto').onclick = () => openProd();
 $('pmCancel').onclick = closeProd; $('prodModal').onclick = e => { if (e.target.id === 'prodModal') closeProd(); };
 $('pmPick').onclick = () => $('pmFile').click();

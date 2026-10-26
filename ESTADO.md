@@ -21,3 +21,7 @@ Leyenda: ✅ implementado y probado (local/SQL) · 🚀 desplegado en Supabase �
 | Panel del propietario | 🚀 separado | Proyecto «Kartta Admin» (solo lectura); UI fuera de este repo |
 | i18n ES/EN/DE | ⏳ | |
 | Precios unificados | ⚙️ | Decisión pendiente |
+| Menú público como app móvil (marco en PC) + ficha de producto a pantalla completa | ✅ probado en navegador (datos simulados) · 🟡 sin desplegar | |
+| Guía interactiva del panel (9 pasos) + lista de tareas | ✅ probado en navegador (datos simulados) · 🟡 sin desplegar | Progreso en `profiles.prefs.tour` |
+| Etiquetas de producto/categoría | ⏳ | Siguiente bloque |
+| IA de fotos con autorización al subir imagen | ⏳ | Existe versión en Personalizar (Pro) |

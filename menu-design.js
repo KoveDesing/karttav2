@@ -64,6 +64,7 @@
     s.setProperty('--red', c.primary); s.setProperty('--black', c.secondary); s.setProperty('--bg', c.background);
     s.setProperty('--tx', c.textColor); s.setProperty('--surface', c.surface);
     s.setProperty('--rad', radiusOf(c) + 'px'); s.setProperty('--fs', { s: .9, m: 1, l: 1.12 }[c.size]);
+    s.setProperty('--backdrop', lum(c.background) < .25 ? '#08080A' : 'color-mix(in srgb, ' + c.primary + ' 9%, #E9E9EC)');
     s.setProperty('--dn', { compact: .7, normal: 1, airy: 1.4 }[c.density]);
     s.setProperty('--fh', `'${c.fontHeading}', -apple-system, sans-serif`); s.setProperty('--fb', `'${c.fontBody}', -apple-system, sans-serif`);
     const d = root.dataset;
