@@ -5,110 +5,62 @@
 <link rel="icon" type="image/png" href="/favicon.png"><link rel="shortcut icon" href="/favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="legal.css">
-<script type="module" src="supabase-init.js"></script>
 <style>
-/* Identidad oscura KARTTA — solo esta pantalla */
-:root{--bg:#121212;--card:#202020;--field:#292929;--line:rgba(255,255,255,.085);--tx:#f7f7f7;--mut:#b9b9b9;--red:#ff3145}
-html{background:#121212}body{background:#121212;color:#f7f7f7;min-height:100vh}
-.card{background:#202020;border:1px solid #2b2b2b;box-shadow:0 24px 70px rgba(0,0,0,.32)}
-.links li{background:#292929;border:1px solid #333;border-radius:10px;padding:9px 11px;transition:background .18s,border-color .18s,transform .18s}.links li:hover{background:#303030;border-color:#484848;transform:translateY(-1px)}
-.links a,.links button{color:#ff6878}.fld{margin-top:20px}.fld label.t{color:#f7f7f7}.date-wheel-wrap{margin-top:10px;padding:14px;background:#292929;border:1px solid #383838;border-radius:16px}
-.date-wheel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.date-wheel-head strong{font-size:12px;color:#c9c9c9;font-weight:600}.date-wheel-head span{font-size:11px;color:#858585}
-.date-wheels{display:grid;grid-template-columns:.8fr 1.35fr 1fr;gap:8px}.wheel-col{min-width:0}.wheel-label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:#898989;text-align:center;margin:0 0 6px}
-.wheel{height:142px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#555 transparent;border-radius:11px;position:relative;background:#202020;border:1px solid #333;scroll-snap-type:y proximity;padding:47px 5px;outline:none}
-.wheel:before,.wheel:after{content:"";position:sticky;left:0;right:0;height:44px;display:block;pointer-events:none;z-index:2}.wheel:before{top:-47px;margin-bottom:-44px;background:linear-gradient(#202020,rgba(32,32,32,0))}.wheel:after{bottom:-47px;margin-top:-44px;background:linear-gradient(rgba(32,32,32,0),#202020)}
-.wheel-option{height:46px;display:flex;align-items:center;justify-content:center;border-radius:9px;color:#999;font-size:14px;cursor:pointer;scroll-snap-align:center;transition:color .18s,background .18s,transform .18s;user-select:none}.wheel-option:hover{color:#fff;background:#292929}.wheel-option.selected{background:rgba(255,49,69,.13);color:#fff;border:1px solid rgba(255,49,69,.4);font-weight:700;transform:scale(1.015)}
-.wheel-hint{font-size:11px;color:#858585;margin:9px 2px 0;display:flex;gap:7px;align-items:center}.wheel-hint i{width:6px;height:6px;border-radius:50%;background:#ff3145;display:inline-block;flex-shrink:0}
-.chk{color:#d0d0d0}.chk em{color:#929292}.chk input{appearance:none;-webkit-appearance:none;display:grid;place-content:center;background:#292929;border:1px solid #555;border-radius:5px;transition:background .18s,border-color .18s,transform .18s,box-shadow .18s}.chk input:before{content:"";width:9px;height:5px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) scale(0);transition:transform .16s ease}.chk input:checked{background:#ff3145;border-color:#ff3145;box-shadow:0 0 0 3px rgba(255,49,69,.12)}.chk input:checked:before{transform:rotate(-45deg) scale(1)}.chk input:active{transform:scale(.9)}.btn{background:#ff3145;box-shadow:0 7px 22px rgba(255,49,69,.15);transition:transform .18s,filter .18s,box-shadow .18s}.btn:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 10px 26px rgba(255,49,69,.22)}.btn.ghost{box-shadow:none}.errbox{background:rgba(255,49,69,.09);border-color:rgba(255,49,69,.28)}
-@media(max-width:420px){.date-wheel-wrap{padding:10px}.date-wheels{gap:5px}.wheel{height:132px;padding-top:42px;padding-bottom:42px}.wheel:before{top:-42px;height:39px;margin-bottom:-39px}.wheel:after{bottom:-42px;height:39px;margin-top:-39px}.wheel-option{height:42px;font-size:13px}}
-/* Ajuste minimalista compacto — solo consentimiento */
+:root{--bg:#121212;--card:#171717;--field:#141414;--line:#292929;--tx:#f7f7f7;--mut:#aaa;--red:#ff3145}
+html,body{background:#121212;color:var(--tx)}
 main{max-width:540px;padding:16px 12px 28px}
-.card{padding:20px;background:#171717;border-color:#242424;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.42)}
-.brand{margin-bottom:14px}.loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px 0}.loading-state[hidden]{display:none}.loading-brand{font-family:'Mr Dafoe',cursive;font-size:42px;line-height:1;color:#f7f7f7}.loading-brand span{color:#ff3145}.loading-state p{margin:0;color:#929292;font-size:12.5px}
-h1{font-size:21px;letter-spacing:-.035em;margin-bottom:5px}
-#form>p:first-of-type{font-size:12.5px;line-height:1.45;color:#929292;margin-bottom:8px}
-.links{grid-template-columns:1fr 1fr;gap:5px;margin:9px 0 2px}
-.links li{padding:7px 8px;border-radius:7px;background:#1c1c1c;border-color:#292929;font-size:11.5px}
-.links a,.links button{font-size:11.5px}
-.fld{margin-top:12px}
-.fld label.t{font-size:12px;margin-bottom:5px}
-.date-wheel-wrap{margin-top:6px;padding:7px;background:#191919;border:1px solid #272727;border-radius:9px}
-.date-wheels{grid-template-columns:.75fr 1.25fr .95fr;gap:5px}
-.wheel-label{font-size:9px;letter-spacing:.06em;margin-bottom:3px;color:#777}
-.wheel{height:76px;padding:25px 3px;border-radius:7px;background:#141414;border-color:#242424;scrollbar-width:none;scroll-snap-type:y mandatory}
+.card{background:#171717;border:1px solid #292929;border-radius:24px;padding:24px;box-shadow:0 18px 48px rgba(0,0,0,.38)}
+.brand{font-family:'Mr Dafoe',cursive;font-size:34px;font-weight:400;line-height:1;color:#f7f7f7;text-decoration:none;display:inline-block;margin-bottom:14px}
+.brand span{color:#ff3145}
+#loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:18px 0;text-align:center}
+#loading[hidden]{display:none}
+.loading-brand{font-family:'Mr Dafoe',cursive;font-size:44px;line-height:1;color:#f7f7f7}
+.loading-brand span{color:#ff3145}
+#loading p{margin:0;color:#929292;font-size:12.5px}
+h1{font-size:22px;line-height:1.2;letter-spacing:-.035em;margin:0 0 7px}
+#form>p:first-of-type{font-size:12.5px;line-height:1.45;color:#929292;margin:0 0 14px}
+.fld{margin:12px 0 0}
+.fld label.t{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:#f7f7f7}
+.date-wheel-wrap{margin-top:6px;padding:10px;background:#1b1b1b;border:1px solid #303030;border-radius:15px}
+.date-wheels{display:grid;grid-template-columns:.75fr 1.25fr .95fr;gap:7px}
+.wheel-col{min-width:0}
+.wheel-label{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#858585;text-align:center;margin:0 0 4px}
+.wheel{height:82px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;scroll-snap-type:y mandatory;padding:28px 3px;border-radius:9px;background:#121212;border:1px solid #303030;outline:none}
 .wheel::-webkit-scrollbar{display:none}
-.wheel:before,.wheel:after{height:23px}
-.wheel:before{top:-25px;margin-bottom:-23px;background:linear-gradient(#141414,rgba(20,20,20,0))}
-.wheel:after{bottom:-25px;margin-top:-23px;background:linear-gradient(rgba(20,20,20,0),#141414)}
-.wheel-option{height:25px;font-size:12px;border-radius:5px;color:#777}
-.wheel-option:hover{background:#202020}
-.wheel-option.selected{background:rgba(255,49,69,.09);border:1px solid rgba(255,49,69,.28);color:#f3f3f3;transform:none}
-.chk{gap:8px;margin-top:10px;font-size:12px;line-height:1.4;color:#b0b0b0}
-.chk em{font-size:10.5px}
-.chk input{width:15px;height:15px;border-radius:4px}
-.chk input:checked{box-shadow:none}
+.wheel-option{height:25px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:#777;font-size:12px;cursor:pointer;scroll-snap-align:center;user-select:none}
+.wheel-option:hover{background:#202020;color:#fff}
+.wheel-option.selected{background:rgba(255,49,69,.12);border:1px solid rgba(255,49,69,.36);color:#fff;font-weight:700}
+.date-hidden-input{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 small{font-size:10.5px;color:#777}
-.err{font-size:11px;margin:4px 0}
-.btn{padding:10px 14px;border-radius:8px;font-size:13px;box-shadow:none}
-.btn:hover:not(:disabled){box-shadow:none;transform:none}
-.btn.ghost{padding:8px 12px}
-#btnGo{max-width:100%}
-#form>p[style*="margin-top:20px"]{margin-top:12px!important;margin-bottom:8px}
-#form>p[style*="text-align:center"]{margin-bottom:0}
-.errbox{font-size:12px;padding:8px}
-@media(max-width:420px){main{padding:10px 9px 20px}.card{padding:16px 13px}.links{gap:4px}.links li{padding:6px}.wheel{height:72px;padding-top:23px;padding-bottom:23px}.wheel-option{height:24px}.wheel:before{top:-23px}.wheel:after{bottom:-23px}}
-/* Pulido UI/UX: jerarquía clara, bordes suaves y controles táctiles */
-.card{border-radius:24px;padding:24px;background:#171717;border-color:#292929;box-shadow:0 18px 48px rgba(0,0,0,.38)}
-.brand{margin-bottom:18px}
-h1{font-size:22px;line-height:1.2;margin-bottom:7px}
-#form>p:first-of-type{font-size:13px;color:#aaa;margin-bottom:16px}
-.date-wheel-wrap{padding:12px;border-radius:16px;background:#1b1b1b;border-color:#303030}
-.date-wheels{gap:8px}
-.wheel{height:90px;padding:32px 4px;border-radius:11px;background:#121212;border-color:#303030}
-.wheel:before{top:-32px;margin-bottom:-23px;background:linear-gradient(#121212,rgba(18,18,18,0))}
-.wheel:after{bottom:-32px;margin-top:-23px;background:linear-gradient(rgba(18,18,18,0),#121212)}
-.wheel-option{height:25px;border-radius:7px}
-.wheel-option.selected{background:rgba(255,49,69,.14);border:1px solid rgba(255,49,69,.38);color:#fff}
-.chk{display:flex;align-items:flex-start;gap:11px;margin-top:10px;padding:12px 13px;border:1px solid #2b2b2b;border-radius:13px;background:#1d1d1d;color:#e4e4e4;transition:border-color .18s,background .18s}
+.chk{display:flex;align-items:flex-start;gap:10px;margin:10px 0 0;padding:12px 13px;border:1px solid #2b2b2b;border-radius:13px;background:#1d1d1d;color:#e4e4e4;font-size:12.5px;line-height:1.45;cursor:pointer;transition:border-color .18s,background .18s}
 .chk:has(input:checked){border-color:rgba(255,49,69,.42);background:#21191b}
-.chk input{flex:0 0 17px;width:17px;height:17px;margin-top:1px;border-radius:5px;background:#111;border-color:#555}
-.chk input:checked{background:#ff3145;border-color:#ff3145;box-shadow:0 0 0 3px rgba(255,49,69,.1)}
-.chk span{display:block}
-.chk em{font-style:normal;color:#8d8d8d}
+.chk input{appearance:none;-webkit-appearance:none;display:grid;place-content:center;flex:0 0 17px;width:17px;height:17px;margin:1px 0 0;border-radius:5px;background:#111;border:1px solid #555;transition:background .18s,border-color .18s}
+.chk input:before{content:"";width:8px;height:4px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) scale(0);transition:transform .16s ease}
+.chk input:checked{background:#ff3145;border-color:#ff3145}
+.chk input:checked:before{transform:rotate(-45deg) scale(1)}
+.chk span{display:block;min-width:0}
+.chk em{font-style:normal;color:#8d8d8d;font-size:10.5px}
+.chk a{overflow-wrap:anywhere}
+.err{font-size:11px;margin:4px 0;color:#ff8a96}
+.errbox{display:none;background:rgba(255,49,69,.09);border:1px solid rgba(255,49,69,.28);border-radius:10px;padding:8px;font-size:12px}
+.btn{background:#ff3145;border-radius:10px;padding:11px 14px;font-size:13px;box-shadow:none}
+.btn:hover:not(:disabled){filter:brightness(1.07);transform:translateY(-1px);box-shadow:none}
+.btn.ghost{background:transparent;border:1px solid #333;color:#aaa;border-radius:10px;padding:8px 12px}
+#form>p[style*="margin-top:20px"]{margin:14px 0 8px!important}
+#form>p[style*="text-align:center"]{margin:0}
 .legal-bottom{margin-top:18px;padding-top:14px;border-top:1px solid #2a2a2a}
-.legal-title{margin:0 0 8px!important;color:#858585!important;font-size:11px!important;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-.links{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:0;padding:0;list-style:none}
-.links li{min-width:0;padding:10px 11px;border-radius:12px;background:#1c1c1c;border-color:#2b2b2b;transform:none;font-size:11.5px;line-height:1.35;overflow-wrap:anywhere}
-.links li:hover{background:#232323;border-color:#414141;transform:none}
-.links a,.links button{display:block;font-size:11.5px;line-height:1.35;text-decoration:none}
-.links a:hover,.links button:hover{text-decoration:underline}
-.btn{border-radius:12px;padding:12px 16px}
-#btnGo{border-radius:13px}
-.errbox{border-radius:12px}
-@media(max-width:420px){.card{padding:18px 14px;border-radius:20px}.date-wheel-wrap{padding:9px;border-radius:14px}.date-wheels{gap:5px}.wheel{height:82px;padding:28px 3px}.wheel:before{top:-28px}.wheel:after{bottom:-28px}.chk{padding:11px;border-radius:12px}.links{gap:5px}.links li{padding:8px;border-radius:10px}.legal-bottom{margin-top:15px;padding-top:12px}}
-/* Microajustes finales: alineación y simetría de controles */
-#ageBlock,#termsBlock,#privBlock{min-width:0}
-#ageBlock>.chk,#termsBlock>.chk,#privBlock>.chk,#form>label.chk{box-sizing:border-box;width:100%;min-width:0;display:flex;align-items:flex-start;gap:12px;margin:10px 0 0;padding:13px 14px;border:1px solid #2d2d2d;border-radius:14px;background:#1c1c1c;line-height:1.45}
-.chk input{box-sizing:border-box;appearance:none;-webkit-appearance:none;display:grid;place-content:center;flex:0 0 18px;width:18px;height:18px;margin:2px 0 0;border:1px solid #565656;border-radius:5px;background:#111;}
-.chk span{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
-.chk em{display:inline;color:#888;font-size:10.5px;white-space:normal}
-.chk:has(input:checked){border-color:rgba(255,49,69,.4);background:#21191b}
-#ageErr,#termsErr,#privErr{margin:5px 3px 0;line-height:1.4}
-#ageBlock>.fld{margin-top:14px}
-#ageBlock .date-wheel-wrap{box-sizing:border-box;width:100%}
-#ageBlock small{display:block;margin:7px 2px 0;line-height:1.4}
-.legal-bottom{margin-top:20px}
-.links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:8px}
-.links li{box-sizing:border-box;display:flex;align-items:center;min-width:0;min-height:44px;padding:10px 12px;line-height:1.4}
-.links li a,.links li button{width:100%;min-width:0;overflow-wrap:anywhere;line-height:1.4}
-#form>p[style*="margin-top:20px"]{margin-top:16px!important}
-#btnGo{min-height:44px}
-@media(max-width:420px){#ageBlock>.chk,#termsBlock>.chk,#privBlock>.chk,#form>label.chk{gap:10px;padding:12px;border-radius:12px}.links{gap:6px}.links li{min-height:42px;padding:9px 10px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}
+.legal-title{margin:0 0 8px!important;color:#858585!important;font-size:10px!important;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:0;padding:0;list-style:none}
+.links li{min-width:0;padding:9px 10px;border-radius:11px;background:#1c1c1c;border:1px solid #2b2b2b;font-size:11.5px;line-height:1.35;overflow-wrap:anywhere}
+.links a,.links button{font-size:11.5px;color:#ff6878}
+.links button{all:unset;color:#ff6878;font-weight:600;cursor:pointer;text-decoration:underline;font-size:11.5px}
+@media(max-width:420px){main{padding:10px 9px 20px}.card{padding:17px 14px;border-radius:20px}.date-wheel-wrap{padding:8px}.date-wheels{gap:5px}.wheel{height:76px;padding:25px 2px}.wheel-option{height:24px;font-size:11.5px}.chk{gap:8px;padding:10px}.links{gap:5px}.links li{padding:8px}.brand{margin-bottom:12px}}
+@media(prefers-reduced-motion:reduce){.chk,.wheel-option,.btn{transition:none}}
 </style>
+<script type="module" src="supabase-init.js"></script>
 </head><body><main><div class="card" id="card" aria-live="polite">
 <a class="brand" href="/" aria-label="KARTTA">Kar<span>tt</span>a</a>
-<div id="loading" class="loading-state"><div class="loading-brand" aria-label="Kartta">Kar<span>tt</span>a</div><p>Verificando tu cuenta…</p></div>
+<div id="loading"><div class="loading-brand" aria-label="Kartta">Kar<span>tt</span>a</div><p>Verificando tu cuenta…</p></div>
 
 <div id="retry" hidden><h1>No pudimos verificar tu cuenta</h1><p>Hubo un problema de conexión o del servidor. Tus datos no se perdieron.</p>
 <p><button class="btn" id="btnRetry" type="button" style="width:auto">Reintentar</button> <button class="btn ghost" data-logout type="button">Cerrar sesión</button></p></div>
@@ -118,20 +70,18 @@ h1{font-size:22px;line-height:1.2;margin-bottom:7px}
 
 <form id="form" hidden novalidate>
 <h1>Antes de entrar a Kartta</h1>
-<p>Confirma tu edad y acepta las condiciones para continuar.</p>
+<p>Queremos que utilices Kartta de forma segura y transparente. Antes de continuar, necesitamos comprobar que cumples los requisitos de edad y explicarte cómo tratamos tus datos y qué condiciones se aplican al uso de la plataforma.</p>
 
 
 <div id="ageBlock">
-<div class="fld"><label class="t" for="dob">Fecha de nacimiento</label>
-<input type="date" id="dob" autocomplete="bday" aria-describedby="dobErr" tabindex="-1" aria-hidden="true" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
-<div class="date-wheel-wrap" id="dateWheelWrap">
-  
-  <div class="date-wheels" aria-label="Fecha de nacimiento">
-    <div class="wheel-col"><span class="wheel-label">Día</span><div class="wheel" id="dayWheel" role="listbox" tabindex="0" aria-label="Día de nacimiento"></div></div>
-    <div class="wheel-col"><span class="wheel-label">Mes</span><div class="wheel" id="monthWheel" role="listbox" tabindex="0" aria-label="Mes de nacimiento"></div></div>
-    <div class="wheel-col"><span class="wheel-label">Año</span><div class="wheel" id="yearWheel" role="listbox" tabindex="0" aria-label="Año de nacimiento"></div></div>
-  </div>
-</div>
+<div class="fld"><label class="t" id="dobLabel">Fecha de nacimiento</label>
+<div class="date-wheel-wrap" aria-labelledby="dobLabel">
+<div class="date-wheels">
+<div class="wheel-col"><span class="wheel-label">Día</span><div class="wheel" id="dayWheel" tabindex="0" role="listbox" aria-label="Día de nacimiento"></div></div>
+<div class="wheel-col"><span class="wheel-label">Mes</span><div class="wheel" id="monthWheel" tabindex="0" role="listbox" aria-label="Mes de nacimiento"></div></div>
+<div class="wheel-col"><span class="wheel-label">Año</span><div class="wheel" id="yearWheel" tabindex="0" role="listbox" aria-label="Año de nacimiento"></div></div>
+</div></div>
+<input class="date-hidden-input" type="date" id="dob" autocomplete="bday" aria-describedby="dobErr">
 <p class="err" id="dobErr" role="alert"></p><small>Solo la usamos para comprobar tu edad y no la guardamos.</small></div>
 <label class="chk"><input type="checkbox" id="chkAge"><span>Confirmo que tengo 18 años o más. <em>(obligatorio)</em></span></label><p class="err" id="ageErr" role="alert"></p>
 </div>
@@ -139,9 +89,10 @@ h1{font-size:22px;line-height:1.2;margin-bottom:7px}
 <div id="privBlock"><label class="chk"><input type="checkbox" id="chkPriv"><span>He leído la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y autorizo el tratamiento de mis datos como allí se explica. <em>(obligatorio)</em></span></label><p class="err" id="privErr" role="alert"></p></div>
 <label class="chk"><input type="checkbox" id="chkPrefs"><span>Permitir guardar en este dispositivo las preferencias de mi panel (tema y color). <em>(opcional; puedes cambiarlo cuando quieras)</em></span></label>
 
-<section class="legal-bottom" aria-label="Documentos legales">
-<p class="legal-title">Información y políticas</p>
-<ul class="links">
+<div class="errbox" id="formErr" role="alert"></div>
+<p style="margin-top:20px"><button class="btn" id="btnGo" type="submit">Continuar</button></p>
+<p style="text-align:center"><button class="btn ghost" data-logout type="button">Cerrar sesión</button></p>
+<div class="legal-bottom"><p class="legal-title">Información y políticas</p><ul class="links">
 <li><a href="terminos.html" target="_blank" rel="noopener">Términos y condiciones</a></li>
 <li><a href="privacidad.html" target="_blank" rel="noopener">Privacidad y tratamiento de datos</a></li>
 <li><a href="cookies.html" target="_blank" rel="noopener">Política de cookies</a></li>
@@ -150,17 +101,12 @@ h1{font-size:22px;line-height:1.2;margin-bottom:7px}
 <li><a href="terminos.html#restaurantes" target="_blank" rel="noopener">Restaurantes, pedidos y servicios</a></li>
 <li><a href="terminos.html#normas" target="_blank" rel="noopener">Normas de uso</a></li>
 <li><a href="privacidad.html#seguridad" target="_blank" rel="noopener">Seguridad de la cuenta</a></li>
-</ul>
-</section>
-
-<div class="errbox" id="formErr" role="alert"></div>
-<p style="margin-top:20px"><button class="btn" id="btnGo" type="submit">Continuar</button></p>
-<p style="text-align:center"><button class="btn ghost" data-logout type="button">Cerrar sesión</button></p>
+</ul></div>
 </form>
 </div></main>
 <script type="module">
 const $ = (id) => document.getElementById(id);
-const show = (id) => { ['loading','retry','blocked','form'].forEach(k => $(k).hidden = (k !== id)); };
+const show = (id) => { ['loading','retry','blocked','form'].forEach(k => $(k).hidden = (k !== id)); const brand = document.querySelector('.card > .brand'); if (brand) brand.hidden = (id === 'loading'); };
 let req = null;
 
 document.querySelectorAll('[data-logout]').forEach(b => b.onclick = async () => { try { await window.KARTTA_AUTH.logout(); } catch {} location.href = 'index.html'; });
@@ -184,7 +130,7 @@ async function cargar() {
 }
 
 function limpiar() { ['dobErr','ageErr','termsErr','privErr'].forEach(i => $(i).textContent = ''); $('formErr').style.display = 'none'; }
-// Selectores de fecha estilo rueda: funcionan con rueda del ratón, scroll, teclado y toque.
+// Selector de fecha tipo rueda: scroll del ratón, teclado y toque.
 const wheelData = {
   day: {el:$('dayWheel'), values:Array.from({length:31},(_,i)=>({value:i+1,label:String(i+1).padStart(2,'0')})), selected:null},
   month: {el:$('monthWheel'), values:['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'].map((label,i)=>({value:i+1,label})), selected:null},
@@ -199,18 +145,34 @@ function updateDateInput(){
   $('dob').dispatchEvent(new Event('change',{bubbles:true}));
 }
 function renderWheel(name,center=true){
-  const w=wheelData[name], el=w.el; el.innerHTML='';
+  const w=wheelData[name],el=w.el;el.innerHTML='';
   w.values.forEach(item=>{
-    const opt=document.createElement('div'); opt.className='wheel-option'+(item.value===w.selected?' selected':'');opt.textContent=item.label;opt.setAttribute('role','option');opt.setAttribute('aria-selected',String(item.value===w.selected));opt.dataset.value=item.value;
-    opt.addEventListener('click',()=>{w.selected=item.value;renderWheel(name);updateDateInput();});el.appendChild(opt);
+    const opt=document.createElement('div');
+    opt.className='wheel-option'+(item.value===w.selected?' selected':'');
+    opt.textContent=item.label;opt.setAttribute('role','option');
+    opt.setAttribute('aria-selected',String(item.value===w.selected));opt.dataset.value=item.value;
+    opt.addEventListener('click',()=>{w.selected=item.value;renderWheel(name);updateDateInput();});
+    el.appendChild(opt);
   });
   if(center&&w.selected!==null){const active=el.querySelector('.selected');if(active)active.scrollIntoView({block:'center',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
 }
-function chooseWheel(name,delta){const w=wheelData[name],idx=w.values.findIndex(x=>x.value===w.selected),next=Math.max(0,Math.min(w.values.length-1,(idx<0?0:idx)+delta));w.selected=w.values[next].value;renderWheel(name);updateDateInput();}
+function chooseWheel(name,delta){
+  const w=wheelData[name],idx=w.values.findIndex(x=>x.value===w.selected);
+  const base=idx<0?(delta>0?-1:1):idx;
+  const next=Math.max(0,Math.min(w.values.length-1,base+delta));
+  w.selected=w.values[next].value;renderWheel(name);updateDateInput();
+}
 Object.entries(wheelData).forEach(([name,w])=>{
   w.el.addEventListener('wheel',e=>{e.preventDefault();chooseWheel(name,e.deltaY>0?1:-1);},{passive:false});
-  w.el.addEventListener('keydown',e=>{if(['ArrowDown','ArrowRight','PageDown'].includes(e.key)){e.preventDefault();chooseWheel(name,e.key==='PageDown'?10:1);}else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();chooseWheel(name,e.key==='PageUp'?-10:-1);}else if(e.key==='Home'){e.preventDefault();w.selected=w.values[0].value;renderWheel(name);updateDateInput();}else if(e.key==='End'){e.preventDefault();w.selected=w.values[w.values.length-1].value;renderWheel(name);updateDateInput();}});
-  let touchY=null;w.el.addEventListener('touchstart',e=>{touchY=e.touches[0].clientY;},{passive:true});w.el.addEventListener('touchend',e=>{if(touchY===null)return;const diff=touchY-e.changedTouches[0].clientY;if(Math.abs(diff)>18)chooseWheel(name,Math.round(diff/35));touchY=null;},{passive:true});
+  w.el.addEventListener('keydown',e=>{
+    if(['ArrowDown','ArrowRight','PageDown'].includes(e.key)){e.preventDefault();chooseWheel(name,e.key==='PageDown'?10:1);}
+    else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();chooseWheel(name,e.key==='PageUp'?-10:-1);}
+    else if(e.key==='Home'){e.preventDefault();w.selected=w.values[0].value;renderWheel(name);updateDateInput();}
+    else if(e.key==='End'){e.preventDefault();w.selected=w.values[w.values.length-1].value;renderWheel(name);updateDateInput();}
+  });
+  let touchY=null;
+  w.el.addEventListener('touchstart',e=>{touchY=e.touches[0].clientY;},{passive:true});
+  w.el.addEventListener('touchend',e=>{if(touchY===null)return;const diff=touchY-e.changedTouches[0].clientY;if(Math.abs(diff)>18)chooseWheel(name,Math.round(diff/35));touchY=null;},{passive:true});
 });
 function validarFecha(v) {
   if (!v) return 'Escribe tu fecha de nacimiento.';

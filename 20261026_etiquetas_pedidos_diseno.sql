@@ -1,0 +1,9 @@
+-- YA APLICADAS en Supabase (proyecto Kartta) como migraciones:
+--  * etiquetas_productos_categorias: tablas product_tags, product_tag_links, category_tag_links (RLS por restaurante, contraste mínimo 4.5,
+--    máx. 40 etiquetas por restaurante, 6 por producto, 3 por categoría), funciones ensure_preset_tags / set_product_tags / set_category_tags,
+--    y get_public_menu ahora devuelve las etiquetas activas. validate_menu_design acepta showTags y tagPosition.
+--  * productos_foto_original_ia: products.original_image_path (conserva la foto original cuando se acepta una versión con IA).
+--  * diseno_menu_buscador_nav_destacados: validate_menu_design acepta showSearch, showNav y showHighlights.
+--  * pedidos_estados_historial: orders.status admite 'cancelado'; tabla order_status_events (historial) y trigger que solo permite
+--    nuevo→preparando→listo→entregado, y cancelar antes de entregar si no está pagado.
+-- Ver definiciones vigentes con pg_get_functiondef / \d en el SQL Editor.

@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="es" data-theme="dark">
 <head>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Mr+Dafoe&display=swap" rel="stylesheet">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Panel — KARTTA</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module" src="supabase-init.js"></script>
 <script src="cookies.js" defer></script>
 <script src="kartta-image-ai.js" defer></script>
 <script src="kartta-tour.js" defer></script>
+<script src="menu-design.js" defer></script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="shortcut icon" href="/favicon.ico">
 <script>
@@ -36,7 +34,7 @@ input,select,textarea{font-family:inherit;color:var(--strong);}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
 #gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:999;}
-#gate .brand{font-family:'Mr Dafoe',cursive;font-style:normal;font-weight:400;font-size:44px;line-height:1;color:var(--strong);letter-spacing:0;}#gate .brand span{color:var(--accent);}
+#gate .brand{font-family:'Mr Dafoe',cursive;font-style:normal;font-weight:400;font-size:44px;line-height:1;color:var(--strong);letter-spacing:0;}#gate .brand b{color:var(--accent);font-style:normal;font-weight:400;}
 #gate p{font-size:13px;color:var(--muted);margin:0;}#gate.hidden{display:none;}
 
 #app{display:none;min-height:100vh;grid-template-columns:260px 1fr;}#app.ready{display:grid;}
@@ -179,6 +177,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 .ped .items{font-size:12.5px;margin:8px 0;line-height:1.6;color:var(--text);}
 .ped .bot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
 .st{font-size:10.5px;font-weight:800;padding:5px 10px;border-radius:99px;text-transform:uppercase;}
+.st.cancelado{background:rgba(229,72,77,.14);color:#E5484D;}
 .st.nuevo{background:var(--accent-soft);color:var(--accent);}.st.preparando{background:rgba(255,184,0,.15);color:#E5A400;}.st.listo{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);}.st.entregado{background:var(--panel);color:var(--muted);}
 .mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
 .mcard{border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;background:var(--panel2);}
@@ -233,11 +232,29 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 #toTop.show{opacity:1;pointer-events:auto;transform:none;}
 .btn:active:not(:disabled){transform:scale(.98);}.btn[aria-busy="true"]{opacity:.7;pointer-events:none;}
 @media (prefers-reduced-motion:reduce){.skel{animation:none}}
+
+/* etiquetas + foto IA */
+#tagModal,#aiPhotoModal{z-index:600}
+.tagpick{display:flex;flex-wrap:wrap;gap:8px}
+.tagpick button{border:0;background:none;padding:3px;border-radius:99px;opacity:.5;cursor:pointer}
+.tagpick button[aria-pressed="true"]{opacity:1;box-shadow:0 0 0 2px var(--accent)}
+.ptags{margin:6px 0 2px}
+.tgrow{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--panel2);margin-bottom:8px;flex-wrap:wrap}
+.tgrow .nm{flex:1;min-width:120px;font-size:12px;color:var(--muted)}
+.palx{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:6px}
+.palx button{height:38px;border-radius:10px;border:2px solid var(--border);font-weight:800;font-size:12px}
+.palx button[aria-pressed="true"]{border-color:var(--strong);box-shadow:0 0 0 2px var(--accent)}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.cmp figure{margin:0;text-align:center;font-size:12px;color:var(--muted)}
+.cmp img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;border:1px solid var(--border);background:var(--panel2)}
+.cmp b{display:block;color:var(--strong);margin-bottom:6px}
+.drag-over{outline:2px dashed var(--accent);outline-offset:3px}
+.pcard[draggable="true"]{cursor:grab}.pcard.dragging{opacity:.4}
 </style>
 </head>
 <body>
 
-<div id="gate"><div class="brand" aria-label="Kartta">Kar<span>tt</span>a</div><p id="gateMsg">Verificando tu sesión…</p></div>
+<div id="gate"><div class="brand">Kar<b>tt</b>a</div><p id="gateMsg">Verificando tu sesión…</p></div>
 
 <div id="app">
   <aside id="sidebar" aria-label="Navegación">
@@ -299,7 +316,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 
     <!-- PRODUCTOS -->
     <section class="view" data-panel="productos">
-      <div class="vhead row between"><div><h2>Mis productos</h2><p>Crea y edita lo que aparece en tu menú. Se publican al instante.</p></div><button class="btn btn-accent" id="btnNuevoProducto">+ Agregar producto</button></div>
+      <div class="vhead row between"><div><h2>Mis productos</h2><p>Crea y edita lo que aparece en tu menú. Se publican al instante.</p></div><div class="row"><button class="btn btn-ghost" id="btnTags">🏷️ Etiquetas</button><button class="btn btn-accent" id="btnNuevoProducto">+ Agregar producto</button></div></div>
       <div class="pgrid" id="pgrid"></div>
       <div class="card empty" id="prodEmpty" style="display:none">
         <div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg></div>
@@ -317,7 +334,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
       <div class="three">
         <div class="card"><h3>Productos</h3><p class="sub">Administra lo que vendes.</p><button class="btn btn-ghost" data-goto="productos">Administrar productos</button></div>
         <div class="card"><h3>Personalizar</h3><p class="sub">Colores, estilo, banner y más, con vista previa.</p><button class="btn btn-accent" data-goto="personalizar">Abrir editor</button></div>
-        <div class="card"><h3>Ver mi menú</h3><p class="sub">Así lo ven tus clientes.</p><div class="row"><a class="btn btn-ghost" id="menuOpen" href="#" target="_blank" rel="noopener">Abrir menú</a><button class="btn btn-ghost" id="menuCopy">Copiar enlace</button></div></div>
+        <div class="card"><h3>Ver mi menú</h3><p class="sub">Así lo ven tus clientes.</p><div class="row"><a class="btn btn-ghost" id="menuOpen" href="#" target="_blank" rel="noopener">Abrir menú</a><button class="btn btn-ghost" id="menuCopy">Copiar enlace</button><button class="btn btn-ghost" id="menuExport" title="Descarga tu menú publicado como un archivo HTML">Descargar menú (HTML)</button></div></div>
       </div>
     </section>
 
@@ -487,13 +504,43 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
     <div class="row"><button class="btn btn-accent" id="twStart">Comenzar</button><button class="btn btn-ghost" id="twLater">Hacerlo más tarde</button></div>
   </div>
 </div>
+<div class="modal-bg" id="tagModal" role="dialog" aria-modal="true" aria-labelledby="tgTitle">
+  <div class="modal lg" style="max-height:92vh;overflow:auto">
+    <h3 id="tgTitle">Etiquetas</h3><p class="sub">Destaca tus productos con etiquetas como «Nuevo» o «Picante». Solo tú las ves y editas; los clientes las ven en el menú.</p>
+    <div id="tgList"></div>
+    <div class="card" style="margin-top:12px;padding:14px"><h3 id="tgFormTitle" style="font-size:15px">Nueva etiqueta</h3>
+      <div class="field"><label for="tgName">Nombre</label><input type="text" id="tgName" maxlength="30" placeholder="Ej: Combo familiar"></div>
+      <div class="field"><label>Color</label><div class="palx" id="tgPal" role="group" aria-label="Color de la etiqueta"></div></div>
+      <div class="f2"><div class="field"><label>Estilo</label><select id="tgStyle"><option value="solid">Relleno</option><option value="soft">Suave</option><option value="outline">Con borde</option></select></div><div class="field"><label for="tgIcon">Icono (opcional)</label><input type="text" id="tgIcon" maxlength="4" placeholder="🔥"></div></div>
+      <div class="field"><label>Vista previa</label><div id="tgPrev" style="padding:10px;border-radius:10px;background:var(--panel2)"></div></div>
+      <div class="row"><button class="btn btn-ghost" id="tgReset" style="flex:1">Cancelar</button><button class="btn btn-accent" id="tgSave" style="flex:1">Crear etiqueta</button></div>
+    </div>
+    <div class="card" style="margin-top:12px;padding:14px"><h3 style="font-size:15px">Etiquetas de categorías</h3><p class="sub" style="margin:0 0 10px">Hasta 3 por categoría. Aparecen junto al título de la categoría.</p><div id="tgCats"></div></div>
+    <div class="row" style="margin-top:14px"><button class="btn btn-ghost" id="tgClose" style="flex:1">Cerrar</button></div>
+  </div>
+</div>
+<div class="modal-bg" id="aiPhotoModal" role="dialog" aria-modal="true" aria-labelledby="apTitle">
+  <div class="modal">
+    <h3 id="apTitle">¿Mejorar esta foto con inteligencia artificial?</h3>
+    <div id="apAsk"><p class="sub">La IA puede dejar tu producto sobre fondo blanco de estudio, con luz suave y aspecto profesional. <b>Mantiene tu producto tal como es</b>; tú decides si usas el resultado y siempre conservas tu foto original.</p>
+      <label class="sw" style="border:0;padding:0 0 14px;font-size:12.5px">Recordar mi respuesta solo en esta sesión<input type="checkbox" id="apRemember"></label>
+      <div class="row"><button class="btn btn-accent" id="apYes" style="flex:1">Sí, mejorar con IA</button><button class="btn btn-ghost" id="apNo" style="flex:1">No, usar imagen original</button></div></div>
+    <div id="apBusy" hidden><p class="sub" id="apBusyMsg">Generando tu foto… puede tardar hasta 1 minuto.</p></div>
+    <div id="apCmp" hidden><div class="cmp"><figure><b>Original</b><img id="apOrig" alt="Foto original"></figure><figure><b>Mejorada con IA</b><img id="apNew" alt="Foto mejorada con inteligencia artificial"></figure></div>
+      <p class="sub" id="apQuota" style="margin:0 0 12px;font-size:12px"></p>
+      <p class="sub" style="font-size:12px">Revisa que sea tu producto real, con sus ingredientes y presentación. Si algo no coincide, rechaza el resultado.</p>
+      <div class="row"><button class="btn btn-accent" id="apAccept" style="flex:1">Usar la mejorada</button><button class="btn btn-ghost" id="apRetry">Intentar otra vez</button><button class="btn btn-ghost" id="apCancel">Usar la original</button></div></div>
+    <p class="sub" id="apErr" style="color:#E5484D;margin-top:10px" hidden></p>
+  </div>
+</div>
 <div class="modal-bg" id="prodModal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
   <div class="modal lg">
     <h3 id="pmTitle">Nuevo producto</h3><p class="sub">Lo básico para publicarlo en tu menú.</p>
-    <div class="field"><label>Imagen</label><div class="imgbox"><div class="imgprev" id="pmPrev">Sin imagen</div><div class="row"><button type="button" class="btn btn-ghost btn-sm" id="pmPick">Elegir imagen</button><button type="button" class="btn btn-danger btn-sm" id="pmDelImg">Quitar</button></div></div><input type="file" id="pmFile" accept="image/*" hidden></div>
+    <div class="field"><label>Imagen</label><div class="imgbox"><div class="imgprev" id="pmPrev">Sin imagen</div><div class="row"><button type="button" class="btn btn-ghost btn-sm" id="pmPick">Elegir imagen</button><button type="button" class="btn btn-ghost btn-sm" id="pmRestore" hidden>Restaurar foto original</button><button type="button" class="btn btn-danger btn-sm" id="pmDelImg">Quitar</button></div></div><input type="file" id="pmFile" accept="image/*" hidden></div>
     <div class="field"><label>Nombre</label><input type="text" id="pmNombre" maxlength="70" placeholder="Hamburguesa clásica"></div>
     <div class="f2"><div class="field"><label>Precio (COP)</label><input type="number" id="pmPrecio" min="0" placeholder="25000"></div><div class="field"><label>Categoría</label><input type="text" id="pmCat" maxlength="40" placeholder="Hamburguesas" list="catList"><datalist id="catList"></datalist></div></div>
     <div class="field"><label>Descripción</label><textarea id="pmDesc" maxlength="200" placeholder="Ingredientes, tamaño, lo que lo hace especial…"></textarea></div>
+    <div class="field"><label>Etiquetas <button type="button" class="btn btn-ghost btn-sm" id="pmTagsManage" style="margin-left:8px">Gestionar</button></label><div class="tagpick" id="pmTags" role="group" aria-label="Etiquetas del producto"></div><p class="sub" id="pmTagsHint" style="margin:6px 0 0;font-size:12px"></p></div>
     <label class="sw">Disponible en el menú<input type="checkbox" id="pmDisp" checked></label>
     <div style="margin-top:14px" id="pmAdv"></div>
     <div class="row" style="margin-top:18px"><button class="btn btn-ghost" id="pmCancel" style="flex:1">Cancelar</button><button class="btn btn-accent" id="pmSave" style="flex:1">Guardar</button></div>
@@ -637,6 +684,159 @@ async function guardarNegocio(cols){
   await cargarNegocio(false); hydrate(); renderPreview();
 }
 
+
+/* =====================================================================================
+   ETIQUETAS · FOTO CON IA AL SUBIR · ORDENAR ARRASTRANDO · EXPORTAR MENÚ
+   ===================================================================================== */
+let etiquetas = [], tagLinks = {}, catTagLinks = {};
+const TAG_PAL = [['#C2410C', '#FFFFFF'], ['#B91C1C', '#FFFFFF'], ['#15803D', '#FFFFFF'], ['#1D4ED8', '#FFFFFF'], ['#7E22CE', '#FFFFFF'], ['#111827', '#FFFFFF'], ['#FACC15', '#111827'], ['#FDBA74', '#431407'], ['#86EFAC', '#052E16'], ['#BAE6FD', '#082F49'], ['#FBCFE8', '#500724'], ['#E5E7EB', '#111827']];
+async function cargarEtiquetas(){
+  try {
+    const q = () => sb.from('product_tags').select('*').eq('restaurant_id', rid).order('sort_order').order('name');
+    let t = await q(); if (t.error) throw t.error;
+    if (!(t.data || []).some(x => x.is_preset)) { const r = await sb.rpc('ensure_preset_tags', { p_restaurant: rid }); if (!r.error) t = await q(); }
+    etiquetas = t.data || [];
+    const [pl, cl] = await Promise.all([sb.from('product_tag_links').select('product_id,tag_id').eq('restaurant_id', rid), sb.from('category_tag_links').select('category_id,tag_id').eq('restaurant_id', rid)]);
+    tagLinks = {}; (pl.data || []).forEach(l => { (tagLinks[l.product_id] = tagLinks[l.product_id] || []).push(l.tag_id); });
+    catTagLinks = {}; (cl.data || []).forEach(l => { (catTagLinks[l.category_id] = catTagLinks[l.category_id] || []).push(l.tag_id); });
+  } catch (e) { console.warn(e); }
+}
+const tagsDe = (pid) => (tagLinks[pid] || []).map(id => etiquetas.find(t => t.id === id)).filter(t => t && t.is_active);
+function renderPmTags(){
+  const box = $('pmTags'); box.innerHTML = ''; const act = etiquetas.filter(t => t.is_active);
+  $('pmTagsHint').textContent = act.length ? 'Toca para activar o quitar (máx. 6). Solo marca «Vegano», «Sin gluten» o similares si puedes confirmarlo.' : 'Todavía no tienes etiquetas. Toca «Gestionar» para crearlas.';
+  act.forEach(t => {
+    const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', String(pmSel.has(t.id))); b.setAttribute('aria-label', t.name);
+    b.appendChild(window.KARTTA_DESIGN.tagEl(t));
+    b.onclick = () => {
+      if (pmSel.has(t.id)) pmSel.delete(t.id);
+      else {
+        if (pmSel.size >= 6) return toast('Máximo 6 etiquetas por producto.');
+        if (t.requires_confirmation && !confirm('Confirma que este producto realmente cumple con «' + t.name + '». Los clientes lo verán en el menú y pueden confiar en ello (por ejemplo, por alergias).')) return;
+        pmSel.add(t.id);
+      }
+      renderPmTags();
+    };
+    box.appendChild(b);
+  });
+}
+/* --- gestor de etiquetas --- */
+let tgEdit = null, tgPalIdx = 3;
+function tgPreview(){
+  const t = { name: $('tgName').value.trim() || 'Etiqueta', bg: TAG_PAL[tgPalIdx][0], fg: TAG_PAL[tgPalIdx][1], style: $('tgStyle').value, icon: $('tgIcon').value.trim() };
+  $('tgPrev').innerHTML = ''; $('tgPrev').appendChild(window.KARTTA_DESIGN.tagEl(t));
+}
+function tgFormReset(){ tgEdit = null; $('tgFormTitle').textContent = 'Nueva etiqueta'; $('tgSave').textContent = 'Crear etiqueta'; $('tgName').value = ''; $('tgIcon').value = ''; $('tgStyle').value = 'solid'; tgPalIdx = 3; renderTgPal(); tgPreview(); }
+function renderTgPal(){ const pal = $('tgPal'); pal.innerHTML = ''; TAG_PAL.forEach(([bg, fg], i) => { const b = document.createElement('button'); b.type = 'button'; b.style.background = bg; b.style.color = fg; b.textContent = 'Aa'; b.setAttribute('aria-label', 'Color ' + (i + 1)); b.setAttribute('aria-pressed', String(i === tgPalIdx)); b.onclick = () => { tgPalIdx = i; renderTgPal(); tgPreview(); }; pal.appendChild(b); }); }
+function renderTagList(){
+  const l = $('tgList'); l.innerHTML = '';
+  if (!etiquetas.length) l.innerHTML = '<p class="sub">Aún no hay etiquetas. Crea la primera abajo.</p>';
+  etiquetas.forEach(t => {
+    const row = document.createElement('div'); row.className = 'tgrow'; row.appendChild(window.KARTTA_DESIGN.tagEl(t));
+    const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = (t.is_preset ? 'Predefinida' : 'Tuya') + (t.requires_confirmation ? ' · confirma antes de asignarla' : '') + ' · en ' + Object.values(tagLinks).filter(a => a.includes(t.id)).length + ' producto(s)'; row.appendChild(nm);
+    const act = document.createElement('label'); act.className = 'sw'; act.style.cssText = 'border:0;padding:0;gap:6px;font-size:12px'; act.append('Activa'); const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = t.is_active; cb.onchange = async () => { const { error } = await sb.from('product_tags').update({ is_active: cb.checked }).eq('id', t.id); if (error) toast('No se pudo cambiar.'); await tgRefresh(); }; act.appendChild(cb); row.appendChild(act);
+    const ed = document.createElement('button'); ed.type = 'button'; ed.className = 'btn btn-ghost btn-sm'; ed.textContent = 'Editar'; ed.onclick = () => { tgEdit = t.id; $('tgFormTitle').textContent = 'Editar etiqueta'; $('tgSave').textContent = 'Guardar cambios'; $('tgName').value = t.name; $('tgIcon').value = t.icon || ''; $('tgStyle').value = t.style; tgPalIdx = Math.max(0, TAG_PAL.findIndex(p => p[0].toLowerCase() === t.bg.toLowerCase() && p[1].toLowerCase() === t.fg.toLowerCase())); renderTgPal(); tgPreview(); $('tgName').focus(); }; row.appendChild(ed);
+    if (!t.is_preset) { const dl = document.createElement('button'); dl.type = 'button'; dl.className = 'btn btn-danger btn-sm'; dl.textContent = 'Eliminar'; dl.onclick = async () => { if (!confirm('¿Eliminar «' + t.name + '»? Se quitará de todos los productos (los productos no se borran).')) return; const { error } = await sb.from('product_tags').delete().eq('id', t.id); if (error) return toast('No se pudo eliminar.'); toast('Etiqueta eliminada.'); await tgRefresh(); }; row.appendChild(dl); }
+    l.appendChild(row);
+  });
+  const c = $('tgCats'); c.innerHTML = ''; if (!categorias.length) c.innerHTML = '<p class="sub" style="margin:0">Tus categorías aparecerán aquí cuando crees productos.</p>';
+  categorias.forEach(cat => {
+    const row = document.createElement('div'); row.className = 'tgrow'; const nm = document.createElement('b'); nm.textContent = cat.name; nm.style.cssText = 'min-width:110px;color:var(--strong)'; row.appendChild(nm);
+    const box = document.createElement('div'); box.className = 'tagpick';
+    etiquetas.filter(t => t.is_active).forEach(t => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', String((catTagLinks[cat.id] || []).includes(t.id))); b.setAttribute('aria-label', t.name + ' en ' + cat.name); b.appendChild(window.KARTTA_DESIGN.tagEl(t));
+      b.onclick = async () => { const cur = new Set(catTagLinks[cat.id] || []); if (cur.has(t.id)) cur.delete(t.id); else { if (cur.size >= 3) return toast('Máximo 3 etiquetas por categoría.'); cur.add(t.id); } const { error } = await sb.rpc('set_category_tags', { p_category: cat.id, p_tags: [...cur] }); if (error) return toast('No se pudo guardar.'); await tgRefresh(); }; box.appendChild(b); });
+    row.appendChild(box); c.appendChild(row);
+  });
+}
+async function tgRefresh(){ await cargarEtiquetas(); renderTagList(); renderProductos(); if ($('prodModal').classList.contains('show')) renderPmTags(); }
+async function openTags(){ await cargarEtiquetas(); await cargarCategorias(); renderTagList(); tgFormReset(); $('tagModal').classList.add('show'); setTimeout(() => $('tgName').focus(), 50); }
+$('btnTags').onclick = openTags; $('pmTagsManage').onclick = openTags;
+$('tgClose').onclick = () => { $('tagModal').classList.remove('show'); if ($('prodModal').classList.contains('show')) renderPmTags(); };
+$('tagModal').onclick = (e) => { if (e.target.id === 'tagModal') $('tgClose').onclick(); };
+$('tgReset').onclick = tgFormReset; $('tgName').oninput = tgPreview; $('tgIcon').oninput = tgPreview; $('tgStyle').onchange = tgPreview;
+$('tgSave').onclick = async () => {
+  const name = $('tgName').value.trim(); if (!name) return toast('Ponle un nombre a la etiqueta.');
+  if (etiquetas.some(t => t.name.toLowerCase() === name.toLowerCase() && t.id !== tgEdit)) return toast('Ya tienes una etiqueta con ese nombre.');
+  const row = { name, bg: TAG_PAL[tgPalIdx][0], fg: TAG_PAL[tgPalIdx][1], style: $('tgStyle').value, icon: $('tgIcon').value.trim() || null };
+  $('tgSave').disabled = true;
+  try { const { error } = tgEdit ? await sb.from('product_tags').update(row).eq('id', tgEdit) : await sb.from('product_tags').insert({ ...row, restaurant_id: rid, sort_order: etiquetas.length + 1 }); if (error) throw error; toast(tgEdit ? 'Etiqueta actualizada.' : 'Etiqueta creada.'); tgFormReset(); await tgRefresh(); }
+  catch (e) { console.error(e); const m = String(e.message || ''); toast(m.includes('limit') ? 'Llegaste al máximo de 40 etiquetas.' : m.includes('icon') ? 'Ese icono no es válido.' : m.includes('duplicate') ? 'Ya existe una etiqueta con ese nombre.' : 'No se pudo guardar la etiqueta.'); }
+  $('tgSave').disabled = false;
+};
+
+/* --- foto con IA al subir (solo plan Pro; el dueño decide y conserva su original) --- */
+let aiSession = null, apResult = null;   // aiSession: 'yes'|'no' solo mientras esta pestaña esté abierta
+const apShow = (k) => { ['apAsk', 'apBusy', 'apCmp'].forEach(id => { $(id).hidden = id !== k; }); $('apErr').hidden = true; };
+function apClose(){ $('aiPhotoModal').classList.remove('show'); }
+function askAi(){
+  pmAi = null; if (!isPro() || !window.KARTTA_IMAGE_AI || !pmImage || typeof pmImage !== 'object' || aiSession === 'no') return;
+  $('apOrig').src = pmImage.url; $('apRemember').checked = false; apShow('apAsk'); $('aiPhotoModal').classList.add('show');
+  if (aiSession === 'yes') runAi(); else setTimeout(() => $('apYes').focus(), 50);
+}
+async function runAi(){
+  apShow('apBusy');
+  try {
+    const f = new File([pmImage.blob], 'foto.jpg', { type: 'image/jpeg' });
+    const r = await window.KARTTA_IMAGE_AI.generate({ restaurantId: rid, image: f, style: 'estudio-blanco', instructions: '' });
+    if (!r?.image_url) throw new Error('Sin imagen'); apResult = r; $('apNew').src = r.image_url;
+    $('apQuota').textContent = r.daily_limit != null ? 'Te quedan ' + r.remaining_today + ' de ' + r.daily_limit + ' imágenes hoy (se comparten con todo tu equipo).' : ''; apShow('apCmp'); $('apRetry').disabled = r.remaining_today === 0; $('apAccept').focus();
+  } catch (e) { apShow('apAsk'); $('apErr').textContent = (e.message || 'No se pudo mejorar la foto.') + ' Tu foto original no cambió.'; $('apErr').hidden = false; }
+}
+$('apYes').onclick = () => { if ($('apRemember').checked) aiSession = 'yes'; runAi(); };
+$('apNo').onclick = () => { if ($('apRemember').checked) aiSession = 'no'; pmAi = null; apClose(); };
+$('apRetry').onclick = runAi;
+$('apCancel').onclick = () => { pmAi = null; apClose(); toast('Se usará tu foto original.'); };
+$('apAccept').onclick = () => { pmAi = { generation_id: apResult.generation_id }; $('pmPrev').innerHTML = `<img src="${esc(apResult.image_url)}" alt="Foto mejorada con IA">`; apClose(); toast('Listo: se usará la foto mejorada al guardar. Tu original se conserva.'); };
+$('aiPhotoModal').onclick = (e) => { if (e.target.id === 'aiPhotoModal' && $('apBusy').hidden) { pmAi = null; apClose(); } };
+$('pmRestore').onclick = async () => {
+  const p = productos.find(x => x.id === editId); if (!p?.originalPath || !confirm('¿Volver a tu foto original? La versión con IA dejará de mostrarse.')) return;
+  const { error } = await sb.from('products').update({ image_path: p.originalPath, original_image_path: null }).eq('id', editId);
+  if (error) return toast('No se pudo restaurar.'); toast('Foto original restaurada.'); closeProd(); await refrescarProductos();
+};
+
+/* --- ordenar productos arrastrando (y con botones para teclado) --- */
+let dragId = null;
+function initDrag(g){
+  g.querySelectorAll('.pcard').forEach(c => {
+    c.addEventListener('dragstart', e => { dragId = c.dataset.pid; c.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', dragId); } catch {} });
+    c.addEventListener('dragend', () => { c.classList.remove('dragging'); g.querySelectorAll('.drag-over').forEach(x => x.classList.remove('drag-over')); });
+    c.addEventListener('dragover', e => { if (dragId && dragId !== c.dataset.pid) { e.preventDefault(); c.classList.add('drag-over'); } });
+    c.addEventListener('dragleave', () => c.classList.remove('drag-over'));
+    c.addEventListener('drop', e => { e.preventDefault(); c.classList.remove('drag-over'); if (dragId && dragId !== c.dataset.pid) moveProd(dragId, c.dataset.pid); dragId = null; });
+    const act = c.querySelector('.pact'); if (act && !act.querySelector('[data-mv]')) { [['-1', '‹', 'Mover antes'], ['1', '›', 'Mover después']].forEach(([d, t, a]) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-ghost btn-sm'; b.dataset.mv = d; b.textContent = t; b.setAttribute('aria-label', a + ': ' + (productos.find(x => x.id === c.dataset.pid)?.nombre || '')); b.onclick = () => { const i = productos.findIndex(x => x.id === c.dataset.pid), j = i + Number(d); if (j >= 0 && j < productos.length) moveProd(c.dataset.pid, productos[j].id); }; act.appendChild(b); }); }
+  });
+}
+async function moveProd(fromId, toId){
+  const arr = productos.slice(), i = arr.findIndex(p => p.id === fromId), j = arr.findIndex(p => p.id === toId); if (i < 0 || j < 0) return;
+  const [m] = arr.splice(i, 1); arr.splice(j, 0, m);
+  const changes = arr.map((p, k) => ({ id: p.id, o: k * 10 })).filter((x, k) => productos.find(p => p.id === x.id)?.orden !== x.o);
+  try { const rs = await Promise.all(changes.map(x => sb.from('products').update({ sort_order: x.o }).eq('id', x.id))); if (rs.some(r => r.error)) throw rs.find(r => r.error).error; toast('Orden guardado. Ya se ve en tu menú.'); }
+  catch (e) { console.error(e); toast('No se pudo guardar el orden.'); }
+  await refrescarProductos();
+}
+
+/* --- exportar el menú como archivo HTML (mismo diseño; sin claves ni pedidos) --- */
+async function exportarMenu(){
+  const btn = $('menuExport'); btn.disabled = true;
+  try {
+    const { data: menu, error } = await sb.rpc('get_public_menu', { p_slug: slug });
+    if (error) throw error; if (!menu) return toast('Primero publica tu menú: solo se exporta lo que ven tus clientes.');
+    const [html, dj] = await Promise.all([fetch('menu.html', { cache: 'no-store' }).then(r => r.text()), fetch('menu-design.js', { cache: 'no-store' }).then(r => r.text())]);
+    const prefix = imageUrl('__x__').replace('__x__', '');
+    const data = JSON.stringify(menu).replace(/</g, '\\u003c').replace(/\u2028|\u2029/g, '');
+    const CLOSE = '<' + '/script>';   // (no escribir la etiqueta completa: cerraría este script)
+    let out = html.replace('<script src="/menu-design.js">' + CLOSE, '<script>' + dj.split(CLOSE).join('<\\/script>') + CLOSE);
+    const imp = 'import { sb, imageUrl } from "/supabase-init.js";'; if (!out.includes(imp)) throw new Error('plantilla');
+    out = out.replace(imp, 'const MENU_DATA = ' + data + ';\nconst IMG_PREFIX = ' + JSON.stringify(prefix) + ';\nconst imageUrl = (p) => p ? IMG_PREFIX + p : "";\nconst sb = { rpc: async (n) => n === "get_public_menu" ? { data: MENU_DATA, error: null } : n === "place_order" ? { data: null, error: { message: "Los pedidos no están disponibles en la versión descargada." } } : { data: null, error: null } };');
+    const sl = "let slug = (params.get('r') || slugDeRuta() || '').trim().toLowerCase();"; if (!out.includes(sl)) throw new Error('plantilla');
+    out = out.replace(sl, 'let slug = ' + JSON.stringify(slug) + ';').replace('href="/"', 'href="' + location.origin + '/"');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([out], { type: 'text/html' })); a.download = 'menu-' + slug + '.html'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast('Menú descargado. Los pedidos y cambios requieren KARTTA en línea.');
+  } catch (e) { console.error(e); toast('No se pudo exportar el menú.'); }
+  btn.disabled = false;
+}
+$('menuExport').onclick = exportarMenu;
+
 /* =====================================================================================
    GUÍA INTERACTIVA (visita guiada). El progreso se guarda por USUARIO y por RESTAURANTE
    en profiles.prefs.tour; un paso solo se marca como completo con datos reales.
@@ -731,7 +931,7 @@ window.KARTTA_AUTH.onChange(async (user) => {
       if (perfil.prefs && Object.keys(perfil.prefs).length) { if (prefsLocalOK()) { try { localStorage.setItem('kartta_prefs', JSON.stringify(perfil.prefs)); } catch {} } applyPrefs(perfil.prefs); } else applyPrefs({});
       $('helloName').textContent = (perfil.panel_name || perfil.full_name || user.displayName || user.email.split('@')[0]).split(' ')[0];
       booted = true;
-      await Promise.all([cargarCategorias(), cargarProductos(), cargarMesas(), cargarPedidos()]);
+      await Promise.all([cargarCategorias(), cargarProductos(), cargarMesas(), cargarPedidos()]); await cargarEtiquetas();
       hydrate(); renderProductos(); renderMesas(); renderPedidos(); updateProdSummary(); updateMenuState();
       suscribirPedidos(); ktInit();
       $('gate').classList.add('hidden'); $('app').classList.add('ready');
@@ -854,7 +1054,7 @@ const copy = async (t) => { try { await navigator.clipboard.writeText(t); toast(
 $('copyMenu').onclick = $('menuCopy').onclick = () => copy(menuURL());
 
 /* ---------- productos ---------- */
-let editId = null, pmImage;   // pmImage: undefined = sin cambios, '' = quitar, {blob,url} = nueva
+let editId = null, pmImage, pmSel = new Set(), pmAi = null;   // pmImage: undefined = sin cambios, '' = quitar, {blob,url} = nueva
 async function cargarCategorias(){
   const { data, error } = await sb.from('categories').select('id,name').eq('restaurant_id', rid);
   if (error) throw error; categorias = data || [];
@@ -868,15 +1068,15 @@ async function ensureCategoria(nombre){
 }
 async function cargarProductos(){
   const { data, error } = await sb.from('products')
-    .select('id,name,description,price,discount_percent,customization,image_path,is_available,category_id').eq('restaurant_id', rid).order('name');
+    .select('id,name,description,price,discount_percent,customization,image_path,original_image_path,is_available,category_id,sort_order').eq('restaurant_id', rid).order('sort_order').order('name');
   if (error) { console.error(error); toast('No pude cargar tus productos.'); return; }
   productos = (data || []).map(p => ({
     id: p.id, nombre: p.name, precio: Number(p.price), descripcion: p.description || '', imagenPath: p.image_path,
     imagen: imageUrl(p.image_path), categoria: categorias.find(c => c.id === p.category_id)?.name || '',
-    disponible: p.is_available, descuento: p.discount_percent, personalizacion: p.customization || '',
+    disponible: p.is_available, descuento: p.discount_percent, personalizacion: p.customization || '', originalPath: p.original_image_path || null, orden: p.sort_order,
   }));
 }
-async function refrescarProductos(){ await cargarProductos(); renderProductos(); updateProdSummary(); updateMenuState(); renderPreview(); }
+async function refrescarProductos(){ await cargarProductos(); await cargarEtiquetas(); renderProductos(); updateProdSummary(); updateMenuState(); renderPreview(); }
 function finalPrice(p){ const d = Number(p.descuento || 0); return d > 0 ? Math.round(p.precio * (1 - d / 100)) : p.precio; }
 function renderProductos(){
   const g = $('pgrid'); g.innerHTML = '';
@@ -886,12 +1086,15 @@ function renderProductos(){
     const d = Number(p.descuento || 0);
     c.innerHTML = `<div class="pimg">${p.imagen ? `<img src="${esc(p.imagen)}" alt="">` : 'Sin imagen'}</div>
       <div class="pbody"><div class="pcat">${esc(p.categoria || 'Sin categoría')}</div><div class="pname">${esc(p.nombre)}</div>
+      <div class="ptags" data-pt="${esc(p.id)}"></div>
       <div class="pdesc">${esc(p.descripcion || '')}</div>
       <div class="pprice">${money(finalPrice(p))}${d > 0 ? `<s>${money(p.precio)}</s>` : ''}</div>
       <div class="pact"><label class="sw" style="border:none;padding:0;gap:8px;font-size:12px"><input type="checkbox" data-av="${p.id}" ${p.disponible !== false ? 'checked' : ''} aria-label="Disponible">${p.disponible !== false ? 'Disponible' : 'Oculto'}</label>
       <button class="btn btn-ghost btn-sm" data-ed="${p.id}">Editar</button><button class="btn btn-danger btn-sm" data-dl="${p.id}">Eliminar</button></div></div>`;
-    g.appendChild(c);
+    const ptEl = c.querySelector('[data-pt]'); ptEl.appendChild(window.KARTTA_DESIGN.tagsRow(tagsDe(p.id))); if (!ptEl.childNodes[0].childNodes.length) ptEl.remove();
+    c.draggable = true; c.dataset.pid = p.id; g.appendChild(c);
   });
+  initDrag(g);
   g.querySelectorAll('[data-ed]').forEach(b => b.onclick = () => openProd(b.dataset.ed));
   g.querySelectorAll('[data-dl]').forEach(b => b.onclick = () => delProd(b.dataset.dl));
   g.querySelectorAll('[data-av]').forEach(i => i.onchange = async () => {
@@ -910,7 +1113,9 @@ function openProd(id){
   $('pmTitle').textContent = id ? 'Editar producto' : 'Nuevo producto';
   $('pmNombre').value = p?.nombre || ''; $('pmPrecio').value = p?.precio ?? ''; $('pmCat').value = p?.categoria || ''; $('pmDesc').value = p?.descripcion || '';
   $('pmDisp').checked = p ? p.disponible !== false : true;
+  pmSel = new Set(p ? (tagLinks[p.id] || []) : []); pmAi = null; renderPmTags();
   $('pmPrev').innerHTML = p?.imagen ? `<img src="${esc(p.imagen)}" alt="">` : 'Sin imagen';
+  $('pmRestore').hidden = !(p && p.originalPath);
   $('pmAdv').innerHTML = (isPro()
       ? `<div class="field"><label>Descuento (%)</label><input type="number" id="pmDesc2" min="0" max="90" value="${p?.descuento || 0}"></div>`
       : `<button type="button" class="lockrow" data-lock="PRO"><span>Agregar descuento</span><span class="badge-lock">🔒 PRO</span></button>`)
@@ -925,11 +1130,11 @@ $('pmCancel').onclick = closeProd; $('prodModal').onclick = e => { if (e.target.
 $('pmPick').onclick = () => $('pmFile').click();
 $('pmFile').onchange = async () => {
   const f = $('pmFile').files[0]; if (!f) return;
-  try { const blob = await fileToBlob(f, IMG_CFG.producto[0], IMG_CFG.producto[1]); pmImage = { blob, url: URL.createObjectURL(blob) }; $('pmPrev').innerHTML = `<img src="${pmImage.url}" alt="">`; }
+  try { const blob = await fileToBlob(f, IMG_CFG.producto[0], IMG_CFG.producto[1]); pmImage = { blob, url: URL.createObjectURL(blob) }; pmAi = null; $('pmPrev').innerHTML = `<img src="${pmImage.url}" alt="">`; askAi(); }
   catch { toast('No se pudo usar esa imagen.'); }
   $('pmFile').value = '';
 };
-$('pmDelImg').onclick = () => { pmImage = ''; $('pmPrev').innerHTML = 'Sin imagen'; };
+$('pmDelImg').onclick = () => { pmImage = ''; pmAi = null; $('pmPrev').innerHTML = 'Sin imagen'; };
 $('pmSave').onclick = async () => {
   const nombre = $('pmNombre').value.trim(), precio = Number($('pmPrecio').value);
   if (!nombre) return toast('Ponle un nombre al producto.');
@@ -942,10 +1147,19 @@ $('pmSave').onclick = async () => {
     else if (pmImage === '') row.image_path = null;
     if ($('pmDesc2')) row.discount_percent = Math.max(0, Math.min(90, Number($('pmDesc2').value) || 0));
     if ($('pmPers')) row.customization = $('pmPers').value.trim() || null;
-    const q = editId ? sb.from('products').update(row).eq('id', editId) : sb.from('products').insert({ ...row, restaurant_id: rid });
-    const { error } = await q;
-    if (error) throw error;
-    if (old && 'image_path' in row && old.imagenPath && old.imagenPath !== row.image_path) borrarImagen(old.imagenPath);
+    let pid = editId;
+    if (editId) { const { error } = await sb.from('products').update(row).eq('id', editId); if (error) throw error; }
+    else { const { data, error } = await sb.from('products').insert({ ...row, restaurant_id: rid }).select('id').single(); if (error) throw error; pid = data.id; }
+    if (old && 'image_path' in row && old.imagenPath && old.imagenPath !== row.image_path && !old.originalPath) borrarImagen(old.imagenPath);
+    // Etiquetas (RPC atómica; si fallara, el producto ya quedó guardado)
+    try { const { error } = await sb.rpc('set_product_tags', { p_product: pid, p_tags: [...pmSel] }); if (error) throw error; } catch (e) { console.warn(e); toast('El producto se guardó, pero no se pudieron guardar las etiquetas.'); }
+    // Foto mejorada con IA aceptada por el dueño: se aplica DESPUÉS de guardar y la original se conserva
+    if (pmAi && pmAi.generation_id) {
+      try {
+        const r = await window.KARTTA_IMAGE_AI.applyToProduct({ restaurantId: rid, generationId: pmAi.generation_id, productId: pid });
+        if (r.previous_image_path) await sb.from('products').update({ original_image_path: r.previous_image_path }).eq('id', pid);
+      } catch (e) { console.warn(e); toast('El producto se guardó con tu foto original; no se pudo aplicar la mejorada.'); }
+    }
     toast(editId ? 'Producto actualizado.' : 'Producto creado.'); closeProd(); await refrescarProductos();
   } catch (e) {
     console.error(e);
@@ -1175,7 +1389,7 @@ async function nuevaMesa(){
 $('btnNuevaMesa').onclick = nuevaMesa;
 
 /* ---------- pedidos + clientes + estadísticas (datos reales; “ventas” = solo pedidos pagados) ---------- */
-const ESTADOS = ['nuevo', 'preparando', 'listo', 'entregado'], ELABEL = { nuevo:'Nuevo', preparando:'Preparando', listo:'Listo', entregado:'Entregado' };
+const ESTADOS = ['nuevo', 'preparando', 'listo', 'entregado'], ELABEL = { nuevo:'Nuevo', preparando:'Preparando', listo:'Listo', entregado:'Entregado', cancelado:'Cancelado' };
 let pedidos = [];
 async function cargarPedidos(){
   const { data, error } = await sb.from('orders')
@@ -1195,18 +1409,26 @@ function renderPedidos(){
   const list = $('pedList'); list.innerHTML = ''; $('pedEmpty').style.display = pedidos.length ? 'none' : 'block';
   const diaCO = d => new Date(d).toLocaleDateString('en-CA', { timeZone: 'America/Bogota' }); const hoyCO = diaCO(Date.now()); let ventas = 0, nHoy = 0; const cli = new Map();
   pedidos.forEach(o => {
-    const est = o.status || 'nuevo', sig = ESTADOS[ESTADOS.indexOf(est) + 1], f = new Date(o.created_at), total = Number(o.total || 0);
-    if (diaCO(f) === hoyCO) { nHoy++; if (o.paid) ventas += total; } /* «hoy» = día calendario de Colombia; ventas = solo pedidos marcados como pagados */
-    const k = (o.customer_phone || o.customer_name || 'anon').toLowerCase(); if (!cli.has(k)) cli.set(k, { n: o.customer_name || 'Cliente', t: o.customer_phone || '', c: 0, s: 0 }); const c = cli.get(k); c.c++; if (o.paid) c.s += total;
+    const est = o.status || 'nuevo', sig = est === 'cancelado' ? undefined : ESTADOS[ESTADOS.indexOf(est) + 1], f = new Date(o.created_at), total = Number(o.total || 0), cancelado = est === 'cancelado';
+    if (!cancelado && diaCO(f) === hoyCO) { nHoy++; if (o.paid) ventas += total; } /* «hoy» = día calendario de Colombia; ventas = solo pedidos marcados como pagados */
+    if (!cancelado) { const k = (o.customer_phone || o.customer_name || 'anon').toLowerCase(); if (!cli.has(k)) cli.set(k, { n: o.customer_name || 'Cliente', t: o.customer_phone || '', c: 0, s: 0 }); const c = cli.get(k); c.c++; if (o.paid) c.s += total; }
     const el = document.createElement('div'); el.className = 'ped';
     el.innerHTML = `<div class="top"><div><div class="mesa">Mesa ${esc(o.table_label || '—')}</div><div class="cli">${esc(o.customer_name || 'Cliente')}${o.customer_phone ? ' · ' + esc(o.customer_phone) : ''}</div></div><span class="st ${est}">${ELABEL[est] || est}</span></div>
         <div class="items">${(o.order_items || []).map(i => `${i.quantity}x ${esc(i.name)}`).join(' · ') || 'Sin productos'}</div>
-        <div class="bot"><strong style="color:var(--strong)">${money(total)} <span class="pill ${o.paid ? 'ok' : 'pend'}">${o.paid ? 'Pagado' : 'Sin pagar'}</span></strong><div class="row">${!o.paid ? `<button class="btn btn-ghost btn-sm" data-pay="${o.id}">Marcar pagado</button>` : ''}${sig ? `<button class="btn btn-accent btn-sm" data-adv="${o.id}" data-n="${sig}">Avanzar a ${ELABEL[sig]}</button>` : ''}</div></div>`;
+        <div class="bot"><strong style="color:var(--strong)">${money(total)} <span class="pill ${o.paid ? 'ok' : 'pend'}">${o.paid ? 'Pagado' : 'Sin pagar'}</span></strong><div class="row">${!o.paid && !cancelado ? `<button class="btn btn-ghost btn-sm" data-pay="${o.id}">Marcar pagado</button>` : ''}${!cancelado && est !== 'entregado' && !o.paid ? `<button class="btn btn-ghost btn-sm" data-cancel="${o.id}">Cancelar</button>` : ''}<button class="btn btn-ghost btn-sm" data-hist="${o.id}">Historial</button>${sig ? `<button class="btn btn-accent btn-sm" data-adv="${o.id}" data-n="${sig}">Avanzar a ${ELABEL[sig]}</button>` : ''}</div></div>`;
     list.appendChild(el);
   });
   const act = async (patch, id, ok) => { const { error } = await sb.from('orders').update(patch).eq('id', id); if (error) return toast('No se pudo actualizar.'); if (ok) toast(ok); await cargarPedidos(); renderPedidos(); };
   list.querySelectorAll('[data-adv]').forEach(b => b.onclick = () => act({ status: b.dataset.n }, b.dataset.adv));
   list.querySelectorAll('[data-pay]').forEach(b => b.onclick = () => act({ paid: true }, b.dataset.pay, 'Marcado como pagado.'));
+  list.querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => { if (confirm('¿Cancelar este pedido? No cuenta en ventas ni estadísticas y no se puede reabrir.')) act({ status: 'cancelado' }, b.dataset.cancel, 'Pedido cancelado.'); });
+  list.querySelectorAll('[data-hist]').forEach(b => b.onclick = async () => {
+    const card = b.closest('.ped'); const old = card.querySelector('.hist'); if (old) { old.remove(); return; }
+    const { data, error } = await sb.from('order_status_events').select('from_status,to_status,created_at').eq('order_id', b.dataset.hist).order('created_at'); if (error) return toast('No se pudo cargar el historial.');
+    const d = document.createElement('div'); d.className = 'hist'; d.style.cssText = 'margin-top:10px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:8px';
+    (data || []).forEach(ev => { const r = document.createElement('div'); r.textContent = new Date(ev.created_at).toLocaleString('es-CO', { timeZone: 'America/Bogota', dateStyle: 'short', timeStyle: 'short' }) + ' · ' + (ev.from_status ? (ELABEL[ev.from_status] || ev.from_status) + ' → ' : '') + (ELABEL[ev.to_status] || ev.to_status); d.appendChild(r); });
+    card.appendChild(d);
+  });
   $('statVentas').textContent = money(ventas); $('statPedidos').textContent = nHoy; $('statClientes').textContent = cli.size;
   const cl = $('cliList'); cl.innerHTML = ''; $('cliEmpty').style.display = cli.size ? 'none' : 'block';
   [...cli.values()].sort((a, b) => b.s - a.s).forEach(c => { const el = document.createElement('div'); el.className = 'ped'; el.innerHTML = `<div class="top"><div><div class="mesa">${esc(c.n)}</div><div class="cli">${esc(c.t) || 'Sin teléfono'}</div></div><span class="st entregado">${c.c} pedido${c.c === 1 ? '' : 's'}</span></div><div class="bot"><strong style="color:var(--strong)">${money(c.s)} pagado</strong></div>`; cl.appendChild(el); });

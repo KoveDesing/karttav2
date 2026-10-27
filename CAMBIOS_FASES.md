@@ -75,3 +75,14 @@ Los cambios del frontend se revierten volviendo al commit anterior. La migració
 4. **Pedidos con estados**, variantes y adicionales; mesas con QR; métricas por pedido; fidelización; email marketing; planes y límites.
 5. Exportar HTML del menú; ordenar productos arrastrando.
 6. Tipografía, colores y logo ya se guardan por restaurante (no se comparten entre cuentas).
+
+## Bloque 2 — etiquetas, IA al subir, menú social, pedidos, exportar y orden
+- **Etiquetas (sección 7):** 10 predefinidas (Más vendido, Nuevo, Promoción, Recomendado, Picante, Vegetariano, Vegano, Sin gluten, Favorito de la casa, Edición limitada) + propias con nombre, color de una paleta con contraste verificado, estilo (relleno/suave/borde) e icono. Gestor en Productos → «Etiquetas»; se asignan en el formulario del producto (máx. 6) y a categorías (máx. 3). Las dietéticas (Picante, Vegetariano, Vegano, Sin gluten) piden confirmar antes de asignarlas. Se ven en tarjetas (bajo el nombre o sobre la foto), ficha y categorías; el editor tiene los interruptores. Aisladas por restaurante (RLS) y probado que no se pueden cruzar entre restaurantes.
+- **Mejorar foto con IA al subirla (sección 8):** solo plan Pro; pregunta siempre antes («Sí, mejorar» / «No, usar original»), muestra Original vs Mejorada, Aceptar / Intentar otra vez / Usar la original; no sustituye nada hasta guardar y conserva la original (`original_image_path`) con botón «Restaurar foto original». «Recordar mi respuesta» vale solo mientras la pestaña esté abierta. Usa las funciones ya desplegadas (OpenAI) y su cuota de 5/día.
+- **Menú:** buscador (nombre, descripción, categoría y etiquetas), barra de navegación inferior (Inicio, Buscar, Favoritos, Carrito), favoritos guardados en el dispositivo por negocio, fila de «Destacados y promociones» con datos reales (descuentos y etiquetas Más vendido/Recomendado/Favorito/Nuevo). Todo se puede apagar desde el editor.
+- **Pedidos:** nuevo estado «Cancelado», transiciones validadas en la base de datos (no se salta ni retrocede un estado; no se cancela un pedido pagado ni se paga uno cancelado), historial por pedido, y lo cancelado no cuenta en ventas, pedidos de hoy ni clientes.
+- **Ordenar productos:** arrastrando o con los botones ‹ ›; el nuevo orden se ve en el menú público.
+- **Exportar menú:** botón «Descargar menú (HTML)» en Mi menú: archivo con el mismo diseño y datos públicos, sin claves ni conexión al servidor; no admite pedidos.
+
+## Aún NO hecho de los documentos
+Fidelización (puntos, premios, canjes), email marketing (necesita proveedor de correo), analítica avanzada con eventos por producto, planes/límites visibles, variantes y adicionales de productos, pagos online, panel multi-sucursal, ordenar categorías arrastrando, edición masiva, importación y archivado de productos.

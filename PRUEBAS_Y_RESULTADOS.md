@@ -55,3 +55,11 @@ No ejecutado: sesión real de Supabase (permisos/RLS reales), Safari/Firefox, ar
 - Editor (28/28) y XSS (PASS) se repitieron tras los cambios.
 - Hallazgo corregido durante la prueba visual: en el marco, la barra de categorías se aplastaba (flex-shrink); ya no.
 - NO ejecutado: sesión real de Supabase, Safari/Firefox, lector de pantalla, dispositivos táctiles reales.
+
+## Bloque 2 (Chromium real con Supabase simulado + pruebas SQL revertidas en tu base real)
+- SQL real (transacción revertida): 10 predefinidas idempotentes; asignar/reemplazar; etiqueta inactiva no sale en el menú público; **etiqueta de otro restaurante rechazada; usuario ajeno rechazado**; contraste insuficiente rechazado; nombre duplicado (sin importar mayúsculas) rechazado; icono con HTML rechazado; diseño con showTags/tagPosition/showSearch/showNav/showHighlights válido y valores/claves raras rechazados; pedidos: no se salta, no retrocede, no se cancela pagado, no se paga cancelado, historial = 4 eventos. **Todo PASS.**
+- Panel (20/20): gestor de etiquetas, categoría, asignación atómica, eliminar propia, predefinidas no eliminables, mover producto guarda `sort_order`, IA pregunta antes y no se ejecuta sola, «No» no llama a la IA, comparación y cupo, nada se aplica hasta guardar, se aplica la mejorada y se guarda la original, plan sin IA no la ofrece, exportación sin claves y que se ve sin conexión.
+- Menú (18/18): barra inferior, etiquetas en tarjetas/categorías/sobre la foto, buscador (nombre y etiqueta), sin resultados, favoritos (persisten y filtran), carrito desde la barra, todo se oculta desde el diseño, barra dentro del marco en PC.
+- Pedidos (6/6) y regresión: guía 17/17, editor 28/28, marco de teléfono 20/20, seguridad XSS PASS.
+- Nota: en la simulación el `insert` no devuelve el id del producto nuevo (en tu base real sí), por eso la prueba de «aplicar IA» muestra `product_id: None`.
+- NO ejecutado: generación real con OpenAI (sin plan Pro activo ni clave verificada), sesión real de Supabase en el navegador, Safari/Firefox, lector de pantalla, arrastrar con ratón real.

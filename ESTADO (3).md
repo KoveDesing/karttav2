@@ -25,3 +25,9 @@ Leyenda: ✅ implementado y probado (local/SQL) · 🚀 desplegado en Supabase �
 | Guía interactiva del panel (9 pasos) + lista de tareas | ✅ probado en navegador (datos simulados) · 🟡 sin desplegar | Progreso en `profiles.prefs.tour` |
 | Etiquetas de producto/categoría | ⏳ | Siguiente bloque |
 | IA de fotos con autorización al subir imagen | ⏳ | Existe versión en Personalizar (Pro) |
+| Etiquetas de producto/categoría | ✅ BD probada · ✅ panel/menú probados (simulado) · 🟡 sin desplegar el frontend | |
+| IA de fotos al subir con comparación | ✅ flujo probado (simulado) · ⚙️ generación real sin probar | Plan Pro + OPENAI_API_KEY |
+| Buscador, barra inferior, favoritos, destacados | ✅ probado (simulado) | |
+| Pedidos con estados y historial | ✅ BD + panel probados | |
+| Ordenar productos / Exportar menú | ✅ probado (simulado) | |
+| Fidelización, email marketing, planes visibles, variantes/adicionales, pagos | ⏳ | Siguientes bloques |
