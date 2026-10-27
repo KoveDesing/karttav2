@@ -12,20 +12,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#FFFFFF; --panel:#141414; --panel2:#1E1E1E; --border:#2A2A2A;
-  --white:#FFFFFF; --gray:#666666; --gray-dim:#9A9A9A; --red:#FF3145; --red-dim:#E22940;
+  --bg:#121212; --panel:#202020; --panel2:#292929; --border:#303030;
+  --white:#FFFFFF; --gray:#A0A0A0; --gray-dim:#B8B8B8; --red:#FF3145; --red-dim:#E22940;
 }
 *{box-sizing:border-box;}
-body{margin:0;min-height:100vh;background:var(--bg);color:#0A0A0A;font-family:'Inter',-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;padding:20px;}
+body{margin:0;min-height:100vh;background:var(--bg);color:#FFFFFF;font-family:'Inter',-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;padding:20px;}
 button,input,textarea{font-family:inherit;}
 
 #gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50;}
 #gate.hidden{display:none;}
-#gate .brand{font-family:'Mr Dafoe',cursive;font-style:normal;font-weight:400;font-size:44px;line-height:1;color:#0A0A0A;letter-spacing:0;}
-#gate .brand b{color:var(--red);font-style:normal;font-weight:400;}
+#gate .brand{font-family:'Mr Dafoe',cursive;font-style:normal;font-size:48px;line-height:1;color:#FFFFFF;letter-spacing:.01em;}
+#gate .brand span{color:var(--red);font-family:inherit;font-style:normal;}
+.loading-brand{font-family:'Mr Dafoe',cursive;font-size:38px;line-height:1;color:#fff;letter-spacing:.01em;margin-bottom:2px}
+.loading-brand span{color:var(--red)}
 
 .wrap{width:100%;max-width:480px;}
-.progress{height:3px;background:#EDEDED;border-radius:3px;overflow:hidden;margin-bottom:40px;}
+.progress{height:3px;background:#292929;border-radius:3px;overflow:hidden;margin-bottom:40px;}
 .progress-bar{height:100%;background:var(--red);width:0%;transition:width .4s cubic-bezier(.4,0,.2,1);}
 
 .step{display:none;}
@@ -33,7 +35,7 @@ button,input,textarea{font-family:inherit;}
 @keyframes stepIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 
 .hint{font-size:13px;color:var(--gray);margin:0 0 8px;font-weight:600;}
-.step h1{font-size:26px;font-weight:800;letter-spacing:-.01em;margin:0 0 26px;line-height:1.25;color:#0A0A0A;}
+.step h1{font-size:26px;font-weight:800;letter-spacing:-.01em;margin:0 0 26px;line-height:1.25;color:#FFFFFF;}
 .step h1 span{color:var(--red);}
 
 .field-wrap{margin-bottom:22px;}
@@ -64,17 +66,58 @@ textarea{resize:vertical;min-height:90px;line-height:1.5;}
 .btn-primary:hover{background:var(--red-dim);}
 .btn-primary:disabled{opacity:.4;cursor:default;}
 .btn-ghost{background:none;color:var(--gray);padding:14px 8px;}
-.btn-ghost:hover{color:#0A0A0A;}
+.btn-ghost:hover{color:#FFFFFF;}
 
 .dots{display:flex;gap:5px;justify-content:center;margin-top:18px;}
-.dots span{width:5px;height:5px;border-radius:50%;background:#E4E4E2;}
+.dots span{width:5px;height:5px;border-radius:50%;background:#343434;}
 .dots span.on{background:var(--red);}
 
-#saving{position:fixed;inset:0;background:rgba(255,255,255,.92);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:60;}
+#saving{position:fixed;inset:0;background:rgba(18,18,18,.96);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:60;}
 #saving.show{display:flex;}
 .spinner{width:26px;height:26px;border:3px solid #E4E4E2;border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 #saving p{color:var(--gray);}
+
+/* Onboarding KARTTA: dark surfaces and legible hierarchy */
+body{background:#121212;color:#fff;padding:24px}
+.wrap{max-width:500px;background:#171717;border:1px solid #292929;border-radius:24px;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.28)}
+.progress{height:5px;background:#292929;margin-bottom:30px}
+.step h1{color:#fff;font-size:clamp(24px,5vw,29px);letter-spacing:-.035em}
+.hint{color:#B0B0B0;letter-spacing:.02em}
+input[type=text],input[type=tel],textarea{background:#292929;border-color:#353535;color:#fff;box-shadow:none}
+input[type=text]:focus,input[type=tel]:focus,textarea:focus{background:#2d2d2d;border-color:var(--red)}
+.chip{background:#242424;border-color:#363636;color:#E2E2E2;box-shadow:none;cursor:pointer}
+.chip:hover{background:#2b2b2b;border-color:#555}
+.chip.selected{background:rgba(255,49,69,.14);border-color:var(--red);color:#fff}
+.check-row{color:#D0D0D0}
+.btn-ghost{color:#B6B6B6}.btn-ghost:hover{color:#fff}
+.dots span{background:#383838}.dots span.on{background:var(--red)}
+#saving{background:rgba(18,18,18,.97)}#saving p{color:#ddd}
+.kicker{display:inline-flex;align-items:center;gap:8px;color:#FF6B79;background:rgba(255,49,69,.10);border:1px solid rgba(255,49,69,.22);padding:7px 11px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}
+.wrap:before{content:"KARTTA";display:block;font-size:11px;font-weight:800;letter-spacing:.18em;color:#8E8E8E;margin-bottom:22px}
+.nav-row{margin-top:30px}.btn{min-height:46px}.btn-primary{box-shadow:0 7px 22px rgba(255,49,69,.14)}
+.product-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
+.product-image-box{display:flex;align-items:center;gap:14px;padding:12px;background:#202020;border:1px solid #383838;border-radius:14px;margin:12px 0 14px}
+.product-image-preview{width:88px;height:88px;flex:0 0 88px;border-radius:11px;background:#292929;border:1px dashed #555;display:grid;place-items:center;overflow:hidden;color:#aaa;font-size:11px;text-align:center;padding:6px}
+.product-image-preview img{width:100%;height:100%;object-fit:cover}
+.product-image-actions{display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.product-image-actions button{background:#303030;color:#fff;border:1px solid #484848;border-radius:9px;padding:9px 12px;font-weight:650;cursor:pointer}
+.product-image-actions small{color:#aaa;font-size:11px;line-height:1.4}
+#q_productoCat{margin-top:0}
+#q_productoDisponible{accent-color:var(--red);width:16px;height:16px}
+.product-available{display:flex;align-items:center;gap:9px;color:#eee;font-size:13px;margin:12px 0 4px}
+@media(max-width:520px){.product-choice{grid-template-columns:1fr}.product-image-box{align-items:flex-start}}
+.choice-card{background:#202020;border:1px solid #353535;border-radius:16px;padding:17px 14px;text-align:left;color:#fff;cursor:pointer;transition:.18s}
+.choice-card:hover,.choice-card.selected{border-color:var(--red);background:#262020}
+.choice-card .choice-icon{font-size:23px;display:block;margin-bottom:12px}
+.choice-card strong{display:block;font-size:14px;margin-bottom:6px}
+.choice-card small{color:#B0B0B0;line-height:1.45;display:block;font-size:12px}
+.complete{display:none;text-align:center;padding:18px 0 8px;animation:stepIn .45s ease}
+.complete.show{display:block}.complete .checkmark{width:68px;height:68px;border-radius:22px;display:grid;place-items:center;background:rgba(255,49,69,.13);border:1px solid rgba(255,49,69,.3);color:#ff6676;font-size:30px;margin:0 auto 22px}
+.complete h1{font-size:28px;line-height:1.2;letter-spacing:-.04em;margin:0 0 12px}
+.complete p{color:#B7B7B7;line-height:1.6;font-size:14px;margin:0 0 24px}
+.complete .btn{width:100%;justify-content:center}
+@media(max-width:520px){body{padding:12px}.wrap{padding:22px 18px;border-radius:20px}.product-choice{grid-template-columns:1fr 1fr}}
 </style>
 <script type="module" src="supabase-init.js"></script>
 <link rel="icon" type="image/png" href="/favicon.png">
@@ -83,7 +126,7 @@ textarea{resize:vertical;min-height:90px;line-height:1.5;}
 <body>
 
 <div id="gate">
-  <div class="brand">Kar<b>tt</b>a</div>
+  <div class="brand" aria-label="Kartta">Kar<span>tt</span>a</div>
 </div>
 
 <div class="wrap" id="wrap" style="display:none;">
@@ -117,7 +160,6 @@ textarea{resize:vertical;min-height:90px;line-height:1.5;}
         <button type="button" class="chip" data-val="Bar">Bar</button>
         <button type="button" class="chip" data-val="Pizzería">Pizzería</button>
         <button type="button" class="chip" data-val="Food truck">Food truck</button>
-        <button type="button" class="chip" data-val="Barbería">Barbería</button>
         <button type="button" class="chip" data-val="Tienda">Tienda</button>
         <button type="button" class="chip" data-val="Agencia">Agencia</button>
         <button type="button" class="chip" data-val="Otro">Otro</button>
@@ -189,6 +231,40 @@ textarea{resize:vertical;min-height:90px;line-height:1.5;}
     </div>
   </div>
 
+  <div class="step" data-step="9">
+    <p class="hint">El toque final</p>
+    <h1>¿Subimos tu primer producto?</h1>
+    <p style="color:#B7B7B7;font-size:14px;line-height:1.6;margin:-12px 0 18px">Tu menú se verá mucho más completo con algo para mostrar. Puedes agregarlo ahora o hacerlo después desde tu panel.</p>
+    <div class="product-choice">
+      <button type="button" class="choice-card selected" id="chooseProduct" aria-pressed="true"><span class="choice-icon">＋</span><strong>Agregar producto</strong><small>Lo guardamos en tu negocio y aparecerá en tu menú.</small></button>
+      <button type="button" class="choice-card" id="skipProduct" aria-pressed="false"><span class="choice-icon">↗</span><strong>Lo haré después</strong><small>Continúa sin producto y agrégalo cuando quieras.</small></button>
+    </div>
+    <div id="productFields">
+      <div class="product-image-box">
+        <div class="product-image-preview" id="q_productoPreview">Sin imagen</div>
+        <div class="product-image-actions">
+          <button type="button" id="q_productoPick">＋ Subir foto del producto</button>
+          <button type="button" id="q_productoRemove" style="display:none">Quitar foto</button>
+          <small>JPG, PNG o WEBP. La foto se guardará con tu producto.</small>
+        </div>
+        <input type="file" id="q_productoImagen" accept="image/*" hidden>
+      </div>
+      <div class="field-wrap"><input type="text" id="q_producto" maxlength="70" placeholder="Nombre del producto · Ej. Hamburguesa clásica"></div>
+      <div class="field-wrap"><input type="number" id="q_precio" min="1" step="1" inputmode="numeric" placeholder="Precio en COP · Ej. 18900"></div>
+      <div class="field-wrap"><input type="text" id="q_productoCat" maxlength="40" placeholder="Categoría · Ej. Hamburguesas (opcional)"></div>
+      <div class="field-wrap"><textarea id="q_productoDesc" maxlength="200" placeholder="Descripción y detalles · ingredientes, tamaño, acompañamientos…"></textarea></div>
+      <label class="product-available"><input type="checkbox" id="q_productoDisponible" checked> Disponible en el menú</label>
+      <p class="err" id="err_producto">Escribe el nombre y un precio válido. La foto, categoría y descripción son opcionales.</p>
+    </div>
+  </div>
+
+  <div class="complete" id="completeScreen">
+    <div class="checkmark">✓</div>
+    <h1>¡Tu menú está listo!</h1>
+    <p id="completeMessage">Tu menú ya está preparado. Entra para verlo, personalizarlo y compartirlo con tus clientes.</p>
+    <button class="btn btn-primary" id="enterMenu">Entrar a mi menú <span aria-hidden="true">→</span></button>
+  </div>
+
   <div class="nav-row">
     <button class="btn btn-ghost" id="btnBack" style="visibility:hidden;">← Atrás</button>
     <button class="btn btn-primary" id="btnNext">Siguiente →</button>
@@ -197,6 +273,7 @@ textarea{resize:vertical;min-height:90px;line-height:1.5;}
 </div>
 
 <div id="saving">
+  <div class="loading-brand" aria-label="Kartta">Kar<span>tt</span>a</div>
   <div class="spinner"></div>
   <p style="font-size:13.5px;color:var(--gray);margin:0;">Guardando tu información…</p>
 </div>
@@ -204,9 +281,44 @@ textarea{resize:vertical;min-height:90px;line-height:1.5;}
 <script type="module">
 import { sb } from "./supabase-init.js";
 
-const TOTAL_STEPS = 9;
+const MEDIA_BUCKET = 'kartta-media';
+function err(id){ document.getElementById(id)?.classList.add('show'); }
+function clearErr(id){ document.getElementById(id)?.classList.remove('show'); }
+let productoImageFile = null;
+let productoImagePreviewUrl = null;
+function limpiarPreviewProducto(){ if (productoImagePreviewUrl) URL.revokeObjectURL(productoImagePreviewUrl); productoImagePreviewUrl = null; }
+function comprimirFotoProducto(file){
+  return new Promise((resolve,reject)=>{
+    if (!file || !file.type.startsWith('image/')) return reject(new Error('Selecciona un archivo de imagen válido.'));
+    const url=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{ const scale=Math.min(1,1200/Math.max(img.width,img.height)); const canvas=document.createElement('canvas'); canvas.width=Math.round(img.width*scale); canvas.height=Math.round(img.height*scale); canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height); URL.revokeObjectURL(url); canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('No se pudo procesar la foto.')),'image/jpeg',.82); };
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('No se pudo abrir esa imagen.'));}; img.src=url;
+  });
+}
+
+const TOTAL_STEPS = 10;
 let current = 0;
 let rid, uid, userEmail;
+let quiereProducto = true;
+
+const productoInputImagen = document.getElementById('q_productoImagen');
+document.getElementById('q_productoPick').addEventListener('click', () => productoInputImagen.click());
+productoInputImagen.addEventListener('change', () => {
+  const file = productoInputImagen.files && productoInputImagen.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { err('err_producto'); return; }
+  if (file.size > 12 * 1024 * 1024) { document.getElementById('err_producto').textContent = 'La imagen debe pesar menos de 12 MB.'; err('err_producto'); return; }
+  productoImageFile = file;
+  limpiarPreviewProducto(); productoImagePreviewUrl = URL.createObjectURL(file);
+  document.getElementById('q_productoPreview').innerHTML = `<img src="${productoImagePreviewUrl}" alt="Vista previa de la foto del producto">`;
+  document.getElementById('q_productoRemove').style.display = 'inline-block';
+  clearErr('err_producto');
+});
+document.getElementById('q_productoRemove').addEventListener('click', () => {
+  productoImageFile = null; productoInputImagen.value = ''; limpiarPreviewProducto();
+  document.getElementById('q_productoPreview').textContent = 'Sin imagen';
+  document.getElementById('q_productoRemove').style.display = 'none';
+});
 
 const respuestas = {
   nombre: '', negocio: '', tipo: '', descripcion: '',
@@ -250,7 +362,7 @@ function updateProgress(){
   document.getElementById('progressBar').style.width = `${((current + 1) / TOTAL_STEPS) * 100}%`;
   document.querySelectorAll('.dots span').forEach((d, i) => d.classList.toggle('on', i <= current));
   document.getElementById('btnBack').style.visibility = current === 0 ? 'hidden' : 'visible';
-  document.getElementById('btnNext').textContent = current === TOTAL_STEPS - 1 ? 'Terminar →' : 'Siguiente →';
+  document.getElementById('btnNext').textContent = current === TOTAL_STEPS - 1 ? 'Crear mi menú →' : 'Siguiente →';
 }
 
 // ---- chips ----
@@ -333,10 +445,24 @@ function validar(step){
     if (!respuestas.metas.length) { err('err_meta'); return false; }
     clearErr('err_meta');
   }
+  if (step === 9 && quiereProducto) {
+    const nombre = document.getElementById('q_producto').value.trim();
+    const precioTexto = document.getElementById('q_precio').value.trim();
+    // Precios en COP: acepta 18900, 18.900 o $18,900 y guarda pesos enteros.
+    const precio = Number(precioTexto.replace(/[^\d]/g, ''));
+    if (!nombre || nombre.length > 120 || !precioTexto || !Number.isSafeInteger(precio) || precio <= 0) {
+      err('err_producto');
+      return false;
+    }
+    clearErr('err_producto');
+  }
   return true;
 }
 
 async function finalizar(){
+  const nextButton = document.getElementById('btnNext');
+  if (nextButton.disabled) return;
+  nextButton.disabled = true;
   document.getElementById('saving').classList.add('show');
   try {
     // Orden pensado para poder reintentar: primero datos privados y perfil; AL FINAL se marca el
@@ -364,6 +490,50 @@ async function finalizar(){
     }).eq('id', uid);
     if (r3.error) throw r3.error;
 
+    // Usa el mismo esquema que el panel y el menú público. La consulta previa evita duplicados
+    // si el producto se guardó, pero una operación posterior falló y el usuario reintenta.
+    if (quiereProducto) {
+      const nombre = document.getElementById('q_producto').value.trim().slice(0, 70);
+      const precio = Number(document.getElementById('q_precio').value.trim().replace(/[^\d]/g, ''));
+      const descripcion = document.getElementById('q_productoDesc').value.trim().slice(0, 200) || null;
+      const categoriaNombre = document.getElementById('q_productoCat').value.trim().slice(0, 40);
+      const existente = await sb.from('products').select('id')
+        .eq('restaurant_id', rid).eq('name', nombre).eq('price', precio).limit(1);
+      if (existente.error) throw existente.error;
+      if (!existente.data || !existente.data.length) {
+        let categoryId = null;
+        if (categoriaNombre) {
+          const cat = await sb.from('categories').select('id').eq('restaurant_id', rid).ilike('name', categoriaNombre).limit(1);
+          if (cat.error) throw cat.error;
+          if (cat.data && cat.data.length) categoryId = cat.data[0].id;
+          else {
+            const createdCat = await sb.from('categories').insert({ restaurant_id: rid, name: categoriaNombre }).select('id').single();
+            if (createdCat.error) throw createdCat.error;
+            categoryId = createdCat.data.id;
+          }
+        }
+        let imagePath = null;
+        if (productoImageFile) {
+          const blob = await comprimirFotoProducto(productoImageFile);
+          imagePath = `${rid}/products/${crypto.randomUUID()}.jpg`;
+          const uploaded = await sb.storage.from(MEDIA_BUCKET).upload(imagePath, blob, { contentType: 'image/jpeg', cacheControl: '31536000', upsert: false });
+          if (uploaded.error) throw uploaded.error;
+        }
+        const producto = {
+          restaurant_id: rid,
+          name: nombre,
+          description: descripcion,
+          price: precio,
+          category_id: categoryId,
+          image_path: imagePath,
+          is_available: document.getElementById('q_productoDisponible').checked,
+          is_active: true
+        };
+        const rp = await sb.from('products').insert(producto);
+        if (rp.error) throw rp.error;
+      }
+    }
+
     // El restaurante se publica al terminar para que el QR y el menú público funcionen desde el primer día.
     const r1 = await sb.from('restaurants').update({
       name: respuestas.negocio,
@@ -377,13 +547,38 @@ async function finalizar(){
     }).eq('id', rid);
     if (r1.error) throw r1.error;
 
-    window.location.href = 'dashboard.html';
+    document.getElementById('saving').classList.remove('show');
+    document.getElementById('wrap').querySelectorAll('.step,.nav-row,.dots,.progress').forEach(el => el.style.display = 'none');
+    document.getElementById('completeScreen').classList.add('show');
+    document.getElementById('completeMessage').textContent = quiereProducto
+      ? 'Tu negocio y tu primer producto ya están guardados. Entra a tu panel para revisar cómo se ve tu menú y seguir personalizándolo.'
+      : 'Tu negocio ya está guardado. Entra a tu panel para agregar productos, personalizar tu menú y compartirlo con tus clientes.';
   } catch (e) {
     console.error(e);
     document.getElementById('saving').classList.remove('show');
+    document.getElementById('btnNext').disabled = false;
     alert('No pudimos guardar tu información: ' + (e.code || e.message || 'error desconocido') + '. Revisa tu conexión e intenta de nuevo.');
   }
 }
+
+document.getElementById('chooseProduct').addEventListener('click', () => {
+  quiereProducto = true;
+  document.getElementById('chooseProduct').classList.add('selected');
+  document.getElementById('skipProduct').classList.remove('selected');
+  document.getElementById('chooseProduct').setAttribute('aria-pressed','true');
+  document.getElementById('skipProduct').setAttribute('aria-pressed','false');
+  document.getElementById('productFields').style.display = 'block';
+});
+document.getElementById('skipProduct').addEventListener('click', () => {
+  quiereProducto = false;
+  document.getElementById('skipProduct').classList.add('selected');
+  document.getElementById('chooseProduct').classList.remove('selected');
+  document.getElementById('skipProduct').setAttribute('aria-pressed','true');
+  document.getElementById('chooseProduct').setAttribute('aria-pressed','false');
+  document.getElementById('productFields').style.display = 'none';
+  document.getElementById('err_producto').classList.remove('show');
+});
+document.getElementById('enterMenu').addEventListener('click', () => { window.location.href = 'dashboard.html'; });
 
 document.getElementById('btnNext').addEventListener('click', () => {
   if (!validar(current)) return;
