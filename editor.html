@@ -86,6 +86,33 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
   .tip{display:none !important}.stage{padding:8px 8px 80px}.top{flex-wrap:wrap;padding:8px 10px;gap:6px}.top h1 small,#dev,.hint{display:none}#saveState{order:9;flex-basis:100%;font-size:12px}.clean{font-size:11.5px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+/* ===== v3: editor tipo Canva ===== */
+.acc{border:1px solid var(--border);border-radius:12px;margin:0 0 8px;background:var(--panel2)}.acc>summary{cursor:pointer;padding:12px 14px;font-weight:800;color:var(--strong);list-style:none;display:flex;align-items:center;justify-content:space-between}.acc>summary::-webkit-details-marker{display:none}.acc>summary::after{content:"+";font-size:18px;color:var(--muted)}.acc[open]>summary::after{content:"–"}.accb{padding:2px 14px 12px}
+.lnk{font-size:12px;font-weight:700;color:var(--accent);padding:4px 6px;border-radius:6px}.lnk:hover{background:var(--accent-soft)}
+.rg{margin-bottom:12px}.rgh{display:flex;align-items:center;gap:8px;margin-bottom:6px}.rgh label{font-size:12.5px;font-weight:700;margin:0;flex:1;color:var(--strong)}.rgh output{font-size:12px;font-weight:800;color:var(--strong);min-width:42px;text-align:right}
+.segc{display:flex;flex-wrap:wrap;gap:4px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:3px}.segc button{flex:1;min-height:34px;padding:0 8px;border-radius:7px;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}.segc button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.cw .cwl{flex:1;min-width:0}.hx{width:84px;min-height:34px;padding:0 8px;border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--strong);font:12px ui-monospace,Menlo,monospace;text-transform:uppercase}.hx.bad{border-color:#E5484D;background:rgba(229,72,77,.08)}
+.wb .warn{margin:4px 0}.rst{margin:10px 0 4px}
+.tgal{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}.tc{border:2px solid var(--border);border-radius:14px;background:var(--panel2);overflow:hidden;display:flex;flex-direction:column}.tc.cur{border-color:var(--accent)}
+.tcv{position:relative;width:100%;aspect-ratio:390/560;overflow:hidden;background:#fff;border-bottom:1px solid var(--border)}.tcv iframe{position:absolute;left:0;top:0;width:390px;height:560px;border:0;transform-origin:0 0;pointer-events:none}
+.tcm{padding:8px 10px 2px}.tcm b{display:flex;align-items:center;gap:6px;flex-wrap:wrap;color:var(--strong);font-size:13px}.tcm em{font-style:normal;font-size:10px;font-weight:800;background:var(--accent);color:#fff;border-radius:99px;padding:2px 7px}.tcd{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+.tcb{display:flex;gap:6px;padding:8px 10px 10px;margin-top:auto}.tcb .btn{min-height:34px;padding:0 8px;font-size:12px;flex:1}
+.pvbar{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:8;background:var(--strong);color:var(--bg);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.3);max-width:94%;flex-wrap:wrap;justify-content:center;font-size:13px;font-weight:700}.pvbar[hidden]{display:none}.pvbar .btn{min-height:34px;padding:0 12px;font-size:12px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}.mbox{background:var(--panel);color:var(--text);border-radius:18px;width:min(460px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 24px 70px rgba(0,0,0,.4)}.mbox.wide{width:min(620px,100%)}
+.mh{display:flex;align-items:center;padding:16px 18px 8px}.mh h3{margin:0;font-size:17px;color:var(--strong);font-weight:800}.mh .x{margin-left:auto;width:34px;height:34px;border-radius:8px;font-size:22px;color:var(--muted)}.mh .x:hover{background:var(--panel2)}
+.mbd{padding:6px 18px 18px;overflow-y:auto}.mf{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:14px}.mf.sticky{position:sticky;bottom:-18px;background:var(--panel);padding:12px 0 4px;border-top:1px solid var(--border)}
+.fst{margin-right:auto;font-size:12px;color:var(--muted);font-weight:700}.fst.dirty{color:var(--warn)}.ferr{font-size:12px;color:#E5484D;font-weight:700;min-height:0;margin:-8px 0 8px}.ferr:empty{display:none}.hint2{display:block;font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+.btn.danger{background:#E5484D;border-color:#E5484D;color:#fff}.two{display:grid;grid-template-columns:2fr 1fr;gap:10px}.two1{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.addrow .two1{grid-template-columns:1fr auto}
+.fld input[type=number]{width:100%;min-height:42px;padding:9px 11px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--strong);font:inherit}.mbd select{width:100%;min-height:42px;padding:9px 11px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--strong);font:inherit}.mbd input[type=text]{width:100%;min-height:42px;padding:9px 11px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);color:var(--strong);font:inherit}
+.th.big{width:92px;height:92px}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{display:inline-flex;align-items:center;gap:4px;background:var(--panel2);border:1px solid var(--border);border-radius:99px;padding:4px 6px 4px 11px;font-size:12.5px;font-weight:600;color:var(--strong)}.chip button{width:22px;height:22px;border-radius:50%;font-size:15px;color:var(--muted)}.chip button:hover{background:var(--border)}
+.allg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.allg label{display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:9px;padding:8px;font-size:12.5px;font-weight:600;background:var(--panel2);color:var(--strong);min-height:40px}.allg input{accent-color:var(--accent);width:17px;height:17px}
+.tgp{border:2px solid transparent;border-radius:99px;padding:6px 12px;font-size:12px;font-weight:800;background:var(--tb);color:var(--tf);opacity:.55}.tgp[aria-pressed="true"]{opacity:1;border-color:var(--strong)}
+.prow{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);flex-wrap:wrap}.prow.off{opacity:.7}.prow .pa{display:flex;align-items:center;gap:3px;margin-left:auto}.pl .pa{display:flex;align-items:center;gap:3px;margin-left:auto}.pl li{flex-wrap:wrap}
+.mini{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--panel);display:inline-flex;align-items:center;justify-content:center;color:var(--strong)}.mini svg{width:16px;height:16px}.mini:disabled{opacity:.3;cursor:default}.mini:hover:not(:disabled){background:var(--border)}.mini.txt{width:auto;padding:0 8px;font-size:11.5px;font-weight:700}
+.pa input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent);margin-right:4px}
+.sr{border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:8px;background:var(--panel2)}.sr input[type=text]{width:100%;min-height:40px;padding:8px 10px;border:1px solid var(--border);border-radius:9px;background:var(--panel);color:var(--strong);font:inherit;margin-top:8px}.srh{display:flex;align-items:center;gap:6px}.srh b{flex:1;color:var(--strong)}.sri svg{width:20px;height:20px;color:var(--strong)}.swm{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700}.swm input{accent-color:var(--accent);width:18px;height:18px}.sr .ferr{margin:4px 0 0}
+.mbd .note{margin-top:2px}
+@media (max-width:900px){.ov{align-items:flex-end;padding:0}.mbox,.mbox.wide{width:100%;max-height:94vh;border-radius:18px 18px 0 0}.allg{grid-template-columns:repeat(2,1fr)}.drawer{max-height:46vh}.pvbar{top:6px}}
 </style>
 </head>
 <body>
@@ -109,6 +136,7 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
     <aside class="drawer" id="drawer" aria-label="Opciones"><div class="dh"><h2 id="dTitle"></h2><button class="x" id="dClose" aria-label="Cerrar panel">✕</button></div><div class="db" id="dBody"></div></aside>
     <section class="stage" id="stage">
       <div class="tip" id="tip"><span>👋 Elige una herramienta a la izquierda o toca cualquier parte del menú para editarla.</span><button id="tipX" aria-label="Cerrar consejo">✕</button></div>
+      <div class="pvbar" id="pvBar" hidden role="status"><span>Previsualizando: <b id="pvName"></b></span><button type="button" class="btn primary" id="pvApply">Aplicar</button><button type="button" class="btn" id="pvStop">Seguir editando</button></div>
       <div class="frame" id="frame"><iframe id="pv" title="Vista previa de tu menú" src="/menu.html?preview=1"></iframe></div>
       <p class="hint">Esto es tu menú real: así lo verán tus clientes.</p>
     </section>
@@ -123,16 +151,20 @@ let rid = null, rank = 0, cfg = D.normalize({}), published = D.normalize({}), re
 let lastSaved = '', saveTimer = null, saving = false, saveErr = null, menuPublished = true;
 let hist = [], hi = -1, lastKey = null, lastAt = 0, device = 'mobile', previewReady = false, tool = 'design', booted = false;
 const isLocked = () => rank < 3, money = (n) => '$' + Number(n || 0).toLocaleString('es-CO');
-function toast(t){ const el = $('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 2800); }
+function toast(t, ms){ const el = $('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), ms || 2800); }
 function h(tag, attrs, ...kids){ const e = document.createElement(tag); Object.entries(attrs || {}).forEach(([k, v]) => { if (k === 'class') e.className = v; else if (k === 'html') e.innerHTML = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v); }); kids.flat().forEach(c => { if (c != null) e.append(c.nodeType ? c : document.createTextNode(c)); }); return e; }
 
 /* ---------- iconos ---------- */
 const I = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const TOOLS = [
+  ['templates', 'Plantillas', I('<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/>')],
   ['design', 'Diseño', I('<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/>')],
-  ['colors', 'Colores', I('<path d="M12 22a10 10 0 1 1 10-10c0 2.6-2 3-4 3h-2a2 2 0 0 0-1 3.7c.7.5.4 3.3-3 3.3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16.5" cy="10" r="1"/>')],
+  ['banner', 'Banner', I('<rect x="3" y="4" width="18" height="9" rx="2"/><path d="M3 17h12M3 21h8"/>')],
   ['text', 'Texto', I('<path d="M4 7V5h16v2M12 5v14M9 19h6"/>')],
-  ['images', 'Imágenes', I('<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/>')],
+  ['colors', 'Colores', I('<path d="M12 22a10 10 0 1 1 10-10c0 2.6-2 3-4 3h-2a2 2 0 0 0-1 3.7c.7.5.4 3.3-3 3.3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16.5" cy="10" r="1"/>')],
+  ['cards', 'Tarjetas', I('<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/>')],
+  ['nav', 'Navegación', I('<rect x="3" y="14" width="18" height="6" rx="3"/><path d="M7 17h.01M12 17h.01M17 17h.01M5 8h14M5 4h8"/>')],
+  ['social', 'Redes', I('<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/>')],
   ['products', 'Productos', I('<path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/>')],
   ['sections', 'Secciones', I('<path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/>')],
 ];
@@ -147,6 +179,7 @@ const ICO = {
   navStyle: { pills: W('<rect x="3" y="10" width="18" height="12" rx="6" fill="currentColor" opacity=".85" stroke="none"/><rect x="25" y="10" width="20" height="12" rx="6"/>'), underline: W('<path d="M5 14h14M27 14h14" opacity=".7"/><path d="M5 22h14" stroke-width="2.4"/>') },
   density: { compact: W('<path d="M4 6h40M4 11h40M4 16h40M4 21h40M4 26h40" opacity=".7"/>'), normal: W('<path d="M4 6h40M4 14h40M4 22h40M4 30h40" opacity=".7"/>'), airy: W('<path d="M4 5h40M4 16h40M4 27h40" opacity=".7"/>') },
   cardStyle: { round: W('<rect x="6" y="6" width="36" height="20" rx="10"/>'), soft: W('<rect x="6" y="6" width="36" height="20" rx="5"/>'), square: W('<rect x="6" y="6" width="36" height="20" rx="0"/>') },
+  style: { flat: W('<rect x="6" y="6" width="36" height="20" rx="4"/>'), minimal: W('<path d="M6 10h36M6 16h24M6 22h30" opacity=".7"/>'), soft: W('<rect x="8" y="9" width="34" height="19" rx="7" opacity=".25" fill="currentColor" stroke="none"/><rect x="6" y="6" width="34" height="19" rx="7"/>'), neo: W('<rect x="7" y="7" width="34" height="19" rx="8" fill="currentColor" opacity=".12"/><rect x="7" y="7" width="34" height="19" rx="8"/>'), glass: W('<circle cx="16" cy="14" r="9" fill="currentColor" opacity=".25" stroke="none"/><rect x="12" y="8" width="30" height="18" rx="6" stroke-dasharray="3 2"/>'), editorial: W('<text x="24" y="23" font-size="17" text-anchor="middle" font-family="Georgia,serif" fill="currentColor" stroke="none">Aa</text><path d="M8 27h32" opacity=".6"/>'), food: W('<rect x="6" y="4" width="36" height="17" rx="4" fill="currentColor" opacity=".35" stroke="none"/><path d="M6 26h22M6 30h14" opacity=".6"/>') },
   buttonStyle: { solid: W('<circle cx="24" cy="16" r="9" fill="currentColor" stroke="none"/><path d="M24 12v8M20 16h8" stroke="#fff" stroke-width="2"/>'), outline: W('<circle cx="24" cy="16" r="9" stroke-width="2.2"/><path d="M24 12v8M20 16h8" stroke-width="2"/>') },
 };
 const OPT = {
@@ -158,11 +191,12 @@ const OPT = {
   navStyle: ['Estilo de las categorías', [['pills', 'Botones'], ['underline', 'Subrayado']]],
   density: ['Espacio entre productos', [['compact', 'Poco'], ['normal', 'Normal'], ['airy', 'Mucho']]],
   cardStyle: ['Esquinas', [['round', 'Redondas'], ['soft', 'Suaves'], ['square', 'Rectas']]],
+  style: ['Estilo visual', [['flat', 'Clásico'], ['minimal', 'Minimalista'], ['soft', 'Soft UI'], ['neo', 'Neomorphism'], ['glass', 'Glass'], ['editorial', 'Editorial'], ['food', 'Food']]],
   buttonStyle: ['Botón “+”', [['solid', 'Relleno'], ['outline', 'Con borde']]],
 };
 const PALETTES = [['Cálida', ['#FF3145', '#1B1B1B', '#FFFFFF', '#0A0A0A', '#F5F5F3']], ['Café', ['#8B5E3C', '#2B1B12', '#FBF6F0', '#2B1B12', '#F1E6D8']], ['Océano', ['#0E7490', '#0B2A36', '#F4FAFC', '#0B2A36', '#E0F1F6']], ['Bosque', ['#1EA35A', '#0F2A1D', '#F7FBF8', '#0F2A1D', '#E8F4EC']], ['Noche', ['#E8B04B', '#000000', '#121212', '#F4F4F4', '#1C1C1C']], ['Dulce', ['#C2185B', '#4A1128', '#FFF8FA', '#2A0B18', '#FCE8EF']], ['Mono', ['#111111', '#111111', '#FFFFFF', '#111111', '#F3F3F3']], ['Sol', ['#F59E0B', '#3B2A05', '#FFFBEB', '#3B2A05', '#FEF3C7']]];
 const QUICK = ['#FF3145', '#FF6B35', '#F59E0B', '#EAB308', '#1EA35A', '#0E7490', '#2563EB', '#7C3AED', '#C2185B', '#8B5E3C', '#111111', '#64748B'];
-const SWITCH = { showAddress: 'Mostrar “Ver ubicación”', showCategoriesNav: 'Mostrar categorías', showImages: 'Mostrar fotos de productos', showDescriptions: 'Mostrar descripciones', showPrices: 'Mostrar precios', showTags: 'Mostrar etiquetas (Nuevo, Picante…)', showSearch: 'Buscador del menú', showNav: 'Barra de navegación inferior', showHighlights: 'Destacados y promociones arriba' };
+const SWITCH = { showAddress: 'Mostrar “Ver ubicación”', showCategoriesNav: 'Mostrar categorías', showImages: 'Mostrar fotos de productos', showDescriptions: 'Mostrar descripciones', showPrices: 'Mostrar precios', showTags: 'Mostrar etiquetas (Nuevo, Picante…)', showSearch: 'Buscador del menú', showNav: 'Barra de navegación inferior', showHighlights: 'Destacados y promociones arriba', showAbout: 'Mostrar la descripción del negocio', navFloating: 'Barra flotante (separada del borde)', navLabels: 'Mostrar el nombre bajo cada icono' };
 const BLOCK_LABEL = { header: 'Encabezado', announcement: 'Anuncio', categories: 'Categorías', items: 'Productos', footer: 'Pie de página' };
 
 /* ---------- componentes de panel ---------- */
@@ -177,75 +211,355 @@ function txt(key, host, label, max, ph, adv, multi){
   const id = 'f_' + key, i = h(multi ? 'textarea' : 'input', { id, maxlength: max, placeholder: ph || '', rows: multi ? 2 : null, type: multi ? null : 'text', oninput: () => set(key, i.value, true) });
   host.append(h('div', { class: 'fld' }, h('label', { for: id }, label), i)); syncers.push(() => { if (document.activeElement !== i) i.value = cfg[key]; i.disabled = !!(adv && isLocked()); });
 }
+/* ---------- v3: controles reutilizables ---------- */
+const sec = (t) => h('div', { class: 'sec' }, t), note = (...k) => h('p', { class: 'note' }, ...k);
+function acc(host, title, build, open){ const d = h('details', { class: 'acc', open: !!open }, h('summary', {}, title)), bd = h('div', { class: 'accb' }); build(bd); d.append(bd); host.append(d); return d; }
+function resetBtn(host, label, keys){ host.append(h('button', { type: 'button', class: 'btn block rst', onclick: () => replace({ ...cfg, ...Object.fromEntries(keys.map(k => [k, D.DEFAULTS[k]])) }, 'Valores recomendados restablecidos') }, label)); }
+/** Deslizador con valor visible y botón “Auto/Restablecer” (los límites son los mismos que valida la base de datos). */
+function rng(key, host, label, o = {}){
+  const [mn, mx] = D.INTS[key], id = 'r_' + key, unit = o.unit ?? 'px', def = D.DEFAULTS[key];
+  const inp = h('input', { type: 'range', id, min: mn, max: mx, step: 1, 'aria-label': label, oninput: () => set(key, Number(inp.value), true) }), val = h('output', { for: id }), rs = h('button', { type: 'button', class: 'lnk', onclick: () => set(key, def) }, def == null ? 'Auto' : 'Restablecer');
+  host.append(h('div', { class: 'fld rg' }, h('div', { class: 'rgh' }, h('label', { for: id }, label), val, rs), inp));
+  syncers.push(() => { const v = cfg[key]; inp.value = v == null ? (o.mid ?? Math.round((mn + mx) / 2)) : v; val.textContent = v == null ? 'Auto' : v + unit; rs.style.visibility = v === def ? 'hidden' : 'visible'; inp.disabled = !!(o.off && o.off()); });
+}
+/** Botones de opción (texto). num=true guarda números (pesos de letra); null = automático. */
+function seg(key, host, label, opts, o = {}){
+  const g = h('div', { class: 'segc', role: 'group', 'aria-label': label });
+  opts.forEach(([v, t]) => g.append(h('button', { type: 'button', 'data-v': String(v), 'aria-pressed': 'false', onclick: () => set(key, o.num && v != null ? Number(v) : v) }, t)));
+  host.append(h('div', { class: 'fld' }, h('div', { class: 'rgh' }, h('label', {}, label)), g));
+  syncers.push(() => g.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(String(cfg[key]) === b.dataset.v))));
+}
+const WTS = [[null, 'Auto'], [500, 'Normal'], [600, 'Semi'], [700, 'Negrita'], [800, 'Extra'], [900, 'Black']];
+/** Selector de color: muestra de color + código hexadecimal editable + “Auto” para volver al color que decide el estilo. */
+function clr(key, host, label, sub, o = {}){
+  const autoable = o.autoable !== false && D.HEXOPT.includes(key), eff = () => (o.eff ? o.eff() : cfg[key]);
+  const i = h('input', { type: 'color', 'aria-label': 'Color de ' + label.toLowerCase(), oninput: () => set(key, i.value.toUpperCase(), true) });
+  const hx = h('input', { type: 'text', class: 'hx', maxlength: 7, spellcheck: 'false', placeholder: autoable ? 'Auto' : '#RRGGBB', 'aria-label': 'Código hexadecimal de ' + label.toLowerCase(),
+    oninput: () => { let v = hx.value.trim(); if (v && !v.startsWith('#')) v = '#' + v; const ok = /^#[0-9a-fA-F]{6}$/.test(v); hx.classList.toggle('bad', !!hx.value.trim() && !ok); if (ok) set(key, v.toUpperCase(), true); }, onblur: () => { hx.classList.remove('bad'); syncAll(); } });
+  const au = h('button', { type: 'button', class: 'lnk', 'aria-label': 'Volver a automático: ' + label, onclick: () => set(key, '') }, 'Auto');
+  host.append(h('div', { class: 'cw' }, i, h('span', { class: 'cwl' }, label, h('small', {}, sub || '')), hx, autoable ? au : null));
+  syncers.push(() => { const v = eff(); if (/^#[0-9a-fA-F]{6}$/.test(v || '')) i.value = v; if (document.activeElement !== hx) hx.value = autoable && !cfg[key] ? '' : String(v || '').toUpperCase(); au.style.visibility = autoable && cfg[key] ? 'visible' : 'hidden'; });
+}
+function warnBox(host, fn){ const w = h('div', { class: 'wb', 'aria-live': 'polite' }); host.append(w); syncers.push(() => { w.innerHTML = ''; fn().forEach(t => w.append(h('p', { class: 'warn' }, 'Aviso: ' + t))); }); }
+const baseOfItems = () => (cfg.itemLayout === 'list' || cfg.style === 'editorial' || cfg.style === 'minimal' ? cfg.background : cfg.surface);
+function contrastWarns(){
+  const e = D.effective(cfg), m = [], base = baseOfItems(), hb = cfg.headerStyle === 'minimal' ? cfg.background : cfg.secondary;
+  if (D.contrast(cfg.textColor, cfg.background) < 4.5) m.push('el texto principal se leerá con dificultad sobre el fondo.');
+  if (cfg.titleColor && (D.contrast(e.title, cfg.background) < 4.5 || D.contrast(e.title, base) < 4.5)) m.push('los títulos casi no contrastan con el fondo.');
+  if (cfg.descColor && D.contrast(e.desc, base) < 4.5) m.push('las descripciones se leerán con dificultad.');
+  if (cfg.priceColor && D.contrast(e.price, base) < 4.5) m.push('los precios se leerán con dificultad.');
+  if (D.contrast('#FFFFFF', cfg.primary) < 3) m.push('el “+” (blanco) casi no se verá sobre el color principal.');
+  if (cfg.headerStyle !== 'minimal' && D.contrast('#FFFFFF', cfg.secondary) < 4.5) m.push('el texto blanco del encabezado se leerá con dificultad.');
+  [['nameColor', 'el nombre del negocio'], ['bTitleColor', 'el título del banner'], ['bSubColor', 'el subtítulo']].forEach(([k, n]) => { if (cfg[k] && D.contrast(cfg[k], hb) < 4.5) m.push(n + ' casi no contrasta con el fondo del encabezado (si hay foto de banner, sube “Oscurecer foto”).'); });
+  if (cfg.style === 'glass' || cfg.style === 'neo') m.push('con ' + (cfg.style === 'glass' ? 'cristal' : 'relieve') + ' el contraste real varía un poco: revisa la vista previa.');
+  return m.filter(x => !x.startsWith('con ')).concat(m.filter(x => x.startsWith('con ')));
+}
 function lockNote(host){ if (isLocked()) host.append(h('div', { class: 'lockbar' }, '🔒 Esta herramienta es del plan Personalizado. Puedes verla, pero no usarla.')); }
+
+/* ---------- v3: ventanas (modal accesible) y confirmaciones ---------- */
+function modal(title, build, o = {}){
+  const ov = h('div', { class: 'ov', role: 'dialog', 'aria-modal': 'true', 'aria-label': title }), box = h('div', { class: 'mbox' + (o.wide ? ' wide' : '') }), body = h('div', { class: 'mbd' });
+  const prev = document.activeElement; let closed = false;
+  const close = (force) => { if (closed) return; if (!force && o.beforeClose && o.beforeClose() === false) return; closed = true; ov.remove(); document.removeEventListener('keydown', onk, true); if (prev && prev.focus) prev.focus(); if (o.onClose) o.onClose(); };
+  const onk = (e) => { if (e.key === 'Escape') { e.stopPropagation(); close(); } else if (e.key === 'Tab') { const f = [...box.querySelectorAll('button:not([disabled]),input:not([disabled]):not([type=hidden]),select,textarea,summary,[href]')].filter(x => x.offsetParent !== null); if (!f.length) return; const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } } };
+  box.append(h('div', { class: 'mh' }, h('h3', {}, title), h('button', { type: 'button', class: 'x', 'aria-label': 'Cerrar', onclick: () => close() }, '×')), body); ov.append(box);
+  ov.addEventListener('mousedown', e => { if (e.target === ov) close(); }); document.body.append(ov); document.addEventListener('keydown', onk, true);
+  build(body, close); const f = body.querySelector('input:not([type=hidden]):not([type=file]),textarea,select') || body.querySelector('button'); if (f) f.focus();
+  return { close, body };
+}
+function confirmDlg(title, msg, okLabel, danger){
+  return new Promise(res => { let done = false; const fin = (v) => { if (!done) { done = true; res(v); } };
+    modal(title, (b, close) => { b.append(h('p', { class: 'note', style: 'font-size:14px' }, msg), h('div', { class: 'mf' }, h('button', { type: 'button', class: 'btn', onclick: () => { fin(false); close(true); } }, 'Cancelar'), h('button', { type: 'button', class: 'btn ' + (danger ? 'danger' : 'primary'), onclick: () => { fin(true); close(true); } }, okLabel || 'Aceptar'))); }, { onClose: () => fin(false) }); });
+}
+
+/* ---------- v3: plantillas (galería con miniaturas reales) y vista previa antes de aplicar ---------- */
+let previewTpl = null; const thumbWins = new Map();
+const shownCfg = () => (previewTpl ? D.applyTemplate(cfg, previewTpl) : cfg);
+function startPreview(t){ previewTpl = t; $('pvName').textContent = t.name; $('pvBar').hidden = false; sendDesign(); }
+function stopPreview(){ if (!previewTpl) return; previewTpl = null; $('pvBar').hidden = true; sendDesign(); }
+function applyTpl(t){ stopPreview(); replace(D.applyTemplate(cfg, t)); toast('Plantilla “' + t.name + '” aplicada. Se restablecieron ' + D.RESET_ON_TEMPLATE + '; se conservaron tus textos, redes y opciones. Puedes deshacer con Ctrl+Z.', 6500); }
+const SAMPLE = { categories: [{ id: 's1', name: 'Entradas', tags: [] }, { id: 's2', name: 'Platos fuertes', tags: [] }], products: [
+  { id: 'x1', category_id: 's1', name: 'Nachos de la casa', description: 'Con queso fundido y guacamole.', price: 18900, discount_percent: 0, image_path: null, is_available: true, tags: [{ id: 'xt', name: 'Nuevo', bg: '#FF3145', fg: '#FFFFFF', style: 'solid' }] },
+  { id: 'x2', category_id: 's1', name: 'Ensalada fresca', description: 'Hojas verdes y vinagreta.', price: 14500, discount_percent: 0, image_path: null, is_available: true, tags: [] },
+  { id: 'x3', category_id: 's2', name: 'Hamburguesa clásica', description: 'Carne 150 g, queso y papas.', price: 26900, discount_percent: 0, image_path: null, is_available: true, tags: [] },
+  { id: 'x4', category_id: 's2', name: 'Pasta cremosa', description: 'Salsa de la casa.', price: 24500, discount_percent: 0, image_path: null, is_available: true, tags: [] }] };
+const usingSample = () => prods.filter(p => p.is_available !== false).length < 3;
+function thumbMenu(t){
+  const real = !usingSample(), pr = real ? prods.filter(p => p.is_available !== false).slice(0, 6) : SAMPLE.products, ct = real ? cats.filter(c => c.is_visible !== false && pr.some(p => p.category_id === c.id)).slice(0, 3) : SAMPLE.categories;
+  return { restaurant: restPayload(), categories: ct, products: real ? pr.filter(p => ct.some(c => c.id === p.category_id)) : pr, design: D.compact(D.applyTemplate(cfg, t)) };
+}
+function mountThumb(host, t){
+  const fr = h('iframe', { src: '/menu.html?preview=1&thumb=1', title: 'Miniatura de la plantilla ' + t.name, tabindex: '-1', 'aria-hidden': 'true' }); host.append(fr);
+  const sc = () => { fr.style.transform = 'scale(' + (host.clientWidth / 390) + ')'; }; sc(); requestAnimationFrame(sc); thumbWins.set(fr.contentWindow, t);
+}
+function tplCard(t, onApply){
+  const host = h('div', { class: 'tcv' }), card = h('div', { class: 'tc' }, host, h('div', { class: 'tcm' }, h('b', {}, t.name, t.recommended ? h('em', {}, 'Recomendada') : null), h('span', { class: 'tcd' }, t.desc)),
+    h('div', { class: 'tcb' }, h('button', { type: 'button', class: 'btn', 'aria-label': 'Previsualizar la plantilla ' + t.name, onclick: () => { if (onApply) onApply(false); startPreview(t); } }, 'Vista previa'), h('button', { type: 'button', class: 'btn primary', 'aria-label': 'Usar la plantilla ' + t.name, onclick: () => { applyTpl(t); if (onApply) onApply(true); } }, 'Usar')));
+  const mark = () => card.classList.toggle('cur', cfg.template === t.id); mark(); syncers.push(mark);
+  const io = new IntersectionObserver((es) => { if (es.some(e => e.isIntersecting)) { io.disconnect(); mountThumb(host, t); } }, { root: null, rootMargin: '200px' }); io.observe(host);
+  return card;
+}
+function tplGallery(host, onApply){
+  host.append(note('Elige un punto de partida: cada plantilla cambia estilo, encabezado, tarjetas y barra inferior (no solo colores). Previsualiza antes de aplicar; puedes cambiar después sin perder productos, textos ni redes.'));
+  if (usingSample()) host.append(note('Las miniaturas usan productos de ejemplo hasta que tengas al menos 3 productos disponibles.'));
+  [['Plantillas profesionales', 'pro'], ['Clásicas', 'classic']].forEach(([title, g]) => { host.append(sec(title)); const gl = h('div', { class: 'tgal' }); host.append(gl); D.TEMPLATES.filter(t => t.group === g).forEach(t => gl.append(tplCard(t, onApply))); });
+  host.append(note('Al aplicar una plantilla se restablecen: ' + D.RESET_ON_TEMPLATE + '. Se conservan: textos, redes sociales, qué se muestra u oculta y tus opciones avanzadas del plan.'));
+}
+function firstRunTemplates(){
+  const rec = D.TEMPLATES.find(t => t.recommended);
+  modal('Elige una plantilla para tu menú', (b, close) => { tplGallery(b, () => close(true)); b.append(h('button', { type: 'button', class: 'btn block', style: 'margin-top:10px', onclick: () => { close(true); applyTpl(rec); } }, 'Usar la recomendada (' + rec.name + ')'), h('button', { type: 'button', class: 'btn block', style: 'margin-top:8px', onclick: () => close(true) }, 'Empezar sin plantilla')); }, { wide: true, onClose: () => { try { localStorage.setItem('kartta_tpl_seen_' + rid, '1'); } catch {} openTool(tool, true); } });
+}
+
+/* ---------- v3: panel de redes sociales y contacto ---------- */
+let socRows = null;
+const SOC_PH = { instagram: '@tunegocio o enlace', facebook: 'enlace o nombre de tu página', whatsapp: '573001234567', tiktok: '@tunegocio o enlace', youtube: '@tucanal o enlace', maps: 'enlace de Google Maps o dirección', web: 'www.tunegocio.com' };
+const socFromCfg = () => cfg.social.map(x => ({ t: x.t, u: x.u, m: x.m || '', on: x.on !== false, text: x.u, err: '' }));
+const socPayload = () => socRows.filter(r => r.u).map(r => { const o = { t: r.t, u: r.u }; if (r.m && r.m.trim()) o.m = r.m.trim().slice(0, 200); if (!r.on) o.on = false; return o; });
+const socPush = () => set('social', socPayload());
+
+/* ---------- v3: productos y categorías (mismas tablas, permisos por columna y RPC que el panel) ---------- */
+let allTags = [], extrasOk = true;
+const sortedCats = () => cats.slice().sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0) || String(a.name).localeCompare(b.name));
+const sortedProds = () => prods.slice().sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0) || String(a.name).localeCompare(b.name));
+const refreshPanel = () => { if (tool === 'products') openTool('products', true); };
+async function reloadAll(){ await loadCatalog(); sendData(); refreshPanel(); }
+const ICON = { edit: I('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>'), copy: I('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'), del: I('<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>'), up: I('<path d="M12 19V5M5 12l7-7 7 7"/>'), down: I('<path d="M12 5v14M5 12l7 7 7-7"/>'), plus: I('<path d="M12 5v14M5 12h14"/>') };
+const ib = (ico, label, fn, dis) => h('button', { type: 'button', class: 'mini', 'aria-label': label, title: label, onclick: fn, disabled: !!dis, html: ico });
+function dbErr(e, what){ const m = String(e && e.message || ''); if (m.includes('product limit')) return 'Llegaste al límite de productos de tu plan. Mejora tu plan en el panel para agregar más.'; if (m.includes('Pro plan')) return 'Los descuentos requieren el plan PRO.'; if (m.includes('Premium')) return 'Esa opción requiere el plan PREMIUM.'; if (m.includes('invalid product')) return 'Algún dato no es válido (revisa ingredientes, alérgenos y longitudes).'; return 'No se pudo ' + what + '. Intenta de nuevo.'; }
+async function moveProd(p, d){
+  const grp = sortedProds().filter(x => x.category_id === p.category_id), i = grp.findIndex(x => x.id === p.id), j = i + d; if (j < 0 || j >= grp.length) return;
+  [grp[i], grp[j]] = [grp[j], grp[i]]; const upd = grp.map((x, k) => [x, k + 1]).filter(([x, n]) => x.sort_order !== n);
+  const res = await Promise.all(upd.map(([x, n]) => sb.from('products').update({ sort_order: n }).eq('id', x.id).eq('restaurant_id', rid)));
+  if (res.some(r => r.error)) { toast('No se pudo reordenar.'); return reloadAll(); }
+  upd.forEach(([x, n]) => { x.sort_order = n; }); sendData(); refreshPanel();
+}
+async function setAvail(p, on){ const { error } = await sb.from('products').update({ is_available: on }).eq('id', p.id).eq('restaurant_id', rid); if (error) { toast('No se pudo cambiar la disponibilidad.'); return refreshPanel(); } p.is_available = on; sendData(); toast(on ? 'Disponible' : 'Marcado como agotado'); refreshPanel(); }
+async function delProd(p){
+  if (!await confirmDlg('Eliminar producto', '¿Eliminar “' + p.name + '”? Esta acción no se puede deshacer.', 'Eliminar', true)) return;
+  const { error } = await sb.from('products').delete().eq('id', p.id).eq('restaurant_id', rid); if (error) return toast('No se pudo eliminar.');
+  if (p.image_path && !prods.some(x => x.id !== p.id && x.image_path === p.image_path)) { try { await sb.storage.from(BUCKET).remove([p.image_path]); } catch {} }
+  toast('Producto eliminado.'); await reloadAll();
+}
+async function dupProd(p){
+  const row = { restaurant_id: rid, name: (p.name + ' (copia)').slice(0, 80), description: p.description || null, price: p.price, discount_percent: p.discount_percent || 0, category_id: p.category_id || null, is_available: p.is_available !== false };
+  if (extrasOk) Object.assign(row, { ingredients: p.ingredients || [], allergens: p.allergens || [], serving: p.serving || null, extra_info: p.extra_info || null });
+  let noImg = false;
+  if (p.image_path) { const np = `${rid}/products/${crypto.randomUUID()}.jpg`; try { const { error } = await sb.storage.from(BUCKET).copy(p.image_path, np); if (error) throw error; row.image_path = np; } catch { noImg = true; } }
+  const { data, error } = await sb.from('products').insert(row).select('id').single(); if (error) return toast(dbErr(error, 'duplicar'));
+  try { const ids = (p.tags || []).map(t => t.id); if (ids.length) await sb.rpc('set_product_tags', { p_product: data.id, p_tags: ids }); } catch (e) { console.warn(e); }
+  toast(noImg ? 'Producto duplicado (sin foto: súbela de nuevo).' : 'Producto duplicado.'); await reloadAll();
+}
+async function addCat(name){ name = String(name || '').trim().slice(0, 60); if (!name) return false; if (cats.some(c => c.name.toLowerCase() === name.toLowerCase())) { toast('Ya existe una categoría con ese nombre.'); return false; }
+  const { error } = await sb.from('categories').insert({ restaurant_id: rid, name, sort_order: Math.max(0, ...cats.map(c => c.sort_order || 0)) + 1 }); if (error) { toast('No se pudo crear la categoría.'); return false; } await reloadAll(); return true; }
+async function updCat(c, patch, msg){ const { error } = await sb.from('categories').update(patch).eq('id', c.id).eq('restaurant_id', rid); if (error) { toast('No se pudo guardar la categoría.'); return refreshPanel(); } Object.assign(c, patch); sendData(); if (msg) toast(msg); refreshPanel(); }
+async function moveCat(c, d){
+  const grp = sortedCats(), i = grp.findIndex(x => x.id === c.id), j = i + d; if (j < 0 || j >= grp.length) return; [grp[i], grp[j]] = [grp[j], grp[i]];
+  const upd = grp.map((x, k) => [x, k + 1]).filter(([x, n]) => x.sort_order !== n); const res = await Promise.all(upd.map(([x, n]) => sb.from('categories').update({ sort_order: n }).eq('id', x.id).eq('restaurant_id', rid)));
+  if (res.some(r => r.error)) { toast('No se pudo reordenar.'); return reloadAll(); } upd.forEach(([x, n]) => { x.sort_order = n; }); sendData(); refreshPanel();
+}
+async function delCat(c){
+  const n = prods.filter(p => p.category_id === c.id).length;
+  if (!await confirmDlg('Eliminar categoría', '¿Eliminar “' + c.name + '”?' + (n ? ' Sus ' + n + ' producto(s) NO se borran: pasarán a “Otros”.' : ''), 'Eliminar', true)) return;
+  const { error } = await sb.from('categories').delete().eq('id', c.id).eq('restaurant_id', rid); if (error) return toast('No se pudo eliminar la categoría.'); toast('Categoría eliminada.'); await reloadAll();
+}
+function promptCat(c){
+  modal(c ? 'Renombrar categoría' : 'Nueva categoría', (b, close) => {
+    const i = h('input', { type: 'text', id: 'catName', maxlength: 60, value: c ? c.name : '', placeholder: 'Ej: Bebidas' }), er = h('div', { class: 'ferr', role: 'alert' });
+    const go = async () => { const v = i.value.trim(); if (!v) { er.textContent = 'Escribe un nombre.'; return; } if (cats.some(x => x.id !== (c && c.id) && x.name.toLowerCase() === v.toLowerCase())) { er.textContent = 'Ya existe una categoría con ese nombre.'; return; } close(true); if (c) await updCat(c, { name: v }, 'Categoría renombrada.'); else await addCat(v); };
+    i.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+    b.append(h('div', { class: 'fld' }, h('label', { for: 'catName' }, 'Nombre'), i, er), h('div', { class: 'mf' }, h('button', { type: 'button', class: 'btn', onclick: () => close() }, 'Cancelar'), h('button', { type: 'button', class: 'btn primary', onclick: go }, 'Guardar')));
+  });
+}
+function openProductForm(p){
+  const isNew = !p, ini = { name: p?.name || '', price: p?.price ?? '', discount: p?.discount_percent || 0, category_id: p?.category_id || '', newCat: '', description: p?.description || '', available: p ? p.is_available !== false : true, ingredients: (p?.ingredients || []).slice(), allergens: (p?.allergens || []).slice(), serving: p?.serving || '', extra: p?.extra_info || '', tags: (p?.tags || []).map(t => t.id), removed: false };
+  const f = JSON.parse(JSON.stringify(ini)); let blob = null, blobUrl = null; const snap = () => JSON.stringify([f, !!blob]); const base = snap(); let busy = false;
+  modal(isNew ? 'Nuevo producto' : 'Editar producto', (b, close) => {
+    const st = h('span', { class: 'fst', role: 'status', 'aria-live': 'polite' }, 'Sin cambios'), upd = () => { st.textContent = snap() === base ? 'Sin cambios' : 'Cambios sin guardar'; st.classList.toggle('dirty', snap() !== base); };
+    const field = (lab, el, id) => h('div', { class: 'fld' }, h('label', { for: id }, lab), el), err = () => h('div', { class: 'ferr', role: 'alert' });
+    // foto
+    const th = h('div', { class: 'th big' }), file = h('input', { type: 'file', accept: 'image/*', hidden: true }), pick = h('button', { type: 'button', class: 'btn', onclick: () => file.click() }, 'Subir foto'), rm = h('button', { type: 'button', class: 'btn', onclick: () => { blob = null; f.removed = true; paint(); upd(); } }, 'Quitar');
+    const paint = () => { th.innerHTML = ''; const u = blob ? blobUrl : (!f.removed && p?.image_path ? imageUrl(p.image_path) : ''); if (u) { const im = h('img', { src: u, alt: 'Foto del producto' }); im.onerror = () => { th.innerHTML = ''; th.textContent = 'No se pudo cargar la foto'; }; th.append(im); } else th.textContent = 'Sin foto'; pick.textContent = u ? 'Cambiar foto' : 'Subir foto'; rm.style.display = u ? '' : 'none'; };
+    file.addEventListener('change', async () => { const fl = file.files[0]; if (!fl) return; try { blob = await toBlob(fl, 900, .8); if (blobUrl) URL.revokeObjectURL(blobUrl); blobUrl = URL.createObjectURL(blob); f.removed = false; paint(); upd(); } catch { toast('No se pudo usar esa imagen.'); } file.value = ''; });
+    b.append(h('div', { class: 'media' }, th, h('div', { class: 'mb' }, h('b', {}, 'Foto'), h('div', { class: 'row' }, pick, rm), h('small', { class: 'hint2' }, 'Se muestra recortada en las tarjetas; la ficha la muestra completa.')), file)); paint();
+    // datos básicos
+    const nm = h('input', { type: 'text', id: 'pf_name', maxlength: 80, value: f.name, oninput: () => { f.name = nm.value; upd(); } }), nmE = err();
+    const pr = h('input', { type: 'number', id: 'pf_price', min: 0, step: 100, inputmode: 'numeric', value: f.price, oninput: () => { f.price = pr.value; upd(); } }), prE = err();
+    const ds = h('input', { type: 'number', id: 'pf_disc', min: 0, max: 90, step: 1, inputmode: 'numeric', value: f.discount, oninput: () => { f.discount = Number(ds.value) || 0; upd(); } });
+    b.append(field('Nombre *', nm, 'pf_name'), nmE, h('div', { class: 'two' }, h('div', {}, field('Precio *', pr, 'pf_price'), prE), field('Descuento (%)', ds, 'pf_disc')));
+    const sel = h('select', { id: 'pf_cat', onchange: () => { f.category_id = sel.value; nc.style.display = sel.value === '__new__' ? '' : 'none'; upd(); } }); sel.append(h('option', { value: '' }, 'Sin categoría (Otros)')); sortedCats().forEach(c => sel.append(h('option', { value: c.id }, c.name))); sel.append(h('option', { value: '__new__' }, '＋ Nueva categoría…')); sel.value = f.category_id || '';
+    const nc = h('input', { type: 'text', id: 'pf_newcat', maxlength: 60, placeholder: 'Nombre de la nueva categoría', style: 'display:none;margin-top:8px', oninput: () => { f.newCat = nc.value; upd(); } });
+    const fc = field('Categoría', sel, 'pf_cat'); fc.append(nc); b.append(fc);
+    const ds2 = h('textarea', { id: 'pf_desc', rows: 3, maxlength: 400, oninput: () => { f.description = ds2.value; upd(); } }, f.description); b.append(field('Descripción', ds2, 'pf_desc'));
+    // disponibilidad
+    const av = h('input', { type: 'checkbox', checked: f.available, onchange: () => { f.available = av.checked; upd(); } }); b.append(h('label', { class: 'sw' }, h('span', {}, 'Disponible (si lo apagas se muestra “agotado”)'), av));
+    // información de la ficha
+    if (extrasOk) {
+      b.append(h('div', { class: 'sec' }, 'Información de la ficha del producto'), note('La ve el cliente al tocar el producto. Escribe solo lo que estés seguro: no se inventa nada.'));
+      const chips = h('div', { class: 'chips' }), ing = h('input', { type: 'text', id: 'pf_ing', maxlength: 40, placeholder: 'Escribe un ingrediente y pulsa Enter' });
+      const drawChips = () => { chips.innerHTML = ''; f.ingredients.forEach((x, i) => chips.append(h('span', { class: 'chip' }, x, h('button', { type: 'button', 'aria-label': 'Quitar ' + x, onclick: () => { f.ingredients.splice(i, 1); drawChips(); upd(); } }, '×')))); };
+      const addIng = () => { ing.value.split(',').map(s => s.trim().slice(0, 40)).filter(Boolean).forEach(s => { if (f.ingredients.length < 30 && !f.ingredients.some(y => y.toLowerCase() === s.toLowerCase())) f.ingredients.push(s); }); ing.value = ''; drawChips(); upd(); };
+      ing.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addIng(); } }); ing.addEventListener('blur', addIng); drawChips();
+      const fi = field('Ingredientes', ing, 'pf_ing'); fi.append(chips); b.append(fi);
+      const al = h('div', { class: 'allg', role: 'group', 'aria-label': 'Alérgenos' }); D.ALLERGENS.forEach(([k, n]) => { const c = h('input', { type: 'checkbox', checked: f.allergens.includes(k), onchange: () => { f.allergens = c.checked ? f.allergens.concat(k) : f.allergens.filter(x => x !== k); upd(); } }); al.append(h('label', {}, c, n)); });
+      const fa = h('div', { class: 'fld' }, h('label', {}, 'Contiene (alérgenos)'), al, h('small', { class: 'hint2' }, 'Marca solo los que hayas confirmado. Si no marcas ninguno, la ficha no muestra ese bloque (no significa “sin alérgenos”).')); b.append(fa);
+      const sv = h('input', { type: 'text', id: 'pf_serv', maxlength: 60, placeholder: 'Ej: 12 oz · 2 personas · 250 g', value: f.serving, oninput: () => { f.serving = sv.value; upd(); } }); b.append(field('Tamaño o porción', sv, 'pf_serv'));
+      const ex = h('textarea', { id: 'pf_extra', rows: 2, maxlength: 300, oninput: () => { f.extra = ex.value; upd(); } }, f.extra); b.append(field('Información adicional', ex, 'pf_extra'));
+    } else b.append(note('Ingredientes y alérgenos estarán disponibles en cuanto se active la actualización de la base de datos.'));
+    // etiquetas
+    if (allTags.length) { b.append(h('div', { class: 'sec' }, 'Etiquetas')); const tg = h('div', { class: 'chips' }); allTags.forEach(t => { const bt = h('button', { type: 'button', class: 'tgp', 'aria-pressed': String(f.tags.includes(t.id)), style: `--tb:${/^#[0-9a-fA-F]{6}$/.test(t.bg || '') ? t.bg : '#EEEEEE'};--tf:${/^#[0-9a-fA-F]{6}$/.test(t.fg || '') ? t.fg : '#111111'}`, onclick: async () => { const on = !f.tags.includes(t.id); if (on && t.requires_confirmation && !await confirmDlg('Confirma la etiqueta', 'Confirma que este producto realmente cumple con «' + t.name + '». Los clientes lo verán y pueden confiar en ello (por ejemplo, por alergias).', 'Sí, cumple')) return; f.tags = on ? f.tags.concat(t.id) : f.tags.filter(x => x !== t.id); bt.setAttribute('aria-pressed', String(on)); upd(); } }, t.name); tg.append(bt); }); b.append(tg); }
+    // pie
+    const save = h('button', { type: 'button', class: 'btn primary', onclick: async () => {
+      if (busy) return; nmE.textContent = prE.textContent = '';
+      const name = f.name.trim(), price = Number(f.price); let bad = false;
+      if (!name) { nmE.textContent = 'Ponle un nombre al producto.'; bad = true; } if (!(price > 0) || price > 99999999) { prE.textContent = 'El precio debe ser mayor a 0.'; bad = true; }
+      if (f.category_id === '__new__' && !f.newCat.trim()) { toast('Escribe el nombre de la nueva categoría.'); bad = true; } if (bad) { (nmE.textContent ? nm : pr).focus(); return; }
+      busy = true; save.disabled = true; save.textContent = 'Guardando…';
+      try {
+        let catId = f.category_id || null; if (f.category_id === '__new__') { const n = f.newCat.trim().slice(0, 60); const hit = cats.find(c => c.name.toLowerCase() === n.toLowerCase()); if (hit) catId = hit.id; else { const r = await sb.from('categories').insert({ restaurant_id: rid, name: n, sort_order: Math.max(0, ...cats.map(c => c.sort_order || 0)) + 1 }).select('id,name,sort_order').single(); if (r.error) throw r.error; cats.push(r.data); catId = r.data.id; } }
+        const row = { name, price, description: f.description.trim() || null, is_available: f.available, category_id: catId, discount_percent: Math.max(0, Math.min(90, Number(f.discount) || 0)) };
+        if (extrasOk) Object.assign(row, { ingredients: f.ingredients, allergens: f.allergens, serving: f.serving.trim() || null, extra_info: f.extra.trim() || null });
+        if (blob) row.image_path = await uploadBlob(blob, 'products'); else if (f.removed) row.image_path = null;
+        let pid = p?.id; if (p) { const { error } = await sb.from('products').update(row).eq('id', p.id).eq('restaurant_id', rid); if (error) throw error; } else { const { data, error } = await sb.from('products').insert({ ...row, restaurant_id: rid }).select('id').single(); if (error) throw error; pid = data.id; }
+        if (p && 'image_path' in row && p.image_path && p.image_path !== row.image_path && !prods.some(x => x.id !== p.id && x.image_path === p.image_path)) { try { await sb.storage.from(BUCKET).remove([p.image_path]); } catch {} }
+        if (JSON.stringify(f.tags.slice().sort()) !== JSON.stringify(ini.tags.slice().sort()) || isNew) { try { const { error } = await sb.rpc('set_product_tags', { p_product: pid, p_tags: f.tags }); if (error) throw error; } catch (e) { console.warn(e); toast('El producto se guardó, pero no se pudieron guardar las etiquetas.'); } }
+        close(true); if (blobUrl) URL.revokeObjectURL(blobUrl); toast(isNew ? 'Producto creado.' : 'Producto actualizado.'); await reloadAll();
+      } catch (e) { console.error(e); toast(dbErr(e, 'guardar el producto')); busy = false; save.disabled = false; save.textContent = 'Guardar'; }
+    } }, 'Guardar');
+    b.append(h('div', { class: 'mf sticky' }, st, h('button', { type: 'button', class: 'btn', onclick: () => close() }, 'Cancelar'), save));
+  }, { wide: true, beforeClose: () => (snap() === base || busy) ? true : confirm('Tienes cambios sin guardar. ¿Cerrar sin guardar?') });
+}
+function productRow(p){
+  const u = imageUrl(p.image_path), av = h('input', { type: 'checkbox', checked: p.is_available !== false, 'aria-label': 'Disponible: ' + p.name, onchange: () => setAvail(p, av.checked) });
+  const grp = sortedProds().filter(x => x.category_id === p.category_id), i = grp.findIndex(x => x.id === p.id);
+  return h('li', { class: 'prow' + (p.is_available === false ? ' off' : '') }, u ? h('img', { class: 'pt', src: u, alt: '', loading: 'lazy' }) : h('div', { class: 'pt' }, '—'),
+    h('div', { class: 'pn' }, p.name, h('small', {}, money(p.price) + (p.discount_percent ? ' · -' + p.discount_percent + '%' : '') + (p.is_available === false ? ' · agotado' : ''))),
+    h('div', { class: 'pa' }, av, ib(ICON.up, 'Subir ' + p.name, () => moveProd(p, -1), i <= 0), ib(ICON.down, 'Bajar ' + p.name, () => moveProd(p, 1), i >= grp.length - 1), ib(ICON.edit, 'Editar ' + p.name, () => openProductForm(p)), ib(ICON.copy, 'Duplicar ' + p.name, () => dupProd(p)), ib(ICON.del, 'Eliminar ' + p.name, () => delProd(p))));
+}
+
 const PANELS = {
+  templates(b){ tplGallery(b); },
   design(b){
-    b.append(h('div', { class: 'sec' }, 'Plantillas'), h('p', { class: 'note' }, 'Un diseño completo con un clic. Conserva tus textos.'));
-    const tp = h('div', { class: 'tpl' }); b.append(tp);
-    D.TEMPLATES.forEach(t => { const c = D.applyTemplate(D.normalize({}), t); tp.append(h('button', { type: 'button', onclick: () => { if (confirm('¿Usar la plantilla “' + t.name + '”? Puedes deshacerlo.')) replace(D.applyTemplate(cfg, t), 'Plantilla aplicada'); } }, h('div', { class: 'sw3' }, [c.primary, c.secondary, c.background, c.surface].map(x => h('i', { style: 'background:' + x }))), h('b', {}, t.name), h('span', {}, t.desc))); });
-    tiles('headerStyle', b); tiles('itemLayout', b); tiles('cardStyle', b); tiles('density', b); tiles('buttonStyle', b);
+    b.append(sec('Estilo visual'), note('Controla fondos, superficies, sombras, bordes y botones. Puedes combinarlo: por ejemplo, un menú minimalista con barra inferior de cristal.'));
+    tiles('style', b); tiles('headerStyle', b); tiles('itemLayout', b); tiles('cardStyle', b); tiles('density', b); tiles('buttonStyle', b);
     const r = h('input', { type: 'range', min: 0, max: 28, id: 'f_radius', oninput: () => set('radius', Number(r.value), true) }), rl = h('label', { for: 'f_radius' });
-    b.append(h('div', { class: 'sec' }, 'Redondeo exacto'), h('div', { class: 'fld' }, rl, r)); syncers.push(() => { r.value = D.radiusOf(cfg); rl.textContent = D.radiusOf(cfg) + ' px'; });
+    b.append(sec('Redondeo exacto'), h('div', { class: 'fld' }, rl, r)); syncers.push(() => { r.value = D.radiusOf(cfg); rl.textContent = D.radiusOf(cfg) + ' px'; });
+    seg('shadow', b, 'Sombras de las tarjetas', [['auto', 'Según estilo'], ['none', 'Ninguna'], ['soft', 'Suave'], ['medium', 'Media']]);
+    seg('anim', b, 'Animaciones', [['none', 'Ninguna'], ['subtle', 'Sutil'], ['dynamic', 'Dinámica']]);
+    b.append(note('Se desactivan solas si el teléfono del cliente tiene activado “reducir movimiento”. En esta vista previa las tarjetas no se animan al aparecer, para que no parpadeen al editar.'));
+  },
+  banner(b){
+    b.append(sec('Tu marca'), note('Sube tu logo y una imagen grande para el encabezado.'), mediaCard('logo', 'Logo', 'logo_path'), mediaCard('banner', 'Banner (imagen del encabezado)', 'cover_path', true));
+    b.append(sec('Textos del banner')); txt('bannerTitle', b, 'Título principal (opcional)', 60, 'Ej: Sabor que se queda'); txt('tagline', b, 'Subtítulo', 140, 'Ej: Buen sabor, siempre.'); swt('showAbout', b); swt('showAddress', b);
+    b.append(note('La descripción del negocio se edita en tu panel. Aquí solo decides si se muestra.'));
+    b.append(sec('Composición'));
+    seg('hAlign', b, 'Alineación del texto', [['auto', 'Según estilo'], ['left', 'Izquierda'], ['center', 'Centro'], ['right', 'Derecha']]);
+    seg('bannerH', b, 'Altura del banner', [['auto', 'Automática'], ['s', 'Baja'], ['m', 'Media'], ['l', 'Alta']]);
+    seg('hVert', b, 'Posición vertical del contenido', [['top', 'Arriba'], ['center', 'Centro'], ['bottom', 'Abajo']]); b.append(note('Se nota cuando la altura no es automática. Un banner alto deja de quedarse fijo arriba para no tapar el menú.'));
+    rng('bannerOverlay', b, 'Oscurecer la foto (legibilidad)', { unit: '%' }); rng('hGap', b, 'Espacio entre textos');
+    resetBtn(b, 'Restablecer banner', ['hAlign', 'hVert', 'bannerH', 'bannerOverlay', 'hGap']);
   },
   colors(b){
-    b.append(h('div', { class: 'sec' }, 'Color principal'), h('p', { class: 'note' }, 'Se usa en los botones y detalles. Toca uno:'));
+    b.append(sec('Color principal'), note('Se usa en los botones y detalles. Toca uno:'));
     const pal = h('div', { class: 'pal' }); b.append(pal);
     QUICK.forEach(c => pal.append(h('button', { type: 'button', style: 'background:' + c, 'aria-label': 'Color ' + c, 'data-c': c, onclick: () => set('primary', c) })));
     syncers.push(() => pal.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.c.toLowerCase() === cfg.primary.toLowerCase()))));
-    b.append(h('div', { class: 'sec' }, 'Paletas completas'));
-    const ps = h('div', { class: 'pals' }); b.append(ps);
+    b.append(sec('Combinaciones recomendadas')); const ps = h('div', { class: 'pals' }); b.append(ps);
     PALETTES.forEach(([n, c]) => ps.append(h('button', { type: 'button', onclick: () => replace({ ...cfg, primary: c[0], secondary: c[1], background: c[2], textColor: c[3], surface: c[4] }, 'Paleta “' + n + '” aplicada') }, h('div', { class: 'sw3' }, c.map(x => h('i', { style: 'background:' + x }))), h('span', {}, n))));
-    b.append(h('div', { class: 'sec' }, 'Personalizar cada color'));
-    [['primary', 'Principal', 'botones y detalles'], ['secondary', 'Encabezado', 'fondo de arriba'], ['background', 'Fondo', 'de la página'], ['textColor', 'Texto', 'letras'], ['surface', 'Tarjetas', 'fondo de cada producto']].forEach(([k, n, sub]) => {
-      const i = h('input', { type: 'color', 'aria-label': 'Color de ' + n.toLowerCase(), oninput: () => set(k, i.value.toUpperCase(), true) }); b.append(h('label', { class: 'cw' }, i, h('span', {}, n, h('small', {}, sub)))); syncers.push(() => { i.value = cfg[k]; });
-    });
-    const w = h('div'); b.append(w); syncers.push(() => { w.innerHTML = ''; const m = [];
-      if (D.contrast(cfg.textColor, cfg.background) < 4.5) m.push('El texto se leerá con dificultad sobre el fondo.');
-      if (D.contrast('#FFFFFF', cfg.primary) < 3) m.push('El “+” (blanco) casi no se verá sobre el color principal.');
-      if (cfg.headerStyle !== 'minimal' && D.contrast('#FFFFFF', cfg.secondary) < 4.5) m.push('El texto blanco del encabezado se leerá con dificultad.');
-      m.forEach(t => w.append(h('p', { class: 'warn' }, '⚠ ' + t))); });
+    b.append(sec('Colores base'));
+    [['primary', 'Principal', 'botones y detalles'], ['secondary', 'Encabezado', 'fondo de arriba'], ['background', 'Fondo', 'de la página'], ['textColor', 'Texto', 'letras'], ['surface', 'Tarjetas', 'fondo de cada producto']].forEach(([k, n, sub]) => clr(k, b, n, sub, { autoable: false }));
+    b.append(sec('Cada texto con su color'), note('Cada uno es independiente. “Auto” = lo decide el estilo.'));
+    const e = () => D.effective(cfg);
+    clr('titleColor', b, 'Títulos', 'categorías y nombres', { eff: () => e().title }); clr('descColor', b, 'Descripciones', 'texto secundario', { eff: () => e().desc }); clr('priceColor', b, 'Precios', 'valor de cada producto', { eff: () => e().price }); clr('cardBorder', b, 'Borde de tarjetas', 'líneas y contornos', { eff: () => cfg.cardBorder || '#E8E8E8' });
+    b.append(note('Los colores de la barra inferior y de las redes están en sus propias herramientas.'));
+    warnBox(b, contrastWarns);
   },
   text(b){
-    b.append(h('div', { class: 'sec' }, 'Frase bajo tu nombre')); txt('tagline', b, 'Se muestra en el encabezado', 140, 'Ej: Buen sabor, siempre.');
-    b.append(h('div', { class: 'sec' }, 'Tamaño de las letras'));
-    const sz = h('div', { class: 'tiles' }); [['s', 'Pequeño', 14], ['m', 'Normal', 18], ['l', 'Grande', 23]].forEach(([v, n, px]) => sz.append(h('button', { type: 'button', class: 'tile', 'data-v': v, onclick: () => set('size', v) }, h('span', { style: 'font-size:' + px + 'px;font-weight:800;line-height:32px' }, 'Aa'), n))); b.append(sz);
+    b.append(sec('Escala general')); const sz = h('div', { class: 'tiles' }); [['s', 'Pequeño', 14], ['m', 'Normal', 18], ['l', 'Grande', 23]].forEach(([v, n, px]) => sz.append(h('button', { type: 'button', class: 'tile', 'data-v': v, onclick: () => set('size', v) }, h('span', { style: 'font-size:' + px + 'px;font-weight:800;line-height:32px' }, 'Aa'), n))); b.append(sz);
     syncers.push(() => sz.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(cfg.size === x.dataset.v))));
-    b.append(h('div', { class: 'sec' }, 'Tipo de letra')); lockNote(b);
+    b.append(sec('Cada texto por separado'), note('En “Auto” se usa el tamaño recomendado del estilo. Los tamaños se adaptan solos a pantallas pequeñas y tienen límites para no desproporcionar el diseño.'));
+    acc(b, 'Nombre del restaurante', a => { rng('nameSize', a, 'Tamaño', { mid: 28 }); seg('nameWeight', a, 'Grosor', WTS, { num: true }); clr('nameColor', a, 'Color del nombre', 'sobre el encabezado', { eff: () => D.effective(cfg).name }); }, true);
+    acc(b, 'Título del banner', a => { rng('titleSize', a, 'Tamaño', { mid: 28 }); seg('titleWeight', a, 'Grosor', WTS, { num: true }); clr('bTitleColor', a, 'Color del título', 'sobre el encabezado', { eff: () => cfg.bTitleColor || '#FFFFFF' }); a.append(note('El texto del título se escribe en Banner.')); });
+    acc(b, 'Subtítulo', a => { rng('subSize', a, 'Tamaño', { mid: 13 }); clr('bSubColor', a, 'Color del subtítulo', 'frase bajo el nombre', { eff: () => cfg.bSubColor || '#9A9A9A' }); });
+    acc(b, 'Categorías y nombres de producto', a => { rng('catSize', a, 'Tamaño de categorías', { mid: 16 }); seg('catWeight', a, 'Grosor de categorías', WTS, { num: true }); rng('prodNameSize', a, 'Tamaño del nombre del producto', { mid: 16 }); seg('prodNameWeight', a, 'Grosor del nombre', WTS, { num: true }); clr('titleColor', a, 'Color de títulos y nombres', 'categorías y nombres', { eff: () => D.effective(cfg).title }); });
+    acc(b, 'Descripción', a => { rng('prodDescSize', a, 'Tamaño', { mid: 12 }); clr('descColor', a, 'Color de la descripción', 'texto secundario', { eff: () => D.effective(cfg).desc }); });
+    acc(b, 'Precio', a => { rng('priceSize', a, 'Tamaño', { mid: 15 }); seg('priceWeight', a, 'Grosor', WTS, { num: true }); clr('priceColor', a, 'Color del precio', 'valor de cada producto', { eff: () => D.effective(cfg).price }); });
+    warnBox(b, contrastWarns);
+    resetBtn(b, 'Restablecer tipografía recomendada', ['nameSize', 'nameWeight', 'nameColor', 'titleSize', 'titleWeight', 'bTitleColor', 'subSize', 'bSubColor', 'catSize', 'catWeight', 'prodNameSize', 'prodNameWeight', 'titleColor', 'prodDescSize', 'descColor', 'priceSize', 'priceWeight', 'priceColor', 'size']);
+    b.append(sec('Tipo de letra')); lockNote(b);
     [['fontHeading', 'Títulos'], ['fontBody', 'Textos']].forEach(([k, n]) => {
       b.append(h('p', { class: 'note', style: 'margin:8px 0 6px;font-weight:700;color:var(--text)' }, n)); const f = h('div', { class: 'fonts' }); b.append(f);
       D.FONTS.forEach(ft => f.append(h('button', { type: 'button', style: "font-family:'" + ft + "',sans-serif", 'data-f': ft, onclick: () => set(k, ft) }, ft, h('small', {}, isLocked() && ft !== 'Inter' ? '🔒' : ''))));
       syncers.push(() => f.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(cfg[k] === x.dataset.f))));
     });
   },
-  images(b){
-    b.append(h('div', { class: 'sec' }, 'Tu marca'), h('p', { class: 'note' }, 'Sube tu logo y una imagen grande para el encabezado.'));
-    b.append(mediaCard('logo', 'Logo', 'logo_path'), mediaCard('banner', 'Banner (imagen del encabezado)', 'cover_path', true));
-    b.append(h('div', { class: 'sec' }, 'Fotos de productos'));
-    swt('showImages', b); tiles('imageShape', b); tiles('imagePosition', b);
-    b.append(h('p', { class: 'note', style: 'margin-top:10px' }, 'La foto de cada producto se sube en ', h('a', { href: '#', style: 'color:var(--accent);font-weight:700', onclick: (e) => { e.preventDefault(); goPanel('productos'); } }, 'Productos'), '.'));
+  cards(b){
+    b.append(sec('Qué mostrar')); swt('showImages', b); swt('showDescriptions', b); swt('showPrices', b); swt('showTags', b); tiles('tagPosition', b);
+    b.append(sec('Fotos de productos')); tiles('imageShape', b); tiles('imagePosition', b);
+    seg('imgRatio', b, 'Proporción de la foto', [['auto', 'Automática'], ['square', 'Cuadrada'], ['portrait', 'Vertical'], ['landscape', 'Horizontal']]);
+    seg('imgFit', b, 'Ajuste', [['cover', 'Llenar (recorta)'], ['contain', 'Completa']]); seg('imgPos', b, 'Parte de la foto que se ve', [['center', 'Centro'], ['top', 'Arriba'], ['bottom', 'Abajo']]);
+    b.append(note('Las fotos nunca se deforman. “Llenar” recorta los bordes; “Completa” muestra la foto entera con márgenes.'));
+    rng('thumb', b, 'Tamaño de la foto (lista y tarjetas)', { mid: 58 }); rng('imgH', b, 'Altura de la foto en cuadrícula', { mid: 112, off: () => cfg.imgRatio !== 'auto' }); rng('cardGap', b, 'Separación entre tarjetas', { mid: 12 });
+    resetBtn(b, 'Restablecer tarjetas y fotos', ['imgRatio', 'imgFit', 'imgPos', 'thumb', 'imgH', 'cardGap', 'shadow', 'cardBorder']);
+  },
+  nav(b){
+    b.append(sec('Barra inferior')); swt('showNav', b);
+    seg('navBar', b, 'Estilo de la barra', [['solid', 'Sólida'], ['translucent', 'Translúcida'], ['glass', 'Cristal']]); b.append(note('“Cristal” desenfoca lo que pasa por detrás; si el teléfono no lo soporta, se muestra sólida.'));
+    swt('navFloating', b); swt('navLabels', b); rng('navH', b, 'Altura', { mid: 64 }); rng('navIconSize', b, 'Tamaño de los iconos', { mid: 22 }); rng('navRadius', b, 'Esquinas', { mid: 26 });
+    clr('navBg', b, 'Fondo de la barra', 'Auto = color del fondo', { eff: () => D.effective(cfg).navBg }); clr('navIcon', b, 'Iconos', 'inactivos', { eff: () => D.effective(cfg).navIcon }); clr('navActive', b, 'Icono activo', 'botón seleccionado', { eff: () => D.effective(cfg).navActive });
+    warnBox(b, () => { const e = D.effective(cfg), m = []; if (D.contrast(e.navIcon, e.navBg) < 3) m.push('los iconos casi no se ven sobre el fondo de la barra.'); if (D.contrast(e.navActive, e.navBg) < 3) m.push('el icono activo casi no se ve sobre la barra.'); return m; });
+    b.append(note('Cada botón lleva a algo real: Inicio, Buscar (si el buscador está activo), Favoritos, Contacto (si agregaste redes) y Carrito. La barra nunca tapa el contenido.'));
+    resetBtn(b, 'Restablecer barra inferior', ['navBar', 'navFloating', 'navLabels', 'navH', 'navIconSize', 'navRadius', 'navBg', 'navIcon', 'navActive']);
+    b.append(sec('Categorías')); swt('showCategoriesNav', b); tiles('navStyle', b);
+    b.append(sec('Buscar y destacados')); swt('showSearch', b); swt('showHighlights', b);
+  },
+  social(b){
+    socRows = socFromCfg();
+    b.append(note('Agrega tus redes y canales de contacto. Solo se muestran las que tengan un enlace válido y estén visibles.'));
+    const list = h('div', { class: 'soclist' }); b.append(list);
+    const sel = h('select', { id: 'socAdd', 'aria-label': 'Red que quieres añadir' }), addB = h('button', { type: 'button', class: 'btn primary', onclick: () => {
+      const t = sel.value; if (!t) return; const row = { t, u: '', m: '', on: true, text: '', err: '' };
+      const pre = t === 'whatsapp' ? String(restaurant.whatsapp || '').replace(/\D/g, '') : t === 'maps' ? String(restaurant.address || '') : ''; if (pre) { const p = D.parseSocialInput(t, pre); if (p.u) { row.text = pre; row.u = p.u; } }
+      socRows.push(row); renderSoc(); if (row.u) socPush(); const i = document.getElementById('soc_' + t); if (i) i.focus(); } }, 'Añadir');
+    b.append(h('div', { class: 'fld addrow' }, h('label', { for: 'socAdd' }, 'Añadir red'), h('div', { class: 'two1' }, sel, addB)));
+    function renderSoc(){
+      list.innerHTML = ''; if (!socRows.length) list.append(h('div', { class: 'empty' }, h('b', {}, 'Aún no agregas redes'), h('p', {}, 'Instagram, WhatsApp, Google Maps… elige una arriba.')));
+      socRows.forEach((r, i) => {
+        const er = h('div', { class: 'ferr', role: 'alert' }, r.err), inp = h('input', { type: 'text', id: 'soc_' + r.t, maxlength: 300, value: r.text, placeholder: SOC_PH[r.t], 'aria-label': D.SOCIAL_LABEL[r.t] + ': enlace o usuario',
+          oninput: () => { r.text = inp.value; if (!inp.value.trim()) { r.u = ''; r.err = ''; } else { const p = D.parseSocialInput(r.t, inp.value); if (p.error) { r.u = ''; r.err = p.error; } else { r.u = p.u; r.err = ''; } } er.textContent = r.err; socPush(); } });
+        const on = h('input', { type: 'checkbox', checked: r.on, 'aria-label': 'Mostrar ' + D.SOCIAL_LABEL[r.t], onchange: () => { r.on = on.checked; socPush(); } });
+        const li = h('div', { class: 'sr' }, h('div', { class: 'srh' }, h('span', { class: 'sri', html: D.SOCIAL_ICON[r.t] }), h('b', {}, D.SOCIAL_LABEL[r.t]), h('label', { class: 'swm' }, 'Visible', on), ib(ICON.up, 'Subir ' + D.SOCIAL_LABEL[r.t], () => { [socRows[i - 1], socRows[i]] = [socRows[i], socRows[i - 1]]; renderSoc(); socPush(); }, i === 0), ib(ICON.down, 'Bajar ' + D.SOCIAL_LABEL[r.t], () => { [socRows[i + 1], socRows[i]] = [socRows[i], socRows[i + 1]]; renderSoc(); socPush(); }, i === socRows.length - 1), ib(ICON.del, 'Quitar ' + D.SOCIAL_LABEL[r.t], () => { socRows.splice(i, 1); renderSoc(); socPush(); })), inp, er);
+        if (r.t === 'whatsapp') { const m = h('input', { type: 'text', maxlength: 200, value: r.m, placeholder: 'Mensaje inicial (opcional): Hola, quiero hacer un pedido', 'aria-label': 'Mensaje inicial de WhatsApp', oninput: () => { r.m = m.value; socPush(); } }); li.append(m); }
+        list.append(li);
+      });
+      sel.innerHTML = ''; const free = D.SOCIAL_TYPES.filter(t => !socRows.some(r => r.t === t)); free.forEach(t => sel.append(h('option', { value: t }, D.SOCIAL_LABEL[t]))); sel.disabled = addB.disabled = !free.length;
+    }
+    renderSoc(); syncers.push(() => { if (JSON.stringify(socPayload()) !== JSON.stringify(cfg.social)) { socRows = socFromCfg(); renderSoc(); } });
+    b.append(sec('Cómo se ven'));
+    seg('socialPlace', b, 'Dónde aparecen', [['footer', 'Sección de contacto'], ['header', 'Encabezado']]); seg('socialShape', b, 'Forma', [['circle', 'Circular'], ['rounded', 'Redondeada'], ['none', 'Sin contenedor']]); seg('socialDir', b, 'Distribución', [['row', 'Horizontal'], ['column', 'Vertical']]);
+    rng('socialSize', b, 'Tamaño', { mid: 38 }); rng('socialGap', b, 'Espaciado', { mid: 10 });
+    clr('socialColor', b, 'Color de los iconos', 'Auto = color del texto', { eff: () => D.effective(cfg).socialColor }); clr('socialBg', b, 'Fondo de los iconos', 'Auto = tono suave', { eff: () => D.effective(cfg).socialBg });
+    warnBox(b, () => { const e = D.effective(cfg); return cfg.socialColor && D.contrast(e.socialColor, cfg.socialBg || cfg.background) < 3 ? ['los iconos de redes casi no se ven sobre su fondo.'] : []; });
+    b.append(note('El menú siempre usa el diseño móvil (también en computadora), así que las redes se ven igual en todos los dispositivos. Los enlaces abren en una pestaña nueva con atributos de seguridad.'));
+    resetBtn(b, 'Restablecer estilo de redes', ['socialPlace', 'socialShape', 'socialDir', 'socialSize', 'socialGap', 'socialColor', 'socialBg']);
   },
   products(b){
-    if (!prods.length) {
-      b.append(h('div', { class: 'empty' }, h('div', { class: 'em' }, '🍽️'), h('b', {}, 'Aún no tienes productos'), h('p', {}, 'Agrégalos con nombre, precio y foto. Aparecerán aquí al instante.'), h('button', { class: 'btn primary block', type: 'button', onclick: () => goPanel('productos') }, '＋ Agregar mis productos')));
-    } else {
-      b.append(h('button', { class: 'btn primary block', type: 'button', style: 'margin:6px 0 14px', onclick: () => goPanel('productos') }, '＋ Agregar o editar productos'));
-      const ul = h('ul', { class: 'pl' }); b.append(ul);
-      prods.slice(0, 40).forEach(p => { const u = imageUrl(p.image_path); ul.append(h('li', {}, u ? h('img', { class: 'pt', src: u, alt: '' }) : h('div', { class: 'pt' }, 'sin foto'), h('div', { class: 'pn' }, p.name, h('small', {}, money(p.price) + (p.is_available === false ? ' · agotado' : ''))), h('a', { href: '#', 'aria-label': 'Editar ' + p.name, onclick: (e) => { e.preventDefault(); goPanel('productos'); } }, 'Editar'))); });
-      if (prods.length > 40) b.append(h('p', { class: 'note' }, 'Y ' + (prods.length - 40) + ' productos más en el panel.'));
-    }
-    b.append(h('div', { class: 'sec' }, 'Qué se muestra')); swt('showPrices', b); swt('showDescriptions', b); swt('showTags', b); tiles('tagPosition', b);
-    b.append(h('p', { class: 'note', style: 'margin-top:10px' }, 'Las etiquetas se crean y asignan en ', h('a', { href: '#', style: 'color:var(--accent);font-weight:700', onclick: (e) => { e.preventDefault(); goPanel('productos'); } }, 'Productos → Etiquetas'), '.'));
+    b.append(note('Los productos y categorías se guardan al instante y se ven en tu menú público. El diseño visual se publica aparte.'));
+    b.append(h('div', { class: 'two1' }, h('button', { type: 'button', class: 'btn primary', onclick: () => openProductForm(null) }, '＋ Nuevo producto'), h('button', { type: 'button', class: 'btn', onclick: () => promptCat(null) }, '＋ Categoría')));
+    if (!prods.length) b.append(h('div', { class: 'empty', style: 'margin-top:12px' }, h('b', {}, 'Aún no tienes productos'), h('p', {}, 'Crea el primero con nombre, precio y foto: aparecerá en la vista previa al instante.')));
+    const cl = sortedCats(); if (cl.length) acc(b, 'Categorías (' + cl.length + ')', a => { const ul = h('ul', { class: 'pl' }); a.append(ul); cl.forEach((c, i) => ul.append(h('li', { class: c.is_visible === false ? 'off' : '' }, h('div', { class: 'pn' }, c.name, h('small', {}, prods.filter(p => p.category_id === c.id).length + ' productos' + (c.is_visible === false ? ' · oculta' : ''))), h('div', { class: 'pa' }, ib(ICON.up, 'Subir ' + c.name, () => moveCat(c, -1), i === 0), ib(ICON.down, 'Bajar ' + c.name, () => moveCat(c, 1), i === cl.length - 1), ib(ICON.edit, 'Renombrar ' + c.name, () => promptCat(c)), h('button', { type: 'button', class: 'mini txt', onclick: () => updCat(c, { is_visible: c.is_visible === false }, c.is_visible === false ? 'Categoría visible' : 'Categoría oculta') }, c.is_visible === false ? 'Mostrar' : 'Ocultar'), ib(ICON.del, 'Eliminar ' + c.name, () => delCat(c)))))); });
+    const groups = cl.map(c => [c.name, sortedProds().filter(p => p.category_id === c.id)]).concat([['Otros', sortedProds().filter(p => !p.category_id || !cl.some(c => c.id === p.category_id))]]);
+    groups.forEach(([n, list]) => { if (!list.length) return; b.append(sec(n + ' · ' + list.length)); const ul = h('ul', { class: 'pl prl' }); b.append(ul); list.forEach(p => ul.append(productRow(p))); });
+    b.append(sec('Qué se muestra')); swt('showPrices', b); swt('showDescriptions', b); swt('showTags', b);
+    b.append(note('Las etiquetas se crean en ', h('a', { href: '#', style: 'color:var(--accent);font-weight:700', onclick: (e) => { e.preventDefault(); goPanel('productos'); } }, 'Productos → Etiquetas'), ' del panel y se asignan desde la ficha del producto. La foto mejorada con IA sigue en el panel.'));
   },
   sections(b){
-    b.append(h('div', { class: 'sec' }, 'Navegar en el menú')); swt('showNav', b); swt('showSearch', b); swt('showHighlights', b);
-    b.append(h('div', { class: 'sec' }, 'Categorías')); swt('showCategoriesNav', b); tiles('navStyle', b);
-    b.append(h('div', { class: 'sec' }, 'Encabezado')); swt('showAddress', b);
-    b.append(h('div', { class: 'sec' }, 'Anuncio y pie de página')); lockNote(b);
+    b.append(sec('Anuncio y pie de página')); lockNote(b);
     txt('announcement', b, 'Anuncio destacado (barra de color)', 160, 'Ej: 2x1 en postres hoy', true); txt('footerText', b, 'Texto del pie', 160, 'Ej: Abierto de 8am a 8pm', true, true);
-    b.append(h('div', { class: 'sec' }, 'Orden de las secciones'), h('p', { class: 'note' }, 'Arrastra o usa las flechas. Encabezado y Productos siempre se muestran.'));
+    b.append(sec('Orden de las secciones'), note('Arrastra o usa las flechas. Encabezado y Productos siempre se muestran.'));
     const ul = h('ul', { class: 'bl' }); b.append(ul); syncers.push(() => renderBlocks(ul));
   },
 };
+function rootNoop(){}
 function mediaCard(kind, title, col, wide){
   const th = h('div', { class: 'th' }), file = h('input', { type: 'file', accept: 'image/*', hidden: true });
   const pick = h('button', { type: 'button', class: 'btn', onclick: () => file.click() }, 'Subir'), del = h('button', { type: 'button', class: 'btn', onclick: () => saveMedia(col, null) }, 'Quitar');
@@ -280,10 +594,10 @@ function moveBlock(b, d){ const n = cfg.blocks.slice(), i = n.indexOf(b), j = i 
 
 /* ---------- barra lateral + panel ---------- */
 function buildRail(){ const r = $('rail'); TOOLS.forEach(([id, name, ico]) => r.append(h('button', { type: 'button', 'data-t': id, 'aria-pressed': 'false', onclick: () => openTool(id === tool && !$('drawer').classList.contains('closed') && matchMedia('(max-width:900px)').matches ? null : id) }, h('span', { html: ico }), name))); }
-function openTool(id){
+function openTool(id, keep){
   const dr = $('drawer'); if (!id) { dr.classList.add('closed'); document.querySelectorAll('#rail button').forEach(b => b.setAttribute('aria-pressed', 'false')); fit(); return; }
   tool = id; dr.classList.remove('closed'); syncers.length = 0;
-  $('dTitle').textContent = TOOLS.find(t => t[0] === id)[1]; const body = $('dBody'); body.innerHTML = ''; PANELS[id](body); body.scrollTop = 0;
+  $('dTitle').textContent = TOOLS.find(t => t[0] === id)[1]; const body = $('dBody'); const st0 = body.scrollTop; body.innerHTML = ''; thumbWins.clear(); PANELS[id](body); body.scrollTop = keep ? st0 : 0;
   document.querySelectorAll('#rail button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === id))); syncAll(); fit();
 }
 $('dClose').onclick = () => openTool(null);
@@ -293,11 +607,12 @@ function syncAll(){ syncers.forEach(f => f()); $('undo').disabled = hi <= 0; $('
 function pushHist(key){ const snap = JSON.stringify(cfg), now = Date.now(); if (key && key === lastKey && now - lastAt < 900 && hi >= 0) hist[hi] = snap; else { hist = hist.slice(0, hi + 1); hist.push(snap); if (hist.length > 100) hist.shift(); hi = hist.length - 1; } lastKey = key; lastAt = now; }
 function afterChange(){ syncAll(); sendDesign(); scheduleSave(); }
 function set(key, value, coalesce){
+  stopPreview();
   if (D.ADVANCED.includes(key) && isLocked()) { toast('🔒 Esta opción es del plan Personalizado.'); syncAll(); return; }
   const next = D.normalize({ ...cfg, [key]: value }); if (JSON.stringify(next) === JSON.stringify(cfg)) return;
   cfg = next; pushHist(coalesce ? key : null); afterChange();
 }
-function replace(next, msg){ cfg = D.normalize(next); if (isLocked()) D.ADVANCED.forEach(k => { cfg[k] = D.DEFAULTS[k]; }); pushHist(null); afterChange(); if (msg) toast(msg); }
+function replace(next, msg){ stopPreview(); cfg = D.normalize(next); if (isLocked()) D.ADVANCED.forEach(k => { cfg[k] = D.DEFAULTS[k]; }); pushHist(null); afterChange(); if (msg) toast(msg); }
 function undo(){ if (hi > 0) { hi--; cfg = JSON.parse(hist[hi]); lastKey = null; afterChange(); } }
 function redo(){ if (hi < hist.length - 1) { hi++; cfg = JSON.parse(hist[hi]); lastKey = null; afterChange(); } }
 $('undo').onclick = undo; $('redo').onclick = redo;
@@ -306,12 +621,16 @@ addEventListener('keydown', e => { const mod = e.ctrlKey || e.metaKey, tg = (e.t
 
 /* ---------- vista previa (el menú real en un iframe) ---------- */
 const pv = $('pv');
-const menuPayload = () => ({ restaurant: { name: restaurant.name, address: restaurant.address, logo_path: restaurant.logo_path, cover_path: restaurant.cover_path }, categories: cats, products: prods, design: D.compact(cfg) });
+const restPayload = () => ({ name: restaurant.name, description: restaurant.description, address: restaurant.address, whatsapp: restaurant.whatsapp, logo_path: restaurant.logo_path, cover_path: restaurant.cover_path });
+const menuPayload = () => ({ restaurant: restPayload(), categories: cats.filter(c => c.is_visible !== false), products: prods, design: D.compact(shownCfg()) });
 function sendData(){ if (previewReady) pv.contentWindow.postMessage({ type: 'kartta-data', menu: menuPayload() }, location.origin); }
-function sendDesign(){ if (previewReady) pv.contentWindow.postMessage({ type: 'kartta-design', design: D.compact(cfg) }, location.origin); }
-addEventListener('message', e => { if (e.origin !== location.origin || e.source !== pv.contentWindow) return; const m = e.data || {};
+function sendDesign(){ if (previewReady) pv.contentWindow.postMessage({ type: 'kartta-design', design: D.compact(shownCfg()) }, location.origin); }
+addEventListener('message', e => { if (e.origin !== location.origin) return; const m = e.data || {};
+  if (thumbWins.has(e.source)) { if (m.type === 'kartta-ready') e.source.postMessage({ type: 'kartta-data', menu: thumbMenu(thumbWins.get(e.source)) }, location.origin); return; }
+  if (e.source !== pv.contentWindow) return;
   if (m.type === 'kartta-ready') { previewReady = true; sendData(); pv.contentWindow.postMessage({ type: 'kartta-clean', on: $('clean').checked }, location.origin); fit(); }
-  else if (m.type === 'kartta-click') { const map = { header: 'design', announcement: 'sections', categories: 'sections', items: 'products', footer: 'sections' }; openTool(map[m.el] || 'design'); pv.contentWindow.postMessage({ type: 'kartta-select', el: m.el }, location.origin); } });
+  else if (m.type === 'kartta-click') { const map = { header: 'banner', announcement: 'sections', categories: 'nav', items: 'products', footer: 'sections', social: 'social' }; openTool(map[m.el] || 'design'); pv.contentWindow.postMessage({ type: 'kartta-select', el: m.el }, location.origin); } });
+$('pvApply').onclick = () => { if (previewTpl) applyTpl(previewTpl); }; $('pvStop').onclick = stopPreview;
 $('clean').onchange = () => pv.contentWindow.postMessage({ type: 'kartta-clean', on: $('clean').checked }, location.origin);
 const DEV = { mobile: [390, 780], tablet: [768, 900], desktop: [1100, 760] };
 function fit(){ const [w, hh] = DEV[device], st = $('stage'), fr = $('frame'), sc = Math.min(1, (st.clientWidth - 24) / (w + 16)); fr.style.width = (w + 16) + 'px'; fr.style.height = (hh + 16) + 'px'; fr.style.transform = 'scale(' + sc + ')'; fr.style.marginBottom = (-(hh + 16) * (1 - sc)) + 'px'; }
@@ -355,11 +674,14 @@ $('pubMenu').onclick = async () => { const { error } = await sb.from('restaurant
 
 /* ---------- datos y arranque ---------- */
 async function loadCatalog(){
-  const [c, p] = await Promise.all([sb.from('categories').select('id,name,sort_order').eq('restaurant_id', rid).order('sort_order'), sb.from('products').select('id,category_id,name,description,price,discount_percent,image_path,is_available,sort_order').eq('restaurant_id', rid).eq('is_active', true).order('sort_order')]);
-  cats = c.data || []; prods = p.data || [];
-  try { // etiquetas activas de cada producto y categoría (solo lectura)
-    const [tg, pl, cl] = await Promise.all([sb.from('product_tags').select('id,name,bg,fg,style,icon,sort_order').eq('restaurant_id', rid).eq('is_active', true).order('sort_order'), sb.from('product_tag_links').select('product_id,tag_id').eq('restaurant_id', rid), sb.from('category_tag_links').select('category_id,tag_id').eq('restaurant_id', rid)]);
-    const byId = new Map((tg.data || []).map(t => [t.id, t]));
+  const cols = 'id,category_id,name,description,price,discount_percent,image_path,is_available,sort_order';
+  const cq = sb.from('categories').select('id,name,sort_order,is_visible').eq('restaurant_id', rid).order('sort_order');
+  let p = await sb.from('products').select(cols + ',ingredients,allergens,serving,extra_info').eq('restaurant_id', rid).eq('is_active', true).order('sort_order');
+  extrasOk = !p.error; if (p.error) p = await sb.from('products').select(cols).eq('restaurant_id', rid).eq('is_active', true).order('sort_order');   // la migración v3 aún no está aplicada: el editor sigue funcionando
+  const c = await cq; cats = c.data || []; prods = p.data || [];
+  try { // etiquetas activas de cada producto y categoría
+    const [tg, pl, cl] = await Promise.all([sb.from('product_tags').select('id,name,bg,fg,style,icon,sort_order,requires_confirmation').eq('restaurant_id', rid).eq('is_active', true).order('sort_order'), sb.from('product_tag_links').select('product_id,tag_id').eq('restaurant_id', rid), sb.from('category_tag_links').select('category_id,tag_id').eq('restaurant_id', rid)]);
+    allTags = tg.data || []; const byId = new Map(allTags.map(t => [t.id, t]));
     prods.forEach(x => { x.tags = (pl.data || []).filter(l => l.product_id === x.id).map(l => byId.get(l.tag_id)).filter(Boolean); });
     cats.forEach(x => { x.tags = (cl.data || []).filter(l => l.category_id === x.id).map(l => byId.get(l.tag_id)).filter(Boolean); });
   } catch (e) { console.warn(e); }
@@ -370,16 +692,18 @@ async function boot(user){
     const mem = await sb.from('restaurant_members').select('restaurant_id,role').eq('user_id', user.uid).order('created_at').limit(1);
     if (!mem.data || !mem.data.length) throw new Error('sin_negocio'); if (!['owner', 'admin'].includes(mem.data[0].role)) throw new Error('sin_permiso');
     rid = mem.data[0].restaurant_id;
-    const [r, sub, ds] = await Promise.all([sb.from('restaurants').select('name,slug,address,logo_path,cover_path,is_published').eq('id', rid).single(), sb.from('subscriptions').select('plan_id,status,current_period_end').eq('restaurant_id', rid).maybeSingle(), sb.from('menu_designs').select('status,config').eq('restaurant_id', rid)]);
+    const [r, sub, ds] = await Promise.all([sb.from('restaurants').select('name,slug,description,whatsapp,address,logo_path,cover_path,is_published').eq('id', rid).single(), sb.from('subscriptions').select('plan_id,status,current_period_end').eq('restaurant_id', rid).maybeSingle(), sb.from('menu_designs').select('status,config').eq('restaurant_id', rid)]);
     if (r.error) throw r.error; restaurant = r.data; $('viewPub').href = location.origin + '/m/' + encodeURIComponent(restaurant.slug); $('bizTitle').textContent = '· ' + (restaurant.name || '');
     const s = sub.data, vig = s && ['active', 'trialing'].includes(s.status) && (!s.current_period_end || new Date(s.current_period_end) > new Date());
     if (vig) { const p = await sb.from('plans').select('limits').eq('id', s.plan_id).maybeSingle(); rank = Number(p.data?.limits?.rank || 0); }
     const rows = ds.data || [], draft = rows.find(x => x.status === 'draft'), pub = rows.find(x => x.status === 'published');
     published = D.normalize(pub ? pub.config : {}); cfg = D.normalize(draft ? draft.config : (pub ? pub.config : {})); lastSaved = draft ? JSON.stringify(D.compact(draft.config)) : '';
     await loadCatalog(); menuPublished = !!restaurant.is_published; $('pubBanner').classList.toggle('show', !menuPublished);
+    const firstRun = !pub && !(draft && Object.keys(D.compact(draft.config)).length > 1);
     buildRail(); hist = [JSON.stringify(cfg)]; hi = 0; booted = true;
     const want = (location.hash || '').slice(1); openTool(TOOLS.some(t => t[0] === want) ? want : (matchMedia('(max-width:900px)').matches ? null : 'design')); renderState();
     $('gate').classList.add('hidden'); $('app').classList.add('ready'); fit(); if (previewReady) sendData();
+    let seen = false; try { seen = !!localStorage.getItem('kartta_tpl_seen_' + rid); } catch {} if (firstRun && !seen) firstRunTemplates();
   } catch (e) { console.error(e); $('gateMsg').textContent = e.message === 'sin_permiso' ? 'Solo el dueño o un administrador puede usar el editor.' : e.message === 'sin_negocio' ? 'Tu cuenta no tiene un negocio asociado todavía.' : 'No pudimos cargar el editor. Revisa tu conexión.'; }
 }
 let started = false;
