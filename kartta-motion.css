@@ -1,0 +1,112 @@
+/* =====================================================================
+   KARTTA — Sistema de motion (capa aditiva; no cambia diseño ni lógica)
+   Se carga AL FINAL del <head> para poder afinar lo existente.
+   Reglas: solo transform/opacity/filter · todo se apaga con prefers-reduced-motion.
+   ===================================================================== */
+:root{
+  /* duraciones: rápida (controles) · base (tarjetas/paneles) · lenta (cambios de contexto) */
+  --m-fast:120ms; --m-base:220ms; --m-slow:360ms;
+  /* curvas: salida suave · resorte con rebote mínimo · entrada/salida */
+  --m-out:cubic-bezier(.16,1,.3,1);
+  --m-spring:cubic-bezier(.34,1.32,.64,1);
+  --m-inout:cubic-bezier(.65,0,.35,1);
+  /* distancias, escalas y desenfoque */
+  --m-dist:8px; --m-dist-lg:14px;
+  --m-press:.97; --m-lift:-3px;
+  --m-blur:6px;
+  /* elevación (sombras suaves; coherentes con --shadow del panel) */
+  --m-elev-1:0 1px 2px rgba(0,0,0,.18),0 10px 24px -14px rgba(0,0,0,.45);
+  --m-elev-2:0 2px 4px rgba(0,0,0,.2),0 18px 36px -16px rgba(0,0,0,.55);
+}
+
+@keyframes m-fade{from{opacity:0}to{opacity:1}}
+@keyframes m-rise{from{opacity:0;transform:translateY(var(--m-dist))}to{opacity:1;transform:none}}
+@keyframes m-blur-in{
+  from{opacity:0;filter:blur(var(--m-blur));transform:translateY(6px)}
+  to{opacity:1;filter:blur(0);transform:none}
+}
+@keyframes m-pop{0%{transform:scale(1)}45%{transform:scale(1.14)}100%{transform:scale(1)}}
+
+/* ---------- 1. Entrada de la app (el "gate" de carga sale con fundido, ver JS) ---------- */
+#app.ready{animation:m-fade var(--m-slow) ease both;}
+#gate .m-gate-bar{width:150px;height:6px;border-radius:99px;margin-top:6px;}
+
+/* ---------- 2. Vistas: entrada coordinada con el fundido de salida (JS) ---------- */
+.view{animation:m-rise var(--m-base) var(--m-out) both;}
+.m-host{position:relative;}
+.view.m-leaving{position:absolute;pointer-events:none;}
+
+/* Primera visita de cada vista: títulos con blur reveal y tarjetas en cascada sutil */
+.view.m-first .vhead h2,.view.m-first .hello{animation:m-blur-in var(--m-slow) var(--m-out) both;}
+.view.m-first .vhead p,.view.m-first .hello-sub{animation:m-blur-in var(--m-slow) var(--m-out) 60ms both;}
+.view.m-first > .card,.view.m-first > .grid-sum > .sum,.view.m-first .three > .card,.view.m-first .mgrid > *{
+  animation:m-rise var(--m-slow) var(--m-out) both;
+  animation-delay:calc(var(--m-i,0) * 45ms + 60ms);
+}
+.view.m-first > .card:nth-child(2),.view.m-first > .grid-sum > .sum:nth-child(2){--m-i:1}
+.view.m-first > .card:nth-child(3),.view.m-first > .grid-sum > .sum:nth-child(3){--m-i:2}
+.view.m-first > .card:nth-child(4),.view.m-first > .grid-sum > .sum:nth-child(4){--m-i:3}
+.view.m-first > .card:nth-child(5),.view.m-first > .grid-sum > .sum:nth-child(5){--m-i:4}
+.view.m-first > .card:nth-child(n+6),.view.m-first > .grid-sum > .sum:nth-child(n+6){--m-i:5}
+
+/* ---------- 3. Cifras: blur reveal con el valor REAL (sin contar números falsos) ---------- */
+.sum .n,.sum .s,#aiTokens{font-variant-numeric:tabular-nums;}
+.m-blur{animation:m-blur-in var(--m-slow) var(--m-out) both;}
+
+/* ---------- 4. Tarjetas: elevación, borde y compresión (solo las interactivas) ---------- */
+@media (hover:hover) and (pointer:fine){
+  .sum.link{transition:transform var(--m-base) var(--m-out),box-shadow var(--m-base) ease,border-color var(--m-base) ease;}
+  .sum.link:hover{box-shadow:var(--m-elev-2);border-color:color-mix(in srgb,var(--accent) 38%,var(--border));}
+  .pcard{transition:transform var(--m-base) var(--m-out),box-shadow var(--m-base) ease,border-color var(--m-base) ease;}
+  .pcard:hover{box-shadow:var(--m-elev-2);border-color:color-mix(in srgb,var(--accent) 30%,var(--border));}
+  .btn:hover:not(:disabled){box-shadow:var(--m-elev-1);}
+  .btn-accent:hover:not(:disabled){box-shadow:0 8px 20px -10px color-mix(in srgb,var(--accent) 70%,transparent);}
+  .btn svg{transition:transform var(--m-base) var(--m-out);}
+  .btn:hover:not(:disabled) svg{transform:translateX(1px) scale(1.06);}
+}
+.sum.link:active{transform:translateY(-1px) scale(.985);}
+.pcard:active{transform:scale(.99);}
+.btn:active:not(:disabled){transform:scale(var(--m-press));transition-duration:var(--m-fast);}
+.sb-item:active,.seg button:active{transform:scale(.98);}
+.seg button{transition:background var(--m-fast) ease,color var(--m-fast) ease,transform var(--m-fast) var(--m-spring);}
+.pill{transition:background-color var(--m-base) ease,color var(--m-base) ease;}
+
+/* Cambio de tema: color y borde fluyen en vez de saltar */
+.card,.modal,#sidebar,#tabbar,.ped,.mcard,.pcard{transition-property:background-color,border-color,color,box-shadow,transform;transition-duration:var(--m-slow);}
+.pcard{transition-duration:var(--m-base),var(--m-base),var(--m-base),var(--m-base),var(--m-base);}
+
+/* ---------- 5. Controles: foco y mensajes de formulario ---------- */
+input,select,textarea{transition:border-color var(--m-fast) ease,box-shadow var(--m-fast) ease,background-color var(--m-fast) ease;}
+.fmsg{transition:color var(--m-base) ease,opacity var(--m-base) ease;}
+
+/* ---------- 6. Toast con resorte mínimo ---------- */
+.toast{transform:translate(-50%,var(--m-dist-lg)) scale(.96);transition:opacity var(--m-base) ease,transform var(--m-slow) var(--m-spring);}
+.toast.show{transform:translate(-50%,0) scale(1);}
+
+/* ---------- 7. Modales, panel lateral y fondo ---------- */
+.modal-bg.show{animation:m-fade var(--m-base) ease both;}
+.modal-bg.m-ghost{display:flex;pointer-events:none;}
+.scrim.show{animation:m-fade var(--m-base) ease both;}
+#sidebar{transition-timing-function:var(--m-out);}
+
+/* ---------- 8. Barra móvil: magnificación tipo dock ---------- */
+#tabbar button svg{
+  transform:scale(calc(var(--mag,1) * var(--act,1)));
+  transform-origin:50% 70%;
+  transition:transform var(--m-base) var(--m-spring);
+  will-change:transform;
+}
+#tabbar button.active{--act:1.12;}
+#tabbar button{transition:background-color var(--m-base) ease,color var(--m-base) ease;}
+#tabbar button.m-press svg{--mag:1.3;}
+#tabbar button.m-pop svg{animation:m-pop var(--m-slow) var(--m-spring);}
+
+/* ---------- 9. Skeleton: shimmer discreto (el .skel base ya existe en el panel) ---------- */
+.skel{animation-duration:1.4s;}
+
+/* ---------- Movimiento reducido: sin desplazamientos, desenfoques ni resortes ---------- */
+@media (prefers-reduced-motion:reduce){
+  .view,.view.m-first *,.m-blur,#app.ready,.modal-bg.show,.scrim.show,#tabbar button.m-pop svg{animation:none !important;}
+  #tabbar button svg{transform:none !important;transition:none !important;}
+  .toast,.toast.show{transform:translate(-50%,0);}
+}
