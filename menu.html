@@ -742,6 +742,14 @@ async function cargarMenu(){
   mostrarMenu();
   paint(menu);
   sb.rpc('track_event', { p_slug: slug, p_type: mesa ? 'qr_scan' : 'menu_view', p_product: null, p_session: sessionId }).then(() => {}, () => {});
+  if (!PREVIEW) sb.rpc('get_restaurant_status', { p_slug: slug }).then(({ data, error }) => {
+    if (error || !data || data.is_open !== false) return;
+    window.__closed = true;
+    const b = document.createElement('div'); b.setAttribute('role', 'status');
+    b.style.cssText = 'position:sticky;top:0;z-index:60;background:#111;color:#fff;text-align:center;padding:10px 14px;font:600 13px/1.4 system-ui,sans-serif';
+    b.textContent = 'Estamos cerrados por ahora. Puedes ver el menú, pero no recibimos pedidos en este momento.';
+    document.body.insertBefore(b, document.body.firstChild);
+  }, () => {});
 }
 
 /* El editor (misma página de origen) envía los datos y el diseño en borrador; nada se guarda desde aquí. */
@@ -833,8 +841,10 @@ function updateNavCart(count){ const n = $m('navCartN'); n.hidden = !count; n.te
 
 // ---------------- Ficha de producto (pantalla completa) ----------------
 let pdProduct = null, pdQty = 1, pdOpener = null;
+const _pvSeen = new Set();
 function openDetail(p, opener){
   pdProduct = p; pdQty = 1; pdOpener = opener || null;
+  if (!PREVIEW && p && p.id && !_pvSeen.has(p.id)) { _pvSeen.add(p.id); try { sb.rpc('track_event', { p_slug: slug, p_type: 'product_view', p_product: p.id, p_session: sessionId }).then(() => {}, () => {}); } catch {} }
   const $ = (id) => document.getElementById(id);
   const disponible = p.is_available !== false, dsc = Number(p.discount_percent || 0), img = imageUrl(p.image_path);
   $('pdName').textContent = p.name || '';
@@ -941,6 +951,7 @@ document.getElementById('btnConfirmarPedido').addEventListener('click', async ()
   errEl.classList.remove('show');
   const nombre = document.getElementById('clienteNombre').value.trim();
   const telefono = document.getElementById('clienteTelefono').value.trim();
+  if (window.__closed) { errEl.textContent = 'El restaurante está cerrado por ahora y no recibe pedidos.'; errEl.classList.add('show'); return; }
   if (cartCount() === 0) { errEl.textContent = 'Tu pedido está vacío.'; errEl.classList.add('show'); return; }
   if (!nombre) { errEl.textContent = 'Cuéntanos tu nombre para enviar el pedido.'; errEl.classList.add('show'); return; }
 
@@ -958,7 +969,8 @@ document.getElementById('btnConfirmarPedido').addEventListener('click', async ()
   } catch (e) {
     console.error(e);
     const msg = String(e?.message || '');
-    errEl.textContent = msg.includes('some items unavailable') ? 'Algún producto de tu pedido ya no está disponible. Actualiza el menú y revisa tu pedido.'
+    errEl.textContent = msg.includes('restaurant_closed') ? 'El restaurante acaba de cerrar y no recibe pedidos por ahora.'
+      : msg.includes('some items unavailable') ? 'Algún producto de tu pedido ya no está disponible. Actualiza el menú y revisa tu pedido.'
       : msg.includes('too many orders') ? 'El restaurante está recibiendo muchos pedidos. Intenta de nuevo en un momento.'
       : 'No pudimos enviar tu pedido. Revisa tu conexión e intenta de nuevo.';
     errEl.classList.add('show');
@@ -971,5 +983,6 @@ document.getElementById('btnCerrarExito').addEventListener('click', () => closeS
 cargarMenu();
 
 </script>
+<script type="module" src="/kartta-loyalty-public.js"></script>
 </body>
 </html>

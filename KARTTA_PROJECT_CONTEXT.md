@@ -35,6 +35,9 @@ SaaS para restaurantes, cafés y bares en Colombia: carta digital con enlace pú
 | `kartta-tour.js` | Guía interactiva del panel (9 pasos) |
 | `cookies.js` + `cookies.html`, `terminos.html`, `privacidad.html`, `legal.css` | Legal y consentimiento de cookies |
 | `kartta-motion.css` / `kartta-motion.js` | **Nuevo (30-oct-2026):** sistema de motion del panel (ver §14) |
+| `kartta-modules.js/.css`, `kartta-metrics.js`, `kartta-qr.js` | **Nuevo (30-oct-2026):** centro de control, métricas, QR, pagos y filtros (ver §15) |
+| `tarjeta.html`, `kartta-card.js`, `kartta-loyalty.js`, `kartta-loyalty-public.js`, `20261030_fidelizacion.sql` | **Nuevo (30-oct-2026):** fidelización (ver §16); SQL **NO aplicada** |
+| `20261029_panel_fase1.sql` | **Nueva, NO APLICADA** (ver §15) |
 | `*.sql` (5) | Migraciones **ya aplicadas** (documentación; algunas son solo comentarios) |
 | `index.ts`, `index (1).ts`, `index (2).ts` | Tres Edge Functions distintas con nombre ambiguo (ver §8) |
 | `assets/`, `landing-*.{png,jpg,webp}`, `diferencia-*`, `personalizacion-*` | Imágenes |
@@ -162,3 +165,38 @@ No ejecuté la app ni un navegador; no inspeccioné Supabase (políticas RLS, fu
 **No aplicado (y por qué):** `editor.html`, `menu.html` e `index.html` no se modificaron: el menú y la landing ya tienen su propio sistema de reveal y `prefers-reduced-motion`, y el editor se comparte con la vista previa del cliente; tocarlos requiere una fase propia. El cierre del panel lateral móvil (`#sidebar`) ya tenía transición; el fondo (`.scrim`) solo anima la entrada.
 
 **Pruebas ejecutadas (Chromium real, Supabase simulado en memoria; NO con sesión real):** panel carga sin errores de consola en escritorio, con movimiento reducido y en móvil 390 px; crossfade (vista saliente marcada y limpiada, sin estilos residuales), 3 cambios consecutivos sin vistas duplicadas, sin desborde horizontal, sin IDs duplicados, cifra cambia con blur y mantiene su texto real, modal abre/cierra con fantasma que se elimina, dock con valores 1.32/1.09/0.94 y tap que activa la vista a la primera. **No probado:** Safari/Firefox, dispositivos táctiles reales, lector de pantalla, sesión real de Supabase, rendimiento en móviles de gama baja.
+
+## 15. Fase 1 del panel integral (30-oct-2026)
+
+**Alcance de esta fase:** centro de control de Inicio, estado abierto/cerrado, compartir menú, filtros de pedidos, Métricas, Código QR y Pagos (estados). **No implementado todavía:** Fidelización (puntos, premios, canjes), Email marketing, importación/exportación de contactos, impresión de pedidos, variantes/adicionales de productos, duplicar/archivar productos, edición de contacto/redes dentro del panel (ya existe en el editor visual, herramienta «Redes», y WhatsApp en Configuración; no se duplicó).
+
+| Módulo | Archivos | Estado |
+|---|---|---|
+| Inicio: nombre, estado de publicación real (Publicado / Borrador / Pendiente / No disponible), 9 accesos rápidos, interruptor abierto/cerrado | `kartta-modules.js`, `dashboard.html` | Probado con Supabase simulado |
+| Abierto/cerrado (separado de la publicación) | RPC `set_restaurant_open`, trigger que rechaza pedidos si está cerrado, `get_restaurant_status`; aviso en `menu.html` | **Requiere aplicar la migración**; sin ella el panel dice «no disponible» |
+| Compartir menú (nativo, WhatsApp, copiar) | `kartta-modules.js` | Probado (enlace real `/m/<slug>`) |
+| Pedidos: búsqueda (n.º, cliente, mesa), estado, fecha, pago | `kartta-modules.js`, `dashboard.html` | Probado. Método de pago y tipo de entrega: **no existen en el modelo actual** |
+| Métricas: visitas, pedidos, completados, cancelados, ventas confirmadas, ticket promedio, comparación con período anterior, por día y por hora, top productos; 7/30/90 días y rango personalizado; gráficas interactivas | `kartta-metrics.js` | Pedidos/ventas: verificado con datos de prueba (cálculo y zona horaria Bogotá). **Visitas dependen de poder leer `menu_events` (esquema no está en el repo)**; si no se puede, se muestra «no disponible» |
+| «Productos más consultados» | `menu.html` envía `track_event(... 'product_view')` | **[X]** Depende de que `track_event` acepte ese tipo; si lo rechaza no se registra nada (falla en silencio) |
+| Código QR: colores, estilo (cuadrado/redondeado/puntos), logo, PNG, SVG, compartir, restablecer, bloqueo por contraste | `kartta-qr.js` | PNG y SVG decodificados con OpenCV → apuntan a `/m/<slug>`. Probado con un núcleo QR equivalente (el sandbox no accede al CDN de qrcodejs). **Logo no probado** (no hay logo en los datos de prueba). Diseño guardado en `profiles.prefs.qr[restaurante]` |
+| Pagos: estado por proveedor (Wompi, Mercado Pago), pasos de vinculación, pagos confirmados a mano | `kartta-modules.js`, tabla `payment_accounts` (solo lectura) | Sin integración real: ningún proveedor se muestra conectado |
+
+**Migración `20261029_panel_fase1.sql` (NO aplicada ni probada contra Postgres):** `restaurants.is_open`, RPC `set_restaurant_open` (owner/admin/staff), RPC pública `get_restaurant_status`, trigger `trg_orders_block_closed` sobre `orders`, tabla `payment_accounts` con RLS (select owner/admin, sin escritura desde el navegador). No redefine `get_public_menu` ni `place_order`. Aplicar primero en una rama de Supabase. El trigger supone que `orders.restaurant_id` y `restaurants.is_suspended` existen (los usa el código actual).
+
+**Variables de entorno nuevas:** ninguna. **Pendiente de configuración externa:** cuenta y credenciales de Wompi/Mercado Pago (secretos de Edge Functions + webhook verificado), proveedor de correo para la fase de Email marketing.
+
+**Pruebas pendientes (no ejecutadas):** aislamiento entre dos restaurantes con sesiones reales; migración en una base real; Safari/Firefox; escaneo con celulares reales; rendimiento con miles de pedidos (la consulta de métricas lee hasta 3.000 pedidos y 10.000 eventos del rango y avisa si se trunca).
+
+## 16. Fase 2 — Fidelización (30-oct-2026)
+
+**Qué hay:** panel «Fidelización» con 7 pestañas (Resumen, Clientes, Puntos, Premios, Canjes, Juegos, Tarjeta); página pública `tarjeta.html` (ruta `/t/<token>`); botón «Mi tarjeta de puntos» en el menú público (`kartta-loyalty-public.js`, solo si el programa está activo y fuera de la vista previa del editor).
+
+**Modelo (migración `20261030_fidelizacion.sql`, NO aplicada ni probada en Postgres):** `loyalty_settings`, `loyalty_customers` (único por restaurante+teléfono normalizado, `card_token` privado, consentimiento obligatorio), `loyalty_rewards`, `loyalty_movements` (libro auditable; índices únicos: un abono por pedido, un bono de bienvenida, un juego por día), `loyalty_redemptions` (código de 6 caracteres).
+
+**Seguridad (diseño):** RLS solo de lectura para owner/admin/staff del restaurante; ninguna escritura directa; todo saldo se mueve en `_loyalty_move` (bloqueo de fila, saldo ≥ 0, registro del movimiento). El cliente no puede asignarse puntos: solo pide canjes (se descuentan al pedir y quedan «pendientes» hasta que el local entrega o cancela y devuelve) y juega la ruleta (azar y límite diario en el servidor). Abono automático por trigger en `orders` cuando el pedido queda **pagado** y no cancelado, con el teléfono del pedido = teléfono del cliente. El registro público **no devuelve el enlace de un teléfono ya registrado** (un teléfono no es una contraseña); el local puede reenviarlo por WhatsApp.
+
+**Tarjeta del cliente:** diseño personalizable (4 colores, estilo, título, texto del saldo) validado en SQL (hex, longitudes) y renderizado con `textContent` (sin inyección). El cliente guarda el enlace en su celular (localStorage + «Añadir a pantalla de inicio»). **No es una tarjeta de Apple Wallet/Google Wallet** (requiere certificados y emisor propios).
+
+**Pruebas (Chromium, Supabase simulado en JavaScript; NO prueban el SQL):** activar programa, reglas, crear cliente (bloqueado sin consentimiento), búsqueda, historial, ajuste con motivo, exportar CSV (neutraliza fórmulas), premios, entregar canje, ruleta con probabilidades, editor de tarjeta con aviso de contraste y texto sin HTML, tarjeta pública en móvil sin desborde, canje y giro, token inválido, registro desde el menú (consentimiento, teléfono ya existente, redirección a `/t/<token>`). Hallazgo corregido durante la prueba: los scripts con ruta relativa fallaban bajo `/t/…` y `/m/…`; ahora son absolutos.
+
+**No implementado / pendiente:** conexión de Mercado Pago/Nequi (Nequi se integra normalmente a través de Wompi; requiere cuenta y credenciales reales), Email marketing, sorteos, reversa de puntos si un pedido se cancela después de pagado, límites por plan, borrado de cliente a solicitud (hoy solo desde SQL), prueba del SQL y del aislamiento entre restaurantes con sesiones reales.
