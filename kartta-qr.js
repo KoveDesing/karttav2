@@ -21,6 +21,7 @@
   }
   function getMatrix(url) {
     if (matrix && matrixFor === url) return matrix;
+    if (!window.QRCode) throw new Error('qr_lib');
     var holder = document.createElement('div');
     var q = new window.QRCode(holder, { text: url, width: 64, height: 64, correctLevel: window.QRCode.CorrectLevel.H });
     var o = q._oQRCode, n = o.getModuleCount(), m = [];
@@ -87,7 +88,7 @@
       '<div class="row"><button class="btn btn-accent" id="qrPng">Descargar PNG</button><button class="btn btn-ghost" id="qrSvg">Descargar SVG</button><button class="btn btn-ghost" id="qrShare">Compartir</button><button class="btn btn-ghost" id="qrCopy">Copiar enlace</button><button class="btn btn-ghost" id="qrReset">Restablecer</button></div>' +
       '<p class="note">Antes de imprimir, escanéalo con tu celular. Deja un margen blanco alrededor y no lo imprimas a menos de 3 cm.</p></div></div>';
     $('qrStyle').value = d.style;
-    loadLogo().then(refresh);
+    loadLogo().then(function () { try { refresh(); } catch (e) { var cv = $('qrCanvas'); if (cv && cv.parentNode) cv.parentNode.innerHTML = '<p class="note warn">No se pudo cargar el generador de QR (revisa tu conexión y recarga).</p>'; } });
   }
   var fname = function (ext) { return 'qr-' + (M.ctx.slug || 'menu') + '.' + ext; };
   function download(blob, name) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500); }

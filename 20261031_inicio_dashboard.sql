@@ -1,0 +1,7 @@
+-- APLICADA el 31-oct-2026 como «inicio_dashboard_agregaciones».
+-- get_home_dashboard(p_restaurant, p_from, p_to, p_prev_from, p_bucket, p_tz): agrega en la base (no descarga pedidos al navegador).
+--  · exige ser owner/admin/staff del restaurante (loyalty_is_member); anon y otros restaurantes → 'forbidden'
+--  · devuelve: serie por hora/día/semana/mes (con ceros reales, zona America/Bogota), totales del periodo y del periodo anterior,
+--    distribución por estado, top de productos (cantidad e ingresos), pedidos por hora del día, pedidos abiertos ahora y productos agotados.
+--  · definiciones: ingresos cobrados = paid y status<>'cancelado'; valor de pedidos = status<>'cancelado'.
+-- (El texto completo de la función está en la migración aplicada; ver list_migrations en Supabase.)

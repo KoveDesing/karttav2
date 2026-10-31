@@ -19,6 +19,10 @@
     users: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-4 4-6 7-6s5.5 2 7 6"/>',
     gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
     card: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+    up: '<path d="M12 19V5M5 12l7-7 7 7"/>',
+    brush: '<path d="M18.4 2.6a2 2 0 0 1 3 3L12 15l-4 1 1-4zM5 17c-2 0-3 1.5-3 4 2.5 0 4-1 4-3"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    box: '<path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v9"/>',
     share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>'
   };
   var svg = function (k) { return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON[k] + '</svg>'; };
@@ -53,6 +57,7 @@
     head.innerHTML =
       '<div class="cc-head"><div><h1>' + esc(C.negocio.nombre || 'Mi restaurante') + '</h1><div class="cc-pills">' +
       '<span class="pill ' + p.k + '" title="' + esc(p.d) + '">Menú: ' + esc(p.t) + '</span>' +
+      '<span class="pill pend" title="Si ves esta etiqueta, el panel nuevo está cargado">Panel v31-oct</span>' +
       (status.openAvailable ? '<span class="pill ' + (status.open !== false ? 'ok' : 'pend') + '">' + (status.open !== false ? 'Recibiendo pedidos' : 'Cerrado temporalmente') + '</span>' : '') +
       '</div></div><div class="row" style="gap:14px;align-items:center">' + openHtml + '<button class="btn btn-ghost btn-sm" data-goto="configuracion" aria-label="Abrir configuración">' + svg('gear') + 'Configuración</button></div></div>';
     var sw = $('ccOpen');
@@ -167,9 +172,12 @@
   K.views.pagos = renderPagos;
   async function init() {
     C = window.KARTTA_CTX; K.ctx = C;
-    await loadStatus();
+    try { await loadStatus(); } catch (e) { console.error('[KARTTA] estado', e); }
     var host = $('ccHost'); if (host) host.innerHTML = '<div id="ccHead"></div><div id="homeBody"></div>';
-    renderControl(); if (K.home) K.home.render(); addShare(); addPedFilters(); afterPed();
+    try { renderControl(); } catch (e) { console.error('[KARTTA] encabezado', e); }
+    try { if (K.home) await K.home.render(); else if (host) host.insertAdjacentHTML('beforeend', '<div class="card"><p class="note warn" style="margin:0">No se cargó el módulo del nuevo Inicio (kartta-home.js). Recarga con Ctrl+Shift+R; si sigue, el archivo no está publicado.</p></div>'); }
+    catch (e) { console.error('[KARTTA] inicio', e); if (host) host.insertAdjacentHTML('beforeend', '<div class="card"><p class="note warn" style="margin:0">No se pudo pintar el nuevo Inicio: ' + esc(e && e.message || e) + '</p></div>'); }
+    try { addShare(); addPedFilters(); afterPed(); } catch (e) { console.error('[KARTTA] extras', e); }
     document.addEventListener('click', function (e) { if (e.target.closest('#ccHost')) onQuick(e); });
     
   }

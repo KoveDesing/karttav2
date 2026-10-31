@@ -251,15 +251,15 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 .drag-over{outline:2px dashed var(--accent);outline-offset:3px}
 .pcard[draggable="true"]{cursor:grab}.pcard.dragging{opacity:.4}
 </style>
-<link rel="stylesheet" href="kartta-motion.css">
-<script src="kartta-motion.js" defer></script>
-<link rel="stylesheet" href="kartta-modules.css">
-<script src="kartta-modules.js" defer></script>
-<script src="kartta-metrics.js" defer></script>
-<script src="kartta-qr.js" defer></script>
-<script src="kartta-card.js" defer></script>
-<script src="kartta-loyalty.js" defer></script>
-<script src="kartta-home.js" defer></script>
+<link rel="stylesheet" href="kartta-motion.css?v=20261031">
+<script src="kartta-motion.js?v=20261031" defer></script>
+<link rel="stylesheet" href="kartta-modules.css?v=20261032">
+<script src="kartta-modules.js?v=20261032" defer></script>
+<script src="kartta-metrics.js?v=20261031" defer></script>
+<script src="kartta-qr.js?v=20261031" defer></script>
+<script src="kartta-card.js?v=20261031" defer></script>
+<script src="kartta-loyalty.js?v=20261031" defer></script>
+<script src="kartta-home.js?v=20261032" defer></script>
 </head>
 <body>
 
@@ -297,8 +297,8 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
     <!-- INICIO -->
     <section class="view active" data-panel="inicio">
       <div id="ccHost"></div>
-      <h1 class="hello">Hola, <span id="helloName">—</span></h1>
-      <p class="hello-sub" id="helloSub">Este es tu espacio dentro de KARTTA.</p>
+      <h1 class="hello" style="display:none">Hola, <span id="helloName">—</span></h1>
+      <p class="hello-sub" id="helloSub" style="display:none">Este es tu espacio dentro de KARTTA.</p>
       <div class="grid-sum">
         <div class="sum link" data-goto="productos"><div class="l">Productos</div><div class="n" id="sumProd">0 <small>/ 20</small></div><div class="bar"><i id="sumProdBar" style="width:0%"></i></div></div>
         <div class="sum link" data-goto="ia"><div class="l">Tokens IA</div><div class="n" id="sumTokens">—</div><div class="s" id="sumTokensSub">Plan PRO</div></div>
