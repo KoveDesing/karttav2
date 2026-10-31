@@ -1,5 +1,5 @@
 -- =====================================================================
--- KARTTA — Panel integral, FASE 1  (NO APLICADA — revisar y ejecutar en Supabase → SQL Editor)
+-- APLICADA en Supabase (proyecto Kartta) el 30-oct-2026 como migración «panel_fase1_estado_apertura_y_pagos».
 -- Aditiva e idempotente: no borra datos ni redefine funciones existentes
 -- (no toca get_public_menu ni place_order, cuyo código no está en este repo).
 -- NO se pudo ejecutar contra una base real al prepararla: probar primero en una rama de Supabase.

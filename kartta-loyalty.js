@@ -185,4 +185,5 @@
   }
 
   M.views.fidelizacion = async function () { if (await loadAll()) render(); };
+  M.openLoyalty = function (t) { if (TABS.some(function (x) { return x[0] === t; })) tab = t; M.ctx.irA('fidelizacion'); };
 })();

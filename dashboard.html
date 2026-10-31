@@ -259,6 +259,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 <script src="kartta-qr.js" defer></script>
 <script src="kartta-card.js" defer></script>
 <script src="kartta-loyalty.js" defer></script>
+<script src="kartta-home.js" defer></script>
 </head>
 <body>
 
@@ -505,6 +506,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 </nav>
 
 <!-- modal PRO / PREMIUM -->
+<div class="modal-bg" id="kModal" role="dialog" aria-modal="true" aria-labelledby="kModalTitle"><div class="modal" id="kModalBox" style="max-width:520px;width:100%"></div></div>
 <div class="modal-bg" id="lockModal" role="dialog" aria-modal="true" aria-labelledby="lockTitle">
   <div class="modal"><div class="lock-ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
     <h3 id="lockTitle">Esta función es PRO</h3><p class="sub" id="lockSub">Actualiza tu plan para desbloquear esta herramienta.</p>
@@ -1417,8 +1419,7 @@ let pedidos = [];
 async function cargarPedidos(){
   const sel = 'id,table_label,customer_name,customer_phone,status,total,paid,created_at,order_items(name,quantity)';
   const q = (cols) => sb.from('orders').select(cols).eq('restaurant_id', rid).order('created_at', { ascending: false }).limit(200);
-  let { data, error } = await q('code,' + sel);          /* n.º de pedido si la columna existe */
-  if (error) ({ data, error } = await q(sel));
+  const { data, error } = await q(sel);
   if (error) { console.error(error); toast('No pude cargar los pedidos.'); return; }
   pedidos = data || [];
 }
@@ -1437,7 +1438,7 @@ function renderPedidos(){
     if (!cancelado && diaCO(f) === hoyCO) { nHoy++; if (o.paid) ventas += total; } /* «hoy» = día calendario de Colombia; ventas = solo pedidos marcados como pagados */
     if (!cancelado) { const k = (o.customer_phone || o.customer_name || 'anon').toLowerCase(); if (!cli.has(k)) cli.set(k, { n: o.customer_name || 'Cliente', t: o.customer_phone || '', c: 0, s: 0 }); const c = cli.get(k); c.c++; if (o.paid) c.s += total; }
     const el = document.createElement('div'); el.className = 'ped';
-    el.innerHTML = `<div class="top"><div><div class="mesa">Mesa ${esc(o.table_label || '—')}${o.code ? ` <span style="font-weight:600;color:var(--muted);font-size:12px">#${esc(o.code)}</span>` : ''}</div><div class="cli">${esc(o.customer_name || 'Cliente')}${o.customer_phone ? ' · ' + esc(o.customer_phone) : ''}</div></div><span class="st ${est}">${ELABEL[est] || est}</span></div>
+    el.innerHTML = `<div class="top"><div><div class="mesa">Mesa ${esc(o.table_label || '—')}${` <span style="font-weight:600;color:var(--muted);font-size:12px">#${esc(String(o.id).slice(-4).toUpperCase())}</span>`}</div><div class="cli">${esc(o.customer_name || 'Cliente')}${o.customer_phone ? ' · ' + esc(o.customer_phone) : ''}</div></div><span class="st ${est}">${ELABEL[est] || est}</span></div>
         <div class="items">${(o.order_items || []).map(i => `${i.quantity}x ${esc(i.name)}`).join(' · ') || 'Sin productos'}</div>
         <div class="bot"><strong style="color:var(--strong)">${money(total)} <span class="pill ${o.paid ? 'ok' : 'pend'}">${o.paid ? 'Pagado' : 'Sin pagar'}</span></strong><div class="row">${!o.paid && !cancelado ? `<button class="btn btn-ghost btn-sm" data-pay="${o.id}">Marcar pagado</button>` : ''}${!cancelado && est !== 'entregado' && !o.paid ? `<button class="btn btn-ghost btn-sm" data-cancel="${o.id}">Cancelar</button>` : ''}<button class="btn btn-ghost btn-sm" data-hist="${o.id}">Historial</button>${sig ? `<button class="btn btn-accent btn-sm" data-adv="${o.id}" data-n="${sig}">Avanzar a ${ELABEL[sig]}</button>` : ''}</div></div>`;
     if (!window.KARTTA_PED_FILTER || window.KARTTA_PED_FILTER(o)) list.appendChild(el);

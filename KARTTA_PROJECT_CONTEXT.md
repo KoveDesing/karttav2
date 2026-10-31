@@ -37,6 +37,7 @@ SaaS para restaurantes, cafés y bares en Colombia: carta digital con enlace pú
 | `kartta-motion.css` / `kartta-motion.js` | **Nuevo (30-oct-2026):** sistema de motion del panel (ver §14) |
 | `kartta-modules.js/.css`, `kartta-metrics.js`, `kartta-qr.js` | **Nuevo (30-oct-2026):** centro de control, métricas, QR, pagos y filtros (ver §15) |
 | `tarjeta.html`, `kartta-card.js`, `kartta-loyalty.js`, `kartta-loyalty-public.js`, `20261030_fidelizacion.sql` | **Nuevo (30-oct-2026):** fidelización (ver §16); SQL **NO aplicada** |
+| `kartta-home.js`, `supabase/functions/mp-connect/`, `20261030_mercadopago_vault.sql` | **Nuevo (30-oct-2026):** Inicio tipo trading, redes, conexión de Mercado Pago (ver §17) |
 | `20261029_panel_fase1.sql` | **Nueva, NO APLICADA** (ver §15) |
 | `*.sql` (5) | Migraciones **ya aplicadas** (documentación; algunas son solo comentarios) |
 | `index.ts`, `index (1).ts`, `index (2).ts` | Tres Edge Functions distintas con nombre ambiguo (ver §8) |
@@ -200,3 +201,18 @@ No ejecuté la app ni un navegador; no inspeccioné Supabase (políticas RLS, fu
 **Pruebas (Chromium, Supabase simulado en JavaScript; NO prueban el SQL):** activar programa, reglas, crear cliente (bloqueado sin consentimiento), búsqueda, historial, ajuste con motivo, exportar CSV (neutraliza fórmulas), premios, entregar canje, ruleta con probabilidades, editor de tarjeta con aviso de contraste y texto sin HTML, tarjeta pública en móvil sin desborde, canje y giro, token inválido, registro desde el menú (consentimiento, teléfono ya existente, redirección a `/t/<token>`). Hallazgo corregido durante la prueba: los scripts con ruta relativa fallaban bajo `/t/…` y `/m/…`; ahora son absolutos.
 
 **No implementado / pendiente:** conexión de Mercado Pago/Nequi (Nequi se integra normalmente a través de Wompi; requiere cuenta y credenciales reales), Email marketing, sorteos, reversa de puntos si un pedido se cancela después de pagado, límites por plan, borrado de cliente a solicitud (hoy solo desde SQL), prueba del SQL y del aislamiento entre restaurantes con sesiones reales.
+
+## 17. Aplicado en Supabase y Inicio tipo trading (30-oct-2026)
+
+**Supabase (proyecto Kartta `ifbvdjvukygvvgiyzgav`, el que usa `supabase-init.js`) — esquema real leído y migraciones APLICADAS:**
+`panel_fase1_estado_apertura_y_pagos`, `fidelizacion_puntos_tarjetas_premios`, `mercadopago_conexion_vault`; Edge Function nueva `mp-connect` (verify_jwt, versión 1). No se tocaron las funciones existentes (`ai-assistant`, `generate-product-image`, `admin-*`, etc.).
+
+**Correcciones al código por el esquema real:** `menu_events` usa `occurred_at` (no `created_at`) → visitas arregladas; `orders` no tiene columna de código → el n.º de pedido es el final del ID en mayúsculas (igual que `place_order`); `menu_events_select` solo permite owner/admin (staff no ve visitas); `track_event` sí acepta `product_view`.
+
+**Pruebas contra la base REAL (transacciones revertidas, sin datos residuales):** abono automático al pagar (+250 por $25.000), sin doble abono, canje descuenta y cancelar devuelve, saldo insuficiente rechazado, ruleta una vez al día, ajuste negativo/sin motivo rechazados, otro dueño ve 0 clientes/movimientos y no puede ajustar ni configurar, inserciones/updates directos rechazados, restaurante cerrado rechaza pedidos desde el servidor, token de Mercado Pago cifrado en Vault y ilegible para el navegador, desconectar lo borra. Las columnas que consulta el panel existen y son legibles por el dueño.
+
+**Mercado Pago:** el dueño pega su Access Token de producción; `mp-connect` verifica con `GET /users/me` y lo guarda en Vault. Lógica probada con 14 casos simulados (el token nunca se devuelve). **NO probado con un token real de Mercado Pago** y **todavía no cobra**: el pago con Mercado Pago dentro del menú público es la siguiente fase (crear preferencia, webhook verificado, marcar pagado solo por el webhook). Alternativa más segura a futuro: OAuth de Mercado Pago.
+
+**Inicio:** encabezado (nombre, estado del menú, abierto/cerrado), panel de ingresos en vivo (Hoy/7/30/Este mes, cursor con ingresos del día, pedidos y acumulado, comparación con el período anterior, refresco cada 20 s y por Realtime), KPIs con minigráficas (pedidos, ticket, visitas, fidelización) y accesos agrupados (editor, menú público, añadir producto, redes sociales, QR, fidelización, premios, juegos, tarjeta, clientes, Mercado Pago con interruptor, pagos, métricas). Redes sociales: reutiliza el modelo del editor (`menu_designs.config.social`, validado por `KARTTA_DESIGN.parseSocialInput`); **guardar publica el menú completo**, incluidos cambios pendientes del editor.
+
+**Pendiente:** desplegar el zip en Vercel (el cambio no se ve hasta entonces); email marketing; cobro con Mercado Pago/Nequi en el menú; sorteos; reversa de puntos si se cancela un pedido ya pagado (hoy el servidor impide cancelar pedidos pagados); borrado de cliente a solicitud; plan/límites de fidelización.

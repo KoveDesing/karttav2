@@ -30,16 +30,17 @@
   function compute(orders, events, from, to) {
     var inR = function (t) { var k = dkey(t); return k >= from && k <= to; };
     var os = orders.filter(function (o) { return inR(o.created_at); });
+    events = events.map(function (e) { return Object.assign({}, e, { created_at: e.created_at || e.occurred_at }); });
     var ev = events.filter(function (e) { return inR(e.created_at); });
     var days = listDays(from, to), idx = {}; days.forEach(function (k, i) { idx[k] = i; });
     var z = function () { return days.map(function () { return 0; }); };
     var r = { orders: os.length, done: 0, cancelled: 0, paidN: 0, sales: 0, visits: 0, qr: 0,
-      ordersDay: z(), salesDay: z(), visitsDay: z(), ordersHour: new Array(24).fill(0), visitsHour: new Array(24).fill(0), top: {}, pviews: {}, days: days };
+      ordersDay: z(), salesDay: z(), visitsDay: z(), ordersHour: new Array(24).fill(0), salesHour: new Array(24).fill(0), visitsHour: new Array(24).fill(0), top: {}, pviews: {}, days: days };
     os.forEach(function (o) {
       var k = idx[dkey(o.created_at)], cancelled = o.status === 'cancelado';
       if (o.status === 'entregado') r.done++; if (cancelled) r.cancelled++;
       r.ordersDay[k]++; r.ordersHour[hourOf(o.created_at)]++;
-      if (o.paid && !cancelled) { r.paidN++; var t = Number(o.total || 0); r.sales += t; r.salesDay[k] += t; }
+      if (o.paid && !cancelled) { r.paidN++; var t = Number(o.total || 0); r.sales += t; r.salesDay[k] += t; r.salesHour[hourOf(o.created_at)] += t; }
       if (!cancelled) (o.order_items || []).forEach(function (i) { r.top[i.name] = (r.top[i.name] || 0) + Number(i.quantity || 0); });
     });
     ev.forEach(function (e) {
@@ -99,7 +100,7 @@
     if (st.range === 'custom' && !(st.from && st.to && st.from <= st.to)) { $('mBody').innerHTML = '<div class="card empty"><h3>Elige un rango</h3><p>Selecciona las fechas «Desde» y «Hasta» para ver tus métricas.</p></div>'; return; }
     var sISO = startISO(R.pFrom), eISO = startISO(addDays(R.to, 1));
     var q1 = C.sb.from('orders').select('id,status,total,paid,created_at,order_items(name,quantity)').eq('restaurant_id', C.rid).gte('created_at', sISO).lt('created_at', eISO).order('created_at').limit(3000);
-    var q2 = C.sb.from('menu_events').select('*').eq('restaurant_id', C.rid).gte('created_at', sISO).lt('created_at', eISO).order('created_at').limit(10000);
+    var q2 = C.sb.from('menu_events').select('id,event_type,product_id,occurred_at').eq('restaurant_id', C.rid).gte('occurred_at', sISO).lt('occurred_at', eISO).order('occurred_at').limit(10000);
     var res = await Promise.all([q1, q2]); if (my !== seq) return;
     var oR = res[0], eR = res[1];
     if (oR.error) { $('mBody').innerHTML = '<div class="card"><p class="note warn" style="margin:0">No se pudieron cargar los pedidos. Intenta de nuevo.</p></div>'; return; }
@@ -120,7 +121,7 @@
         kpi('Cancelados', cur.cancelled, delta(cur.cancelled, prev.cancelled)) +
         kpi('Ventas confirmadas', money(cur.sales), delta(cur.sales, prev.sales)) +
         kpi('Ticket promedio', cur.paidN ? money(Math.round(cur.avg)) : '—', cur.paidN ? '<div class="d">' + cur.paidN + ' pedido' + (cur.paidN === 1 ? '' : 's') + ' pagado' + (cur.paidN === 1 ? '' : 's') + '</div>' : '<div class="d">Sin pedidos pagados</div>') + '</div>';
-      if (!evOK) h += '<div class="card"><p class="note warn" style="margin:0">Las visitas no están disponibles: la tabla de eventos no se puede leer con tu cuenta. Los pedidos y ventas sí son reales. (Detalle técnico: ' + esc(eR.error.message || '') + ')</p></div>';
+      if (!evOK) h += '<div class="card"><p class="note warn" style="margin:0">Las visitas no están disponibles: la tabla de eventos no se puede leer con tu cuenta. Los pedidos y ventas sí son reales. Solo el dueño o un administrador puede ver las visitas.</p></div>';
       h += '<div class="card"><h3>Visitas por día</h3><div id="chV"></div></div>' +
         '<div class="cgrid"><div class="card"><h3>Pedidos por día</h3><div id="chO"></div></div><div class="card"><h3>Ventas confirmadas por día</h3><div id="chS"></div></div></div>' +
         '<div class="cgrid"><div class="card"><h3>Horas de mayor tráfico</h3><p class="sub">Visitas (o pedidos si no hay visitas) por hora.</p><div id="chH"></div></div><div class="card"><h3>Productos con mayor demanda</h3><div id="topP"></div></div></div>' +

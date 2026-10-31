@@ -45,31 +45,16 @@
 
   /* ---------- Inicio: centro de control ---------- */
   function renderControl() {
-    var host = $('ccHost'); if (!host) return;
+    var head = $('ccHead'); if (!head) return;
     var p = publicationState();
     var openHtml;
     if (!status.openAvailable) openHtml = '<span class="pill pend" title="Aplica la migración 20261029_panel_fase1.sql">Estado de apertura no disponible</span>';
     else openHtml = '<label class="cc-open"><input type="checkbox" id="ccOpen" role="switch"' + (status.open !== false ? ' checked' : '') + ' aria-label="Restaurante abierto"><span id="ccOpenTxt">' + (status.open !== false ? 'Abierto' : 'Cerrado') + '</span></label>';
-    host.innerHTML =
+    head.innerHTML =
       '<div class="cc-head"><div><h1>' + esc(C.negocio.nombre || 'Mi restaurante') + '</h1><div class="cc-pills">' +
       '<span class="pill ' + p.k + '" title="' + esc(p.d) + '">Menú: ' + esc(p.t) + '</span>' +
       (status.openAvailable ? '<span class="pill ' + (status.open !== false ? 'ok' : 'pend') + '">' + (status.open !== false ? 'Recibiendo pedidos' : 'Cerrado temporalmente') + '</span>' : '') +
-      '</div></div><div class="row" style="gap:14px;align-items:center">' + openHtml + '<button class="btn btn-ghost btn-sm" data-goto="configuracion" aria-label="Abrir configuración">' + svg('gear') + 'Configuración</button></div></div>' +
-      '<div class="qa-grid" role="list">' + [
-        ['editor', 'Editor del menú', 'Diseño y publicación', 'href', 'editor.html'],
-        ['eye', 'Menú público', 'Abrir en otra pestaña', 'open'],
-        ['plus', 'Añadir producto', 'Crear uno nuevo', 'newprod'],
-        ['list', 'Pedidos', 'Gestiona los recibidos', 'goto', 'pedidos'],
-        ['qr', 'Código QR', 'Descargar y personalizar', 'goto', 'qr'],
-        ['chart', 'Métricas', 'Visitas, pedidos y ventas', 'goto', 'metricas'],
-        ['users', 'Clientes', 'Quiénes te compran', 'goto', 'clientes'],
-        ['card', 'Pagos', 'Estado de conexión', 'goto', 'pagos'],
-        ['users', 'Fidelización', 'Puntos y tarjetas', 'goto', 'fidelizacion'],
-        ['gear', 'Contacto y redes', 'WhatsApp, Instagram, Maps', 'contact']
-      ].map(function (a) {
-        var attr = a[3] === 'goto' ? 'data-goto="' + a[4] + '"' : a[3] === 'href' ? 'data-href="' + a[4] + '"' : 'data-qa="' + a[3] + '"';
-        return '<button type="button" class="qa" role="listitem" ' + attr + '><span class="qi">' + svg(a[0]) + '</span><span>' + a[1] + '<small>' + a[2] + '</small></span></button>';
-      }).join('') + '</div>';
+      '</div></div><div class="row" style="gap:14px;align-items:center">' + openHtml + '<button class="btn btn-ghost btn-sm" data-goto="configuracion" aria-label="Abrir configuración">' + svg('gear') + 'Configuración</button></div></div>';
     var sw = $('ccOpen');
     if (sw) sw.addEventListener('change', async function () {
       var want = sw.checked; sw.disabled = true;
@@ -85,6 +70,8 @@
     var a = b.dataset.qa;
     if (a === 'open') window.open(C.menuURL(), '_blank', 'noopener');
     else if (a === 'newprod') { C.irA('productos'); C.openProd(); }
+    else if (a === 'social') { if (K.openSocial) K.openSocial(); }
+    else if (a && a.indexOf('loy:') === 0) { if (K.openLoyalty) K.openLoyalty(a.slice(4)); else C.irA('fidelizacion'); }
     else if (a === 'contact') { C.irA('configuracion'); setTimeout(function () { var el = $('cfgWpp'); if (el) { el.scrollIntoView({ block: 'center' }); el.focus(); } }, 350); }
   }
 
@@ -119,7 +106,7 @@
     }
     if (F.q) {
       var q = F.q.toLowerCase().replace(/^#/, '');
-      var hay = [o.code, String(o.id || '').slice(0, 8), o.customer_name, o.customer_phone, o.table_label].map(function (x) { return String(x == null ? '' : x).toLowerCase(); });
+      var hay = [o.code, String(o.id || '').slice(-4), String(o.id || '').slice(0, 8), o.customer_name, o.customer_phone, o.table_label].map(function (x) { return String(x == null ? '' : x).toLowerCase(); });
       if (!hay.some(function (h) { return h.indexOf(q) >= 0; })) return false;
     }
     return true;
@@ -144,7 +131,7 @@
     var none = $('pedNoMatch'); if (none) none.style.display = tot && !n ? 'block' : 'none';
     var f = $('pedFilters'); if (f) f.style.display = tot ? 'flex' : 'none';
   }
-  K.afterPed = function () { if (C) afterPed(); };
+  K.afterPed = function () { if (C) { afterPed(); window.dispatchEvent(new Event('kartta:data')); } };
 
   /* ---------- Pagos: estado de conexión (sin simular nada) ---------- */
   var PROVIDERS = [{ id: 'wompi', name: 'Wompi' }, { id: 'mercadopago', name: 'Mercado Pago' }];
@@ -181,9 +168,10 @@
   async function init() {
     C = window.KARTTA_CTX; K.ctx = C;
     await loadStatus();
-    renderControl(); addShare(); addPedFilters(); afterPed();
+    var host = $('ccHost'); if (host) host.innerHTML = '<div id="ccHead"></div><div id="homeBody"></div>';
+    renderControl(); if (K.home) K.home.render(); addShare(); addPedFilters(); afterPed();
     document.addEventListener('click', function (e) { if (e.target.closest('#ccHost')) onQuick(e); });
-    window.addEventListener('kartta:data', function () { if (status.loaded) { renderControl(); afterPed(); } });
+    
   }
   window.addEventListener('kartta:ready', init, { once: true });
   window.addEventListener('kartta:view', function (e) {

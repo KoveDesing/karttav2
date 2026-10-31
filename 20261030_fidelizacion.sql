@@ -1,5 +1,5 @@
 -- =====================================================================
--- KARTTA — FIDELIZACIÓN (fase 2)   *** NO APLICADA NI PROBADA contra Postgres ***
+-- APLICADA el 30-oct-2026 como «fidelizacion_puntos_tarjetas_premios» y probada con una simulación completa revertida (abono, canje, ruleta, aislamiento, RLS).
 -- Probar primero en una rama de Supabase. Aditiva e idempotente; no toca tablas existentes
 -- salvo añadir un trigger sobre public.orders (acumula puntos cuando un pedido queda pagado).
 -- Principios: los puntos SOLO se mueven dentro de funciones SECURITY DEFINER (nunca por escritura directa),
