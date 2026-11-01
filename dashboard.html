@@ -47,6 +47,7 @@ input,select,textarea{font-family:inherit;color:var(--strong);}
 .sb-item svg{flex-shrink:0;}.sb-item .lk{margin-left:auto;font-size:9.5px;font-weight:800;padding:3px 7px;border-radius:999px;background:var(--panel2);color:var(--muted);}
 .sb-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--border);}
 .sb-biz{display:flex;align-items:center;gap:10px;padding:8px 10px 10px;font-size:12.5px;font-weight:700;color:var(--strong);}
+.sb-prof{border-bottom:1px solid var(--border);margin:0 0 6px;padding-bottom:8px;}.sb-bt{display:flex;flex-direction:column;min-width:0;line-height:1.3;}.sb-bt span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.sb-bt small{font-size:11.5px;font-weight:600;color:var(--muted);}.sb-up{display:flex;justify-content:center;margin:2px 6px 0;}.sb-up[hidden]{display:none;}
 .avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;overflow:hidden;flex-shrink:0;}.avatar img{width:100%;height:100%;object-fit:cover;}
 
 #main{padding:28px clamp(16px,3vw,44px) 60px;min-width:0;}
@@ -260,6 +261,8 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 <script src="kartta-card.js?v=20261031" defer></script>
 <script src="kartta-loyalty.js?v=20261031" defer></script>
 <script src="kartta-home.js?v=20261032" defer></script>
+<link rel="stylesheet" href="kartta-ai-chat.css?v=20261033">
+<script src="kartta-ai-chat.js?v=20261033" defer></script>
 </head>
 <body>
 
@@ -268,6 +271,11 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 <div id="app">
   <aside id="sidebar" aria-label="Navegación">
     <div class="sb-brand">Kar<span>tt</span>a</div>
+    <div class="sb-prof" id="sbProf">
+      <div class="sb-biz"><div class="avatar" id="sbAvatar">K</div><div class="sb-bt"><span id="sbBiz">—</span><small id="sbPlanName">Plan Free</small><small id="sbPlanPrice"></small></div></div>
+      <a class="btn btn-accent btn-sm sb-up" id="sbUpgrade" href="index.html#precios" hidden>Mejorar plan</a>
+      <a class="btn btn-ghost btn-sm sb-up" id="sbAdvisor" href="https://wa.me/573152507850?text=Hola%20KARTTA%2C%20quiero%20hablar%20con%20un%20asesor%20sobre%20mi%20plan." target="_blank" rel="noopener" hidden>Hablar con un asesor</a>
+    </div>
     <div class="sb-label">Principal</div>
     <button class="sb-item active" data-view="inicio"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Inicio</button>
     <button class="sb-item" data-view="productos"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Productos</button>
@@ -285,7 +293,6 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
     <button class="sb-item" data-view="fidelizacion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>Fidelización</button>
     <button class="sb-item" data-view="pagos"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 5h20v14H2zM2 10h20"/></svg>Pagos</button>
     <div class="sb-foot">
-      <div class="sb-biz"><div class="avatar" id="sbAvatar">K</div><span id="sbBiz">—</span></div>
       <button class="sb-item" id="btnLogout"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Cerrar sesión</button>
     </div>
   </aside>
@@ -413,6 +420,10 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
     <section class="view" data-panel="configuracion">
       <div class="vhead"><h2>Configuración</h2><p>La información de tu negocio y las preferencias de tu panel.</p></div>
       <div class="card">
+        <div class="row between"><div><h3>Tu plan</h3><p class="sub" style="margin:0"><strong id="cfgPlanName" style="color:var(--strong)">—</strong> · <span id="cfgPlanPrice"></span></p></div>
+          <div class="row"><a class="btn btn-accent btn-sm" id="cfgUpgrade" href="index.html#precios" hidden>Mejorar plan</a><a class="btn btn-ghost btn-sm" id="cfgAdvisor" href="https://wa.me/573152507850?text=Hola%20KARTTA%2C%20quiero%20hablar%20con%20un%20asesor%20sobre%20mi%20plan." target="_blank" rel="noopener" hidden>Hablar con un asesor</a></div></div>
+      </div>
+      <div class="card">
         <h3>Logo / foto de perfil</h3><p class="sub">Se usa en tu panel, tu menú y la vista previa.</p>
         <div class="imgbox"><div class="imgprev round" id="logoPrev">Sin logo</div>
           <div class="row"><button class="btn btn-ghost btn-sm" id="logoPick">Cambiar imagen</button><button class="btn btn-danger btn-sm" id="logoDel">Eliminar</button></div></div>
@@ -439,15 +450,8 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 
     <!-- IA -->
     <section class="view" data-panel="ia">
-      <div class="vhead row between"><div><h2>Asistente IA</h2><p>Pregunta sobre tu negocio, ideas para vender más y más.</p></div><div class="sum" style="padding:12px 18px;margin:0"><div class="l">Tokens de IA</div><div class="n" id="aiTokens" style="font-size:20px;margin-top:4px">—</div></div></div>
-      <div class="aiwrap card" style="padding:0">
-        <div class="lockov" id="aiLock" style="display:none"><div class="lock-ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><h3>El asistente de KARTTA es PRO</h3><p>Actualiza tu plan para utilizar el asistente.</p><button class="btn btn-accent" data-lock="PRO">Ver planes</button></div>
-        <div class="chat">
-          <div class="msgs" id="msgs"><div class="bub bot" id="aiHello">Hola 👋 Soy tu asistente de KARTTA. ¿En qué te ayudo hoy?</div></div>
-          <div class="attach" id="aiAttach" hidden><img id="aiAttachImg" alt="Foto adjunta"><span id="aiAttachName"></span><button type="button" class="btn btn-ghost btn-sm" id="aiAttachDel" aria-label="Quitar foto adjunta">Quitar</button></div>
-          <form class="cin" id="aiForm"><button type="button" class="clip" id="aiClip" aria-label="Adjuntar foto" title="Adjuntar foto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12l-8.5 8.5a5 5 0 0 1-7-7L14 5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 8"/></svg></button><input type="file" id="aiFile" accept="image/jpeg,image/png,image/webp" hidden><textarea id="aiText" rows="1" placeholder="Pregunta lo que quieras…" aria-label="Mensaje"></textarea><button type="submit" id="aiSend" aria-label="Enviar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
-        </div>
-      </div>
+      <div class="vhead"><h2>Asistente IA</h2><p>Pregunta sobre tu negocio, pide ideas para vender más y guarda tus conversaciones.</p></div>
+      <div id="aiMount"></div>
     </section>
 
     <!-- DOMINIO -->
@@ -581,6 +585,7 @@ import { sb, imageUrl } from "./supabase-init.js";
 const BUCKET = 'kartta-media';
 const PLAN_RANK = { trial:0, free:0, kartta:1, pro:2, custom:3 };
 const PLAN_NAME = { trial:'Prueba gratis', free:'Free', kartta:'KARTTA', pro:'KARTTA Pro', custom:'Personalizado' };
+const PLAN_PRICE = { trial:'$0 COP / mes', free:'$0 COP / mes', kartta:'$43.900 COP / mes', pro:'$84.900 COP / mes', custom:'' }; // solo para mostrar; el cobro y los límites los decide el servidor
 const PROD_LIMIT = [20, 60, 200, 1000];
 const ACCENTS = { Rojo:'#FF3145', Azul:'#3B82F6', Verde:'#22C55E', Amarillo:'#EAB308', Morado:'#8B5CF6', Naranja:'#F97316' };
 const MS_DEFAULT = { primary:'#FF3145', secondary:'#0A0A0A', cardStyle:'round', buttonStyle:'solid', size:'m', showImages:true, showDescriptions:true, showPrices:true, tagline:'' };
@@ -979,12 +984,14 @@ function hydrate(){
   $('sbAvatar').innerHTML = negocio.logo ? `<img src="${esc(negocio.logo)}" alt="">` : esc(nombre[0].toUpperCase());
   $('helloSub').textContent = `${nombre} · este es tu espacio dentro de KARTTA.`;
   $('statPlan').textContent = PLAN_NAME[negocio.plan || 'free'] || 'Free';
-  $('lkIA').style.display = isPro() ? 'none' : '';
+  $('lkIA').style.display = 'none'; // la IA está disponible en todos los planes (con cuota mensual según el plan)
   const pct = perfilPct(); $('sumPerfil').textContent = pct + '%'; $('sumPerfilBar').style.width = pct + '%';
-  $('sumTokens').textContent = isPro() ? '—' : 'Bloqueado';
-  $('sumTokensSub').textContent = isPro() ? 'Sin datos de uso' : 'Requiere PRO';
-  $('aiTokens').textContent = isPro() ? '—' : 'PRO';
-  $('aiLock').style.display = 'none'; // La IA queda accesible también en el plan gratuito.
+  { const pid = negocio.plan || 'free', adv = pid === 'custom';
+    $('sbPlanName').textContent = 'Plan ' + (PLAN_NAME[pid] || 'Free'); $('sbPlanPrice').textContent = PLAN_PRICE[pid] || '';
+    $('sbUpgrade').hidden = !(pid === 'free' || pid === 'trial'); $('sbAdvisor').hidden = !adv;
+    $('cfgPlanName').textContent = PLAN_NAME[pid] || 'Free'; $('cfgPlanPrice').textContent = PLAN_PRICE[pid] || 'Precio acordado con tu asesor';
+    $('cfgUpgrade').hidden = !(pid === 'free' || pid === 'trial'); $('cfgAdvisor').hidden = !adv; }
+  // Tokens y preguntas de IA reales: los rellena kartta-ai-chat.js desde el servidor (ai_usage_summary).
   $('sumDom').textContent = 'kartta.' + slug + '.food'; $('slugReal').textContent = menuURL(); if (document.activeElement !== $('cfgSlug')) $('cfgSlug').value = slug;
   $('urlMenu').textContent = menuURL(); $('urlAdmin').textContent = location.href.split('#')[0];
   $('homeMenuLink').href = $('menuOpen').href = menuURL();
@@ -1242,43 +1249,7 @@ function renderPreview(){
     : `<div class="pv-phone"><div class="scr">${html}</div></div>`;
 }
 
-let aiImg = null, aiImgUrl = null;
-function clearAiImg(){ aiImg = null; if (aiImgUrl) URL.revokeObjectURL(aiImgUrl); aiImgUrl = null; $('aiAttach').hidden = true; $('aiFile').value = ''; }
-$('aiClip').onclick = () => $('aiFile').click();
-$('aiAttachDel').onclick = clearAiImg;
-$('aiFile').onchange = async () => {
-  const f = $('aiFile').files[0]; if (!f) return;
-  if (!['image/jpeg','image/png','image/webp'].includes(f.type)) { toast('Usa una imagen JPG, PNG o WEBP.'); $('aiFile').value = ''; return; }
-  try {
-    aiImg = new File([await refBlob(f, 1280, .85)], 'foto.jpg', { type: 'image/jpeg' });
-    if (aiImgUrl) URL.revokeObjectURL(aiImgUrl); aiImgUrl = URL.createObjectURL(aiImg);
-    $('aiAttachImg').src = aiImgUrl; $('aiAttachName').textContent = f.name; $('aiAttach').hidden = false;
-  } catch { toast('No se pudo leer esa imagen.'); $('aiFile').value = ''; }
-};
-/* ---------- IA (función segura en el servidor: la clave de Gemini nunca llega al navegador) ---------- */
-function aiBubble(t, who){ const b = document.createElement('div'); b.className = 'bub ' + who; if (who === 'typing') { b.className = 'bub bot typing'; b.innerHTML = '<i></i><i></i><i></i>'; } else b.textContent = t; $('msgs').appendChild(b); $('msgs').scrollTop = $('msgs').scrollHeight; return b; }
-$('aiText').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('aiForm').requestSubmit(); } });
-$('aiText').addEventListener('input', () => { $('aiText').style.height = 'auto'; $('aiText').style.height = Math.min(120, $('aiText').scrollHeight) + 'px'; });
-$('aiForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const msg = $('aiText').value.trim() || (aiImg ? 'Analiza esta foto de mi producto y dime cómo mejorarla.' : ''); if (!msg) return;
-  const foto = aiImg; aiBubble(foto ? '📷 ' + msg : msg, 'me'); $('aiText').value = ''; $('aiText').style.height = 'auto'; $('aiSend').disabled = true;
-  const typing = aiBubble('', 'typing'); let out;
-  try {
-    if (foto) {
-      const r = await window.KARTTA_IMAGE_AI.askWithPhoto({ restaurantId: rid, image: foto, message: msg });
-      out = r?.reply || 'No obtuve una respuesta para esa foto.'; clearAiImg();
-    } else {
-      const { data, error } = await sb.functions.invoke('ai-assistant', { body: { restaurant_id: rid, message: msg } });
-      if (error) throw error;
-      out = data?.reply || 'No obtuve una respuesta. Intenta de nuevo.';
-    }
-  } catch (err) {
-    console.warn(err);
-    out = foto ? (err?.message || 'No pude analizar la foto ahora. Intenta de nuevo.') : 'El asistente aún no está activo en el servidor. Cuando se configure la clave de IA, responderá aquí con los datos de tu negocio.';
-  }
-  typing.remove(); aiBubble(out, 'bot'); $('aiSend').disabled = false; $('aiText').focus();
-});
+/* El chat de IA (historial, memoria, cuotas, foto) vive en kartta-ai-chat.js */
 
 /* ---------- referencia: reduce y aplana (fondo blanco) para enviar al servidor ---------- */
 function refBlob(file, maxSide, q){
