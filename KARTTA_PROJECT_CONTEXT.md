@@ -246,3 +246,21 @@ No ejecuté la app ni un navegador; no inspeccioné Supabase (políticas RLS, fu
 **NO probado:** la Edge Function desplegada contra Groq real (`stream_options.include_usage` y el campo de uso del último fragmento dependen del modelo; si no llega, se registra `usage_missing`); `dashboard.html` completo con sesión real (la tarjeta del plan en la barra lateral y en Configuración solo se verificó estáticamente); Safari/Firefox y teclado móvil real; carga concurrente real (la concurrencia se prueba por el diseño del bloqueo, no con dos conexiones simultáneas); cobro/mejora de plan (no existe checkout: «Mejorar plan» lleva a `index.html#precios`).
 
 **Pendiente de despliegue:** aplicar la migración (idempotente); desplegar `ai-assistant` (carpeta con `index.ts` + `core.js`, verify_jwt = true) y re-desplegar `ai-assistant-vision` con el aviso 410 (o desactivarla); subir `dashboard.html`, `kartta-ai-chat.js/.css`. Si más adelante se define el límite de CORS (`*` hoy), ajustar `CORS` en la función.
+
+---
+
+## 18. Actualización 1-nov-2026 — acento libre, soporte y políticas
+
+**Alcance:** lectura + cambios en el zip `karttav2-main`. Probado en Chromium (Playwright) con un Supabase **simulado**; **no** se ejecutó contra tu Supabase real ni se aplicó ninguna migración.
+
+### 18.1 Color de acento (dashboard.html + módulos)
+- `--accent` sigue siendo la única variable de acento; se añadió `--on-accent` (negro o blanco según contraste; coral conserva texto blanco) y `--ok` ahora **es** el acento. Ya no hay verdes/amarillos/morados/azules fijos en iconos, barras, KPIs, indicador «en vivo», estados de pedido, chat IA ni guía.
+- Estados de pedido (Nuevo / Preparando / Listo / Entregado / Cancelado) usan tonos del acento; los errores y acciones destructivas siguen en rojo (semántica). Las etiquetas de producto (`TAG_PAL`) son contenido del restaurante y no se tocaron.
+- Selector libre: color visual + HEX + sliders R/G/B + restablecer coral. Aplica al instante y se guarda en `profiles.prefs.accent` (Supabase). Se valida `#RRGGBB` al leer y escribir.
+- **Bug corregido:** `savePrefs` y la guía (`ktSave`) escribían `profiles.prefs` completo desde copias distintas y podían borrarse entre sí (p. ej. perder el acento). Ahora ambos fusionan sobre `perfil.prefs`.
+
+### 18.2 Soporte y reportes + Políticas y privacidad
+- Migración `20261101_soporte_politicas.sql` (**NO APLICADA**): `legal_document_versions`, `legal_contact`, `support_tickets/messages/attachments/ticket_events`, bucket privado `support-attachments`, RLS de solo lectura, escritura solo vía funciones `security definer` (`support_*`, `admin_support_*`, `admin_legal_*`), tiempo real.
+- Cliente: `kartta-support.js/.css` (vistas `soporte` y `politicas` del panel). Admin: `kartta-support-admin.js` + `soporte-admin.html` (usa la misma sesión; el servidor exige `private.is_platform_admin()`).
+- Pendiente: integrar la bandeja en «Kartta Prime/Admin» (su código no está en este repo); revisión jurídica de los textos; datos de `legal_contact`; las páginas estáticas `privacidad/terminos/cookies.html` aún duplican el texto (se necesitan antes del login).
+- Pruebas a ejecutar tras aplicar la migración: ver la lista de aceptación del prompt (ticket → admin → respuesta → lectura, aislamiento entre restaurantes, notas internas ocultas, adjuntos).

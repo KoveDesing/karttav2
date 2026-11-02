@@ -13,7 +13,8 @@
   var M = window.KARTTA_MODS, esc = M.esc, svg = M.svg;
   var PERIODS = [['24h', '24 horas'], ['7', '7 días'], ['30', '30 días'], ['12m', '12 meses'], ['all', 'Todo']];
   var STL = { nuevo: 'Nuevo', preparando: 'Preparando', listo: 'Listo', entregado: 'Entregado', cancelado: 'Cancelado' };
-  var STC = { nuevo: '#60A5FA', preparando: '#F5A524', listo: '#A78BFA', entregado: '#22C55E', cancelado: '#FF5468' };
+  /* Estados de pedido: solo tonos del color de acento del usuario (sin colores fijos) */
+  var STC = { nuevo: 'var(--accent)', preparando: 'color-mix(in srgb,var(--accent) 72%,var(--panel))', listo: 'color-mix(in srgb,var(--accent) 50%,var(--panel))', entregado: 'color-mix(in srgb,var(--accent) 30%,var(--panel))', cancelado: 'var(--muted)' };
   var st = { period: '7', timer: 0, busy: false, seq: 0, mp: null, loy: undefined, data: null, recent: null, err: null, gid: 0 };
   var RM = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
 
@@ -165,7 +166,7 @@
 
     var K = $('kCards'), first = !K.firstChild || K.querySelector('.skel');
     var html =
-      card('ingresos', 'Ingresos cobrados', '', (prev ? deltaHtml(cur.sales, prev.sales, 'vs. ' + prevName()) : '<span class="dl">Sin comparación (todo el historial)</span>'), '<div class="kcx"><span>Valor de pedidos <b>' + money(cur.value) + '</b></span><span>Por cobrar <b>' + money(cur.value - cur.sales) + '</b></span></div>' + spark(S.map(function (x) { return x.sales; }), cur.sales >= (prev ? prev.sales : 0) ? '#22C55E' : '#FF5468')) +
+      card('ingresos', 'Ingresos cobrados', '', (prev ? deltaHtml(cur.sales, prev.sales, 'vs. ' + prevName()) : '<span class="dl">Sin comparación (todo el historial)</span>'), '<div class="kcx"><span>Valor de pedidos <b>' + money(cur.value) + '</b></span><span>Por cobrar <b>' + money(cur.value - cur.sales) + '</b></span></div>' + spark(S.map(function (x) { return x.sales; }), cur.sales >= (prev ? prev.sales : 0) ? 'var(--accent)' : 'var(--muted)')) +
       card('pedidos', 'Pedidos recibidos', '', prev ? deltaHtml(cur.orders, prev.orders, 'vs. ' + prevName()) : '', '<div class="kcx"><span>' + valid + ' válidos · ' + cur.cancelled + ' cancelados</span>' + (valid ? '<span>Promedio <b>' + money(cur.value / valid) + '</b></span>' : '') + '</div>' + spark(S.map(function (x) { return x.orders; }), 'var(--accent)')) +
       card('ticket', 'Ticket promedio', '', cur.paid_orders ? (prev && prev.paid_orders ? deltaHtml(ticket(cur), ticket(prev), 'vs. ' + prevName()) : '<span class="dl">Sobre ' + cur.paid_orders + ' pedido' + (cur.paid_orders === 1 ? '' : 's') + ' pagado' + (cur.paid_orders === 1 ? '' : 's') + '</span>') : '<span class="dl">Aún sin pedidos pagados</span>', '') +
       card('pendientes', 'Pedidos pendientes', '', '<span class="dl">Ahora mismo, requieren atención</span>', '<div class="kcx"><span style="color:' + STC.nuevo + '">' + (ip.nuevo || 0) + ' nuevos</span><span style="color:' + STC.preparando + '">' + (ip.preparando || 0) + ' en preparación</span><span style="color:' + STC.listo + '">' + (ip.listo || 0) + ' listos</span></div>') +
@@ -178,7 +179,7 @@
     $('kv_pendientes').style.color = pend ? STC.nuevo : '';
 
     /* hero: resumen que sigue al cursor */
-    var up = !prev || cur.sales >= prev.sales, color = up ? '#22C55E' : '#FF5468';
+    var up = !prev || cur.sales >= prev.sales, color = up ? 'var(--accent)' : 'var(--muted)';
     var summary = function (i) {
       var x = i == null ? null : S[i], v = x ? x.sales : cur.sales;
       setNum($('hBig'), v, money, i != null || st.hov);
@@ -198,7 +199,7 @@
     /* analítica */
     var top = D.top || [], tmax = top.length ? top[0].qty : 1;
     $('anTop').innerHTML = top.length ? '<ul class="rank">' + top.slice(0, 5).map(function (t) { return '<li><span>' + esc(t.name) + '</span><strong>' + t.qty + (t.qty === 1 ? ' ud' : ' uds') + ' · ' + money(t.revenue) + '</strong><div class="bar"><i style="width:' + (t.qty / tmax * 100) + '%"></i></div></li>'; }).join('') + '</ul>' + '<button class="btn btn-ghost btn-sm" data-kc="productos" style="margin-top:10px">Ver detalle' + (top.length > 5 ? ' (' + top.length + ' productos)' : '') + '</button>' : '<p class="note">Aún no hay productos vendidos en este periodo.</p>';
-    barChart($('anOrd'), { labels: S.map(function (x) { return axisLabel(x.t, D.bucket); }), values: S.map(function (x) { return x.orders; }), color: '#60A5FA', aria: 'Pedidos por intervalo', tip: function (i) { var x = S[i]; return '<b>' + esc(fullLabel(x.t, D.bucket)) + '</b><br>' + x.orders + ' pedido' + (x.orders === 1 ? '' : 's') + (x.cancelled ? '<br><span class="mut">' + x.cancelled + ' cancelado' + (x.cancelled === 1 ? '' : 's') + '</span>' : ''); } });
+    barChart($('anOrd'), { labels: S.map(function (x) { return axisLabel(x.t, D.bucket); }), values: S.map(function (x) { return x.orders; }), color: 'var(--accent)', aria: 'Pedidos por intervalo', tip: function (i) { var x = S[i]; return '<b>' + esc(fullLabel(x.t, D.bucket)) + '</b><br>' + x.orders + ' pedido' + (x.orders === 1 ? '' : 's') + (x.cancelled ? '<br><span class="mut">' + x.cancelled + ' cancelado' + (x.cancelled === 1 ? '' : 's') + '</span>' : ''); } });
     var stt = D.status || {}, tot = Object.keys(stt).reduce(function (s, k) { return s + stt[k]; }, 0);
     $('anSt').innerHTML = tot ? '<div class="stack" role="img" aria-label="Distribución de pedidos por estado">' + Object.keys(STL).filter(function (k) { return stt[k]; }).map(function (k) { return '<i style="width:' + stt[k] / tot * 100 + '%;background:' + STC[k] + '" title="' + STL[k] + ': ' + stt[k] + '"></i>'; }).join('') + '</div><ul class="legend">' + Object.keys(STL).filter(function (k) { return stt[k]; }).map(function (k) { return '<li><span class="sw" style="background:' + STC[k] + '"></span>' + STL[k] + '<b>' + stt[k] + ' · ' + (stt[k] / tot * 100).toFixed(0) + '%</b></li>'; }).join('') + '</ul>' : '<p class="note">Sin pedidos en este periodo.</p>';
     var hrs = D.hours || [], htot = hrs.reduce(function (s, v) { return s + v; }, 0), best = -1, bsum = 0; for (var h = 0; h < 24; h++) { var sm = hrs[h] + hrs[(h + 1) % 24]; if (sm > bsum) { bsum = sm; best = h; } }

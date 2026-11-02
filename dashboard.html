@@ -12,7 +12,7 @@
 <script type="module" src="supabase-init.js"></script>
 <script src="cookies.js" defer></script>
 <script src="kartta-image-ai.js" defer></script>
-<script src="kartta-tour.js" defer></script>
+<script src="kartta-tour.js?v=20261034" defer></script>
 <script src="menu-design.js" defer></script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="shortcut icon" href="/favicon.ico">
@@ -20,12 +20,13 @@
 /* aplica tema y acento guardados ANTES de pintar (evita parpadeo) */
 (function(){try{var p=JSON.parse(localStorage.getItem('kartta_prefs')||'{}');
 document.documentElement.setAttribute('data-theme',p.theme==='light'?'light':'dark');
-if(p.accent)document.documentElement.style.setProperty('--accent',p.accent);}catch(e){}})();
+if(/^#[0-9a-fA-F]{6}$/.test(p.accent||'')){var h=p.accent,c=[1,3,5].map(function(i){var v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);}),L=.2126*c[0]+.7152*c[1]+.0722*c[2];
+document.documentElement.style.setProperty('--accent',h);document.documentElement.style.setProperty('--on-accent',L>.34?'#0A0A0A':'#FFFFFF');}}catch(e){}})();
 </script>
 <style>
-:root{--accent:#FF3145;--accent-dim:color-mix(in srgb,var(--accent) 82%,#000);--accent-soft:color-mix(in srgb,var(--accent) 14%,transparent);--r:16px;--ease:cubic-bezier(.16,1,.3,1);}
-:root[data-theme=dark]{--bg:#0A0A0A;--panel:#151515;--panel2:#1C1C1C;--border:#262626;--text:#E4E4E4;--strong:#fff;--muted:#8F8F8F;--shadow:0 1px 2px rgba(0,0,0,.4),0 14px 30px -16px rgba(0,0,0,.7);--ok:#3ECF7E;}
-:root[data-theme=light]{--bg:#F3F3F1;--panel:#FFFFFF;--panel2:#F5F5F3;--border:#E6E6E3;--text:#2A2A2A;--strong:#0A0A0A;--muted:#777;--shadow:0 1px 2px rgba(10,10,10,.05),0 14px 30px -14px rgba(10,10,10,.18);--ok:#16A34A;}
+:root{--accent:#FF3145;--on-accent:#FFFFFF;--accent-dim:color-mix(in srgb,var(--accent) 82%,#000);--accent-soft:color-mix(in srgb,var(--accent) 14%,transparent);--r:16px;--ease:cubic-bezier(.16,1,.3,1);}
+:root[data-theme=dark]{--bg:#0A0A0A;--panel:#151515;--panel2:#1C1C1C;--border:#262626;--text:#E4E4E4;--strong:#fff;--muted:#8F8F8F;--shadow:0 1px 2px rgba(0,0,0,.4),0 14px 30px -16px rgba(0,0,0,.7);--ok:var(--accent);}
+:root[data-theme=light]{--bg:#F3F3F1;--panel:#FFFFFF;--panel2:#F5F5F3;--border:#E6E6E3;--text:#2A2A2A;--strong:#0A0A0A;--muted:#777;--shadow:0 1px 2px rgba(10,10,10,.05),0 14px 30px -14px rgba(10,10,10,.18);--ok:var(--accent);}
 *{box-sizing:border-box;}
 body{margin:0;font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);transition:background .25s ease,color .25s ease;}
 a{color:inherit;text-decoration:none;}button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;}
@@ -48,7 +49,7 @@ input,select,textarea{font-family:inherit;color:var(--strong);}
 .sb-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--border);}
 .sb-biz{display:flex;align-items:center;gap:10px;padding:8px 10px 10px;font-size:12.5px;font-weight:700;color:var(--strong);}
 .sb-prof{border-bottom:1px solid var(--border);margin:0 0 6px;padding-bottom:8px;}.sb-bt{display:flex;flex-direction:column;min-width:0;line-height:1.3;}.sb-bt span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}.sb-bt small{font-size:11.5px;font-weight:600;color:var(--muted);}.sb-up{display:flex;justify-content:center;margin:2px 6px 0;}.sb-up[hidden]{display:none;}
-.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;overflow:hidden;flex-shrink:0;}.avatar img{width:100%;height:100%;object-fit:cover;}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;overflow:hidden;flex-shrink:0;}.avatar img{width:100%;height:100%;object-fit:cover;}
 
 #main{padding:28px clamp(16px,3vw,44px) 60px;min-width:0;}
 .topbar{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
@@ -74,7 +75,7 @@ input,select,textarea{font-family:inherit;color:var(--strong);}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:0 18px;border-radius:12px;font-size:13.5px;font-weight:700;transition:transform .15s var(--ease),background .15s ease,box-shadow .15s ease;}
 .btn:hover{transform:translateY(-1px);}.btn:active{transform:scale(.98);}
-.btn-accent{background:var(--accent);color:#fff;}.btn-accent:hover{background:var(--accent-dim);}
+.btn-accent{background:var(--accent);color:var(--on-accent);}.btn-accent:hover{background:var(--accent-dim);}
 .btn-ghost{background:var(--panel2);border:1px solid var(--border);color:var(--strong);}.btn-ghost:hover{background:var(--border);}
 .btn-danger{background:rgba(255,49,69,.12);color:#FF3145;}
 .btn-sm{min-height:36px;padding:0 12px;font-size:12px;border-radius:10px;}
@@ -89,12 +90,31 @@ input,select,textarea{font-family:inherit;color:var(--strong);}
 input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-radius:12px;background:var(--panel2);padding:4px;cursor:pointer;}
 .seg{display:inline-flex;background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:3px;gap:2px;}
 .seg button{min-height:38px;padding:0 14px;border-radius:9px;font-size:12.5px;font-weight:700;color:var(--muted);transition:background .15s ease,color .15s ease;}
-.seg button.on{background:var(--accent);color:#fff;}
+.seg button.on{background:var(--accent);color:var(--on-accent);}
 .sw{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--border);font-size:13.5px;font-weight:600;}
 .sw input{appearance:none;width:42px;height:24px;border-radius:99px;background:var(--border);position:relative;cursor:pointer;transition:background .2s ease;flex-shrink:0;}
 .sw input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s var(--ease);}
 .sw input:checked{background:var(--accent);}.sw input:checked::after{transform:translateX(18px);}
 .accents{display:flex;gap:10px;flex-wrap:wrap;}
+/* selector de color de acento (RGB / HEX) */
+.acc{width:34px;height:34px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s var(--ease),box-shadow .15s ease;}.acc:hover{transform:scale(1.08);}.acc.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--strong);}
+.accpick{display:grid;grid-template-columns:auto 1fr;gap:16px 18px;align-items:start;margin-top:18px;padding-top:18px;border-top:1px solid var(--border);}
+@media (max-width:560px){.accpick{grid-template-columns:1fr;}}
+.accsw{position:relative;width:96px;height:96px;border-radius:20px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;background:var(--accent);}
+.accsw input[type=color]{position:absolute;inset:-12px;width:calc(100% + 24px);height:calc(100% + 24px);opacity:0;cursor:pointer;}
+.accsw:focus-within{outline:2px solid var(--strong);outline-offset:3px;}
+.accsw span{position:absolute;left:0;right:0;bottom:0;padding:5px 0;text-align:center;font-size:11px;font-weight:800;background:rgba(0,0,0,.45);color:#fff;pointer-events:none;}
+.accctl{display:grid;gap:10px;min-width:0;}
+.accctl .hexrow{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+.accctl .hexrow .field{margin:0;flex:0 0 128px;}
+.accctl input[type=text]{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--border);border-radius:12px;background:var(--panel2);font-size:14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+.accctl input[type=text]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.rgbr{display:grid;grid-template-columns:18px 1fr 44px;gap:10px;align-items:center;font-size:12px;font-weight:800;color:var(--muted);}
+.rgbr output{text-align:right;font-variant-numeric:tabular-nums;color:var(--strong);}
+.rgbr input[type=range]{width:100%;height:6px;border-radius:99px;appearance:none;-webkit-appearance:none;background:var(--panel2);border:1px solid var(--border);}
+.rgbr input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);border:3px solid var(--panel);box-shadow:0 0 0 1px var(--border);cursor:pointer;}
+.rgbr input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);border:3px solid var(--panel);cursor:pointer;}
+.accmsg{font-size:12px;color:var(--muted);min-height:16px;margin:0;}
 .acc{width:44px;height:44px;border-radius:50%;border:3px solid transparent;box-shadow:0 0 0 1px var(--border);transition:transform .15s var(--ease);}
 .acc:hover{transform:scale(1.08);}.acc.on{border-color:var(--panel);box-shadow:0 0 0 3px var(--strong);}
 
@@ -160,13 +180,13 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 .chat{display:flex;flex-direction:column;height:min(560px,70vh);}
 .msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;}
 .bub{max-width:80%;padding:12px 15px;border-radius:16px;font-size:14px;line-height:1.55;animation:vin .25s ease;white-space:pre-wrap;}
-.bub.bot{background:var(--panel2);align-self:flex-start;border-bottom-left-radius:4px;}.bub.me{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+.bub.bot{background:var(--panel2);align-self:flex-start;border-bottom-left-radius:4px;}.bub.me{background:var(--accent);color:var(--on-accent);align-self:flex-end;border-bottom-right-radius:4px;}
 .bub.typing{display:flex;gap:5px;padding:15px;}.bub.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:ty 1.2s infinite;}.bub.typing i:nth-child(2){animation-delay:.18s}.bub.typing i:nth-child(3){animation-delay:.36s}
 @keyframes ty{0%,60%,100%{opacity:.25}30%{opacity:1}}
 .cin{display:flex;gap:10px;padding:14px;border-top:1px solid var(--border);align-items:flex-end;}
 .cin textarea{flex:1;min-height:46px;max-height:120px;padding:12px 14px;border:1px solid var(--border);border-radius:14px;background:var(--panel2);resize:none;font-size:14px;}
 .cin textarea:focus{outline:none;border-color:var(--accent);}
-.cin button{width:46px;height:46px;border-radius:14px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cin button{width:46px;height:46px;border-radius:14px;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .cin button:disabled{opacity:.45;}
 .lockov{position:absolute;inset:0;background:color-mix(in srgb,var(--bg) 55%,transparent);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;border-radius:var(--r);z-index:2;}
 .lockov h3{margin:0 0 6px;font-size:18px;color:var(--strong);}.lockov p{margin:0 0 16px;color:var(--muted);font-size:13.5px;}
@@ -179,7 +199,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 .ped .bot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
 .st{font-size:10.5px;font-weight:800;padding:5px 10px;border-radius:99px;text-transform:uppercase;}
 .st.cancelado{background:rgba(229,72,77,.14);color:#E5484D;}
-.st.nuevo{background:var(--accent-soft);color:var(--accent);}.st.preparando{background:rgba(255,184,0,.15);color:#E5A400;}.st.listo{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);}.st.entregado{background:var(--panel);color:var(--muted);}
+.st.nuevo{background:var(--accent-soft);color:var(--accent);}.st.preparando{background:transparent;box-shadow:inset 0 0 0 1px var(--accent);color:var(--accent);}.st.listo{background:var(--accent);color:var(--on-accent);}.st.entregado{background:var(--panel);color:var(--muted);}
 .mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
 .mcard{border:1px solid var(--border);border-radius:16px;padding:16px;text-align:center;background:var(--panel2);}
 .qrbox{width:150px;height:150px;margin:10px auto 12px;background:#fff;padding:6px;border-radius:10px;}.qrbox img,.qrbox canvas{width:100%!important;height:100%!important;}
@@ -254,14 +274,16 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 </style>
 <link rel="stylesheet" href="kartta-motion.css?v=20261031">
 <script src="kartta-motion.js?v=20261031" defer></script>
-<link rel="stylesheet" href="kartta-modules.css?v=20261032">
+<link rel="stylesheet" href="kartta-modules.css?v=20261034">
 <script src="kartta-modules.js?v=20261032" defer></script>
-<script src="kartta-metrics.js?v=20261031" defer></script>
+<script src="kartta-metrics.js?v=20261034" defer></script>
 <script src="kartta-qr.js?v=20261031" defer></script>
 <script src="kartta-card.js?v=20261031" defer></script>
 <script src="kartta-loyalty.js?v=20261031" defer></script>
-<script src="kartta-home.js?v=20261032" defer></script>
-<link rel="stylesheet" href="kartta-ai-chat.css?v=20261033">
+<script src="kartta-home.js?v=20261034" defer></script>
+<link rel="stylesheet" href="kartta-support.css?v=20261101">
+<script src="kartta-support.js?v=20261101" defer></script>
+<link rel="stylesheet" href="kartta-ai-chat.css?v=20261034">
 <script src="kartta-ai-chat.js?v=20261033" defer></script>
 </head>
 <body>
@@ -292,6 +314,9 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
     <button class="sb-item" data-view="clientes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-4 4-6 7-6s5.5 2 7 6"/></svg>Clientes</button>
     <button class="sb-item" data-view="fidelizacion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>Fidelización</button>
     <button class="sb-item" data-view="pagos"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 5h20v14H2zM2 10h20"/></svg>Pagos</button>
+    <div class="sb-label">Ayuda</div>
+    <button class="sb-item" data-view="soporte"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 8v4M12 16v.01"/></svg>Soporte y reportes<span class="lk" id="lkSupport" hidden>0</span></button>
+    <button class="sb-item" data-view="politicas"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.2 8.2-8 9-4.8-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Políticas y privacidad</button>
     <div class="sb-foot">
       <button class="sb-item" id="btnLogout"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Cerrar sesión</button>
     </div>
@@ -439,8 +464,21 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
         <button class="btn btn-accent" id="btnSaveCfg">Guardar cambios</button>
       </div>
       <div class="card">
-        <h3>Color de acento</h3><p class="sub">Cambia botones, estados y tu nombre en el panel.</p>
-        <div class="accents" id="accents"></div>
+        <h3>Color de acento</h3><p class="sub">Elige cualquier color. Se aplica a botones, iconos, barras y estadísticas de tu panel al instante y se guarda en tu cuenta.</p>
+        <div class="accents" id="accents" role="group" aria-label="Colores sugeridos"></div>
+        <div class="accpick">
+          <label class="accsw" title="Abrir selector de color"><input type="color" id="accColor" aria-label="Selector visual de color de acento" value="#ff3145"><span id="accSwTxt">#FF3145</span></label>
+          <div class="accctl">
+            <div class="hexrow">
+              <div class="field"><label for="accHex">Código HEX</label><input type="text" id="accHex" maxlength="7" spellcheck="false" autocomplete="off" inputmode="text" value="#FF3145" aria-describedby="accMsg"></div>
+              <button type="button" class="btn btn-ghost btn-sm" id="accReset">Restablecer coral KARTTA</button>
+            </div>
+            <div class="rgbr"><span>R</span><input type="range" id="accR" min="0" max="255" aria-label="Rojo"><output id="accRo">255</output></div>
+            <div class="rgbr"><span>G</span><input type="range" id="accG" min="0" max="255" aria-label="Verde"><output id="accGo">49</output></div>
+            <div class="rgbr"><span>B</span><input type="range" id="accB" min="0" max="255" aria-label="Azul"><output id="accBo">69</output></div>
+            <p class="accmsg" id="accMsg" role="status" aria-live="polite"></p>
+          </div>
+        </div>
       </div>
       <div class="card">
         <h3>Apariencia</h3><p class="sub">Elige cómo quieres ver tu panel.</p>
@@ -498,6 +536,8 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
     <section class="view" data-panel="qr"><div id="modQr"></div></section>
     <section class="view" data-panel="pagos"><div id="modPagos"></div></section>
     <section class="view" data-panel="fidelizacion"><div id="modLoyalty"></div></section>
+    <section class="view" data-panel="soporte"><div id="modSupport"></div></section>
+    <section class="view" data-panel="politicas"><div id="modLegal"></div></section>
   </main>
 </div>
 
@@ -630,25 +670,60 @@ async function borrarImagen(path){ if (!path) return; try { await sb.storage.fro
 /* ---------- tema y acento ---------- */
 function prefsLocalOK(){ try { return JSON.parse(localStorage.getItem('kartta_consent') || 'null')?.preferences === true; } catch { return false; } }
 function getPrefs(){ try { return JSON.parse(localStorage.getItem('kartta_prefs') || '{}'); } catch { return {}; } }
+const HEX_RE = /^#[0-9a-fA-F]{6}$/;
+const cleanHex = (h) => (HEX_RE.test(h || '') ? String(h).toUpperCase() : null);
+const hexToRgb = (h) => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16));
+const rgbToHex = (r, g, b) => '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('').toUpperCase();
+function relLum(h){ const c = hexToRgb(h).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; }
+/* texto sobre el color de acento: negro o blanco, el que dé más contraste (así un acento amarillo sigue legible) */
+const onAccent = (h) => (relLum(h) > .34 ? '#0A0A0A' : '#FFFFFF');
+function paintAccent(hex){
+  const h = cleanHex(hex) || ACCENTS.Rojo, st = document.documentElement.style;
+  st.setProperty('--accent', h); st.setProperty('--on-accent', onAccent(h));
+  return h;
+}
+function syncPicker(h){
+  const [r, g, b] = hexToRgb(h), act = document.activeElement && document.activeElement.id;
+  if ($('accColor').value.toUpperCase() !== h.toLowerCase().toUpperCase()) $('accColor').value = h.toLowerCase();
+  $('accSwTxt').textContent = h;
+  if (act !== 'accHex') $('accHex').value = h;
+  [['accR', r], ['accG', g], ['accB', b]].forEach(([id, v]) => { if (act !== id) $(id).value = v; $(id + 'o').textContent = v; });
+  document.querySelectorAll('.acc').forEach(a => a.classList.toggle('on', a.dataset.c.toUpperCase() === h));
+}
 function applyPrefs(p){
   document.documentElement.setAttribute('data-theme', p.theme === 'light' ? 'light' : 'dark');
-  document.documentElement.style.setProperty('--accent', p.accent || ACCENTS.Rojo);
+  syncPicker(paintAccent(p.accent));
   document.querySelectorAll('#themeSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === (p.theme === 'light' ? 'light' : 'dark')));
-  document.querySelectorAll('.acc').forEach(a => a.classList.toggle('on', a.dataset.c === (p.accent || ACCENTS.Rojo)));
 }
+/* perfil.prefs es la fuente de verdad: lo comparten el color/tema y la guía (tour). Así ninguna escritura pisa a la otra. */
 async function savePrefs(patch){
-  const p = { ...getPrefs(), ...patch };
+  if (patch.accent !== undefined) { const h = cleanHex(patch.accent); if (!h) return; patch = { ...patch, accent: h }; }
+  const p = { ...getPrefs(), ...(perfil.prefs || {}), ...patch };
+  perfil.prefs = p;
   if (prefsLocalOK()) { try { localStorage.setItem('kartta_prefs', JSON.stringify(p)); } catch {} }
   applyPrefs(p);
   const { error } = await sb.from('profiles').update({ prefs: p }).eq('id', uid);
-  if (error) console.warn(error);
+  if (error) { console.warn(error); const m = $('accMsg'); if (m && patch.accent) m.textContent = 'Se aplicó en este dispositivo, pero no se pudo guardar en tu cuenta. Inténtalo de nuevo.'; }
+  else { const m = $('accMsg'); if (m && patch.accent) { m.textContent = 'Color guardado en tu cuenta.'; clearTimeout(savePrefs._t); savePrefs._t = setTimeout(() => { m.textContent = ''; }, 2500); } }
 }
-$('accents').innerHTML = Object.entries(ACCENTS).map(([n, c]) => `<button class="acc" data-c="${c}" style="background:${c}" aria-label="${n}" title="${n}"></button>`).join('');
+$('accents').innerHTML = Object.entries(ACCENTS).map(([n, c]) => `<button type="button" class="acc" data-c="${c}" style="background:${c}" aria-label="${n}" title="${n}"></button>`).join('');
 $('accents').addEventListener('click', e => { const b = e.target.closest('.acc'); if (b) savePrefs({ accent: b.dataset.c }); });
+/* selector libre: vista previa inmediata mientras se arrastra, y se guarda en la cuenta al soltar (o 600 ms después de la última edición) */
+let accSaveT = 0;
+function accLive(hex){ const h = cleanHex(hex); if (!h) return false; syncPicker(paintAccent(h)); clearTimeout(accSaveT); accSaveT = setTimeout(() => savePrefs({ accent: h }), 600); return true; }
+$('accColor').addEventListener('input', e => accLive(e.target.value));
+['accR', 'accG', 'accB'].forEach(id => $(id).addEventListener('input', () => accLive(rgbToHex($('accR').value, $('accG').value, $('accB').value))));
+$('accHex').addEventListener('input', e => {
+  let v = e.target.value.trim(); if (v && v[0] !== '#') v = '#' + v;
+  if (HEX_RE.test(v)) { $('accMsg').textContent = ''; accLive(v); }
+  else $('accMsg').textContent = v.length >= 7 ? 'Código no válido. Usa 6 caracteres: 0-9 y A-F (ej. #FF3145).' : '';
+});
+$('accHex').addEventListener('blur', () => { $('accHex').value = cleanHex(document.documentElement.style.getPropertyValue('--accent').trim()) || ACCENTS.Rojo; });
+$('accReset').addEventListener('click', () => { clearTimeout(accSaveT); savePrefs({ accent: ACCENTS.Rojo }); });
 $('themeSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) savePrefs({ theme: b.dataset.v }); });
 
 /* ---------- navegación ---------- */
-const VIEWS = ['inicio','productos','menu','personalizar','configuracion','ia','dominio','pedidos','mesas','clientes','metricas','qr','pagos','fidelizacion'];
+const VIEWS = ['inicio','productos','menu','personalizar','configuracion','ia','dominio','pedidos','mesas','clientes','metricas','qr','pagos','fidelizacion','soporte','politicas'];
 function irA(view){
   if (!VIEWS.includes(view)) view = 'inicio';
   if (window.KARTTA_MOTION && KARTTA_MOTION.switchView) KARTTA_MOTION.switchView(view);
@@ -920,7 +995,7 @@ function ktRender(){
   $('tourTitle').textContent = n === tot ? '¡Tu menú está listo!' : 'Prepara tu menú · ' + n + ' de ' + tot;
   $('tourSub').textContent = n === tot ? 'Completaste todos los pasos. Puedes repetir la guía cuando quieras.' : 'Te falta poco: ' + (tot - n) + (tot - n === 1 ? ' paso' : ' pasos') + '.';
   $('tourGo').textContent = n === tot ? 'Repetir la guía' : (n === 0 ? 'Comenzar la guía' : 'Continuar la guía');
-  $('tourList').innerHTML = KT_STEPS.map((s, i) => `<li><button type="button" data-kt="${i}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 10px;border-radius:10px;background:var(--panel2);color:var(--text);font-weight:600"><span aria-hidden="true" style="width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;${d[i] ? 'background:#1EA35A;color:#fff' : 'border:2px solid var(--border)'}">${d[i] ? '✓' : ''}</span><span style="${d[i] ? 'text-decoration:line-through;color:var(--muted)' : 'color:var(--strong)'}">${esc(s.title)}</span><span class="sr-only" style="position:absolute;left:-9999px">${d[i] ? 'completado' : 'pendiente'}</span></button></li>`).join('');
+  $('tourList').innerHTML = KT_STEPS.map((s, i) => `<li><button type="button" data-kt="${i}" style="display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 10px;border-radius:10px;background:var(--panel2);color:var(--text);font-weight:600"><span aria-hidden="true" style="width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;${d[i] ? 'background:var(--accent);color:#fff' : 'border:2px solid var(--border)'}">${d[i] ? '✓' : ''}</span><span style="${d[i] ? 'text-decoration:line-through;color:var(--muted)' : 'color:var(--strong)'}">${esc(s.title)}</span><span class="sr-only" style="position:absolute;left:-9999px">${d[i] ? 'completado' : 'pendiente'}</span></button></li>`).join('');
 }
 $('tourList').addEventListener('click', (e) => { const b = e.target.closest('[data-kt]'); if (b) ktStart(Number(b.dataset.kt)); });
 $('tourGo').onclick = () => ktStart(ktDone().every(Boolean) ? 0 : ktFirstPending());

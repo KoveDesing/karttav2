@@ -134,7 +134,7 @@
     if (evOK) chart($('chV'), { labels: labels, values: cur.visitsDay, type: 'line', color: 'var(--accent)', aria: 'Visitas por día' });
     else $('chV').parentNode.style.display = 'none';
     chart($('chO'), { labels: labels, values: cur.ordersDay, type: 'bar', color: 'var(--accent)', aria: 'Pedidos por día' });
-    chart($('chS'), { labels: labels, values: cur.salesDay, type: 'bar', color: '#22C55E', fmt: cop, axis: function (v) { return v >= 1e6 ? (v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? Math.round(v / 1e3) + 'k' : Math.round(v); }, aria: 'Ventas confirmadas por día' });
+    chart($('chS'), { labels: labels, values: cur.salesDay, type: 'bar', color: 'var(--accent)', fmt: cop, axis: function (v) { return v >= 1e6 ? (v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? Math.round(v / 1e3) + 'k' : Math.round(v); }, aria: 'Ventas confirmadas por día' });
     var hv = cur.visits ? cur.visitsHour : cur.ordersHour;
     chart($('chH'), { labels: hv.map(function (_, i) { return i + 'h'; }), values: hv, type: 'bar', color: 'var(--accent)', fmt: function (v) { return v + (cur.visits ? ' visitas' : ' pedidos'); }, aria: 'Actividad por hora' });
     var top = Object.keys(cur.top).map(function (k) { return [k, cur.top[k]]; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 6);
