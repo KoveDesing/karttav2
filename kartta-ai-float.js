@@ -124,8 +124,12 @@
       if (!resp.ok || ct.indexOf('application/json') >= 0) {
         var j = await resp.json().catch(function () { return {}; }); tp.remove();
         if (me.state) me.state.textContent = '✓';
+        if (resp.ok && typeof j.reply === 'string' && j.reply.trim()) {
+          if (j.conversation_id) { S.cid = j.conversation_id; LS.set(kConv(), S.cid); }
+          bot = addMsg('bot', j.reply.trim()); return;
+        }
         if (j.blocked && j.reply) { if (j.conversation_id) { S.cid = j.conversation_id; LS.set(kConv(), S.cid); } addMsg('bot', j.reply); return; }
-        addMsg('bot', j.message || 'No pude responder ahora. Intenta de nuevo en un momento.', { error: true }); return;
+        addMsg('bot', j.message || (j.error === 'monthly_limit' ? 'Alcanzaste el límite mensual de preguntas de IA de tu plan.' : 'No pude responder ahora. Intenta de nuevo en un momento.'), { error: true }); return;
       }
       if (me.state) me.state.textContent = '✓';
       var ensureBot = function () { if (!bot) { tp.remove(); bot = addMsg('bot', ''); } return bot; };
