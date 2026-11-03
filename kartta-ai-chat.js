@@ -272,26 +272,35 @@
   async function send(retryText) {
     const text = (retryText != null ? retryText : el.kaiText.value).trim(); const foto = retryText != null ? null : S.img;
     if (!text && !foto) return;
+    const prompt = text || (foto ? 'Analiza esta foto de mi producto y dime cómo mejorarla.' : '');
     if (S.usage && (S.usage.limit_reached || S.usage.contact_advisor)) { S.limitDismissed = false; return showLimit(S.usage); }
     if (!navigator.onLine) { addBubble('bot', 'Parece que no tienes conexión. Revisa tu internet e intenta de nuevo.', '', true); return; }
-    S.lastMsg = text;
-    if (retryText == null) { addBubble('me', (foto ? '📷 ' : '') + (text || 'Analiza esta foto de mi producto y dime cómo mejorarla.')); el.kaiText.value = ''; autosize(); }
+    S.lastMsg = prompt;
+    if (retryText == null) { addBubble('me', (foto ? '📷 ' : '') + prompt); el.kaiText.value = ''; autosize(); }
     const typing = typingBubble(); setBusy(true); setStatus('run');
     const key = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)).replace(/[^A-Za-z0-9_-]/g, '');
     S.ctrl = new AbortController(); let bubble = null, buf = '', gotDone = false, failed = false;
     try {
       const { data: ses } = await S.sb.auth.getSession(); const tok = ses && ses.session && ses.session.access_token; if (!tok) throw Object.assign(new Error('auth'), { code: 'auth' });
       const headers = { Authorization: 'Bearer ' + tok, apikey: S.sb.supabaseKey }; let body;
-      if (foto) { const fd = new FormData(); fd.append('restaurant_id', S.rid); fd.append('request_key', key); fd.append('message', text); if (S.cid) fd.append('conversation_id', S.cid); fd.append('image', foto); body = fd; }
-      else { headers['Content-Type'] = 'application/json'; body = JSON.stringify({ restaurant_id: S.rid, conversation_id: S.cid || undefined, message: text, request_key: key }); }
-      const resp = await fetch(S.sb.supabaseUrl + '/functions/v1/ai-assistant', { method: 'POST', headers, body, signal: S.ctrl.signal });
+      if (foto) { const fd = new FormData(); fd.append('restaurant_id', S.rid); fd.append('message', prompt); fd.append('image', foto); body = fd; }
+      else { headers['Content-Type'] = 'application/json'; body = JSON.stringify({ restaurant_id: S.rid, conversation_id: S.cid || undefined, message: prompt, request_key: key }); }
+      // Texto y análisis de imágenes usan funciones separadas en Supabase.
+      const endpoint = foto ? 'ai-assistant-vision' : 'ai-assistant';
+      const resp = await fetch(S.sb.supabaseUrl + '/functions/v1/' + endpoint, { method: 'POST', headers, body, signal: S.ctrl.signal });
       const ct = resp.headers.get('content-type') || '';
-      if (!resp.ok || ct.includes('application/json')) {
+      if (ct.includes('application/json')) {
         const j = await resp.json().catch(() => ({})); typing.remove();
-        if (j.error === 'monthly_limit' || j.error === 'contact_advisor') { await loadUsage(); S.limitDismissed = false; setStatus(null); setBusy(false); showLimit(Object.assign({}, S.usage || {}, { quota: j.quota, used: j.used, plan_name: j.plan_name, plan_id: j.plan_id, contact_advisor: j.error === 'contact_advisor' })); return; }
-        if (j.blocked) { adoptConv(j.conversation_id, j.title, true); addBubble('bot', j.reply); setStatus('ok'); setBusy(false); return; }
-        throw Object.assign(new Error(j.message || 'No pude responder ahora.'), { code: j.error || 'http_' + resp.status });
+        if (!resp.ok) {
+          if (j.error === 'monthly_limit' || j.error === 'contact_advisor') { await loadUsage(); S.limitDismissed = false; setStatus(null); setBusy(false); showLimit(S.usage || {}); return; }
+          if (j.blocked && j.reply) { adoptConv(j.conversation_id, j.title, true); addBubble('bot', j.reply); setStatus('ok'); setBusy(false); return; }
+          throw Object.assign(new Error(j.message || 'No pude responder ahora.'), { code: j.error || 'http_' + resp.status });
+        }
+        // ai-assistant y ai-assistant-vision devuelven { reply } en JSON.
+        if (typeof j.reply === 'string' && j.reply.trim()) { const r = addBubble('bot', j.reply.trim()); bubble = r.b; setStatus('ok'); if (foto) clearImg(); return; }
+        throw Object.assign(new Error(j.message || 'La IA respondió sin contenido.'), { code: j.error || 'empty_reply' });
       }
+      if (!resp.ok) throw Object.assign(new Error('No pude responder ahora. Intenta de nuevo.'), { code: 'http_' + resp.status });
       typing.remove(); const r = addBubble('bot', ''); bubble = r.b; const textNode = bubble.firstChild;
       const reader = resp.body.getReader(), dec = new TextDecoder(); let pending = '';
       while (true) {
@@ -303,7 +312,7 @@
           if (ev === 'meta') adoptConv(d.conversation_id, d.title, d.is_new);
           else if (ev === 'delta') { buf += d.t; textNode.nodeValue = buf; scrollEnd(); }
           else if (ev === 'replace') { buf = d.text; textNode.nodeValue = buf; }
-          else if (ev === 'error') { failed = true; if (!buf) { r.row.classList.add('err'); textNode.nodeValue = d.message || 'No pude responder ahora.'; addRetry(bubble, text); } }
+          else if (ev === 'error') { failed = true; if (!buf) { r.row.classList.add('err'); textNode.nodeValue = d.message || 'No pude responder ahora.'; addRetry(bubble, prompt); } }
           else if (ev === 'done') { gotDone = true; if (d.usage) { S.usage = d.usage; renderUsage(); } if (d.status === 'stopped') bubble.appendChild(h('span', 'meta', 'Respuesta detenida')); if (d.memory_saved) bubble.appendChild(h('span', 'meta', '✓ Guardado en la memoria del restaurante')); }
         }
       }
@@ -313,7 +322,7 @@
       if (e && e.name === 'AbortError') { if (bubble && !buf) bubble.parentElement.remove(); else if (bubble) bubble.appendChild(h('span', 'meta', 'Respuesta detenida')); setStatus(buf ? 'ok' : null); }
       else {
         const msg = e && e.code === 'auth' ? 'Tu sesión expiró. Vuelve a iniciar sesión.' : e && e.code === 'busy' ? 'Aún se está procesando otra pregunta. Espera un momento.' : (e && e.message && !/Failed to fetch|NetworkError|Load failed/i.test(e.message) ? e.message : 'Se perdió la conexión con la IA. No se descontó ninguna pregunta si no llegó respuesta.');
-        const r = addBubble('bot', msg, '', true); addRetry(r.b, text); setStatus('err');
+        const r = addBubble('bot', msg, '', true); addRetry(r.b, prompt); setStatus('err');
       }
     } finally {
       S.ctrl = null; setBusy(false);
