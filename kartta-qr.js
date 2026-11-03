@@ -79,7 +79,7 @@
   function render() {
     var C = M.ctx, host = $('modQr'); if (!host) return;
     var saved = C.perfil && C.perfil.prefs && C.perfil.prefs.qr && C.perfil.prefs.qr[C.rid]; d = Object.assign({}, DEF, saved || {});
-    host.innerHTML = '<div class="vhead"><h2>Código QR del menú</h2><p>Apunta siempre a tu enlace real y se actualiza si cambias tu identificador.</p></div>' +
+    host.innerHTML = '<div class="vhead"><h2>Código QR del menú</h2><p>Para que tus clientes consulten el menú. Los pedidos en mesa solo se hacen con el QR de cada mesa (sección Mesas).</p></div>' +
       '<div class="qrwrap"><div class="qrprev"><canvas id="qrCanvas" role="img" aria-label="Vista previa del código QR del menú"></canvas><p class="note" id="qrUrl" style="word-break:break-all;margin:12px 0 0;text-align:center"></p><p class="note" id="qrVerify" style="margin:6px 0 0;text-align:center"></p></div>' +
       '<div class="card qrctl"><div class="two"><div class="field"><label for="qrFg">Color del código</label><input id="qrFg" type="color" value="' + d.fg + '"></div><div class="field"><label for="qrBg">Color de fondo</label><input id="qrBg" type="color" value="' + d.bg + '"></div></div>' +
       '<div class="field"><label for="qrStyle">Estilo</label><select id="qrStyle"><option value="square">Cuadrado</option><option value="rounded">Redondeado</option><option value="dots">Puntos</option></select></div>' +

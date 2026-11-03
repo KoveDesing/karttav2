@@ -49,21 +49,27 @@ import { sb, imageUrl } from "/supabase-init.js";
 const $ = (id) => document.getElementById(id);
 const toast = (m) => { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 3200); };
 const fmt = (n) => Number(n || 0).toLocaleString('es-CO');
-const ERR = { insufficient_points: 'Aún no tienes puntos suficientes para este premio.', too_many_pending: 'Ya tienes 3 canjes pendientes. Muéstralos en el local primero.', reward_not_available: 'Ese premio ya no está disponible.', already_played: 'Ya jugaste hoy. ¡Vuelve mañana!', disabled: 'Esta función no está activa por ahora.' };
+const ERR = { reward_limit_reached: 'Ya usaste este premio el máximo de veces permitido.', reward_sold_out: 'Este premio ya se agotó.', invalid_customer_session: 'Tu sesión venció. Vuelve al menú y verifica tu teléfono.', insufficient_points: 'Aún no tienes puntos suficientes para este premio.', too_many_pending: 'Ya tienes 3 canjes pendientes. Muéstralos en el local primero.', reward_not_available: 'Ese premio ya no está disponible.', already_played: 'Ya jugaste hoy. ¡Vuelve mañana!', disabled: 'Esta función no está activa por ahora.' };
 const errMsg = (e) => { const m = String(e?.message || ''); for (const k in ERR) if (m.includes(k)) return ERR[k]; return 'No se pudo completar. Intenta de nuevo.'; };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const token = (new URLSearchParams(location.search).get('t') || (location.pathname.match(/^\/t\/([^/?#]+)/) || [])[1] || '').trim();
+/* /t/<restaurante>: la tarjeta se abre con la sesión verificada del cliente (OTP). Los enlaces secretos antiguos ya no dan acceso. */
+const slug = decodeURIComponent((new URLSearchParams(location.search).get('t') || (location.pathname.match(/^\/t\/([^/?#]+)/) || [])[1] || '')).trim().toLowerCase();
+const SKEY = 'kartta_cs_' + slug;
+const getSess = () => { try { const t = localStorage.getItem(SKEY); return t && /^[A-Za-z0-9_-]{32,128}$/.test(t) ? t : null; } catch { return null; } };
+let token = getSess();
 const KIND = { earn: 'Compra', welcome: 'Bienvenida', redeem: 'Canje', refund: 'Devolución', adjust: 'Ajuste', game: 'Ruleta' };
 let data = null;
 
 function bad(title, msg) { $('app').innerHTML = ''; const d = document.createElement('div'); d.className = 'center'; const h = document.createElement('h1'); h.textContent = title; const p = document.createElement('p'); p.textContent = msg; d.append(h, p); $('app').appendChild(d); }
 
 async function load() {
-  if (!UUID.test(token)) return bad('Enlace no válido', 'Pídele al restaurante que te reenvíe el enlace de tu tarjeta.');
-  const { data: d, error } = await sb.rpc('get_loyalty_card', { p_token: token });
+  if (UUID.test(slug)) return bad('Enlace retirado', 'Por seguridad, las tarjetas ya no se abren con enlaces secretos. Entra al menú de tu restaurante y verifica tu teléfono.');
+  token = getSess();
+  if (!slug || !token) { location.replace(slug ? '/m/' + encodeURIComponent(slug) : '/'); return; }
+  const { data: d, error } = await sb.rpc('get_my_loyalty', { p_slug: slug, p_session: token });
   if (error) return bad('No pudimos cargar tu tarjeta', 'Revisa tu conexión e intenta de nuevo.');
-  if (!d) return bad('Tarjeta no disponible', 'El enlace no existe o el programa de puntos está desactivado.');
-  data = d; try { localStorage.setItem('kartta_card_' + d.restaurant.slug, token); } catch {}
+  if (!d) { try { localStorage.removeItem(SKEY); } catch {} return bad('Tu sesión venció', 'Vuelve al menú y verifica tu teléfono para ver tu tarjeta.'); }
+  data = d;
   document.title = 'Mi tarjeta · ' + d.restaurant.name; render();
 }
 
@@ -75,7 +81,7 @@ function render() {
   const rewards = d.rewards || [], bal = d.customer.balance;
   const next = (rewards.find(r => r.cost_points > bal) || rewards[rewards.length - 1] || {}).cost_points || 0;
   const wrap = el('div', 'card-wrap'); app.appendChild(wrap);
-  KARTTA_CARD.render(wrap, { design: d.program.card, programName: d.program.name, restaurantName: d.restaurant.name, logoUrl: d.restaurant.logo_path ? imageUrl(d.restaurant.logo_path) : '', customerName: d.customer.name, last4: d.customer.phone_last4, balance: bal, nextCost: next });
+  KARTTA_CARD.render(wrap, { design: d.program.card, programName: d.program.name, restaurantName: d.restaurant.name, logoUrl: d.restaurant.logo_path ? imageUrl(d.restaurant.logo_path) : '', customerName: d.customer.name, last4: d.customer.phone_last4, balance: bal, nextCost: next, tier: d.customer.tier, tierEnabled: !!d.program.tiers_enabled, nextTier: d.customer.next_tier, rewardName: ((rewards.find(r => r.cost_points > bal) || {}).name) || '' });
 
   if ((d.pending || []).length) {
     const s = section('Canjes por entregar'); s.appendChild(el('p', 'note', 'Muestra este código en el local para recibir tu premio.'));
@@ -86,14 +92,14 @@ function render() {
     const s = section('Ruleta diaria'); const w = el('div', 'spin');
     w.appendChild(el('p', 'note', 'Un giro gratis al día. Premios posibles: ' + (d.spin.prizes || []).join(' · ')));
     const out = el('div', 'prize'); out.id = 'prize'; const b = el('button', 'main', d.spin.played_today ? 'Ya jugaste hoy' : 'Girar ruleta'); b.disabled = !!d.spin.played_today;
-    b.onclick = async () => { b.disabled = true; b.textContent = 'Girando…'; const { data: r, error } = await sb.rpc('loyalty_play_spin', { p_token: token }); if (error) { toast(errMsg(error)); await load(); return; } out.textContent = '🎉 ' + r.label; toast('+' + r.points + ' puntos'); setTimeout(load, 1800); };
+    b.onclick = async () => { b.disabled = true; b.textContent = 'Girando…'; const { data: r, error } = await sb.rpc('loyalty_play_spin_s', { p_session: token }); if (error) { toast(errMsg(error)); await load(); return; } out.textContent = '🎉 ' + r.label; toast('+' + r.points + ' puntos'); setTimeout(load, 1800); };
     w.append(b, out); s.appendChild(w); app.appendChild(s);
   }
   const rs = section('Premios'); if (!rewards.length) rs.appendChild(el('p', 'note', 'El restaurante aún no ha publicado premios.'));
   rewards.forEach(r => {
-    const w = el('div', 'rw'), top = el('div', 'row'); const l = el('div'); l.appendChild(el('b', null, r.name)); if (r.description) { l.appendChild(el('br')); l.appendChild(el('small', null, r.description)); }
-    const can = bal >= r.cost_points, btn = el('button', can ? 'main' : '', can ? 'Canjear' : fmt(r.cost_points) + ' pts'); btn.disabled = !can;
-    btn.onclick = async () => { if (!confirm('¿Canjear «' + r.name + '» por ' + fmt(r.cost_points) + ' puntos?')) return; btn.disabled = true; const { data: x, error } = await sb.rpc('loyalty_request_redemption', { p_token: token, p_reward: r.id }); if (error) { toast(errMsg(error)); btn.disabled = false; return; } toast('Canje listo. Código: ' + x.code); await load(); };
+    const w = el('div', 'rw'), top = el('div', 'row'); const l = el('div'); l.appendChild(el('b', null, r.name)); if (r.description) { l.appendChild(el('br')); l.appendChild(el('small', null, r.description)); } if (r.conditions) { l.appendChild(el('br')); l.appendChild(el('small', null, 'Condiciones: ' + r.conditions)); } if (r.valid_until) { l.appendChild(el('br')); l.appendChild(el('small', null, 'Válido hasta ' + new Date(r.valid_until).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', dateStyle: 'medium' }))); }
+    const can = bal >= r.cost_points && !r.limit_reached, btn = el('button', can ? 'main' : '', r.limit_reached ? 'No disponible' : can ? 'Canjear' : fmt(r.cost_points) + ' pts'); btn.disabled = !can;
+    btn.onclick = async () => { if (!confirm('¿Canjear «' + r.name + '» por ' + fmt(r.cost_points) + ' puntos?')) return; btn.disabled = true; const { data: x, error } = await sb.rpc('loyalty_request_redemption_s', { p_session: token, p_reward: r.id }); if (error) { toast(errMsg(error)); btn.disabled = false; return; } toast('Canje listo. Código: ' + x.code); await load(); };
     top.append(l, btn); w.appendChild(top);
     if (!can) { const bar = el('div', 'bar'), i = el('i'); i.style.width = Math.min(100, Math.round(bal / r.cost_points * 100)) + '%'; bar.appendChild(i); w.appendChild(bar); }
     rs.appendChild(w);
@@ -102,10 +108,22 @@ function render() {
   const ms = section('Mis movimientos'); if (!(d.movements || []).length) ms.appendChild(el('p', 'note', 'Todavía no tienes movimientos.'));
   (d.movements || []).forEach(m => { const r = el('div', 'mv'), l = el('div'); l.appendChild(document.createTextNode((KIND[m.kind] || m.kind) + (m.note && m.kind !== 'earn' ? ' · ' + m.note : ''))); l.appendChild(el('small', null, new Date(m.at).toLocaleString('es-CO', { timeZone: 'America/Bogota', dateStyle: 'medium', timeStyle: 'short' }))); r.append(l, el('span', m.points > 0 ? 'plus' : 'minus', (m.points > 0 ? '+' : '') + fmt(m.points))); ms.appendChild(r); });
   app.appendChild(ms);
-  const tools = section('Guarda tu tarjeta'); tools.appendChild(el('p', 'note', 'Este enlace es tu tarjeta: guárdalo en tu celular. En iPhone: Compartir → «Añadir a pantalla de inicio». En Android: menú ⋮ → «Añadir a pantalla de inicio». No lo compartas: quien lo tenga puede ver tus puntos.'));
-  const row = el('div', 'row'); row.style.marginTop = '12px';
-  const cp = el('button', null, 'Copiar mi enlace'); cp.onclick = async () => { try { await navigator.clipboard.writeText(location.origin + '/t/' + token); toast('Enlace copiado.'); } catch { toast(location.origin + '/t/' + token); } };
-  const mn = el('a'); mn.href = '/m/' + encodeURIComponent(d.restaurant.slug); mn.textContent = 'Ver el menú'; mn.style.cssText = 'color:var(--accent);font-weight:700;font-size:13.5px'; row.append(cp, mn); tools.appendChild(row); app.appendChild(tools);
+  if ((d.orders || []).length) {
+    const os = section('Mis pedidos');
+    const ST = { nuevo: 'Recibido', preparando: 'En preparación', listo: 'Listo', entregado: 'Entregado', cancelado: 'Cancelado' };
+    d.orders.forEach(o => { const r = el('div', 'mv'), l = el('div'); l.appendChild(document.createTextNode('Pedido #' + o.code + ' · ' + (ST[o.status] || o.status) + (o.paid ? ' · pagado' : ''))); l.appendChild(el('small', null, new Date(o.at).toLocaleString('es-CO', { timeZone: 'America/Bogota', dateStyle: 'medium', timeStyle: 'short' }))); r.append(l, el('span', null, '$' + fmt(o.total))); os.appendChild(r); });
+    app.appendChild(os);
+  }
+  const tools = section('Mi privacidad');
+  tools.appendChild(el('p', 'note', 'Tu teléfono se usa solo para identificarte en este restaurante, guardar tus puntos y gestionar tus pedidos. No se comparte con otros restaurantes.'));
+  const mk = el('label', 'note'); mk.style.cssText = 'display:flex;gap:8px;align-items:flex-start;margin:10px 0'; const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!d.customer.marketing; cb.style.marginTop = '3px';
+  cb.onchange = async () => { const { error } = await sb.rpc('customer_set_marketing', { p_session: token, p_value: cb.checked }); if (error) { cb.checked = !cb.checked; toast(errMsg(error)); } else toast(cb.checked ? 'Recibirás promociones.' : 'No recibirás promociones.'); };
+  mk.append(cb, document.createTextNode('Quiero recibir promociones de este restaurante (opcional).')); tools.appendChild(mk);
+  const row = el('div', 'row'); row.style.cssText = 'margin-top:12px;flex-wrap:wrap;gap:10px';
+  const out = el('button', null, 'Cerrar sesión'); out.onclick = async () => { await sb.rpc('customer_logout', { p_session: token }).then(() => {}, () => {}); try { localStorage.removeItem(SKEY); } catch {} location.href = '/m/' + encodeURIComponent(slug); };
+  const del = el('button', null, 'Borrar mis datos'); del.onclick = async () => { if (!confirm('Vas a borrar tu tarjeta, tus puntos y tus datos de este restaurante. No se puede deshacer. ¿Continuar?')) return; const { error } = await sb.rpc('customer_delete_my_data', { p_session: token }); if (error) return toast(errMsg(error)); try { localStorage.removeItem(SKEY); } catch {} toast('Tus datos fueron borrados.'); setTimeout(() => { location.href = '/m/' + encodeURIComponent(slug); }, 900); };
+  const mn = el('a'); mn.href = '/m/' + encodeURIComponent(d.restaurant.slug); mn.textContent = 'Ver el menú'; mn.style.cssText = 'color:var(--accent);font-weight:700;font-size:13.5px';
+  row.append(out, del, mn); tools.appendChild(row); app.appendChild(tools);
   if (d.program.terms) { const t = section('Condiciones'); t.appendChild(el('p', 'note', d.program.terms)); app.appendChild(t); }
 }
 load();

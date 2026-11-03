@@ -40,7 +40,7 @@ input,select,textarea{font-family:inherit;color:var(--strong);}
 
 #app{display:none;min-height:100vh;grid-template-columns:260px 1fr;}#app.ready{display:grid;}
 #sidebar{background:var(--panel);border-right:1px solid var(--border);padding:20px 14px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;overflow-y:auto;}
-.sb-brand{font-size:21px;font-weight:800;padding:6px 10px 16px;color:var(--strong);}.sb-brand span{color:var(--accent);}
+.sb-brand{font-family:'Mr Dafoe',cursive;font-style:normal;font-weight:400;font-size:clamp(34px,3.2vw,44px);line-height:1.05;letter-spacing:0;padding:4px 10px 14px;color:#FFFFFF;white-space:nowrap;user-select:none;-webkit-font-smoothing:antialiased;}html[data-theme="light"] .sb-brand{color:var(--strong);}.sb-brand span{color:#FF3145;font-style:normal;font-weight:400;}
 .sb-label{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:14px 12px 6px;}
 .sb-item{display:flex;align-items:center;gap:11px;width:100%;padding:11px 12px;border-radius:12px;font-size:13.5px;font-weight:600;color:var(--muted);text-align:left;transition:background .15s ease,color .15s ease,transform .15s ease;}
 .sb-item:hover{background:var(--panel2);color:var(--strong);}
@@ -278,13 +278,15 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 <script src="kartta-modules.js?v=20261032" defer></script>
 <script src="kartta-metrics.js?v=20261034" defer></script>
 <script src="kartta-qr.js?v=20261031" defer></script>
-<script src="kartta-card.js?v=20261031" defer></script>
-<script src="kartta-loyalty.js?v=20261031" defer></script>
+<script src="kartta-card.js?v=20261102" defer></script>
+<script src="kartta-loyalty.js?v=20261102" defer></script>
 <script src="kartta-home.js?v=20261034" defer></script>
 <link rel="stylesheet" href="kartta-support.css?v=20261101">
 <script src="kartta-support.js?v=20261101" defer></script>
 <link rel="stylesheet" href="kartta-ai-chat.css?v=20261034">
 <script src="kartta-ai-chat.js?v=20261033" defer></script>
+<link rel="stylesheet" href="kartta-ai-float.css?v=20261102">
+<script src="kartta-ai-float.js?v=20261102" defer></script>
 </head>
 <body>
 
@@ -292,7 +294,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 
 <div id="app">
   <aside id="sidebar" aria-label="Navegación">
-    <div class="sb-brand">Kar<span>tt</span>a</div>
+    <div class="sb-brand" role="img" aria-label="Kartta">Kar<span>tt</span>a</div>
     <div class="sb-prof" id="sbProf">
       <div class="sb-biz"><div class="avatar" id="sbAvatar">K</div><div class="sb-bt"><span id="sbBiz">—</span><small id="sbPlanName">Plan Free</small><small id="sbPlanPrice"></small></div></div>
       <a class="btn btn-accent btn-sm sb-up" id="sbUpgrade" href="index.html#precios" hidden>Mejorar plan</a>
@@ -521,7 +523,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 
     <!-- MESAS -->
     <section class="view" data-panel="mesas">
-      <div class="vhead row between"><div><h2>Mesas y QR</h2><p>Imprime el QR de cada mesa: tu cliente cae directo en tu menú.</p></div><button class="btn btn-accent" id="btnNuevaMesa">+ Nueva mesa</button></div>
+      <div class="vhead row between"><div><h2>Mesas y QR</h2><p>Cada mesa tiene su QR único. Tus clientes piden escaneándolo; el enlace general de tu menú solo sirve para consultar.</p></div><button class="btn btn-accent" id="btnNuevaMesa">+ Nueva mesa</button></div>
       <div class="mgrid" id="mgrid"></div>
       <div class="card empty" id="mesasEmpty"><div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18M5 9v10M19 9v10M8 9V5h8v4"/></svg></div><h3>Aún no tienes mesas</h3><p>Crea una mesa para generar su código QR.</p><button class="btn btn-accent" data-newmesa>Crear mesa</button></div>
     </section>
@@ -1428,22 +1430,34 @@ $('iaConfirm').onclick = async () => {
 })();
 
 /* ---------- mesas y QR ---------- */
-const urlMesa = (n) => `${location.origin}/m/${encodeURIComponent(slug)}?mesa=${encodeURIComponent(n)}`;
+const urlMesa = (m) => `${location.origin}/q/${m.qr_token}`;   // QR único por mesa: el servidor valida restaurante y mesa
 let mesas = [];
 async function cargarMesas(){
-  const { data, error } = await sb.from('restaurant_tables').select('id,label').eq('restaurant_id', rid);
+  const { data, error } = await sb.from('restaurant_tables').select('id,label,qr_token,is_active').eq('restaurant_id', rid);
   if (error) { console.error(error); toast('No pude cargar tus mesas.'); return; }
   mesas = (data || []).sort((a, b) => a.label.localeCompare(b.label, 'es', { numeric: true }));
 }
 function renderMesas(){
   const g = $('mgrid'); g.innerHTML = ''; $('mesasEmpty').style.display = mesas.length ? 'none' : 'block';
   mesas.forEach(m => {
-    const c = document.createElement('div'); c.className = 'mcard';
-    c.innerHTML = `<strong style="color:var(--strong)">Mesa ${esc(m.label)}</strong><div class="qrbox" id="qr-${m.id}"></div><div class="row" style="justify-content:center"><button class="btn btn-ghost btn-sm" data-dq="${m.id}" data-n="${esc(m.label)}">Descargar</button><button class="btn btn-danger btn-sm" data-dm="${m.id}">Eliminar</button></div>`;
+    const c = document.createElement('div'); c.className = 'mcard'; if (m.is_active === false) c.style.opacity = '.62';
+    c.innerHTML = `<strong style="color:var(--strong)">Mesa ${esc(m.label)}</strong><small style="color:var(--muted);font-weight:700">${m.is_active === false ? 'Desactivada · el QR no recibe pedidos' : 'Activa'}</small><div class="qrbox" id="qr-${m.id}"></div><div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" data-dq="${m.id}" data-n="${esc(m.label)}">Descargar</button><button class="btn btn-ghost btn-sm" data-ta="${m.id}">${m.is_active === false ? 'Activar' : 'Desactivar'}</button><button class="btn btn-ghost btn-sm" data-rq="${m.id}">Regenerar QR</button><button class="btn btn-danger btn-sm" data-dm="${m.id}">Eliminar</button></div>`;
     g.appendChild(c);
-    new QRCode($('qr-' + m.id), { text: urlMesa(m.label), width: 138, height: 138, colorDark: '#0A0A0A', colorLight: '#FFFFFF', correctLevel: QRCode.CorrectLevel.M });
+    new QRCode($('qr-' + m.id), { text: urlMesa(m), width: 138, height: 138, colorDark: '#0A0A0A', colorLight: '#FFFFFF', correctLevel: QRCode.CorrectLevel.M });
   });
   g.querySelectorAll('[data-dq]').forEach(b => b.onclick = () => { const box = $('qr-' + b.dataset.dq), cv = box.querySelector('canvas'), im = box.querySelector('img'); const u = cv ? cv.toDataURL('image/png') : im?.src; if (!u) return toast('No se pudo generar el QR.'); const a = document.createElement('a'); a.href = u; a.download = `kartta-mesa-${b.dataset.n}.png`; a.click(); });
+  g.querySelectorAll('[data-ta]').forEach(b => b.onclick = async () => {
+    const m = mesas.find(x => x.id === b.dataset.ta); if (!m) return; const to = m.is_active === false;
+    const { error } = await sb.rpc('table_set_active', { p_table: m.id, p_active: to });
+    if (error) return toast('No se pudo cambiar el estado de la mesa.');
+    toast(to ? 'Mesa activada.' : 'Mesa desactivada: su QR ya no recibe pedidos.'); await cargarMesas(); renderMesas();
+  });
+  g.querySelectorAll('[data-rq]').forEach(b => b.onclick = async () => {
+    if (!confirm('Se generará un QR nuevo para esta mesa. El QR impreso anterior dejará de funcionar y deberás imprimir el nuevo. ¿Continuar?')) return;
+    const { error } = await sb.rpc('table_rotate_qr', { p_table: b.dataset.rq });
+    if (error) return toast('No se pudo regenerar el QR.');
+    toast('QR regenerado. Descarga e imprime el nuevo.'); await cargarMesas(); renderMesas();
+  });
   g.querySelectorAll('[data-dm]').forEach(b => b.onclick = async () => {
     if (!confirm('¿Eliminar esta mesa? El QR impreso dejará de servir.')) return;
     const { error } = await sb.from('restaurant_tables').delete().eq('id', b.dataset.dm);

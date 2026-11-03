@@ -528,7 +528,15 @@ import { sb, imageUrl } from "/supabase-init.js";
  * place_order: el PRECIO lo calcula el servidor, no el navegador.
  */
 const params = new URLSearchParams(window.location.search);
-const mesa = params.get('mesa');
+const qToken = (params.get('q') || '').trim();
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/* Sesión de mesa: solo se obtiene escaneando el QR de la mesa (el servidor la valida). El enlace general solo sirve para consultar. */
+let TS = null;                       // { session, table, slug, expires_at }
+let mesa = null;                     // etiqueta de la mesa (solo si hay sesión válida)
+const TS_KEY = 'kartta_table_session';
+const tsSave = (t) => { try { sessionStorage.setItem(TS_KEY, JSON.stringify(t)); } catch {} };
+const tsLoad = () => { try { const t = JSON.parse(sessionStorage.getItem(TS_KEY) || 'null'); return t && UUID_RE.test(t.session || '') ? t : null; } catch { return null; } };
+const tsClear = () => { try { sessionStorage.removeItem(TS_KEY); } catch {} TS = null; mesa = null; };
 // El negocio se toma de: ?r=  →  la ruta /m/<negocio> (aunque el servidor no pase el ?r=)  →  dominio/subdominio.
 const slugDeRuta = () => { const m = location.pathname.match(/^\/m\/([^/?#]+)/); if (!m) return ''; try { return decodeURIComponent(m[1]); } catch { return ''; } };
 let slug = (params.get('r') || slugDeRuta() || '').trim().toLowerCase();
@@ -630,7 +638,7 @@ function paint(menu){
     d.appendChild(a); tagEl.after(d);
   }
   document.title = (negocio.name || 'Menú') + ' — KARTTA';
-  if (mesa) { const tag = document.getElementById('mesaTag'); tag.style.display = 'inline-block'; tag.textContent = 'Mesa ' + mesa; }
+  if (mesa && TS) { const tag = document.getElementById('mesaTag'); tag.style.display = 'inline-block'; tag.textContent = 'Mesa ' + mesa; }
   document.documentElement.style.setProperty('--hh', hd.offsetHeight + 'px');
 
   const mcats = document.getElementById('mcats'), mlist = document.getElementById('mlist'), mempty = document.getElementById('mempty');
@@ -718,6 +726,24 @@ function mostrarMenu(){
 
 async function cargarMenu(){
   if (PREVIEW) { initPreview(); return; }
+  if (qToken) {
+    if (!UUID_RE.test(qToken)) { mostrarError('Este código QR no es válido. Pídele al restaurante que te muestre el QR de tu mesa.'); return; }
+    try {
+      const { data, error } = await sb.rpc('start_table_session', { p_token: qToken });
+      if (error) throw error;
+      TS = { session: data.session, table: data.table, slug: data.slug, expires_at: data.expires_at };
+      tsSave(TS); slug = data.slug; mesa = data.table;
+      history.replaceState(null, '', '/m/' + encodeURIComponent(slug));     // el token del QR no se queda en la barra de direcciones
+    } catch (e) {
+      const m = String(e?.message || '');
+      mostrarError(m.includes('table_disabled') ? 'Esta mesa no está disponible por ahora. Avisa al personal del restaurante.'
+        : m.includes('rate_limited') ? 'Hay mucha actividad. Intenta escanear el QR de nuevo en un momento.'
+        : m.includes('restaurant_unavailable') ? 'Este restaurante no está disponible por ahora.'
+        : m.includes('invalid_qr') ? 'Este código QR ya no es válido. Pídele al restaurante el QR actual de tu mesa.'
+        : 'No pudimos validar el QR. Revisa tu conexión e intenta de nuevo.');
+      return;
+    }
+  }
   if (!slug) slug = await resolverSlugPorDominio() || '';
   if (!slug) { mostrarError('Este enlace no incluye el nombre del negocio. Debe verse así: tu-sitio.com/m/nombre-del-negocio. Pídele al restaurante su enlace o QR.'); return; }
 
@@ -735,13 +761,23 @@ async function cargarMenu(){
     // Enlace viejo: si el restaurante cambió su identificador, redirige al actual (los QR anteriores siguen sirviendo).
     try {
       const { data: nuevo } = await sb.rpc('resolve_slug_alias', { p_slug: slug });
-      if (nuevo && nuevo !== slug) { location.replace('/m/' + encodeURIComponent(nuevo) + (mesa ? '?mesa=' + encodeURIComponent(mesa) : '')); return; }
+      if (nuevo && nuevo !== slug) { location.replace('/m/' + encodeURIComponent(nuevo)); return; }
     } catch (e) { console.warn(e); }
     mostrarError(); return;
   }
+  if (!TS) {
+    const saved = tsLoad();
+    if (saved && saved.slug === slug) {
+      try {
+        const { data: st } = await sb.rpc('get_table_session', { p_session: saved.session });
+        if (st && st.status === 'valid') { TS = saved; mesa = st.table; } else tsClear();
+      } catch { /* sin red: se queda en modo consulta */ }
+    }
+  }
+  window.__karttaSlug = slug; window.dispatchEvent(new Event('kartta:menu'));
   mostrarMenu();
   paint(menu);
-  sb.rpc('track_event', { p_slug: slug, p_type: mesa ? 'qr_scan' : 'menu_view', p_product: null, p_session: sessionId }).then(() => {}, () => {});
+  sb.rpc('track_event', { p_slug: slug, p_type: TS && qToken ? 'qr_scan' : 'menu_view', p_product: null, p_session: sessionId }).then(() => {}, () => {});
   if (!PREVIEW) sb.rpc('get_restaurant_status', { p_slug: slug }).then(({ data, error }) => {
     if (error || !data || data.is_open !== false) return;
     window.__closed = true;
@@ -939,7 +975,16 @@ function renderCart(){
 document.getElementById('cartBar').addEventListener('click', () => openSheet());
 document.getElementById('sheetClose').addEventListener('click', () => closeSheet());
 document.getElementById('sheetBg').addEventListener('click', (e) => { if (e.target.id === 'sheetBg') closeSheet(); });
+function applyOrderMode(){
+  const btn = document.getElementById('btnConfirmarPedido'), err = document.getElementById('pedidoErr');
+  if (!btn) return;
+  if (!TS) {
+    btn.disabled = true; btn.textContent = 'Escanea el QR de tu mesa';
+    err.textContent = 'Los pedidos en mesa se hacen escaneando el código QR de tu mesa. Este enlace es solo para consultar el menú.'; err.classList.add('show');
+  } else if (btn.textContent === 'Escanea el QR de tu mesa') { btn.disabled = false; btn.textContent = 'Confirmar pedido'; err.classList.remove('show'); }
+}
 function openSheet(){
+  applyOrderMode();
   document.getElementById('cartView').style.display = 'block';
   document.getElementById('successView').style.display = 'none';
   document.getElementById('sheetBg').classList.add('show');
@@ -953,22 +998,29 @@ document.getElementById('btnConfirmarPedido').addEventListener('click', async ()
   const telefono = document.getElementById('clienteTelefono').value.trim();
   if (window.__closed) { errEl.textContent = 'El restaurante está cerrado por ahora y no recibe pedidos.'; errEl.classList.add('show'); return; }
   if (cartCount() === 0) { errEl.textContent = 'Tu pedido está vacío.'; errEl.classList.add('show'); return; }
-  if (!nombre) { errEl.textContent = 'Cuéntanos tu nombre para enviar el pedido.'; errEl.classList.add('show'); return; }
+  const cust = window.KARTTA_CUSTOMER, ctok = cust && cust.token ? cust.token() : null;
+  if (!TS) { applyOrderMode(); return; }
+  if (cust && cust.required && !ctok) { errEl.textContent = 'Este restaurante pide identificarte con tu teléfono para pedir.'; errEl.classList.add('show'); cust.open(); return; }
+  if (!nombre && !ctok) { errEl.textContent = 'Cuéntanos tu nombre para enviar el pedido.'; errEl.classList.add('show'); return; }
 
   const btn = document.getElementById('btnConfirmarPedido');
   btn.disabled = true; btn.textContent = 'Enviando...';
   try {
     const items = Object.entries(cart).map(([id, it]) => ({ product_id: id, quantity: it.cantidad }));
-    const { data, error } = await sb.rpc('place_order', { p_slug: slug, p_table: mesa || null, p_name: nombre, p_phone: telefono || null, p_items: items });
+    const { data, error } = await sb.rpc('place_table_order', { p_session: TS.session, p_name: nombre || 'Cliente', p_phone: telefono || null, p_items: items, p_customer_session: ctok || null });
     if (error) throw error;
     document.getElementById('successMsg').textContent =
-      `Pedido #${data.code} · Mesa ${mesa || '—'} · ${moneyCO(data.total)}. Tu pedido quedó registrado y el restaurante ya puede verlo.`;
+      `Pedido #${data.code} · Mesa ${data.table || mesa || '—'} · ${moneyCO(data.total)}. Tu pedido quedó registrado y el restaurante ya puede verlo.${ctok ? ' Tus puntos se suman cuando el restaurante confirme el pago.' : ''}`;
+    if (cust && cust.refresh) cust.refresh();
     document.getElementById('cartView').style.display = 'none';
     document.getElementById('successView').style.display = 'block';
     cart = {}; renderCart();
   } catch (e) {
     console.error(e);
     const msg = String(e?.message || '');
+    if (msg.includes('invalid_table_session') || msg.includes('table_disabled')) { tsClear(); applyOrderMode(); errEl.textContent = msg.includes('table_disabled') ? 'Esta mesa fue desactivada. Avisa al personal.' : 'Tu sesión de mesa venció. Escanea de nuevo el QR de tu mesa para pedir.'; errEl.classList.add('show'); return; }
+    if (msg.includes('invalid_customer_session')) { if (cust && cust.logout) cust.logout(true); errEl.textContent = 'Tu sesión de cliente venció. Identifícate de nuevo para sumar puntos.'; errEl.classList.add('show'); return; }
+    if (msg.includes('identity_required')) { errEl.textContent = 'Este restaurante pide identificarte con tu teléfono para pedir.'; errEl.classList.add('show'); if (cust) cust.open(); return; }
     errEl.textContent = msg.includes('restaurant_closed') ? 'El restaurante acaba de cerrar y no recibe pedidos por ahora.'
       : msg.includes('some items unavailable') ? 'Algún producto de tu pedido ya no está disponible. Actualiza el menú y revisa tu pedido.'
       : msg.includes('too many orders') ? 'El restaurante está recibiendo muchos pedidos. Intenta de nuevo en un momento.'

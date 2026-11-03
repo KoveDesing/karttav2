@@ -5,6 +5,10 @@
       "destination": "/menu.html?r=:slug"
     },
     {
+      "source": "/q/:token",
+      "destination": "/menu.html?q=:token"
+    },
+    {
       "source": "/t/:token",
       "destination": "/tarjeta.html?t=:token"
     }

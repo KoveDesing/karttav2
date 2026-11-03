@@ -1,0 +1,37 @@
+/* KARTTA AI flotante — usa las variables del panel (colores, radios, sombras, tema claro/oscuro). */
+.kaf-btn{position:fixed;z-index:70;width:56px;height:56px;border-radius:50%;border:1px solid var(--border);background:var(--panel);color:var(--strong);box-shadow:var(--shadow);cursor:grab;display:grid;place-items:center;touch-action:none;user-select:none;-webkit-user-select:none;padding:0;transition:transform .2s var(--ease,ease),box-shadow .2s;animation:kafIn .5s var(--ease,ease) both}
+.kaf-btn:hover{transform:translateY(-2px) scale(1.04)}.kaf-btn:active{cursor:grabbing;transform:scale(.97)}.kaf-btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.kaf-btn .kaf-mark{font-family:'Mr Dafoe',cursive;font-size:30px;line-height:1;color:var(--strong);transform:translateY(-1px)}.kaf-btn .kaf-mark b{color:#FF3145;font-weight:400}
+.kaf-btn .kaf-dot{position:absolute;top:4px;right:4px;width:12px;height:12px;border-radius:50%;background:#1EA35A;border:2px solid var(--panel)}
+.kaf-btn .kaf-tag{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);font:800 8.5px/1 system-ui,sans-serif;letter-spacing:.08em;color:var(--on-accent,#fff);background:var(--accent);padding:3px 6px;border-radius:99px}
+.kaf-btn[data-open="1"]{box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent),var(--shadow)}
+@keyframes kafIn{from{opacity:0;transform:translateY(14px) scale(.8)}to{opacity:1;transform:none}}
+.kaf-card{box-sizing:border-box;position:fixed;z-index:71;width:min(380px,calc(100vw - 24px));height:min(580px,calc(100vh - 110px));display:flex;flex-direction:column;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:var(--r,16px);box-shadow:var(--shadow);overflow:hidden;animation:kafPop .22s var(--ease,ease) both;transform-origin:var(--kaf-ox,100%) var(--kaf-oy,100%)}
+.kaf-card[hidden]{display:none}.kaf-card[data-min="1"]{height:auto}.kaf-card[data-min="1"] .kaf-body,.kaf-card[data-min="1"] .kaf-foot{display:none}
+@keyframes kafPop{from{opacity:0;transform:scale(.92) translateY(8px)}to{opacity:1;transform:none}}
+.kaf-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--panel)}
+.kaf-head .kaf-ttl{font-weight:800;color:var(--strong);font-size:14.5px;line-height:1.1}.kaf-head .kaf-sub{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);font-weight:600}
+.kaf-head .kaf-sub i{width:7px;height:7px;border-radius:50%;background:#1EA35A;display:inline-block}.kaf-head .kaf-sec{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kaf-head .kaf-av{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--panel2);display:grid;place-items:center;font-family:'Mr Dafoe',cursive;font-size:21px;color:var(--strong);flex:none}.kaf-head .kaf-av b{color:#FF3145;font-weight:400}
+.kaf-head .kaf-sp{flex:1;min-width:0}.kaf-ib{width:32px;height:32px;border-radius:10px;border:0;background:none;color:var(--muted);cursor:pointer;display:grid;place-items:center;padding:0}.kaf-ib:hover{background:var(--panel2);color:var(--strong)}.kaf-ib:focus-visible{outline:2px solid var(--accent)}
+.kaf-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:14px 12px;display:flex;flex-direction:column;gap:6px;background:var(--bg)}
+.kaf-row{display:flex;flex-direction:column;max-width:86%;animation:kafMsg .25s var(--ease,ease) both}.kaf-row.me{align-self:flex-end;align-items:flex-end}.kaf-row.bot{align-self:flex-start;align-items:flex-start}
+@keyframes kafMsg{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.kaf-bub{padding:9px 12px;border-radius:16px;font-size:13.5px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+.kaf-row.me .kaf-bub{background:var(--accent);color:var(--on-accent,#fff);border-bottom-right-radius:5px}.kaf-row.bot .kaf-bub{background:var(--panel);border:1px solid var(--border);color:var(--text);border-bottom-left-radius:5px}
+.kaf-row.err .kaf-bub{border-color:color-mix(in srgb,var(--accent) 60%,var(--border))}
+.kaf-meta{display:flex;align-items:center;gap:8px;margin:2px 4px 0;font-size:10.5px;color:var(--muted);font-weight:600;position:relative}
+.kaf-meta button{border:0;background:none;color:inherit;font:inherit;cursor:pointer;padding:2px 3px;border-radius:6px}.kaf-meta button:hover{color:var(--strong);background:var(--panel2)}
+.kaf-react{position:absolute;top:-4px;font-size:13px;background:var(--panel);border:1px solid var(--border);border-radius:99px;padding:0 5px;line-height:18px;box-shadow:var(--shadow)}
+.kaf-row.me .kaf-react{left:2px;top:-30px}.kaf-row.bot .kaf-react{right:2px;top:-30px}
+.kaf-picker{position:absolute;bottom:22px;left:0;display:flex;gap:2px;background:var(--panel);border:1px solid var(--border);border-radius:99px;padding:3px 5px;box-shadow:var(--shadow);z-index:2}.kaf-picker button{font-size:17px;padding:2px 4px}
+.kaf-typing{display:inline-flex;gap:4px;padding:12px 14px}.kaf-typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:kafDot 1.2s infinite ease-in-out}.kaf-typing i:nth-child(2){animation-delay:.15s}.kaf-typing i:nth-child(3){animation-delay:.3s}
+@keyframes kafDot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+.kaf-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.kaf-chip{border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:99px;padding:7px 12px;font:600 12.5px system-ui,sans-serif;cursor:pointer;text-align:left}.kaf-chip:hover{border-color:var(--accent);color:var(--strong)}
+.kaf-hello{color:var(--muted);font-size:12.5px;text-align:center;margin:4px 8px 6px}.kaf-act{background:var(--panel);border:1px solid var(--accent);border-radius:14px;padding:10px 12px;font-size:13px;display:grid;gap:8px}.kaf-act .r{display:flex;gap:8px}
+.kaf-act button{border:0;border-radius:10px;padding:8px 12px;font:700 12.5px system-ui,sans-serif;cursor:pointer}.kaf-act .ok{background:var(--accent);color:var(--on-accent,#fff)}.kaf-act .no{background:var(--panel2);color:var(--text)}
+.kaf-foot{display:flex;align-items:flex-end;gap:8px;padding:10px;border-top:1px solid var(--border);background:var(--panel)}
+.kaf-foot textarea{flex:1;resize:none;min-height:40px;max-height:110px;border:1px solid var(--border);background:var(--bg);color:var(--text);border-radius:14px;padding:10px 12px;font:500 13.5px/1.35 system-ui,sans-serif;box-sizing:border-box}.kaf-foot textarea:focus{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);border-color:var(--accent)}
+.kaf-send{width:40px;height:40px;border-radius:50%;border:0;background:var(--accent);color:var(--on-accent,#fff);cursor:pointer;display:grid;place-items:center;flex:none;padding:0}.kaf-send:disabled{opacity:.45;cursor:default}.kaf-send:focus-visible{outline:2px solid var(--strong);outline-offset:2px}
+@media (max-width:640px){.kaf-card{left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%;height:min(76vh,640px);border-radius:20px 20px 0 0;border-bottom:0;--kaf-ox:50%;--kaf-oy:100%}.kaf-card[data-min="1"]{height:auto}.kaf-foot{padding-bottom:max(10px,env(safe-area-inset-bottom))}}
+@media (prefers-reduced-motion:reduce){.kaf-btn,.kaf-card,.kaf-row{animation:none}.kaf-typing i{animation:none;opacity:.7}.kaf-btn{transition:none}}

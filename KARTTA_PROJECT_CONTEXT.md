@@ -264,3 +264,18 @@ No ejecuté la app ni un navegador; no inspeccioné Supabase (políticas RLS, fu
 - Cliente: `kartta-support.js/.css` (vistas `soporte` y `politicas` del panel). Admin: `kartta-support-admin.js` + `soporte-admin.html` (usa la misma sesión; el servidor exige `private.is_platform_admin()`).
 - Pendiente: integrar la bandeja en «Kartta Prime/Admin» (su código no está en este repo); revisión jurídica de los textos; datos de `legal_contact`; las páginas estáticas `privacidad/terminos/cookies.html` aún duplican el texto (se necesitan antes del login).
 - Pruebas a ejecutar tras aplicar la migración: ver la lista de aceptación del prompt (ticket → admin → respuesta → lectura, aislamiento entre restaurantes, notas internas ocultas, adjuntos).
+
+
+---
+
+## Actualización 2026-11-03 — QR de mesa, identidad por OTP, fidelización ampliada y KARTTA AI flotante
+
+**Verificado (migración probada en transacción revertida contra la base real, ver `DESPLIEGUE_QR_FIDELIZACION_AI.md`):**
+- Pedidos en mesa SOLO con sesión de mesa válida: `start_table_session(qr_token)` → `place_table_order(session, …)`. `place_order` ya no es invocable desde el navegador. QR único por mesa (`restaurant_tables.qr_token`, uuid), mesas activables/desactivables y QR regenerable.
+- Identidad del cliente por teléfono verificado (OTP): Edge Function `customer-otp` + RPC `otp_issue`/`otp_verify` (solo service_role). Sesión de cliente con hash en `customer_sessions`; el enlace secreto `/t/<token>` fue retirado (`/t/<slug>` abre la tarjeta con la sesión).
+- Puntos: solo clientes verificados (`orders.customer_id`), idempotentes por saldo neto del pedido; reverso automático si se desmarca el pago o se cancela; re-abono si se vuelve a pagar.
+- Recompensas con vigencia, límite por cliente y límite total (canje serializado). Niveles opcionales por puntos históricos. Derecho de supresión (`customer_delete_my_data`) y consentimiento de promociones separado.
+- Editor visual de tarjeta ampliado (8 plantillas, colores, degradado, 8 patrones, 5 tipografías, tamaño/peso/alineación, iconos, textos) con vista previa en celular. Pestañas: Resumen, Programa de puntos, Recompensas, Diseño de tarjeta, Clientes, Historial, Canjes, Juegos.
+- KARTTA AI flotante (`kartta-ai-float.js/.css`): componente global que reutiliza la Edge Function `ai-assistant` (se añadió el campo opcional `section`, lista cerrada, con datos extra de mesas/clientes calculados en el servidor). Acciones: solo la arquitectura (registro + confirmación); ninguna acción modifica datos todavía.
+
+**Pendiente / no verificado:** envío real de códigos (requiere cuenta Twilio y secretos), despliegue de las Edge Functions, prueba end-to-end en producción con un restaurante real, KARTTA AI dentro de `editor.html` (página separada), imagen en recompensas.
