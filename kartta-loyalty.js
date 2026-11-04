@@ -179,19 +179,19 @@
       box.innerHTML = '<div class="note" style="border-top:1px solid var(--border);margin-top:10px;padding-top:8px">' + ((r.data || []).map(function (m) { return when(m.created_at) + ' · ' + (K[m.kind] || m.kind) + ' · <strong>' + (m.points > 0 ? '+' : '') + m.points + '</strong> → ' + m.balance_after + (m.note && m.kind !== 'earn' ? ' · ' + esc(m.note) : ''); }).join('<br>') || 'Sin movimientos.') + '</div>'; return;
     }
     if (d.ladj) {
-      var cu = customers.filter(function (x) { return x.id === d.ladj; })[0], v = prompt('Puntos a sumar (o restar con -). Cliente: ' + (cu.name || cu.phone) + ' (saldo ' + cu.balance + ')'); if (v == null) return;
-      var delta = parseInt(v, 10); if (!delta) return C.toast('Cantidad no válida.'); var note = prompt('Motivo del ajuste (obligatorio):'); if (note == null) return;
+      var cu = customers.filter(function (x) { return x.id === d.ladj; })[0], v = await KDialog.prompt({ title: 'Ajustar puntos', message: 'Cliente: ' + (cu.name || cu.phone) + ' (saldo ' + cu.balance + ')', label: 'Puntos a sumar (o restar con -)', placeholder: 'Ej: 50 o -20', inputmode: 'numeric', ok: 'Continuar', validate: function (x) { return parseInt(x, 10) ? '' : 'Cantidad no válida.'; } }); if (v == null) return;
+      var delta = parseInt(v, 10); if (!delta) return C.toast('Cantidad no válida.'); var note = await KDialog.prompt({ title: 'Motivo del ajuste', label: 'Motivo (obligatorio)', maxlength: 200, ok: 'Aplicar ajuste', requiredMsg: 'El motivo es obligatorio.' }); if (note == null) return;
       var rr = await C.sb.rpc('loyalty_adjust', { p_customer: cu.id, p_delta: delta, p_note: note }); if (rr.error) return C.toast(errMsg(rr.error)); C.toast('Saldo actualizado.'); await loadAll(); render(); return;
     }
     if (d.lres) {
-      var p = d.lres.split(':'), msg = p[0] === 'delivered' ? '¿Confirmas que ya entregaste este premio?' : '¿Cancelar el canje y devolver los puntos al cliente?'; if (!confirm(msg)) return;
+      var p = d.lres.split(':'), msg = p[0] === 'delivered' ? '¿Confirmas que ya entregaste este premio?' : '¿Cancelar el canje y devolver los puntos al cliente?'; if (!await KDialog.confirm({ title: p[0] === 'delivered' ? 'Entregar premio' : 'Cancelar canje', message: msg, ok: p[0] === 'delivered' ? 'Sí, entregado' : 'Cancelar canje', danger: p[0] !== 'delivered' })) return;
       var rs = await C.sb.rpc('loyalty_resolve_redemption', { p_redemption: p[1], p_status: p[0] }); if (rs.error) return C.toast(errMsg(rs.error)); C.toast(p[0] === 'delivered' ? 'Entregado.' : 'Canje cancelado; puntos devueltos.'); await loadAll(); render(); return;
     }
     if (d.redit) { var rw = rewards.filter(function (x) { return x.id === d.redit; })[0]; rewardForm(rw); return; }
     if (d.jdel) { S.spin_prizes.splice(+d.jdel, 1); render(); return; }
     switch (d.lact) {
       case 'enable': if (await saveSettings({ enabled: true }, 'Programa activado.')) { tab = 'puntos'; render(); } break;
-      case 'disable': if (confirm('¿Pausar el programa? Los clientes conservan sus puntos pero no verán su tarjeta hasta que lo reactives.') && await saveSettings({ enabled: false }, 'Programa pausado.')) render(); break;
+      case 'disable': if (await KDialog.confirm({ title: 'Pausar programa', message: '¿Pausar el programa? Los clientes conservan sus puntos pero no verán su tarjeta hasta que lo reactives.', ok: 'Pausar' }) && await saveSettings({ enabled: false }, 'Programa pausado.')) render(); break;
       case 'copymenu': try { await navigator.clipboard.writeText(C.menuURL()); C.toast('Enlace copiado.'); } catch (x) { C.toast(C.menuURL()); } break;
       case 'saverules': {
         var tiers = []; for (var ti = 0; ti < 3; ti++) { var tn = $('tN' + ti).value.trim(), tm = $('tM' + ti).value; if (tn) tiers.push({ name: tn, min_lifetime: Math.max(0, parseInt(tm || '0', 10) || 0) }); }

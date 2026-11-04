@@ -86,6 +86,11 @@ body{background:#121212;color:#fff;padding:24px}
 .hint{color:#B0B0B0;letter-spacing:.02em}
 input[type=text],input[type=tel],input[type=number],textarea{background:#292929;border-color:#353535;color:#fff;box-shadow:none;max-width:100%;min-width:0}
 input[type=text]:focus,input[type=tel]:focus,input[type=number]:focus,textarea:focus{background:#2d2d2d;border-color:var(--red)}
+.price-field{position:relative}.price-field::before{content:"$";position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:17px;font-weight:700;color:#A0A0A0;pointer-events:none;transition:color .15s ease}.price-field:focus-within::before{color:var(--red)}
+.price-field input{width:100%;border:1px solid var(--border);border-radius:14px;outline:none;transition:border-color .2s ease,background .2s ease;padding:15px 17px 15px 34px;font-size:17px;font-weight:700;letter-spacing:.01em;-moz-appearance:textfield;appearance:textfield}
+.price-field input:focus{border-color:var(--red)}
+.price-field input::-webkit-outer-spin-button,.price-field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.price-field input::placeholder{font-weight:500;font-size:14px}
 .chip{background:#242424;border-color:#363636;color:#E2E2E2;box-shadow:none;cursor:pointer}
 .chip:hover{background:#2b2b2b;border-color:#555}
 .chip.selected{background:rgba(255,49,69,.14);border-color:var(--red);color:#fff}
@@ -120,6 +125,7 @@ input[type=text]:focus,input[type=tel]:focus,input[type=number]:focus,textarea:f
 @media(max-width:360px){.wrap{padding:20px 13px}.nav-row .btn{padding:12px 11px;font-size:13px}.product-image-preview{width:68px;height:68px;flex-basis:68px}}
 </style>
 <script type="module" src="supabase-init.js"></script>
+<script src="kartta-dialogs.js?v=20261103"></script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="shortcut icon" href="/favicon.ico">
 </head>
@@ -250,7 +256,7 @@ input[type=text]:focus,input[type=tel]:focus,input[type=number]:focus,textarea:f
         <input type="file" id="q_productoImagen" accept="image/*" hidden>
       </div>
       <div class="field-wrap"><input type="text" id="q_producto" maxlength="70" placeholder="Nombre del producto · Ej. Hamburguesa clásica"></div>
-      <div class="field-wrap"><input type="number" id="q_precio" min="1" step="1" inputmode="numeric" placeholder="Precio en COP · Ej. 18900"></div>
+      <div class="field-wrap price-field"><input type="number" id="q_precio" min="1" step="1" inputmode="numeric" placeholder="Precio en COP · Ej. 18900"></div>
       <div class="field-wrap"><input type="text" id="q_productoCat" maxlength="40" placeholder="Categoría · Ej. Hamburguesas (opcional)"></div>
       <div class="field-wrap"><textarea id="q_productoDesc" maxlength="200" placeholder="Descripción y detalles · ingredientes, tamaño, acompañamientos…"></textarea></div>
       <label class="product-available"><input type="checkbox" id="q_productoDisponible" checked> Disponible en el menú</label>
@@ -557,7 +563,7 @@ async function finalizar(){
     console.error(e);
     document.getElementById('saving').classList.remove('show');
     document.getElementById('btnNext').disabled = false;
-    alert('No pudimos guardar tu información: ' + (e.code || e.message || 'error desconocido') + '. Revisa tu conexión e intenta de nuevo.');
+    KDialog.alert({ title: 'No pudimos guardar tu información', message: (e.code || e.message || 'error desconocido') + '. Revisa tu conexión e intenta de nuevo.', ok: 'Reintentar' });
   }
 }
 

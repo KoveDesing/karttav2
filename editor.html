@@ -114,6 +114,7 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
 .mbd .note{margin-top:2px}
 @media (max-width:900px){.ov{align-items:flex-end;padding:0}.mbox,.mbox.wide{width:100%;max-height:94vh;border-radius:18px 18px 0 0}.allg{grid-template-columns:repeat(2,1fr)}.drawer{max-height:46vh}.pvbar{top:6px}}
 </style>
+<link rel="stylesheet" href="/kartta-fields.css?v=20261103">
 </head>
 <body>
 <div id="gate"><div class="brand" aria-label="Kartta">Kar<span>tt</span>a</div><strong style="color:var(--strong);font-size:18px">Cargando el editor…</strong><span id="gateMsg" style="color:var(--muted)"></span></div>
@@ -260,7 +261,7 @@ function lockNote(host){ if (isLocked()) host.append(h('div', { class: 'lockbar'
 function modal(title, build, o = {}){
   const ov = h('div', { class: 'ov', role: 'dialog', 'aria-modal': 'true', 'aria-label': title }), box = h('div', { class: 'mbox' + (o.wide ? ' wide' : '') }), body = h('div', { class: 'mbd' });
   const prev = document.activeElement; let closed = false;
-  const close = (force) => { if (closed) return; if (!force && o.beforeClose && o.beforeClose() === false) return; closed = true; ov.remove(); document.removeEventListener('keydown', onk, true); if (prev && prev.focus) prev.focus(); if (o.onClose) o.onClose(); };
+  const close = (force) => { if (closed) return; if (!force && o.beforeClose) { const r = o.beforeClose(); if (r && typeof r.then === 'function') { r.then(ok => { if (ok) close(true); }); return; } if (r === false) return; } closed = true; ov.remove(); document.removeEventListener('keydown', onk, true); if (prev && prev.focus) prev.focus(); if (o.onClose) o.onClose(); };
   const onk = (e) => { if (e.key === 'Escape') { e.stopPropagation(); close(); } else if (e.key === 'Tab') { const f = [...box.querySelectorAll('button:not([disabled]),input:not([disabled]):not([type=hidden]),select,textarea,summary,[href]')].filter(x => x.offsetParent !== null); if (!f.length) return; const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } } };
   box.append(h('div', { class: 'mh' }, h('h3', {}, title), h('button', { type: 'button', class: 'x', 'aria-label': 'Cerrar', onclick: () => close() }, '×')), body); ov.append(box);
   ov.addEventListener('mousedown', e => { if (e.target === ov) close(); }); document.body.append(ov); document.addEventListener('keydown', onk, true);
@@ -426,7 +427,7 @@ function openProductForm(p){
       } catch (e) { console.error(e); toast(dbErr(e, 'guardar el producto')); busy = false; save.disabled = false; save.textContent = 'Guardar'; }
     } }, 'Guardar');
     b.append(h('div', { class: 'mf sticky' }, st, h('button', { type: 'button', class: 'btn', onclick: () => close() }, 'Cancelar'), save));
-  }, { wide: true, beforeClose: () => (snap() === base || busy) ? true : confirm('Tienes cambios sin guardar. ¿Cerrar sin guardar?') });
+  }, { wide: true, beforeClose: () => (snap() === base || busy) ? true : confirmDlg('Cambios sin guardar', 'Tienes cambios sin guardar. ¿Cerrar sin guardar?', 'Cerrar sin guardar', true) });
 }
 function productRow(p){
   const u = imageUrl(p.image_path), av = h('input', { type: 'checkbox', checked: p.is_available !== false, 'aria-label': 'Disponible: ' + p.name, onchange: () => setAvail(p, av.checked) });
@@ -664,12 +665,12 @@ async function saveNow(){
 addEventListener('beforeunload', e => { if (snapJSON() !== lastSaved) { e.preventDefault(); e.returnValue = ''; } });
 async function goPanel(view){ clearTimeout(saveTimer); await saveNow(); location.href = '/dashboard.html#' + view; }
 $('publish').onclick = async () => {
-  if (!confirm('¿Publicar este diseño? Se verá en tu menú público ahora mismo.')) return; const b = $('publish'); b.disabled = true;
+  if (!await confirmDlg('Publicar diseño', '¿Publicar este diseño? Se verá en tu menú público ahora mismo.', 'Publicar')) return; const b = $('publish'); b.disabled = true;
   try { await saveNow(); if (saveErr) throw new Error('save'); const pub = await sb.rpc('publish_design', { p_restaurant: rid }); if (pub.error) throw pub.error;
     await sb.from('restaurants').update({ menu_configured: true }).eq('id', rid); published = D.normalize(cfg); renderState(); toast('✅ Publicado. Ya se ve en tu menú.'); }
   catch (e) { console.error(e); toast('No se pudo publicar. Intenta de nuevo.'); renderState(); }
 };
-$('discard').onclick = () => { if (snapJSON() === JSON.stringify(D.compact(published))) return toast('No hay cambios sin publicar.'); if (!confirm('¿Volver al diseño publicado? Puedes deshacerlo con Ctrl+Z.')) return; replace(published, 'Volviste al diseño publicado'); };
+$('discard').onclick = async () => { if (snapJSON() === JSON.stringify(D.compact(published))) return toast('No hay cambios sin publicar.'); if (!await confirmDlg('Volver al publicado', '¿Volver al diseño publicado? Puedes deshacerlo con Ctrl+Z.', 'Volver')) return; replace(published, 'Volviste al diseño publicado'); };
 $('pubMenu').onclick = async () => { const { error } = await sb.from('restaurants').update({ is_published: true }).eq('id', rid); if (error) return toast('No se pudo publicar tu menú.'); menuPublished = true; $('pubBanner').classList.remove('show'); toast('Tu menú ya está publicado.'); };
 
 /* ---------- datos y arranque ---------- */

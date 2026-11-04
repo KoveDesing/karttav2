@@ -39,11 +39,13 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .prize{font-size:22px;font-weight:800;color:var(--accent);min-height:30px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<link rel="stylesheet" href="/kartta-fields.css?v=20261103">
 </head>
 <body>
 <main id="app" aria-live="polite"><div class="center" id="loading">Cargando tu tarjeta…</div></main>
 <div class="toast" id="toast" role="status"></div>
 <script src="/kartta-card.js"></script>
+<script src="/kartta-dialogs.js?v=20261103"></script>
 <script type="module">
 import { sb, imageUrl } from "/supabase-init.js";
 const $ = (id) => document.getElementById(id);
@@ -99,7 +101,7 @@ function render() {
   rewards.forEach(r => {
     const w = el('div', 'rw'), top = el('div', 'row'); const l = el('div'); l.appendChild(el('b', null, r.name)); if (r.description) { l.appendChild(el('br')); l.appendChild(el('small', null, r.description)); } if (r.conditions) { l.appendChild(el('br')); l.appendChild(el('small', null, 'Condiciones: ' + r.conditions)); } if (r.valid_until) { l.appendChild(el('br')); l.appendChild(el('small', null, 'Válido hasta ' + new Date(r.valid_until).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', dateStyle: 'medium' }))); }
     const can = bal >= r.cost_points && !r.limit_reached, btn = el('button', can ? 'main' : '', r.limit_reached ? 'No disponible' : can ? 'Canjear' : fmt(r.cost_points) + ' pts'); btn.disabled = !can;
-    btn.onclick = async () => { if (!confirm('¿Canjear «' + r.name + '» por ' + fmt(r.cost_points) + ' puntos?')) return; btn.disabled = true; const { data: x, error } = await sb.rpc('loyalty_request_redemption_s', { p_session: token, p_reward: r.id }); if (error) { toast(errMsg(error)); btn.disabled = false; return; } toast('Canje listo. Código: ' + x.code); await load(); };
+    btn.onclick = async () => { if (!await KDialog.confirm({ title: 'Canjear premio', message: '¿Canjear «' + r.name + '» por ' + fmt(r.cost_points) + ' puntos?', ok: 'Canjear' })) return; btn.disabled = true; const { data: x, error } = await sb.rpc('loyalty_request_redemption_s', { p_session: token, p_reward: r.id }); if (error) { toast(errMsg(error)); btn.disabled = false; return; } toast('Canje listo. Código: ' + x.code); await load(); };
     top.append(l, btn); w.appendChild(top);
     if (!can) { const bar = el('div', 'bar'), i = el('i'); i.style.width = Math.min(100, Math.round(bal / r.cost_points * 100)) + '%'; bar.appendChild(i); w.appendChild(bar); }
     rs.appendChild(w);
@@ -121,7 +123,7 @@ function render() {
   mk.append(cb, document.createTextNode('Quiero recibir promociones de este restaurante (opcional).')); tools.appendChild(mk);
   const row = el('div', 'row'); row.style.cssText = 'margin-top:12px;flex-wrap:wrap;gap:10px';
   const out = el('button', null, 'Cerrar sesión'); out.onclick = async () => { await sb.rpc('customer_logout', { p_session: token }).then(() => {}, () => {}); try { localStorage.removeItem(SKEY); } catch {} location.href = '/m/' + encodeURIComponent(slug); };
-  const del = el('button', null, 'Borrar mis datos'); del.onclick = async () => { if (!confirm('Vas a borrar tu tarjeta, tus puntos y tus datos de este restaurante. No se puede deshacer. ¿Continuar?')) return; const { error } = await sb.rpc('customer_delete_my_data', { p_session: token }); if (error) return toast(errMsg(error)); try { localStorage.removeItem(SKEY); } catch {} toast('Tus datos fueron borrados.'); setTimeout(() => { location.href = '/m/' + encodeURIComponent(slug); }, 900); };
+  const del = el('button', null, 'Borrar mis datos'); del.onclick = async () => { if (!await KDialog.confirm({ title: 'Borrar mis datos', message: 'Vas a borrar tu tarjeta, tus puntos y tus datos de este restaurante. No se puede deshacer. ¿Continuar?', ok: 'Borrar mis datos', danger: true })) return; const { error } = await sb.rpc('customer_delete_my_data', { p_session: token }); if (error) return toast(errMsg(error)); try { localStorage.removeItem(SKEY); } catch {} toast('Tus datos fueron borrados.'); setTimeout(() => { location.href = '/m/' + encodeURIComponent(slug); }, 900); };
   const mn = el('a'); mn.href = '/m/' + encodeURIComponent(d.restaurant.slug); mn.textContent = 'Ver el menú'; mn.style.cssText = 'color:var(--accent);font-weight:700;font-size:13.5px';
   row.append(out, del, mn); tools.appendChild(row); app.appendChild(tools);
   if (d.program.terms) { const t = section('Condiciones'); t.appendChild(el('p', 'note', d.program.terms)); app.appendChild(t); }

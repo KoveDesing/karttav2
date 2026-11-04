@@ -1,0 +1,43 @@
+/* KARTTA — campos de escritura unificados.
+   Cubre TODOS los inputs/selects/textarea (incluidos los que no declaran type, y los de tipo search, date,
+   datetime-local, time, email, url, password) que antes caían al aspecto nativo del navegador.
+   Va con :where() => especificidad 0: cualquier estilo propio de un componente (chat, interruptores,
+   buscador del menú público…) sigue ganando. Usa los tokens de cada página y el acento del restaurante. */
+:where(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]):not([type=hidden]):not([type=button]):not([type=submit]):not([type=reset]):not([type=image]),select,textarea){
+  box-sizing:border-box;width:100%;max-width:100%;min-width:0;min-height:44px;padding:11px 13px;
+  border:1px solid var(--border,#303030);border-radius:12px;background-color:var(--panel2,#292929);
+  color:var(--strong,var(--text,#fff));font-family:inherit;font-size:14px;line-height:1.35;
+  outline:none;-webkit-appearance:none;appearance:none;
+  transition:border-color .15s ease,box-shadow .15s ease,background-color .15s ease;
+}
+:where(textarea){min-height:84px;line-height:1.5;resize:vertical}
+:where(input,select,textarea)::placeholder{color:var(--muted,#8F8F8F);opacity:.85}
+:where(input,select,textarea):hover:not(:disabled):not(:focus){border-color:color-mix(in srgb,var(--muted,#8F8F8F) 55%,var(--border,#303030))}
+:where(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea):focus{
+  border-color:var(--accent,var(--red,#FF3145));box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,var(--red,#FF3145)) 18%,transparent);
+}
+:where(input,select,textarea):disabled{opacity:.55;cursor:not-allowed}
+:where(input,select,textarea)[aria-invalid=true]{border-color:#E5323F}
+/* números sin flechitas antiguas */
+:where(input[type=number]){-moz-appearance:textfield}
+:where(input[type=number])::-webkit-outer-spin-button,:where(input[type=number])::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+/* buscador */
+:where(input[type=search])::-webkit-search-decoration,:where(input[type=search])::-webkit-search-cancel-button{-webkit-appearance:none}
+/* fecha / hora: icono visible según tema */
+:where(input[type=date],input[type=datetime-local],input[type=time],input[type=month]){min-width:0;color-scheme:light}
+:root[data-theme=dark] :where(input[type=date],input[type=datetime-local],input[type=time],input[type=month]){color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme]) :where(input[type=date],input[type=datetime-local],input[type=time],input[type=month]){color-scheme:dark}}
+:where(input[type=date],input[type=datetime-local],input[type=time])::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7;transition:opacity .15s ease}
+:where(input[type=date],input[type=datetime-local],input[type=time])::-webkit-calendar-picker-indicator:hover{opacity:1}
+/* select con flecha propia (especificidad mayor a propósito: los selects de cada módulo usan el shorthand `background` y la borrarían) */
+html select:not([multiple]){-webkit-appearance:none;appearance:none;padding-right:38px;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238F8F8F' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 13px center;background-size:14px}
+:where(select) option{background:var(--panel,#1C1C1C);color:var(--strong,var(--text,#fff))}
+/* color y rango coherentes */
+:where(input[type=color]){border:1px solid var(--border,#303030);border-radius:12px;background:var(--panel2,#292929);padding:4px;cursor:pointer}
+:where(input[type=range]){accent-color:var(--accent,var(--red,#FF3145));cursor:pointer}
+:where(input[type=checkbox],input[type=radio]){accent-color:var(--accent,var(--red,#FF3145))}
+/* listas de tabla / filas de formulario: los campos no se desbordan */
+:where(.fbar,.f2,.hexrow) :where(input,select,textarea){width:100%}
+@media (prefers-reduced-motion:reduce){:where(input,select,textarea){transition:none}}

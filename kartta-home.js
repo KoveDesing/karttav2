@@ -341,7 +341,7 @@
   document.addEventListener('change', async function (e) {
     if (e.target.id !== 'mpSwitch') return; var sw = e.target, want = sw.checked;
     if (want) { sw.checked = false; openMp(); return; }
-    if (!confirm('¿Desconectar Mercado Pago? Se borrará el token guardado.')) { sw.checked = true; return; }
+    if (!await KDialog.confirm({ title: 'Desconectar Mercado Pago', message: '¿Desconectar Mercado Pago? Se borrará el token guardado.', ok: 'Desconectar', danger: true })) { sw.checked = true; return; }
     sw.disabled = true; var r = await mpCall('disconnect'); if (r.error) { M.ctx.toast(r.error); sw.checked = true; sw.disabled = false; return; } M.ctx.toast('Mercado Pago desconectado.'); await reloadMp();
   });
   document.addEventListener('click', async function (e) {
