@@ -8,7 +8,7 @@
   var CAT = { technical: 'Problema técnico', menu: 'Error en el menú digital', orders: 'Problema con pedidos', billing: 'Pagos o suscripción', tables_kitchen: 'Mesas o cocina', images_ai: 'Imágenes o IA', access: 'Acceso o cuenta', help: 'Solicitud de ayuda', suggestion: 'Sugerencia de mejora', other: 'Otro' };
   var PRI = { low: 'Baja', normal: 'Normal', high: 'Alta', urgent: 'Urgente' };
   var ST = { received: 'Recibido', in_review: 'En revisión', in_progress: 'En proceso', waiting_customer: 'Esperando respuesta del restaurante', resolved: 'Resuelto', closed: 'Cerrado' };
-  var PLAN = { trial: 'Prueba gratis', free: 'Free', kartta: 'KARTTA', pro: 'KARTTA Pro', custom: 'Personalizado' };
+  var PLAN = { trial: 'Prueba gratis', free: 'Free', kartta: 'Standard', pro: 'Pro', custom: 'Pro' };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var text = function (s) { return esc(s).replace(/\n/g, '<br>'); };
   var fmt = function (d) { return d ? new Date(d).toLocaleString('es-CO', { timeZone: 'America/Bogota', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'; };

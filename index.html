@@ -28,8 +28,8 @@
     {"@type":"Organization","name":"KARTTA","url":"https://kartta.co/","description":"Sistema digital que conecta la operación de restaurantes, cafeterías, bares, pizzerías y food trucks."},
     {"@type":"SoftwareApplication","name":"KARTTA","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":[
       {"@type":"Offer","name":"Free","price":"0","priceCurrency":"COP"},
-      {"@type":"Offer","name":"KARTTA Pro","price":"43900","priceCurrency":"COP"},
-      {"@type":"Offer","name":"KARTTA Elite","price":"84900","priceCurrency":"COP"}
+      {"@type":"Offer","name":"Standard","price":"43900","priceCurrency":"COP"},
+      {"@type":"Offer","name":"Pro","price":"84900","priceCurrency":"COP"}
     ]},
     {"@type":"FAQPage","mainEntity":[
       {"@type":"Question","name":"¿Qué es KARTTA?","acceptedAnswer":{"@type":"Answer","text":"KARTTA es el sistema digital que conecta menú, pedidos, pagos, cocina, clientes, inventario y analítica de un negocio gastronómico en un solo lugar."}},
@@ -360,15 +360,17 @@ section{padding:clamp(60px,8vw,112px) 0;position:relative;}
 .bill-wrap{text-align:center}
 .plan-sub{font-size:12.5px;color:var(--gray);min-height:34px;margin:-2px 0 16px}
 .plan-sub b{color:var(--black)}
-.plan-card.elite{background:var(--black);color:#fff;box-shadow:10px 10px 24px rgba(0,0,0,.4),-6px -6px 18px rgba(60,60,60,.25);}
-.plan-card.elite .plan-price span,.plan-card.elite .plan-for,.plan-card.elite .plan-sub{color:#A7A7A7}
-.plan-card.elite .plan-sub b{color:#fff}
-.plan-card.elite .plan-list li{border-color:#232323}
+.plan-card.pro{background:var(--black);color:#fff;box-shadow:10px 10px 24px rgba(0,0,0,.4),-6px -6px 18px rgba(60,60,60,.25);}
+.plan-card.pro .plan-price span,.plan-card.pro .plan-for,.plan-card.pro .plan-sub{color:#A7A7A7}
+.plan-card.pro .plan-sub b{color:#fff}
+.plan-card.pro .plan-list li{border-color:#232323}
 .plan-lim{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 18px}
 .plan-lim div{background:var(--surface);border-radius:12px;padding:9px 11px;font-size:11.5px;color:var(--gray)}
 .plan-lim b{display:block;font-size:15px;color:var(--black)}
-.plan-card.elite .plan-lim div{background:#1A1A1A;color:#A7A7A7}.plan-card.elite .plan-lim b{color:#fff}
+.plan-card.pro .plan-lim div{background:#1A1A1A;color:#A7A7A7}.plan-card.pro .plan-lim b{color:#fff}
 .plan-list li.no{color:var(--gray);text-decoration:none}
+.plan-was{font-size:13px;color:var(--gray);margin:-2px 0 4px}.plan-was s{margin-right:6px}.plan-off{display:inline-block;background:rgba(255,49,69,.12);color:var(--red);font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px}
+.plan-bill{font-size:12.5px;font-weight:700;margin:8px 0 4px}
 .plan-note{text-align:center;font-size:12.5px;color:var(--gray);margin-top:22px}
 .plan-card{border:none;background:#FFFFFF;border-radius:var(--r-lg);padding:28px 24px;display:flex;flex-direction:column;position:relative;box-shadow:8px 8px 18px rgba(10,10,10,.07),-8px -8px 18px rgba(255,255,255,.85);transition:transform .25s ease,box-shadow .25s ease;}
 .plan-card:hover{transform:translateY(-4px);box-shadow:10px 10px 22px rgba(10,10,10,.09),-10px -10px 22px rgba(255,255,255,.9);}
@@ -978,9 +980,9 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
       <h2>Un <span class="hl">plan</span> para cada etapa.</h2>
       <p>Tu menú, tus pedidos y tu página web viven en el mismo plan, desde el primer día. Empieza gratis y sube cuando tu negocio lo necesite.</p>
     </div>
-    <div class="bill-wrap"><div class="bill-toggle" role="group" aria-label="Periodo de facturación"><button type="button" data-int="monthly" aria-pressed="true">Mensual</button><button type="button" data-int="annual" aria-pressed="false">Anual<span class="off">-27%</span></button></div></div>
+    <div class="bill-wrap"><div class="bill-toggle" role="group" aria-label="Periodo de facturación"><button type="button" data-int="monthly" aria-pressed="true">Mensual</button><button type="button" data-int="annual" aria-pressed="false">Anual<span class="off">-50%</span></button></div></div>
     <div class="pricing-grid" id="pricingGrid" aria-live="polite"></div>
-    <p class="plan-note">Precios en pesos colombianos (COP). Free no requiere tarjeta. Puedes cambiar de plan cuando quieras; si no renuevas, conservas tu menú y tus datos y vuelves a Free.</p>
+    <p class="plan-note">Precios en pesos colombianos (COP). Free no requiere tarjeta. En facturación anual se cobra el total del año por adelantado. Puedes cambiar de plan cuando quieras; si no renuevas, conservas tu menú y tus datos y vuelves a Free.</p>
   </div>
 </section>
 
@@ -1050,14 +1052,19 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
   var esc=function(t){return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
   var n=function(v){return v==='all'?'Todas':new Intl.NumberFormat('es-CO').format(v)};
   function card(code){
-    var pl=P.plans[code],pr=P.price(code,interval),cls='plan-card'+(pl.recommended?' featured':'')+(code==='elite'?' elite':'');
-    var price=pl.monthly===0?'$0<span> COP</span>':P.fmt(pr.total).replace(' COP','')+'<span> COP / '+(interval==='annual'?'año':'mes')+'</span>';
-    var sub=pl.monthly===0?'Sin costo, sin tarjeta.':interval==='annual'
-      ?'Equivale a ≈ <b>'+P.fmt(pr.perMonth)+'</b> / mes. Ahorras <b>'+P.fmt(pr.saving)+'</b> (-'+pr.discount+'%) frente a 12 mensualidades de '+P.fmt(pl.monthly)+'.'
-      :'Facturado cada mes. Pagando anual ahorras '+P.ANNUAL_DISCOUNT+'%.';
+    var pl=P.plans[code],pr=P.price(code,interval),cls='plan-card'+(pl.recommended?' featured':'')+(code==='pro'?' pro':'');
+    var price,extra;
+    if(pl.monthly===0){price='$0<span> COP / mes</span>';extra='<div class="plan-sub">Sin costo, sin tarjeta.</div>';}
+    else if(interval==='annual'){
+      price=P.fmt(pr.main).replace(' COP','')+'<span> COP / mes</span>';
+      extra='<div class="plan-was"><s>Antes '+P.fmt(pr.before)+' / mes</s><span class="plan-off">'+pr.discount+'% de descuento</span></div><div class="plan-bill">Facturado anualmente: '+P.fmt(pr.total)+'</div><div class="plan-sub">Ahorras '+P.fmt(pr.saving)+' frente a 12 mensualidades. Se renueva cada año.</div>';
+    } else {
+      price=P.fmt(pr.main).replace(' COP','')+'<span> COP / mes</span>';
+      extra='<div class="plan-bill">Facturado cada mes</div><div class="plan-sub">Con pago anual pagas '+P.fmt(P.price(code,'annual').main)+' / mes (-'+P.ANNUAL_DISCOUNT+'%).</div>';
+    }
     var L=pl.limits,lim='<div class="plan-lim"><div><b>'+n(L.products)+'</b>productos</div><div><b>'+n(L.tables)+'</b>mesas</div><div><b>'+(L.templates==='all'?'Todas':L.templates)+'</b>plantillas</div><div><b>'+n(L.ai_credits)+'</b>créditos IA / mes</div></div>';
     var li=pl.features.map(function(f){return '<li>✓ '+esc(f)+'</li>'}).join('')+(pl.locked||[]).map(function(f){return '<li class="no">— Sin '+esc(f.toLowerCase())+'</li>'}).join('')+'<li>✓ '+n(L.users)+(L.users===1?' usuario administrador':' usuarios del equipo')+'</li>';
-    return '<div class="'+cls+'">'+(pl.recommended?'<span class="plan-badge">RECOMENDADO</span>':'')+'<div class="plan-name">'+esc(pl.name)+'</div><div class="plan-price">'+price+'</div><div class="plan-sub">'+sub+'</div><div class="plan-for">'+esc(pl.tagline)+'</div>'+lim+'<ul class="plan-list">'+li+'</ul><a href="#" data-plan="'+code+'" data-auth="signup" class="btn '+(pl.recommended?'btn-primary':'btn-outline')+'"'+(code==='elite'?' style="border-color:#3A3A3A;color:#fff;"':'')+'>'+(pl.monthly===0?'Empezar gratis':'Elegir '+esc(pl.name))+'</a></div>';
+    return '<div class="'+cls+'">'+(pl.recommended?'<span class="plan-badge">RECOMENDADO</span>':'')+'<div class="plan-name">'+esc(pl.name)+'</div><div class="plan-price">'+price+'</div>'+extra+'<div class="plan-for">'+esc(pl.tagline)+'</div>'+lim+'<ul class="plan-list">'+li+'</ul><a href="#" data-plan="'+code+'" data-auth="signup" class="btn '+(pl.recommended?'btn-primary':'btn-outline')+'"'+(code==='pro'?' style="border-color:#3A3A3A;color:#fff;"':'')+'>'+(pl.monthly===0?'Empezar gratis':'Elegir '+esc(pl.name))+'</a></div>';
   }
   function draw(){grid.innerHTML=P.order.map(card).join('');}
   document.querySelectorAll('.bill-toggle button').forEach(function(b){b.addEventListener('click',function(){
@@ -1504,11 +1511,11 @@ document.addEventListener('DOMContentLoaded', function(){
     var kchatText = document.getElementById('kchatText');
     var kchatSend = document.getElementById('kchatSend');
 
-    var CONTEXTO = 'Eres el asistente de KARTTA, un sistema para restaurantes, cafeterias, bares, pizzerias y food trucks en Colombia. KARTTA conecta menu digital, QR por mesa, pedidos, mesas, POS, pagos, cocina, clientes, inventario, analytics, WhatsApp, chatbot, automatizaciones e IA en un solo sistema. Planes: Free $0/mes, KARTTA Pro $43.900/mes (recomendado) y KARTTA Elite $84.900/mes; pago anual con 27% de descuento. Hay 1 mes gratis por dejar una resena. Responde corto, claro, en espanol colombiano natural, sin inventar funciones que no existan, y cuando tenga sentido invita a crear la cuenta.';
+    var CONTEXTO = 'Eres el asistente de KARTTA, un sistema para restaurantes, cafeterias, bares, pizzerias y food trucks en Colombia. KARTTA conecta menu digital, QR por mesa, pedidos, mesas, POS, pagos, cocina, clientes, inventario, analytics, WhatsApp, chatbot, automatizaciones e IA en un solo sistema. Planes: Free $0/mes, Standard $43.900/mes (recomendado) y Pro $84.900/mes; pago anual con 50% de descuento. Hay 1 mes gratis por dejar una resena. Responde corto, claro, en espanol colombiano natural, sin inventar funciones que no existan, y cuando tenga sentido invita a crear la cuenta.';
 
     var RESPUESTAS = [
       { k:['que es','qué es','kartta es','de que se trata'], r:'KARTTA es el sistema que conecta toda la operación de tu restaurante: menú digital con QR, pedidos, cocina, pagos, POS, inventario y tus ventas. Todo en un solo lugar, sin saltar entre cinco herramientas.' },
-      { k:['plan','precio','cuesta','vale','cuanto','cuánto'], r:'Tienes tres planes: Free ($0) para empezar, KARTTA Pro ($43.900/mes) con editor visual avanzado y analítica, y KARTTA Elite ($84.900/mes) con la mayor capacidad. Pagando anual ahorras 27%.' },
+      { k:['plan','precio','cuesta','vale','cuanto','cuánto'], r:'Tienes tres planes: Free ($0) para empezar, Standard ($43.900/mes) con editor visual avanzado y analítica, y Pro ($84.900/mes) con la mayor capacidad. Pagando anual tienes 50% de descuento.' },
       { k:['empiezo','empezar','comenzar','registr','cuenta','probar'], r:'Muy fácil: creas tu cuenta, armas tu menú, generas los QR de tus mesas y ya puedes recibir pedidos. Dale a "Crear mi KARTTA" aquí arriba y arrancas gratis.' },
       { k:['cafeter','bar','pizzer','food truck','panader','negocio peque','sirve para'], r:'Sí, KARTTA funciona para restaurantes, cafeterías, bares, pizzerías y food trucks. Si vendes comida o bebida y recibes pedidos, te sirve.' },
       { k:['qr','escane','mesa'], r:'Cada mesa tiene su QR. Tu cliente lo escanea, ve tu menú al instante en su celular, pide y paga. Sin descargar apps ni esperar al mesero.' },
