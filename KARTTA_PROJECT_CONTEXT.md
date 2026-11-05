@@ -279,3 +279,15 @@ No ejecuté la app ni un navegador; no inspeccioné Supabase (políticas RLS, fu
 - KARTTA AI flotante (`kartta-ai-float.js/.css`): componente global que reutiliza la Edge Function `ai-assistant` (se añadió el campo opcional `section`, lista cerrada, con datos extra de mesas/clientes calculados en el servidor). Acciones: solo la arquitectura (registro + confirmación); ninguna acción modifica datos todavía.
 
 **Pendiente / no verificado:** envío real de códigos (requiere cuenta Twilio y secretos), despliegue de las Edge Functions, prueba end-to-end en producción con un restaurante real, KARTTA AI dentro de `editor.html` (página separada), imagen en recompensas.
+
+---
+
+## Actualización 2026-11-04 — Botón flotante de WhatsApp
+
+**Decisión de arquitectura:** no se creó tabla nueva. Se reutiliza `public.restaurants` (ya guardaba `whatsapp` y es lo que lee `get_public_menu`): columnas nuevas `whatsapp_enabled` (default false) y `whatsapp_country_code` (default `57`); `whatsapp` pasa a guardar el número nacional solo con dígitos. Por eso el número de «Configuración» y el del botón son **el mismo**.
+
+**Seguridad:** las 2 columnas nuevas no tienen UPDATE para `authenticated`; solo se escriben con `set_whatsapp_button` (owner/admin, valida indicativo y número en el servidor, no duplica el indicativo). `get_public_menu` devuelve `restaurant.wa_button` (dígitos listos para wa.me) solo si está activo y es válido; `get_public_whatsapp(slug)` permite refrescar el botón sin recargar el menú.
+
+**Archivos:** `20261104_whatsapp_boton.sql` (**NO aplicada** al escribir esto), `kartta-whatsapp.js` (sección «Botón de WhatsApp» del panel), `kartta-wa-fab.js` (botón del menú), cambios mínimos en `menu.html` (script + 2 llamadas) y `dashboard.html` (vista, menú lateral, script), estilos al final de `kartta-modules.css`.
+
+**Pruebas:** SQL probado contra la base real dentro de una transacción revertida (18 vectores de normalización, A no puede editar B, anon sin acceso, escritura directa bloqueada, activar sin número rechazado, desactivar/borrar oculta el botón). Interfaz probada en Chromium con Supabase simulado (móvil 390 y escritorio 1280: posición, 60×60, sin solapes con carrito ni barra inferior, aparece/desaparece, vista previa sin navegación). **No probado:** Safari/iPhone y Android reales, sesión real, apertura real de WhatsApp.

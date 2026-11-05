@@ -274,12 +274,11 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 </style>
 <link rel="stylesheet" href="kartta-motion.css?v=20261031">
 <script src="kartta-motion.js?v=20261031" defer></script>
-<script src="kartta-dialogs.js?v=20261103"></script>
-<link rel="stylesheet" href="kartta-fields.css?v=20261103">
-<link rel="stylesheet" href="kartta-modules.css?v=20261034">
+<link rel="stylesheet" href="kartta-modules.css?v=20261104">
 <script src="kartta-modules.js?v=20261032" defer></script>
 <script src="kartta-metrics.js?v=20261034" defer></script>
 <script src="kartta-qr.js?v=20261031" defer></script>
+<script src="kartta-whatsapp.js?v=20261104" defer></script>
 <script src="kartta-card.js?v=20261102" defer></script>
 <script src="kartta-loyalty.js?v=20261102" defer></script>
 <script src="kartta-home.js?v=20261034" defer></script>
@@ -318,6 +317,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
     <button class="sb-item" data-view="clientes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-4 4-6 7-6s5.5 2 7 6"/></svg>Clientes</button>
     <button class="sb-item" data-view="fidelizacion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>Fidelización</button>
     <button class="sb-item" data-view="pagos"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 5h20v14H2zM2 10h20"/></svg>Pagos</button>
+    <button class="sb-item" data-view="whatsapp"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/><path d="M9 9.5c.3 2 2.5 4.2 4.5 4.5l1.3-1.2-1.8-1-.8.6c-.7-.3-1.5-1.1-1.8-1.8l.6-.8-1-1.8z"/></svg>Botón de WhatsApp</button>
     <div class="sb-label">Ayuda</div>
     <button class="sb-item" data-view="soporte"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 8v4M12 16v.01"/></svg>Soporte y reportes<span class="lk" id="lkSupport" hidden>0</span></button>
     <button class="sb-item" data-view="politicas"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.2 8.2-8 9-4.8-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Políticas y privacidad</button>
@@ -539,6 +539,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
     <section class="view" data-panel="metricas"><div id="modMetricas"></div></section>
     <section class="view" data-panel="qr"><div id="modQr"></div></section>
     <section class="view" data-panel="pagos"><div id="modPagos"></div></section>
+    <section class="view" data-panel="whatsapp"><div id="modWhatsapp"></div></section>
     <section class="view" data-panel="fidelizacion"><div id="modLoyalty"></div></section>
     <section class="view" data-panel="soporte"><div id="modSupport"></div></section>
     <section class="view" data-panel="politicas"><div id="modLegal"></div></section>
@@ -727,7 +728,7 @@ $('accReset').addEventListener('click', () => { clearTimeout(accSaveT); savePref
 $('themeSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) savePrefs({ theme: b.dataset.v }); });
 
 /* ---------- navegación ---------- */
-const VIEWS = ['inicio','productos','menu','personalizar','configuracion','ia','dominio','pedidos','mesas','clientes','metricas','qr','pagos','fidelizacion','soporte','politicas'];
+const VIEWS = ['inicio','productos','menu','personalizar','configuracion','ia','dominio','pedidos','mesas','clientes','metricas','qr','pagos','whatsapp','fidelizacion','soporte','politicas'];
 function irA(view){
   if (!VIEWS.includes(view)) view = 'inicio';
   if (window.KARTTA_MOTION && KARTTA_MOTION.switchView) KARTTA_MOTION.switchView(view);
@@ -813,11 +814,11 @@ function renderPmTags(){
   act.forEach(t => {
     const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', String(pmSel.has(t.id))); b.setAttribute('aria-label', t.name);
     b.appendChild(window.KARTTA_DESIGN.tagEl(t));
-    b.onclick = async () => {
+    b.onclick = () => {
       if (pmSel.has(t.id)) pmSel.delete(t.id);
       else {
         if (pmSel.size >= 6) return toast('Máximo 6 etiquetas por producto.');
-        if (t.requires_confirmation && !await KDialog.confirm({ title: 'Confirmar etiqueta', message: 'Confirma que este producto realmente cumple con «' + t.name + '». Los clientes lo verán en el menú y pueden confiar en ello (por ejemplo, por alergias).', ok: 'Sí, lo cumple' })) return;
+        if (t.requires_confirmation && !confirm('Confirma que este producto realmente cumple con «' + t.name + '». Los clientes lo verán en el menú y pueden confiar en ello (por ejemplo, por alergias).')) return;
         pmSel.add(t.id);
       }
       renderPmTags();
@@ -841,7 +842,7 @@ function renderTagList(){
     const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = (t.is_preset ? 'Predefinida' : 'Tuya') + (t.requires_confirmation ? ' · confirma antes de asignarla' : '') + ' · en ' + Object.values(tagLinks).filter(a => a.includes(t.id)).length + ' producto(s)'; row.appendChild(nm);
     const act = document.createElement('label'); act.className = 'sw'; act.style.cssText = 'border:0;padding:0;gap:6px;font-size:12px'; act.append('Activa'); const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = t.is_active; cb.onchange = async () => { const { error } = await sb.from('product_tags').update({ is_active: cb.checked }).eq('id', t.id); if (error) toast('No se pudo cambiar.'); await tgRefresh(); }; act.appendChild(cb); row.appendChild(act);
     const ed = document.createElement('button'); ed.type = 'button'; ed.className = 'btn btn-ghost btn-sm'; ed.textContent = 'Editar'; ed.onclick = () => { tgEdit = t.id; $('tgFormTitle').textContent = 'Editar etiqueta'; $('tgSave').textContent = 'Guardar cambios'; $('tgName').value = t.name; $('tgIcon').value = t.icon || ''; $('tgStyle').value = t.style; tgPalIdx = Math.max(0, TAG_PAL.findIndex(p => p[0].toLowerCase() === t.bg.toLowerCase() && p[1].toLowerCase() === t.fg.toLowerCase())); renderTgPal(); tgPreview(); $('tgName').focus(); }; row.appendChild(ed);
-    if (!t.is_preset) { const dl = document.createElement('button'); dl.type = 'button'; dl.className = 'btn btn-danger btn-sm'; dl.textContent = 'Eliminar'; dl.onclick = async () => { if (!await KDialog.confirm({ title: 'Eliminar etiqueta', message: '¿Eliminar «' + t.name + '»? Se quitará de todos los productos (los productos no se borran).', ok: 'Eliminar', danger: true })) return; const { error } = await sb.from('product_tags').delete().eq('id', t.id); if (error) return toast('No se pudo eliminar.'); toast('Etiqueta eliminada.'); await tgRefresh(); }; row.appendChild(dl); }
+    if (!t.is_preset) { const dl = document.createElement('button'); dl.type = 'button'; dl.className = 'btn btn-danger btn-sm'; dl.textContent = 'Eliminar'; dl.onclick = async () => { if (!confirm('¿Eliminar «' + t.name + '»? Se quitará de todos los productos (los productos no se borran).')) return; const { error } = await sb.from('product_tags').delete().eq('id', t.id); if (error) return toast('No se pudo eliminar.'); toast('Etiqueta eliminada.'); await tgRefresh(); }; row.appendChild(dl); }
     l.appendChild(row);
   });
   const c = $('tgCats'); c.innerHTML = ''; if (!categorias.length) c.innerHTML = '<p class="sub" style="margin:0">Tus categorías aparecerán aquí cuando crees productos.</p>';
@@ -894,7 +895,7 @@ $('apCancel').onclick = () => { pmAi = null; apClose(); toast('Se usará tu foto
 $('apAccept').onclick = () => { pmAi = { generation_id: apResult.generation_id }; $('pmPrev').innerHTML = `<img src="${esc(apResult.image_url)}" alt="Foto mejorada con IA">`; apClose(); toast('Listo: se usará la foto mejorada al guardar. Tu original se conserva.'); };
 $('aiPhotoModal').onclick = (e) => { if (e.target.id === 'aiPhotoModal' && $('apBusy').hidden) { pmAi = null; apClose(); } };
 $('pmRestore').onclick = async () => {
-  const p = productos.find(x => x.id === editId); if (!p?.originalPath || !await KDialog.confirm({ title: 'Volver a tu foto original', message: '¿Volver a tu foto original? La versión con IA dejará de mostrarse.', ok: 'Volver a la original' })) return;
+  const p = productos.find(x => x.id === editId); if (!p?.originalPath || !confirm('¿Volver a tu foto original? La versión con IA dejará de mostrarse.')) return;
   const { error } = await sb.from('products').update({ image_path: p.originalPath, original_image_path: null }).eq('id', editId);
   if (error) return toast('No se pudo restaurar.'); toast('Foto original restaurada.'); closeProd(); await refrescarProductos();
 };
@@ -1283,7 +1284,7 @@ $('pmSave').onclick = async () => {
   $('pmSave').disabled = false;
 };
 async function delProd(id){
-  if (!await KDialog.confirm({ title: 'Eliminar producto', message: '¿Eliminar este producto?', ok: 'Eliminar', danger: true })) return;
+  if (!confirm('¿Eliminar este producto?')) return;
   const old = productos.find(x => x.id === id);
   const { error } = await sb.from('products').delete().eq('id', id);
   if (error) return toast('No se pudo eliminar.');
@@ -1412,7 +1413,7 @@ $('iaUse').onclick = () => {
 $('iaConfirm').onclick = async () => {
   const pid = $('iaProd').value; if (!pid) return iaMsg('Elige el producto donde la quieres usar.', 'bad');
   const nombre = productos.find(p => p.id === pid)?.nombre || 'ese producto';
-  if (!await KDialog.confirm({ title: 'Usar imagen', message: `¿Usar esta imagen en “${nombre}”? La imagen actual se conserva guardada.`, ok: 'Usar imagen' })) return;
+  if (!confirm(`¿Usar esta imagen en “${nombre}”? La imagen actual se conserva guardada.`)) return;
   const btn = $('iaConfirm'); btn.setAttribute('aria-busy', 'true');
   try {
     await IAI().applyToProduct({ restaurantId: rid, generationId: iaGen.generation_id, productId: pid });
@@ -1455,20 +1456,20 @@ function renderMesas(){
     toast(to ? 'Mesa activada.' : 'Mesa desactivada: su QR ya no recibe pedidos.'); await cargarMesas(); renderMesas();
   });
   g.querySelectorAll('[data-rq]').forEach(b => b.onclick = async () => {
-    if (!await KDialog.confirm({ title: 'Regenerar QR', message: 'Se generará un QR nuevo para esta mesa. El QR impreso anterior dejará de funcionar y deberás imprimir el nuevo. ¿Continuar?', ok: 'Regenerar', danger: true })) return;
+    if (!confirm('Se generará un QR nuevo para esta mesa. El QR impreso anterior dejará de funcionar y deberás imprimir el nuevo. ¿Continuar?')) return;
     const { error } = await sb.rpc('table_rotate_qr', { p_table: b.dataset.rq });
     if (error) return toast('No se pudo regenerar el QR.');
     toast('QR regenerado. Descarga e imprime el nuevo.'); await cargarMesas(); renderMesas();
   });
   g.querySelectorAll('[data-dm]').forEach(b => b.onclick = async () => {
-    if (!await KDialog.confirm({ title: 'Eliminar mesa', message: '¿Eliminar esta mesa? El QR impreso dejará de servir.', ok: 'Eliminar', danger: true })) return;
+    if (!confirm('¿Eliminar esta mesa? El QR impreso dejará de servir.')) return;
     const { error } = await sb.from('restaurant_tables').delete().eq('id', b.dataset.dm);
     if (error) return toast('No se pudo eliminar.');
     toast('Mesa eliminada.'); await cargarMesas(); renderMesas();
   });
 }
 async function nuevaMesa(){
-  const n = await KDialog.prompt({ title: 'Crear mesa', label: 'Número o nombre de la mesa', placeholder: 'Ej: 4, Terraza 2', maxlength: 40, ok: 'Crear mesa', requiredMsg: 'Escribe el número o nombre de la mesa.' }); if (!n || !n.trim()) return;
+  const n = prompt('Número o nombre de la mesa (ej: 4, Terraza 2):'); if (!n || !n.trim()) return;
   const { error } = await sb.from('restaurant_tables').insert({ restaurant_id: rid, label: n.trim().slice(0, 40) });
   if (error) return toast(error.code === '23505' ? 'Ya existe una mesa con ese nombre.' : 'No se pudo crear la mesa.');
   toast('Mesa creada.'); await cargarMesas(); renderMesas();
@@ -1508,7 +1509,7 @@ function renderPedidos(){
   const act = async (patch, id, ok) => { const { error } = await sb.from('orders').update(patch).eq('id', id); if (error) return toast('No se pudo actualizar.'); if (ok) toast(ok); await cargarPedidos(); renderPedidos(); };
   list.querySelectorAll('[data-adv]').forEach(b => b.onclick = () => act({ status: b.dataset.n }, b.dataset.adv));
   list.querySelectorAll('[data-pay]').forEach(b => b.onclick = () => act({ paid: true }, b.dataset.pay, 'Marcado como pagado.'));
-  list.querySelectorAll('[data-cancel]').forEach(b => b.onclick = async () => { if (await KDialog.confirm({ title: 'Cancelar pedido', message: '¿Cancelar este pedido? No cuenta en ventas ni estadísticas y no se puede reabrir.', ok: 'Cancelar pedido', cancel: 'Volver', danger: true })) act({ status: 'cancelado' }, b.dataset.cancel, 'Pedido cancelado.'); });
+  list.querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => { if (confirm('¿Cancelar este pedido? No cuenta en ventas ni estadísticas y no se puede reabrir.')) act({ status: 'cancelado' }, b.dataset.cancel, 'Pedido cancelado.'); });
   list.querySelectorAll('[data-hist]').forEach(b => b.onclick = async () => {
     const card = b.closest('.ped'); const old = card.querySelector('.hist'); if (old) { old.remove(); return; }
     const { data, error } = await sb.from('order_status_events').select('from_status,to_status,created_at').eq('order_id', b.dataset.hist).order('created_at'); if (error) return toast('No se pudo cargar el historial.');

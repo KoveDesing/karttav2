@@ -518,6 +518,7 @@ html.thumb .cart-bar{display:none !important;}
 </div><!-- /#phone -->
 
 <script src="/menu-design.js"></script>
+<script src="/kartta-wa-fab.js"></script>
 <script type="module">
 import { sb, imageUrl } from "/supabase-init.js";
 
@@ -602,6 +603,7 @@ function applyDesign(raw){
 function paint(menu){
   MENU = menu; loadFav();
   const negocio = menu.restaurant || {};
+  if (window.KARTTA_WA) window.KARTTA_WA.set(negocio.wa_button, { preview: PREVIEW });   // botón flotante de WhatsApp (el servidor solo lo envía si está activo y válido)
   applyDesign(menu.design);
   const logo = imageUrl(negocio.logo_path), banner = imageUrl(negocio.cover_path);
   document.getElementById('bizName').textContent = negocio.name || 'Menú';
@@ -777,6 +779,11 @@ async function cargarMenu(){
   window.__karttaSlug = slug; window.dispatchEvent(new Event('kartta:menu'));
   mostrarMenu();
   paint(menu);
+  // Si el restaurante cambia o apaga su WhatsApp mientras el cliente tiene el menú abierto, se actualiza al volver a la pestaña.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden || !window.KARTTA_WA) return;
+    sb.rpc('get_public_whatsapp', { p_slug: slug }).then(({ data, error }) => { if (!error) window.KARTTA_WA.set(data, { preview: false }); }, () => {});
+  });
   sb.rpc('track_event', { p_slug: slug, p_type: TS && qToken ? 'qr_scan' : 'menu_view', p_product: null, p_session: sessionId }).then(() => {}, () => {});
   if (!PREVIEW) sb.rpc('get_restaurant_status', { p_slug: slug }).then(({ data, error }) => {
     if (error || !data || data.is_open !== false) return;
