@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="kartta-plans.js"></script>
 <script type="module" src="supabase-init.js"></script>
 <script src="cookies.js" defer></script>
 <script src="kartta-image-ai.js" defer></script>
@@ -628,9 +629,9 @@ import { sb, imageUrl } from "./supabase-init.js";
    Toda la seguridad real está en las políticas RLS; este código solo es la interfaz.
    ====================================================================== */
 const BUCKET = 'kartta-media';
-const PLAN_RANK = { trial:0, free:0, kartta:1, pro:2, custom:3 };
-const PLAN_NAME = { trial:'Prueba gratis', free:'Free', kartta:'KARTTA', pro:'KARTTA Pro', custom:'Personalizado' };
-const PLAN_PRICE = { trial:'$0 COP / mes', free:'$0 COP / mes', kartta:'$43.900 COP / mes', pro:'$84.900 COP / mes', custom:'' }; // solo para mostrar; el cobro y los límites los decide el servidor
+const PLAN_RANK = { trial:0, free:0, pro:1, kartta:1, elite:2, custom:2 }; // ids antiguos (kartta/custom) se conservan por compatibilidad
+const PLAN_NAME = { trial:'Prueba gratis', free:'Free', pro:'KARTTA Pro', kartta:'KARTTA Pro', elite:'KARTTA Elite', custom:'KARTTA Elite' };
+const PLAN_PRICE = (function(){ const P = window.KARTTA_PLANS, o = { trial:'$0 COP / mes', free:'$0 COP / mes' }; ['pro','kartta','elite','custom'].forEach(id => { const pl = P.get(id); o[id] = P.fmt(pl.monthly) + ' / mes'; }); return o; })(); // solo para mostrar; el cobro y los límites los decide el servidor
 const PROD_LIMIT = [20, 60, 200, 1000];
 const ACCENTS = { Rojo:'#FF3145', Azul:'#3B82F6', Verde:'#22C55E', Amarillo:'#EAB308', Morado:'#8B5CF6', Naranja:'#F97316' };
 const MS_DEFAULT = { primary:'#FF3145', secondary:'#0A0A0A', cardStyle:'round', buttonStyle:'solid', size:'m', showImages:true, showDescriptions:true, showPrices:true, tagline:'' };

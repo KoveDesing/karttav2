@@ -17,7 +17,7 @@
   const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const num = (n) => Number(n || 0).toLocaleString('es-CO');
   const reduce = () => window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
-  const PRICE = { trial: '$0 COP / mes', free: '$0 COP / mes', kartta: '$43.900 COP / mes', pro: '$84.900 COP / mes', custom: '' };
+  const PRICE = (function () { const P = window.KARTTA_PLANS, o = { trial: '$0 COP / mes', free: '$0 COP / mes' }; ['pro', 'kartta', 'elite', 'custom'].forEach(function (id) { o[id] = P.fmt(P.get(id).monthly) + ' / mes'; }); return o; })();
 
   const S = { sb: null, rid: null, convs: [], cid: null, usage: null, busy: false, ctrl: null, img: null, imgUrl: null, built: false, loaded: false, limitDismissed: false, lastMsg: null };
   let el = {};

@@ -1,0 +1,13 @@
+ACTUALIZACION KARTTA — Planes Free / Pro / Elite (Etapas B y C)
+
+Copia estos archivos a la RAIZ del repositorio (junto a index.html), reemplazando los existentes:
+  NUEVO       kartta-plans.js
+  REEMPLAZA   index.html
+  REEMPLAZA   dashboard.html
+  REEMPLAZA   kartta-ai-chat.js
+  NUEVO       20261105_planes_free_pro_elite.sql  (solo documentacion en el repo; NO se aplica en Supabase hasta que lo confirmes)
+
+Comandos:
+  git add .
+  git commit -m "Planes Free/Pro/Elite: precios centralizados y selector mensual/anual"
+  git push
