@@ -48,9 +48,13 @@ async function chooser() {
   const r = await sb.rpc('billing_my_overview', { p_restaurant: rid });
   if (r.error) { $app.innerHTML = '<div class="ck-card"><p class="ck-err">' + esc(r.error.message === 'forbidden' ? ERR.forbidden : 'No pudimos cargar los planes.') + '</p></div>'; return; }
   ov = r.data;
-  const want = (() => { try { return sessionStorage.getItem('kartta_plan_choice'); } catch { return null; } })();
+  const q = new URLSearchParams(location.search);
+  let want = q.get('plan'), cyc = q.get('cycle');
+  try { const j = JSON.parse(sessionStorage.getItem('kartta_plan_choice') || 'null'); if (j && Date.now() - (j.t || 0) < 6 * 3600e3) { want = want || j.plan; cyc = cyc || j.interval; } } catch { /* ignorar */ }
   const cur = ov.subscription && ov.subscription.plan_id;
   st.plan = (ov.plans.find((p) => p.id === want) || ov.plans.find((p) => p.id !== cur) || ov.plans[0] || {}).id || null;
+  const chosen = planOf(st.plan);
+  st.cycle = cyc === 'annual' && chosen && chosen.annual_available ? 'annual' : 'monthly';   // anual solo si está habilitado
   draw();
 }
 

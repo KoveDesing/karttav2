@@ -1064,14 +1064,24 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
     }
     var L=pl.limits,lim='<div class="plan-lim"><div><b>'+n(L.products)+'</b>productos</div><div><b>'+n(L.tables)+'</b>mesas</div><div><b>'+(L.templates==='all'?'Todas':L.templates)+'</b>plantillas</div><div><b>'+n(L.ai_credits)+'</b>créditos IA / mes</div></div>';
     var li=pl.features.map(function(f){return '<li>✓ '+esc(f)+'</li>'}).join('')+(pl.locked||[]).map(function(f){return '<li class="no">— Sin '+esc(f.toLowerCase())+'</li>'}).join('')+'<li>✓ '+n(L.users)+(L.users===1?' usuario administrador':' usuarios del equipo')+'</li>';
-    return '<div class="'+cls+'">'+(pl.recommended?'<span class="plan-badge">RECOMENDADO</span>':'')+'<div class="plan-name">'+esc(pl.name)+'</div><div class="plan-price">'+price+'</div>'+extra+'<div class="plan-for">'+esc(pl.tagline)+'</div>'+lim+'<ul class="plan-list">'+li+'</ul><a href="#" data-plan="'+code+'" data-auth="signup" class="btn '+(pl.recommended?'btn-primary':'btn-outline')+'"'+(code==='pro'?' style="border-color:#3A3A3A;color:#fff;"':'')+'>'+(pl.monthly===0?'Empezar gratis':'Elegir '+esc(pl.name))+'</a></div>';
+    return '<div class="'+cls+'">'+(pl.recommended?'<span class="plan-badge">RECOMENDADO</span>':'')+'<div class="plan-name">'+esc(pl.name)+'</div><div class="plan-price">'+price+'</div>'+extra+'<div class="plan-for">'+esc(pl.tagline)+'</div>'+lim+'<ul class="plan-list">'+li+'</ul><a href="#" data-plan="'+code+'" data-auth="signup" class="btn '+(pl.recommended?'btn-primary':'btn-outline')+'"'+(code==='pro'?' style="border-color:#3A3A3A;color:#fff;"':'')+'>'+(pl.monthly===0?'Empezar gratis':'Obtener plan '+esc(pl.name))+'</a></div>';
   }
-  function draw(){grid.innerHTML=P.order.map(card).join('');}
+  function draw(){grid.innerHTML=P.order.map(card).join('');if(grid.dataset.logged==='1')window.__karttaPlanButtons();}
   document.querySelectorAll('.bill-toggle button').forEach(function(b){b.addEventListener('click',function(){
     interval=b.dataset.int;document.querySelectorAll('.bill-toggle button').forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});draw();});});
   // Guarda la elección (plan + periodo) para el checkout; no concede nada: el servidor decide el plan.
+  function planHref(code){return '/checkout?plan='+encodeURIComponent(code)+'&cycle='+interval;}
+  function syncLinks(){grid.querySelectorAll('a[data-plan]').forEach(function(a){if(a.dataset.logged==='1'&&a.dataset.plan!=='free')a.setAttribute('href',planHref(a.dataset.plan));});}
+  // Con sesión: el botón del plan de pago va directo a la pasarela. Sin sesión: abre el registro y recuerda la elección.
+  // La elección no concede nada: el servidor decide el plan y el importe.
   grid.addEventListener('click',function(e){var a=e.target.closest('[data-plan]');if(!a)return;
-    try{sessionStorage.setItem('kartta_plan_choice',JSON.stringify({plan:a.dataset.plan,interval:interval,t:Date.now()}));}catch(_){}});
+    try{sessionStorage.setItem('kartta_plan_choice',JSON.stringify({plan:a.dataset.plan,interval:interval,t:Date.now()}));}catch(_){}
+    if(a.dataset.logged==='1'&&a.dataset.plan!=='free')a.setAttribute('href',planHref(a.dataset.plan));});
+  // lo llama el script de sesión cuando hay usuario
+  window.__karttaPlanButtons=function(){grid.dataset.logged='1';grid.querySelectorAll('a[data-plan]').forEach(function(a){
+    a.dataset.logged='1';a.removeAttribute('data-auth');
+    if(a.dataset.plan==='free'){a.textContent='Ir a mi panel';a.setAttribute('href','dashboard.html');}
+    else a.setAttribute('href',planHref(a.dataset.plan));});};
   draw();
 })();
 </script>
@@ -1141,10 +1151,11 @@ document.addEventListener('DOMContentLoaded', function(){
             if (heroH1 && !primerNombre) heroH1.textContent = 'Hola, bienvenido.';
             var heroSub = document.getElementById('heroLoggedInSub');
             if (heroSub) heroSub.textContent = 'Continúa administrando tu KARTTA donde lo dejaste.';
-            document.querySelectorAll('[data-auth="signup"]').forEach(function(a){
+            document.querySelectorAll('[data-auth="signup"]:not([data-plan])').forEach(function(a){
               a.textContent = 'Ir a mi panel'; a.setAttribute('href', 'dashboard.html'); a.removeAttribute('data-auth');
             });
 
+            if (window.__karttaPlanButtons) window.__karttaPlanButtons();
             try {
               var info = await window.KARTTA_AUTH.summary();
               if (info) {
