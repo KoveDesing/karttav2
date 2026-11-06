@@ -46,7 +46,14 @@ async function boot() {
 /* ---------------- elección de plan + datos + pago ---------------- */
 async function chooser() {
   const r = await sb.rpc('billing_my_overview', { p_restaurant: rid });
-  if (r.error) { $app.innerHTML = '<div class="ck-card"><p class="ck-err">' + esc(r.error.message === 'forbidden' ? ERR.forbidden : 'No pudimos cargar los planes.') + '</p></div>'; return; }
+  if (r.error) {
+    const m = String(r.error.message || ''), code = r.error.code || '';
+    const why = /forbidden/.test(m) ? ERR.forbidden
+      : (code === 'PGRST202' || code === '42883' || /could not find the function|does not exist/i.test(m)) ? 'Falta instalar la base de datos de pagos: ejecuta INSTALAR_PAGOS.sql en Supabase (SQL Editor).'
+      : 'No pudimos cargar los planes.';
+    console.error('[checkout] billing_my_overview', code, m);
+    $app.innerHTML = '<div class="ck-card"><p class="ck-err">' + esc(why) + '</p><p class="ck-note">Detalle técnico: ' + esc(code || 'error') + ' — ' + esc(m.slice(0, 160)) + '</p></div>'; return;
+  }
   ov = r.data;
   const q = new URLSearchParams(location.search);
   let want = q.get('plan'), cyc = q.get('cycle');
@@ -62,7 +69,7 @@ const planOf = (id) => ov.plans.find((p) => p.id === id);
 const priceOf = (p, cycle) => (cycle === 'annual' ? Number(p.annual_price_cop) : Number(p.monthly_price_cop));
 const feats = (p) => {
   const l = p.limits || {}, f = [];
-  if (l.products) f.push(l.products + ' productos'); if (l.tables) f.push(l.tables + ' mesas'); if (l.users) f.push(l.users + ' usuarios'); if (l.ai_credits) f.push(l.ai_credits + ' créditos de IA');
+  const prod = l.products || l.max_products; if (prod) f.push(prod + ' productos'); if (l.tables) f.push(l.tables + ' mesas'); if (l.users) f.push(l.users + ' usuarios'); const ai = l.ai_credits || l.ai_monthly_questions; if (ai) f.push(ai + ' consultas de IA al mes');
   return f;
 };
 

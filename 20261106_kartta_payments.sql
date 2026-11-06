@@ -75,6 +75,9 @@ revoke all on public.billing_settings from anon, authenticated;
 alter table public.plans add column if not exists monthly_price_cop integer;
 alter table public.plans add column if not exists annual_price_cop  integer;
 alter table public.plans add column if not exists currency text not null default 'COP';
+alter table public.plans add column if not exists description text;
+update public.plans set description = 'Profesionaliza tu presencia y personaliza tu menú.' where id = 'kartta' and description is null;
+update public.plans set description = 'La experiencia más completa de KARTTA.' where id = 'pro' and description is null;
 alter table public.plans add column if not exists is_purchasable boolean not null default false;
 alter table public.plans add column if not exists updated_at timestamptz not null default now();
 -- Precios mensuales indicados por el propietario. El ANUAL no se inventa: queda NULL hasta confirmarlo.
@@ -181,6 +184,9 @@ alter table public.payments add column if not exists metadata jsonb not null def
 alter table public.payments add column if not exists created_at timestamptz not null default now();
 alter table public.payments add column if not exists updated_at timestamptz not null default now();
 
+-- El check previo solo admitía estados en minúscula de otro proveedor; la tabla está vacía (preflight) y Wompi usa los suyos.
+alter table public.payments drop constraint if exists payments_status_check;
+alter table public.payments alter column provider set default 'wompi';
 do $$ begin alter table public.payments add constraint payments_status_chk check (status in ('CREATED','PENDING','APPROVED','DECLINED','VOIDED','ERROR','EXPIRED')); exception when duplicate_object then null; end $$;
 do $$ begin alter table public.payments add constraint payments_env_chk check (environment in ('sandbox','production')); exception when duplicate_object then null; end $$;
 do $$ begin alter table public.payments add constraint payments_amount_chk check (amount_in_cents > 0); exception when duplicate_object then null; end $$;
