@@ -6,7 +6,7 @@
  */
 (function () {
   'use strict';
-  const PRICING = 'index.html#precios';
+  const PRICING = '/checkout';
   const ADVISOR = 'https://wa.me/573152507850?text=' + encodeURIComponent('Hola KARTTA, quiero hablar con un asesor sobre mi plan.');
   const ICON = {
     plus: '<path d="M12 5v14M5 12h14"/>', menu: '<path d="M4 7h16M4 12h16M4 17h16"/>', send: '<path d="M5 12h14M13 6l6 6-6 6"/>',

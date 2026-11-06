@@ -1,15 +1,12 @@
-// REEMPLAZADA. La función "ai-assistant-vision" ya no analiza fotos por su cuenta:
-// ahora las fotos pasan por "ai-assistant" (misma cuota atómica, mismo historial y mismas protecciones).
-// Re-despliega este archivo como "ai-assistant-vision" para que la versión antigua (que contaba con otros
-// límites) no pueda usarse para saltarse la cuota, o desactiva esa función en Supabase.
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-Deno.serve((req) =>
-  req.method === "OPTIONS"
-    ? new Response(null, { headers: CORS })
-    : new Response(JSON.stringify({ error: "moved", message: "Las fotos ahora se envían desde el chat de IA del panel." }),
-        { status: 410, headers: { ...CORS, "Content-Type": "application/json" } }),
-);
+// Edge Function wompi-webhook — URL de eventos de Wompi. DEBE desplegarse con verify_jwt = false (Wompi no envía JWT de Supabase):
+//   supabase functions deploy wompi-webhook --no-verify-jwt
+// La autenticidad se garantiza con el checksum de eventos (WOMPI_EVENTS_SECRET) y con la consulta a la API de Wompi.
+import { createClient } from 'npm:@supabase/supabase-js@2';
+import { handle } from './core.js';
+
+Deno.serve((req: Request) => {
+  const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
+  const env: Record<string, string | undefined> = {};
+  for (const k of ['WOMPI_ENVIRONMENT', 'WOMPI_PUBLIC_KEY', 'WOMPI_PRIVATE_KEY', 'WOMPI_EVENTS_SECRET', 'WOMPI_INTEGRITY_SECRET']) env[k] = Deno.env.get(k);
+  return handle(req, { env, fetchFn: fetch, admin });
+});

@@ -11,6 +11,18 @@
     {
       "source": "/t/:token",
       "destination": "/tarjeta.html?t=:token"
+    },
+    {
+      "source": "/checkout",
+      "destination": "/checkout.html"
+    },
+    {
+      "source": "/checkout/:state",
+      "destination": "/checkout.html"
+    },
+    {
+      "source": "/checkout/:state/:ref",
+      "destination": "/checkout.html"
     }
   ],
   "headers": [
@@ -71,6 +83,14 @@
           "key": "Cache-Control",
           "value": "no-store"
         }
+      ]
+    },
+    {
+      "source": "/checkout.html",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "Cache-Control", "value": "no-store" }
       ]
     },
     {
