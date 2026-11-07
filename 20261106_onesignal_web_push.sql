@@ -221,6 +221,12 @@ begin
                where rm.restaurant_id = s.restaurant_id and rm.role = 'owner'
                order by rm.created_at asc limit 1
             )) = n.user_id
+            and not exists (
+              select 1 from public.payments p
+               where p.restaurant_id = s.restaurant_id
+                 and p.status = 'PENDING'
+                 and p.created_at > now() - interval '3 days'
+            )
             and ((s.status = 'trialing' and coalesce(s.trial_end, s.current_period_end) > now())
               or (s.status = 'active' and s.plan_id not in ('free', 'trial') and s.current_period_end > now()))
        )
