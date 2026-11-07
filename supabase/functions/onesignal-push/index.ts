@@ -83,7 +83,7 @@ async function sendToExternalId(args: {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': \`Key \${ONESIGNAL_REST_API_KEY}\`,
+        'Authorization': 'Key ' + ONESIGNAL_REST_API_KEY,
       },
       body: JSON.stringify(payload),
       signal: controller.signal,
