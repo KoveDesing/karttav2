@@ -2,16 +2,8 @@
 -- Migración aditiva: no modifica pagos, billing_notifications ni fechas de suscripción.
 -- La API Key de OneSignal nunca se almacena aquí; permanece en Edge Function Secrets.
 
-begin;
-
 create extension if not exists pg_cron;
 create extension if not exists pg_net;
-
--- Los esquemas internos de Cron/pg_net no deben ser consultables por clientes de la API.
-revoke all on schema cron from public, anon, authenticated;
-revoke all on all tables in schema cron from public, anon, authenticated;
-revoke all on schema net from public, anon, authenticated;
-revoke all on all tables in schema net from public, anon, authenticated;
 
 create table if not exists public.onesignal_push_notifications (
   id uuid primary key default gen_random_uuid(),
@@ -427,4 +419,3 @@ select cron.schedule(
   $$
 );
 
-commit;
