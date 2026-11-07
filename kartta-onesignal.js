@@ -7,7 +7,7 @@ const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
 
 // OneSignal Web Push está configurado para el origen canónico indicado por KARTTA.
 // No inicializar en previews de Vercel ni en subdominios de restaurantes: Web Push es same-origin.
-if (location.hostname.toLowerCase() !== 'kartta.food') {
+if (location.hostname.toLowerCase() !== 'www.kartta.food') {
   // El panel sigue funcionando normalmente; solo se omite OneSignal fuera del origen oficial.
 } else {
 
@@ -23,6 +23,8 @@ window.OneSignalDeferred.push(async (OneSignal) => {
   try {
     await OneSignal.init({
       appId: APP_ID,
+      serviceWorkerPath: '/OneSignalSDKWorker.js',
+      serviceWorkerParam: { scope: '/' },
       autoResubscribe: true,
       welcomeNotification: { disable: true },
     });
