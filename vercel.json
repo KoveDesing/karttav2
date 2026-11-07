@@ -1,4 +1,17 @@
 {
+  "redirects": [
+    {
+      "source": "/:path(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "(karttafood|karttaweb)\\.vercel\\.app"
+        }
+      ],
+      "destination": "https://kartta.food/:path",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/",

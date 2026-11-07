@@ -11,6 +11,11 @@
  */
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
 
+// Dominio antiguo → oficial. Respaldo por si el redirect de Vercel aún no está activo: conserva ruta, query y hash.
+if (/^(karttafood|karttaweb)\.vercel\.app$/i.test(location.hostname)) {
+  location.replace("https://kartta.food" + location.pathname + location.search + location.hash);
+}
+
 const SUPABASE_URL = "https://ifbvdjvukygvvgiyzgav.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1hE4YyQLSll7KlIQoUEACQ_QjaoAfLH";
 const BUCKET = "kartta-media";
