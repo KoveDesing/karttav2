@@ -1,0 +1,3 @@
+# El cron (pg_net) llama a la función sin JWT de usuario: se autentica con el token de Vault.
+[functions.onesignal-push]
+verify_jwt = false

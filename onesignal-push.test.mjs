@@ -6,6 +6,8 @@ import {
   buildOneSignalPayload,
   classifyOneSignalResponse,
   isUuid,
+  isOneSignalAppId,
+  APP_ID,
   bogotaDaysRemaining,
   reminderTypeForSubscription,
   isReminderEligible,
@@ -114,4 +116,9 @@ test('logs out a persisted SDK identity even after a page reload', async () => {
   const sync = createOneSignalIdentitySynchronizer(async () => mock);
   await sync(null);
   assert.deepEqual(calls, [['logout']]);
+});
+
+test('el App ID configurado en el repo tiene formato UUID válido de OneSignal', () => {
+  assert.equal(isOneSignalAppId('2211f00d-3641-4a1d-8105-e5d04fbc181b'), true);
+  assert.equal(isOneSignalAppId(APP_ID), true, 'APP_ID incompleto: la última sección debe tener 12 caracteres');
 });

@@ -1,7 +1,7 @@
 import { sb } from './supabase-init.js';
 import { createOneSignalIdentitySynchronizer } from './kartta-onesignal-identity.mjs';
 
-const APP_ID = '2211f00d-3641-4a1d-8105-e5d4fbc181b';
+const APP_ID = '2211f00d-3641-4a1d-8105-e5d04fbc181b';
 const DISMISS_KEY = 'kartta_push_dismissed_until';
 const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -19,8 +19,13 @@ let card = null;
 let initError = null;
 
 window.OneSignalDeferred = window.OneSignalDeferred || [];
+const APP_ID_VALID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(APP_ID);
+
 window.OneSignalDeferred.push(async (OneSignal) => {
   try {
+    if (!APP_ID_VALID) {
+      throw new Error('onesignal_invalid_app_id: el App ID debe tener formato 8-4-4-4-12 (36 caracteres). Cópialo de OneSignal > Settings > Keys & IDs.');
+    }
     await OneSignal.init({
       appId: APP_ID,
       serviceWorkerPath: '/OneSignalSDKWorker.js',
