@@ -235,6 +235,13 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 .subd-fix{padding:0 12px;min-height:46px;display:flex;align-items:center;font-weight:700;color:var(--muted);background:var(--panel);user-select:none;white-space:nowrap;}
 .subd input{flex:1;min-width:0;border:0;background:transparent;padding:0 10px;min-height:46px;font-size:15px;font-weight:700;color:var(--strong);}
 .subd input:focus{outline:none;}
+.urlprev{margin:14px 0 4px;max-width:520px;border:1px solid var(--border);border-radius:14px;background:var(--panel);overflow:hidden;}
+.urlprev .bar{display:flex;align-items:center;gap:7px;padding:9px 12px;background:var(--panel2);border-bottom:1px solid var(--border);}
+.urlprev .dot{width:9px;height:9px;border-radius:50%;background:var(--border);}
+.urlprev .addr{flex:1;min-width:0;display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--border);border-radius:99px;padding:6px 12px;font-size:14px;color:var(--muted);overflow:hidden;white-space:nowrap;}
+.urlprev .addr b{color:var(--accent);font-weight:800;overflow:hidden;text-overflow:ellipsis;}
+.urlprev .addr .tld{color:var(--strong);font-weight:700;}
+.urlprev .cap{padding:9px 14px;font-size:12.5px;color:var(--muted);}
 .fmsg{font-size:12.5px;margin:8px 0 0;min-height:18px;color:var(--muted);}.fmsg.ok{color:var(--ok);}.fmsg.bad{color:#E5484D;}
 .styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:16px;}
 .stylec{text-align:left;padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--panel2);transition:border-color .15s,transform .15s var(--ease),background .15s;}
@@ -512,10 +519,11 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
         <p class="sub">Solo puedes cambiar el nombre de tu negocio. “.kartta.food” es fijo y no se puede modificar.</p>
         <div class="field"><label for="cfgSlug">Nombre de tu negocio en la dirección</label>
           <div class="subd"><input type="text" id="cfgSlug" maxlength="30" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="url" placeholder="laesquina" aria-describedby="slugMsg"><span class="subd-fix" aria-hidden="true">.kartta.food</span></div>
+          <div class="urlprev" aria-live="polite"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="addr"><span aria-hidden="true">🔒</span><span>https://<b id="prevName">tunegocio</b><span class="tld">.kartta.food</span></span></div></div><div class="cap" id="prevCap">Así verán tu dirección tus clientes en el navegador.</div></div>
           <p class="fmsg" id="slugMsg" role="status" aria-live="polite">3 a 30 caracteres: letras minúsculas, números y guiones.</p>
         </div>
         <div class="row"><button class="btn btn-ghost" id="btnSlugCheck">Comprobar disponibilidad</button><button class="btn btn-accent" id="btnSlug">Guardar cambios</button></div>
-        <p class="sub" style="margin:14px 0 0">Enlace activo de tu menú: <strong id="slugReal" style="color:var(--strong)">—</strong>. Si cambias el nombre, los QR y enlaces anteriores siguen funcionando.</p>
+        <p class="sub" style="margin:14px 0 0">Dirección oficial de tu menú: <strong id="slugReal" style="color:var(--strong)">—</strong>. Si cambias el nombre, los QR y enlaces anteriores siguen funcionando.</p>
       </div>
     </section>
 
@@ -1077,7 +1085,7 @@ function hydrate(){
     $('cfgPlanName').textContent = PLAN_NAME[pid] || 'Free'; $('cfgPlanPrice').textContent = PLAN_PRICE[pid] || 'Precio acordado con tu asesor';
     $('cfgUpgrade').hidden = !(pid === 'free' || pid === 'trial'); $('cfgAdvisor').hidden = !adv; }
   // Tokens y preguntas de IA reales: los rellena kartta-ai-chat.js desde el servidor (ai_usage_summary).
-  $('sumDom').textContent = slug + '.kartta.food'; $('slugReal').textContent = menuURL(); if (document.activeElement !== $('cfgSlug')) $('cfgSlug').value = slug;
+  $('sumDom').textContent = slug + '.kartta.food'; $('slugReal').textContent = 'https://' + slug + '.kartta.food'; paintPrev(slug); const _pc = $('prevCap'); if (_pc) _pc.textContent = SUBDOMAINS_LIVE ? 'Tu dirección está en línea.' : 'Tu dirección oficial se está activando. Mientras tanto tu menú ya funciona en ' + menuURL() + '.'; if (document.activeElement !== $('cfgSlug')) $('cfgSlug').value = slug;
   $('urlMenu').textContent = menuURL(); $('urlAdmin').textContent = location.href.split('#')[0];
   $('homeMenuLink').href = $('menuOpen').href = menuURL();
   if (typeof ktRender === 'function') ktRender();
@@ -1147,6 +1155,8 @@ async function slugCheck(){
   if (!data?.available) { slugMsg(SLUG_TXT[data?.reason] || SLUG_TXT.format, 'bad'); return false; }
   slugMsg('Disponible ✓', 'ok'); return true;
 }
+function paintPrev(v){ const el = $('prevName'); if (el) el.textContent = (v || '').trim().toLowerCase() || 'tunegocio'; }
+$('cfgSlug').addEventListener('input', () => paintPrev($('cfgSlug').value));
 let slugTimer; $('cfgSlug').addEventListener('input', () => { clearTimeout(slugTimer); const v = $('cfgSlug').value.trim().toLowerCase(); const bad = v ? slugLocal(v) : null; if (bad) return slugMsg(bad, 'bad'); slugMsg('Comprobando…'); slugTimer = setTimeout(slugCheck, 450); });
 $('btnSlugCheck').onclick = slugCheck;
 $('btnSlug').onclick = async () => {

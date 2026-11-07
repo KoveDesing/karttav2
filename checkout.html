@@ -1,21 +1,34 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Checkout — KARTTA</title>
 <meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light">
 <link rel="icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
-<script>(function(){try{var t=localStorage.getItem('kartta_theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
-<link rel="stylesheet" href="/checkout.css?v=20261106">
+<link rel="stylesheet" href="/checkout.css?v=20261107">
 </head>
 <body>
-<header class="ck-top"><a class="ck-brand" href="/dashboard.html" aria-label="Volver al panel">Kar<span>tt</span>a</a><a class="ck-back" href="/dashboard.html#facturacion">← Volver al panel</a></header>
+<header class="ck-top">
+  <a class="ck-brand" href="/dashboard.html" aria-label="KARTTA — volver al panel">Kar<span>tt</span>a</a>
+  <ol class="ck-steps" id="steps" aria-label="Progreso del pago">
+    <li data-s="1" class="on"><b>1</b><span>Método de pago</span></li>
+    <li data-s="2"><b>2</b><span>Completa el pago</span></li>
+    <li data-s="3"><b>3</b><span>Confirmación</span></li>
+  </ol>
+  <div class="ck-secure"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Pago 100% seguro con <b>Wompi</b></span></div>
+</header>
 <main class="ck-main" id="app" aria-live="polite"><p class="ck-muted">Cargando…</p></main>
+<footer class="ck-foot">
+  <a class="ck-brand sm" href="/index.html" aria-label="KARTTA">Kar<span>tt</span>a</a>
+  <span>Tu restaurante, en una sola plataforma.</span>
+  <nav aria-label="Enlaces legales"><a href="/terminos.html">Términos y condiciones</a><a href="/privacidad.html">Política de privacidad</a><a href="/dashboard.html#soporte">Soporte</a></nav>
+</footer>
 <script src="/kartta-plans.js"></script>
-<script type="module" src="/checkout.js?v=20261106"></script>
+<script type="module" src="/checkout.js?v=20261107"></script>
 </body>
 </html>

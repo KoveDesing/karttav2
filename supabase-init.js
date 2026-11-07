@@ -32,7 +32,7 @@ export function appOrigin() {
   return h === ROOT_DOMAIN || h.endsWith("." + ROOT_DOMAIN) ? APP_URL : location.origin;
 }
 /** Pasar a true SOLO cuando *.kartta.food responda con HTTPS en Vercel (DNS + wildcard listos). */
-export const SUBDOMAINS_LIVE = false;
+export const SUBDOMAINS_LIVE = true;
 window.KARTTA_CONFIG = { APP_URL, ROOT_DOMAIN, appOrigin, SUBDOMAINS_LIVE };
 
 /** Plan elegido en precios antes de registrarse. Se conserva ~6 h en esta pestaña. */
