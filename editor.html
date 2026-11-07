@@ -146,7 +146,7 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
 <div id="toast" role="status"></div>
 <script src="/menu-design.js"></script>
 <script type="module">
-import { sb, imageUrl } from "/supabase-init.js";
+import { sb, imageUrl, SUBDOMAINS_LIVE, appOrigin } from "/supabase-init.js";
 const D = window.KARTTA_DESIGN, $ = (id) => document.getElementById(id), BUCKET = 'kartta-media';
 let rid = null, rank = 0, cfg = D.normalize({}), published = D.normalize({}), restaurant = {}, cats = [], prods = [];
 let lastSaved = '', saveTimer = null, saving = false, saveErr = null, menuPublished = true;
@@ -694,7 +694,7 @@ async function boot(user){
     if (!mem.data || !mem.data.length) throw new Error('sin_negocio'); if (!['owner', 'admin'].includes(mem.data[0].role)) throw new Error('sin_permiso');
     rid = mem.data[0].restaurant_id;
     const [r, sub, ds] = await Promise.all([sb.from('restaurants').select('name,slug,description,whatsapp,address,logo_path,cover_path,is_published').eq('id', rid).single(), sb.from('subscriptions').select('plan_id,status,current_period_end').eq('restaurant_id', rid).maybeSingle(), sb.from('menu_designs').select('status,config').eq('restaurant_id', rid)]);
-    if (r.error) throw r.error; restaurant = r.data; $('viewPub').href = location.origin + '/m/' + encodeURIComponent(restaurant.slug); $('bizTitle').textContent = '· ' + (restaurant.name || '');
+    if (r.error) throw r.error; restaurant = r.data; $('viewPub').href = SUBDOMAINS_LIVE ? 'https://' + restaurant.slug + '.kartta.food' : appOrigin() + '/m/' + encodeURIComponent(restaurant.slug); $('bizTitle').textContent = '· ' + (restaurant.name || '');
     const s = sub.data, vig = s && ['active', 'trialing'].includes(s.status) && (!s.current_period_end || new Date(s.current_period_end) > new Date());
     if (vig) { const p = await sb.from('plans').select('limits').eq('id', s.plan_id).maybeSingle(); rank = Number(p.data?.limits?.rank || 0); }
     const rows = ds.data || [], draft = rows.find(x => x.status === 'draft'), pub = rows.find(x => x.status === 'published');
