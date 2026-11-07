@@ -38,7 +38,7 @@ Estado: **código completo y probado con Wompi simulado. NO probado contra el Sa
 5. **Hosting (Vercel):** publicar este repo (ya incluye los rewrites de `/checkout`). Definir `APP_URL` con tu dominio.
 6. **Cron:** programar una llamada diaria (pg_cron + pg_net o Supabase Cron) a `billing-cron` con `Authorization: Bearer <CRON_SECRET>`.
 7. **Panel privado:** publicar el repo del panel con `config.js` apuntando a `admin-billing`; definir `PANEL_*` en los secrets.
-8. **Precio anual:** cuando el propietario lo confirme, activarlo por SQL (`billing_settings.annual_sales_enabled = true` y `plans.annual_price_cop`). El repo propone 263400 / 509400 (50 % sobre 12 mensualidades, valor de `kartta-plans.js`) **solo como referencia**.
+8. **Pago anual:** ejecutar `20261107_activar_pago_anual.sql` (después de la migración principal). Fija 263.400 COP (Standard) y 509.400 COP (Pro) —los importes que ya publica la landing: 12 mensualidades con 50 % de descuento— y habilita el cobro anual. Si cambias el precio, cámbialo allí y en `kartta-plans.js`.
 
 ## 4. Pasar a producción
 1. Pruebas de Sandbox completas (sección 6) en verde.
@@ -67,3 +67,8 @@ Checklist de Sandbox para ti: pago aprobado, rechazado, pendiente (PSE), webhook
 - Columna de `panel_bridge_admins` y columnas de pagos que devuelve `admin-api` del panel.
 - Que `create_restaurant` asigne la prueba gratuita (y su duración); el plan de prueba hoy tiene rank 0, igual que Free.
 - Cambio de plan: no se acredita prorrata.
+
+## 8. Panel: recordatorios manuales (Finanzas → Clientes → ficha del cliente)
+- **Recordar por WhatsApp:** abre WhatsApp con el mensaje ya redactado según el estado (fin de prueba, renovación próxima, plan vencido) y el enlace a `/checkout`. Usa el teléfono del dueño (`restaurant_private.contact_phone`) o, si falta, el WhatsApp del menú. Funciona hoy, sin proveedor de correo.
+- **Enviar por correo:** encola el aviso (`admin_billing_send_reminder`), con límite de 1 cada 10 minutos por cliente y auditoría con tu correo. Solo sale cuando `billing-cron` y `RESEND_API_KEY` estén configurados; mientras tanto queda "pending" en «Avisos».
+- Despliegue: `20261108_recordatorios_manuales.sql`, función `admin-billing` (verify_jwt desactivado; valida la sesión del panel y el correo en `panel_bridge_admins`) y secrets `PANEL_SUPABASE_URL`, `PANEL_SUPABASE_KEY`, `PANEL_ORIGINS`.

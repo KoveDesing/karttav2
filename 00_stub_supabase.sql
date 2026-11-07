@@ -12,8 +12,9 @@ create or replace function auth.uid() returns uuid language sql stable as $$ sel
 grant usage on schema auth, private, public to anon, authenticated, service_role;
 create table public.platform_admins (user_id uuid primary key);
 create or replace function private.is_platform_admin() returns boolean language sql stable security definer as $$ select exists (select 1 from public.platform_admins where user_id = auth.uid()) $$;
-create table public.restaurants (id uuid primary key default gen_random_uuid(), name text not null, slug text unique, is_suspended boolean not null default false, created_at timestamptz default now());
+create table public.restaurants (id uuid primary key default gen_random_uuid(), name text not null, slug text unique, is_suspended boolean not null default false, created_at timestamptz default now(), whatsapp text, whatsapp_country_code text not null default '57', public_phone text);
 create table public.restaurant_members (restaurant_id uuid references public.restaurants(id), user_id uuid, role text, primary key (restaurant_id, user_id));
+create table public.restaurant_private (restaurant_id uuid primary key references public.restaurants(id) on delete cascade, owner_name text, contact_email text, contact_phone text);
 create table public.plans (id text primary key check (id ~ '^[a-z0-9_]{2,30}$'), name text not null check (char_length(name) between 2 and 60), monthly_price_cop integer check (monthly_price_cop >= 0),
   yearly_monthly_price_cop integer check (yearly_monthly_price_cop >= 0), limits jsonb not null default '{}' check (jsonb_typeof(limits)='object'), is_active boolean not null default true, created_at timestamptz not null default now(), annual_price_cop integer);
 insert into public.plans (id, name, limits, monthly_price_cop) values
