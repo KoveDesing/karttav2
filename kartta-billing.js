@@ -29,7 +29,7 @@
       timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit'
     }).formatToParts(d);
     var get = function (type) { return Number(parts.find(function (p) { return p.type === type; }).value); };
-    return Date.UTC(get('year'), get('month') - 1, get('day)) / 86400000;
+    return Date.UTC(get('year'), get('month') - 1, get('day')) / 86400000;
   }
   function daysLeft(iso, serverNow) {
     var expiryDay = bogotaDayNumber(iso);
