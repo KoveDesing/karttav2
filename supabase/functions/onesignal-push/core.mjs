@@ -81,8 +81,7 @@ export function buildOneSignalPayload({ appId = APP_ID, userId, restaurantId, su
     headings: { es: copy.title },
     contents: { es: copy.body },
     url: DASHBOARD_BILLING_URL,
-    large_icon: KARTTA_ICON_URL,
-    chrome_web_image: KARTTA_ICON_URL,
+    chrome_web_icon: KARTTA_ICON_URL,
     data: {
       source: 'kartta',
       notification_type: notificationType,
