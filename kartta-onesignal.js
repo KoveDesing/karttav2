@@ -74,7 +74,7 @@ function ensureCard() {
   card.id = 'karttaPushCard';
   card.className = 'card kartta-push-card';
   card.setAttribute('aria-live', 'polite');
-  card.innerHTML = \`
+  card.innerHTML = `
     <div class="kartta-push-copy">
       <div class="kartta-push-icon" aria-hidden="true">🔔</div>
       <div class="kartta-push-text">
@@ -87,7 +87,7 @@ function ensureCard() {
       <button type="button" class="btn btn-accent" id="karttaPushActivate">Activar notificaciones</button>
       <button type="button" class="btn btn-ghost btn-sm" id="karttaPushDismiss">Ahora no</button>
       <button type="button" class="btn btn-ghost btn-sm" id="karttaPushTest" hidden>Enviar prueba</button>
-    </div>\`;
+    </div>`;
   const tour = home.querySelector('#tourCard');
   if (tour) home.insertBefore(card, tour);
   else home.appendChild(card);
