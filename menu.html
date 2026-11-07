@@ -560,8 +560,10 @@ async function resolverSlugPorDominio(){
   const { data } = await sb.rpc('resolve_hostname', { p_host: host });
   if (data) return data;
   // identificador.dominio.tld  →  el identificador es el negocio (se valida luego con get_public_menu)
-  const partes = host.split('.');
-  if (partes.length >= 3 && !['www', 'app', 'm', 'menu', 'kartta'].includes(partes[0])) return partes[0].toLowerCase();
+  const partes = host.toLowerCase().split('.');
+  const RESERVADOS = ['www','app','m','menu','kartta','api','admin','dashboard','panel','auth','login','registro','soporte','support','ayuda','help','mail','status','docs','assets','static','cdn'];
+  // identificador.kartta.food → el identificador es el negocio (se valida luego con get_public_menu)
+  if (partes.length === 3 && partes[1] === 'kartta' && partes[2] === 'food' && !RESERVADOS.includes(partes[0]) && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(partes[0])) return partes[0];
   return null;
 }
 

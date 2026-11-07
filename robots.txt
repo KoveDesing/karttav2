@@ -8,3 +8,8 @@ Disallow: /consentimiento
 Disallow: /consentimiento.html
 Disallow: /editor
 Disallow: /editor.html
+
+Disallow: /checkout
+Disallow: /tarjeta.html
+
+Sitemap: https://kartta.food/sitemap.xml

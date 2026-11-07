@@ -509,9 +509,9 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
       </div>
       <div class="card">
         <div class="row between"><h3>Dirección de tu menú</h3><span class="pill ok">Oficial KARTTA</span></div>
-        <p class="sub">Solo puedes cambiar el nombre del centro. “kartta.” y “.food” son fijos y no se pueden modificar.</p>
+        <p class="sub">Solo puedes cambiar el nombre de tu negocio. “.kartta.food” es fijo y no se puede modificar.</p>
         <div class="field"><label for="cfgSlug">Nombre de tu negocio en la dirección</label>
-          <div class="subd"><span class="subd-fix" aria-hidden="true">kartta.</span><input type="text" id="cfgSlug" maxlength="30" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="url" placeholder="laesquina" aria-describedby="slugMsg"><span class="subd-fix" aria-hidden="true">.food</span></div>
+          <div class="subd"><input type="text" id="cfgSlug" maxlength="30" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="url" placeholder="laesquina" aria-describedby="slugMsg"><span class="subd-fix" aria-hidden="true">.kartta.food</span></div>
           <p class="fmsg" id="slugMsg" role="status" aria-live="polite">3 a 30 caracteres: letras minúsculas, números y guiones.</p>
         </div>
         <div class="row"><button class="btn btn-ghost" id="btnSlugCheck">Comprobar disponibilidad</button><button class="btn btn-accent" id="btnSlug">Guardar cambios</button></div>
@@ -621,7 +621,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 <div class="toast" id="toast" role="status"></div>
 
 <script type="module">
-import { sb, imageUrl } from "./supabase-init.js";
+import { sb, imageUrl, takePlanChoice, SUBDOMAINS_LIVE, appOrigin } from "./supabase-init.js";
 
 /* ======================================================================
    ESTRUCTURA DE DATOS (Supabase) — ver docs/ARQUITECTURA.md
@@ -1038,6 +1038,7 @@ window.KARTTA_AUTH.onChange(async (user) => {
       perfil = pf.data || {}; rid = mem.data[0].restaurant_id;
       await cargarNegocio(true);
       if (!negocio.onboardingCompleted) { location.href = 'onboarding.html'; return; }
+      { const pc = takePlanChoice(); if (pc) { try { sessionStorage.removeItem('kartta_plan_choice'); } catch {} location.replace('/checkout?plan=' + encodeURIComponent(pc.plan) + '&cycle=' + encodeURIComponent(pc.interval === 'annual' ? 'annual' : 'monthly')); return; } }   // continúa con el plan elegido en precios
       if (perfil.prefs && Object.keys(perfil.prefs).length) { if (prefsLocalOK()) { try { localStorage.setItem('kartta_prefs', JSON.stringify(perfil.prefs)); } catch {} } applyPrefs(perfil.prefs); } else applyPrefs({});
       $('helloName').textContent = (perfil.panel_name || perfil.full_name || user.displayName || user.email.split('@')[0]).split(' ')[0];
       booted = true;
@@ -1056,7 +1057,7 @@ window.KARTTA_AUTH.onChange(async (user) => {
 $('btnLogout').onclick = async () => { try { localStorage.removeItem('kartta_prefs'); } catch {} await window.KARTTA_AUTH.logout(); location.href = 'index.html'; };
 
 function menuURL(){
-  return location.origin + '/m/' + encodeURIComponent(slug);
+  return SUBDOMAINS_LIVE ? 'https://' + slug + '.kartta.food' : appOrigin() + '/m/' + encodeURIComponent(slug);   // /m/identificador sigue funcionando siempre
 }
 function perfilPct(){
   const f = [negocio.nombre, negocio.descripcion, negocio.telefono, negocio.direccion, negocio.logo, negocio.banner];
@@ -1076,7 +1077,7 @@ function hydrate(){
     $('cfgPlanName').textContent = PLAN_NAME[pid] || 'Free'; $('cfgPlanPrice').textContent = PLAN_PRICE[pid] || 'Precio acordado con tu asesor';
     $('cfgUpgrade').hidden = !(pid === 'free' || pid === 'trial'); $('cfgAdvisor').hidden = !adv; }
   // Tokens y preguntas de IA reales: los rellena kartta-ai-chat.js desde el servidor (ai_usage_summary).
-  $('sumDom').textContent = 'kartta.' + slug + '.food'; $('slugReal').textContent = menuURL(); if (document.activeElement !== $('cfgSlug')) $('cfgSlug').value = slug;
+  $('sumDom').textContent = slug + '.kartta.food'; $('slugReal').textContent = menuURL(); if (document.activeElement !== $('cfgSlug')) $('cfgSlug').value = slug;
   $('urlMenu').textContent = menuURL(); $('urlAdmin').textContent = location.href.split('#')[0];
   $('homeMenuLink').href = $('menuOpen').href = menuURL();
   if (typeof ktRender === 'function') ktRender();
@@ -1127,7 +1128,7 @@ function wireImage(pickId, fileId, delId, tipo, col, pathKey){
 wireImage('logoPick', 'logoFile', 'logoDel', 'logo', 'logo_path', 'logoPath');
 wireImage('bannerPick', 'bannerFile', 'bannerDel', 'banner', 'cover_path', 'bannerPath');
 
-/* ---------- dirección oficial: kartta.IDENTIFICADOR.food (solo se edita el centro) ---------- */
+/* ---------- dirección oficial: IDENTIFICADOR.kartta.food (solo se edita el centro) ---------- */
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const SLUG_TXT = { empty:'Escribe un nombre.', length:'Debe tener entre 3 y 30 caracteres.', format:'Usa solo letras minúsculas, números y guiones (sin espacios ni guion al inicio o final).', reserved:'Ese nombre está reservado por KARTTA. Elige otro.', taken:'Ese nombre ya está en uso. Prueba con otro.' };
 function slugLocal(v){

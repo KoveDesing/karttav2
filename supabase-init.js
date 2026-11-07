@@ -15,6 +15,30 @@ const SUPABASE_URL = "https://ifbvdjvukygvvgiyzgav.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_1hE4YyQLSll7KlIQoUEACQ_QjaoAfLH";
 const BUCKET = "kartta-media";
 
+/**
+ * Dominio oficial (única fuente de verdad en el navegador).
+ * En kartta.food, www.kartta.food y *.kartta.food las URLs de retorno de la autenticación
+ * usan SIEMPRE https://kartta.food. En localhost / previews de Vercel se usa el origen actual.
+ */
+export const APP_URL = "https://kartta.food";
+const ROOT_DOMAIN = "kartta.food";
+export function appOrigin() {
+  const h = location.hostname;
+  return h === ROOT_DOMAIN || h.endsWith("." + ROOT_DOMAIN) ? APP_URL : location.origin;
+}
+/** Pasar a true SOLO cuando *.kartta.food responda con HTTPS en Vercel (DNS + wildcard listos). */
+export const SUBDOMAINS_LIVE = false;
+window.KARTTA_CONFIG = { APP_URL, ROOT_DOMAIN, appOrigin, SUBDOMAINS_LIVE };
+
+/** Plan elegido en precios antes de registrarse. Se conserva ~6 h en esta pestaña. */
+export function takePlanChoice() {
+  try {
+    const j = JSON.parse(sessionStorage.getItem("kartta_plan_choice") || "null");
+    if (j && j.plan && j.plan !== "free" && Date.now() - (j.t || 0) < 6 * 3600e3) return j;
+  } catch { /* ignorar */ }
+  return null;
+}
+
 export const sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
 });
@@ -162,7 +186,7 @@ window.KARTTA_AUTH = {
   async google() {
     const { error } = await sb.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${location.origin}/dashboard.html` },
+      options: { redirectTo: `${appOrigin()}/dashboard.html` },
     });
     if (error) throw translateAuthError(error);
     return new Promise(() => {}); // la página se redirige a Google

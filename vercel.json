@@ -1,6 +1,16 @@
 {
   "rewrites": [
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "(?!(?:www|app|api|admin|dashboard|panel|auth|login|registro|soporte|support|ayuda|help|mail|status|docs|assets|static|cdn|kartta|menu|m)\\.)[a-z0-9-]+\\.kartta\\.food"
+        }
+      ],
+      "destination": "/menu.html"
+    },
+    {
       "source": "/m/:slug",
       "destination": "/menu.html?r=:slug"
     },
@@ -88,9 +98,18 @@
     {
       "source": "/checkout.html",
       "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
-        { "key": "Referrer-Policy", "value": "no-referrer" },
-        { "key": "Cache-Control", "value": "no-store" }
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
       ]
     },
     {
