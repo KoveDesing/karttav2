@@ -1,0 +1,33 @@
+.kartta-push-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
+  background: linear-gradient(115deg, color-mix(in srgb, var(--accent) 5%, var(--panel)), var(--panel) 55%);
+}
+.kartta-push-card[hidden] { display: none !important; }
+.kartta-push-copy { display: flex; align-items: flex-start; gap: 14px; min-width: 0; }
+.kartta-push-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--accent) 10%, var(--panel2));
+  font-size: 19px;
+}
+.kartta-push-text { min-width: 0; }
+.kartta-push-text h3 { margin: 1px 0 5px; }
+.kartta-push-text .sub { margin: 0; max-width: 64ch; }
+.kartta-push-status { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.kartta-push-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; flex: 0 0 auto; }
+.kartta-push-actions button[hidden] { display: none !important; }
+.kartta-push-actions button:disabled { opacity: .55; cursor: wait; }
+@media (max-width: 720px) {
+  .kartta-push-card { align-items: stretch; flex-direction: column; padding: 18px; }
+  .kartta-push-actions { justify-content: flex-start; }
+  .kartta-push-actions .btn { flex: 1 1 auto; }
+}

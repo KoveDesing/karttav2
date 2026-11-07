@@ -1,0 +1,17 @@
+{
+  "id": "/dashboard.html",
+  "name": "KARTTA — Panel del restaurante",
+  "short_name": "KARTTA",
+  "start_url": "/dashboard.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
