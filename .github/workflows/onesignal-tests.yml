@@ -1,0 +1,27 @@
+name: OneSignal integration tests
+
+on:
+  push:
+    branches:
+      - feat/onesignal-web-push
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  onesignal-tests:
+    name: OneSignal unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run OneSignal tests
+        run: node --test onesignal-push.test.mjs
