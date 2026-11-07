@@ -29,6 +29,7 @@ test('builds the exact 3-day reminder with the billing destination and one exter
   assert.equal(payload.headings.es, '¡Hey! KARTTA te está esperando 👋');
   assert.match(payload.contents.es, /KaKAO/);
   assert.equal(payload.url, 'https://www.kartta.food/dashboard.html#facturacion');
+  assert.equal(payload.chrome_web_icon, 'https://www.kartta.food/favicon.png');
   assert.equal(payload.data.notification_type, 'renewal_3d');
 });
 
