@@ -21,7 +21,21 @@
   var CYCLE = { monthly: 'Mensual', annual: 'Anual' };
   var pill = function (m, k) { var s = m[k] || ['pend', k || '—']; return '<span class="pill ' + s[0] + '">' + esc(s[1]) + '</span>'; };
 
-  function daysLeft(iso) { return iso ? Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000)) : 0; }
+  function bogotaDayNumber(iso) {
+    if (!iso) return null;
+    var d = new Date(iso);
+    if (!Number.isFinite(d.getTime())) return null;
+    var parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(d);
+    var get = function (type) { return Number(parts.find(function (p) { return p.type === type; }).value); };
+    return Date.UTC(get('year'), get('month') - 1, get('day)) / 86400000;
+  }
+  function daysLeft(iso, serverNow) {
+    var expiryDay = bogotaDayNumber(iso);
+    var today = bogotaDayNumber(serverNow || new Date().toISOString());
+    return expiryDay === null || today === null ? null : Math.round(expiryDay - today);
+  }
 
   function view() {
     var host = $('modBilling'); if (!host) return;
@@ -35,15 +49,31 @@
     if (!s) {
       html += '<div class="card"><p class="sub" style="margin:0">Todavía no hay una suscripción asociada a este restaurante.</p></div>';
     } else {
+      var expiry = s.status === 'trialing' ? (s.trial_end || s.current_period_end) : s.current_period_end;
+      var remaining = daysLeft(expiry, data.server_now);
       var rows = [['Plan', esc(s.plan_name || s.plan_id)], ['Estado', pill(STATUS, eff)]];
+      if (s.current_period_start || s.trial_start) rows.push(['Fecha de inicio', fmtDate(s.current_period_start || s.trial_start)]);
       if (paid) rows.push(['Modalidad', esc(CYCLE[s.billing_cycle] || '—')]);
-      if (eff === 'trialing') rows.push(['Prueba termina', fmtDate(s.trial_end || s.current_period_end) + ' · quedan ' + daysLeft(s.trial_end || s.current_period_end) + ' días']);
-      else if (s.current_period_end) rows.push([s.cancel_at_period_end ? 'Acceso hasta' : (eff === 'active' ? 'Vigente hasta' : 'Venció el'), fmtDate(s.current_period_end)]);
+      if (expiry) {
+        rows.push([eff === 'expired' ? 'Venció el' : (s.status === 'trialing' ? 'Prueba termina' : (s.cancel_at_period_end ? 'Acceso hasta' : 'Vigente hasta')), fmtDate(expiry)]);
+        if (remaining !== null && remaining >= 0) rows.push(['Días restantes', String(remaining)]);
+      }
+      var latestPayment = (data.payments || [])[0];
+      if (data.has_pending_payment) rows.push(['Estado del pago', pill(PAY, 'PENDING')]);
+      else if (latestPayment && paid) rows.push(['Último pago', pill(PAY, latestPayment.status)]);
       if (paid && eff === 'active') rows.push(['Renovación', s.cancel_at_period_end ? 'Cancelada (conservas el acceso hasta la fecha indicada)' : 'Manual: te avisaremos antes de que venza para que renueves']);
       html += '<div class="card"><dl class="kv" style="display:grid;grid-template-columns:max-content 1fr;gap:8px 18px;margin:0">' +
         rows.map(function (r) { return '<dt style="color:var(--muted)">' + r[0] + '</dt><dd style="margin:0">' + r[1] + '</dd>'; }).join('') + '</dl>';
       if (data.has_pending_payment) html += '<p class="note" style="margin-top:12px">Tienes un pago en proceso. Si ya pagaste, tu plan se activará en cuanto Wompi lo confirme.</p>';
-      if (eff === 'past_due' || eff === 'expired') html += '<p class="note warn" style="margin-top:12px">Tu plan no está vigente, por eso algunas funciones están limitadas. Renueva para recuperarlas.</p>';
+      if (eff === 'expired' || (remaining !== null && remaining < 0)) {
+        html += '<div class="note warn" style="margin-top:14px"><strong>Tu suscripción ha finalizado.</strong><p style="margin:6px 0 10px">Renueva para recuperar el acceso a las herramientas de KARTTA.</p><a class="btn btn-accent btn-sm" href="/checkout">Renovar ahora</a></div>';
+      } else if (remaining !== null && remaining <= 3) {
+        var urgencyTitle = remaining <= 1 ? '¡Tu suscripción está por finalizar! ❤️' : '¡Tu suscripción está por terminar! ❤️';
+        var urgencyText = remaining === 0 ? 'Tu plan termina hoy. Renueva para seguir disfrutando de KARTTA.' :
+          (remaining === 1 ? 'Tu plan termina mañana. Renueva para mantener tus herramientas activas.' :
+          'Tu plan termina el ' + fmtDate(expiry) + '. Renueva para seguir disfrutando de KARTTA.');
+        html += '<div class="note warn" style="margin-top:14px"><strong>' + urgencyTitle + '</strong><p style="margin:6px 0 10px">' + urgencyText + '</p><a class="btn btn-accent btn-sm" href="/checkout">Renovar suscripción</a></div>';
+      }
       html += '<div class="row" style="margin-top:14px;gap:8px;flex-wrap:wrap">';
       if (paid && eff === 'active' && !s.cancel_at_period_end) html += '<button class="btn btn-ghost btn-sm" data-bill="cancel">Cancelar renovación</button>';
       if (paid && eff === 'active' && s.cancel_at_period_end) html += '<button class="btn btn-ghost btn-sm" data-bill="resume">Reanudar renovación</button>';
