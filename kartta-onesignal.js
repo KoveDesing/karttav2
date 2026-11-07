@@ -36,6 +36,7 @@ window.OneSignalDeferred.push(async (OneSignal) => {
     renderState();
   } catch (error) {
     initError = error;
+    console.error('[KARTTA] OneSignal initialization failed:', error);
     sdkReadyReject(error);
     renderState();
   }
@@ -76,7 +77,7 @@ function ensureCard() {
   card.setAttribute('aria-live', 'polite');
   card.innerHTML = `
     <div class="kartta-push-copy">
-      <div class="kartta-push-icon" aria-hidden="true">🔔</div>
+      <div class="kartta-push-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></div>
       <div class="kartta-push-text">
         <h3 id="karttaPushTitle">Activa las notificaciones de KARTTA</h3>
         <p class="sub" id="karttaPushDescription">Recibe avisos importantes sobre tu restaurante, tus pedidos y tu suscripción directamente en tu dispositivo.</p>
@@ -152,7 +153,7 @@ function renderState() {
     test.hidden = false;
     status.textContent = 'Este dispositivo está vinculado a tu cuenta de KARTTA.';
   } else {
-    title.textContent = 'Activa las notificaciones de KARTTA 🔔';
+    title.textContent = 'Activa las notificaciones de KARTTA';
     description.textContent = 'Recibe avisos importantes sobre tu restaurante, tus pedidos y tu suscripción directamente en tu dispositivo.';
     activate.textContent = 'Activar notificaciones';
     activate.disabled = false;
