@@ -9,10 +9,8 @@ const num = (v, lo, hi) => { const n = Number(v); return Number.isFinite(n) && n
 const str = (v, max) => (v == null || v === '' ? null : String(v).slice(0, max));
 
 export function corsFor(req, env) {
-  const allowed = String(env.PANEL_ORIGINS || '').split(',').map((s) => s.trim().replace(/\/$/, '')).filter(Boolean);
-  const origin = req.headers.get('origin') || '';
-  const base = { 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS', Vary: 'Origin' };
-  return allowed.includes(origin) ? { ...base, 'Access-Control-Allow-Origin': origin } : base;
+  // La seguridad es el token de la sesión del PANEL + correo autorizado (no cookies), igual que admin-api.
+  return { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Max-Age': '86400' };
 }
 
 async function panelUser(fetchFn, env, token) {
