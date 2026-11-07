@@ -18,7 +18,7 @@
       "has": [
         {
           "type": "host",
-          "value": "^(?!www$|app$|m$|menu$|kartta$|api$|admin$|dashboard$|panel$|auth$|login$|registro$|soporte$|support$|ayuda$|help$|mail$|status$|docs$|assets$|static$|cdn$)(?<slug>[a-z0-9]+(?:-[a-z0-9]+)*)\\.kartta\\.food$"
+          "value": "^(?!(?:www|app|m|menu|kartta|api|admin|dashboard|panel|auth|login|registro|soporte|support|ayuda|help|mail|status|docs|assets|static|cdn)\\.kartta\\.food$)(?<slug>[a-z0-9]+(?:-[a-z0-9]+)*)\\.kartta\\.food$"
         }
       ],
       "dest": "/menu.html?r=:slug"
