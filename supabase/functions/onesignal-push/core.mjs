@@ -1,6 +1,6 @@
 export const APP_ID = '2211f00d-3641-4a1d-8105-e5d4fbc181b';
-export const DASHBOARD_BILLING_URL = 'https://kartta.food/dashboard.html#facturacion';
-export const KARTTA_ICON_URL = 'https://kartta.food/favicon.png';
+export const DASHBOARD_BILLING_URL = 'https://www.kartta.food/dashboard.html#facturacion';
+export const KARTTA_ICON_URL = 'https://www.kartta.food/favicon.png';
 
 const REMINDER_COPY = {
   renewal_3d: {
