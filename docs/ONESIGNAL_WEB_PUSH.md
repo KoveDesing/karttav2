@@ -2,7 +2,7 @@
 
 ## Arquitectura
 
-- El SDK web v16 se carga únicamente en \`dashboard.html\` y se configura para el origen canónico \`https://kartta.food\`.
+- El SDK web v16 se carga únicamente en \`dashboard.html\` y se configura para el origen canónico \`https://www.kartta.food\`.
 - Supabase Auth es la fuente de identidad. El SDK recibe el UUID real mediante \`OneSignal.login(user.id)\` y ejecuta \`OneSignal.logout()\` al cerrar sesión. \`kartta-onesignal-identity.mjs\` serializa cambios de cuenta y también limpia identidades persistidas tras una recarga.
 - OneSignal administra las suscripciones push de cada navegador/dispositivo. Al iniciar sesión con el mismo UUID desde otro dispositivo, OneSignal asocia esa suscripción al mismo usuario.
 - \`OneSignalSDKWorker.js\` se sirve desde la raíz del dominio. La tarjeta de activación se muestra dentro de Inicio y su opción “Ahora no” se recuerda durante siete días. No había un Service Worker previo en el repositorio al momento de la auditoría.
@@ -15,13 +15,13 @@
 En OneSignal → Settings → Push & In-App → Web:
 
 1. Habilitar Web Push.
-2. Configurar el Site URL con el origen canónico exacto: \`https://kartta.food\`.
+2. Configurar el Site URL con el origen canónico exacto: \`https://www.kartta.food\`.
 3. Configurar el nombre del sitio como \`KARTTA\`.
-4. Configurar el icono predeterminado con \`https://kartta.food/favicon.png\`.
+4. Configurar el icono predeterminado con \`https://www.kartta.food/favicon.png\`.
 5. Mantener el Service Worker en la raíz con el nombre \`OneSignalSDKWorker.js\` (configuración predeterminada).
 6. No configurar prompts automáticos: KARTTA solicita permiso únicamente cuando el usuario pulsa “Activar notificaciones”.
 
-**Importante:** Web Push está limitado por el mismo origen. No se debe usar esta misma app de OneSignal desde \`www.kartta.food\`, previews \`*.vercel.app\` ni subdominios de restaurantes a menos que se unifique el origen o se cree otra app de OneSignal. El panel debe operar en \`https://kartta.food\`.
+**Importante:** Web Push está limitado por el mismo origen. No se debe usar esta misma app de OneSignal desde \`www.kartta.food\`, previews \`*.vercel.app\` ni subdominios de restaurantes a menos que se unifique el origen o se cree otra app de OneSignal. El panel debe operar en \`https://www.kartta.food\`.
 
 En iPhone/iPad, Web Push requiere iOS/iPadOS 16.4 o posterior y que el usuario añada el sitio a la pantalla de inicio. El manifiesto se enlaza desde el dashboard.
 
@@ -68,7 +68,7 @@ La prueba manual del dashboard queda registrada en \`onesignal_push_test_limits\
 1. Revisar el branch \`feat/onesignal-web-push\`.
 2. Desplegar la Edge Function \`onesignal-push\` con \`verify_jwt = false\`.
 3. Aplicar \`20261106_onesignal_web_push.sql\` después de desplegar la Edge Function, porque la migración registra el Cron que la invoca.
-4. Verificar que el job aparezca en \`cron.job\` y que el Service Worker responda como JavaScript en \`https://kartta.food/OneSignalSDKWorker.js\`.
+4. Verificar que el job aparezca en \`cron.job\` y que el Service Worker responda como JavaScript en \`https://www.kartta.food/OneSignalSDKWorker.js\`.
 5. Fusionar el branch a \`main\` cuando se autorice el despliegue del frontend a producción.
 
 No se deben enviar pruebas a segmentos, listas globales ni usuarios ajenos. La prueba manual está restringida al usuario autenticado.
