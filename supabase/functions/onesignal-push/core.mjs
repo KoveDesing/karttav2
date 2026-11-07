@@ -5,23 +5,23 @@ export const KARTTA_ICON_URL = 'https://kartta.food/favicon.png';
 const REMINDER_COPY = {
   renewal_3d: {
     title: '¡Hey! KARTTA te está esperando 👋',
-    body: (name) => `Tu suscripción de ${name} está por terminar. Sigue disfrutando de todas las herramientas de KARTTA para tu restaurante. ¡Renueva antes de que termine!`,
+    body: (name) => 'Tu suscripción de ' + name + ' está por terminar. Sigue disfrutando de todas las herramientas de KARTTA para tu restaurante. ¡Renueva antes de que termine!',
   },
   trial_ending_3d: {
     title: '¡Hey! KARTTA te está esperando 👋',
-    body: (name) => `Tu periodo de prueba de ${name} está por terminar. Elige o renueva tu plan para seguir disfrutando de todas las herramientas de KARTTA.`,
+    body: (name) => 'Tu periodo de prueba de ' + name + ' está por terminar. Elige o renueva tu plan para seguir disfrutando de todas las herramientas de KARTTA.',
   },
   renewal_2d: {
     title: '¡Un recordatorio de KARTTA! ❤️',
-    body: (name) => `¡La suscripción de ${name} está cerca de finalizar! Renueva tu plan y sigue gestionando tu restaurante con KARTTA.`,
+    body: (name) => '¡La suscripción de ' + name + ' está cerca de finalizar! Renueva tu plan y sigue gestionando tu restaurante con KARTTA.',
   },
   trial_ending_2d: {
     title: '¡Un recordatorio de KARTTA! ❤️',
-    body: (name) => `¡Tu periodo de prueba de ${name} está cerca de finalizar! Elige tu plan para seguir gestionando tu restaurante con KARTTA.`,
+    body: (name) => '¡Tu periodo de prueba de ' + name + ' está cerca de finalizar! Elige tu plan para seguir gestionando tu restaurante con KARTTA.',
   },
   manual_test: {
     title: '¡KARTTA está conectado! 🔔',
-    body: (name) => `Esta es una notificación de prueba para ${name}. Tu dispositivo está vinculado correctamente a tu cuenta.`,
+    body: (name) => 'Esta es una notificación de prueba para ' + name + '. Tu dispositivo está vinculado correctamente a tu cuenta.',
   },
 };
 
@@ -59,7 +59,7 @@ export function buildReminderDedupeKey(subscriptionId, notificationType, cycleEn
   if (!isUuid(subscriptionId) || !REMINDER_COPY[notificationType]) throw new Error('invalid_dedupe_identity');
   const cycle = new Date(cycleEnd);
   if (!Number.isFinite(cycle.getTime())) throw new Error('invalid_expiry_date');
-  return `onesignal:${subscriptionId}:${notificationType}:${cycle.toISOString().replace(/[-:.TZ]/g, '')}`;
+  return 'onesignal:' + subscriptionId + ':' + notificationType + ':' + cycle.toISOString().replace(/[-:.TZ]/g, '');
 }
 
 export function buildNotificationCopy(type, restaurantName) {
@@ -98,7 +98,7 @@ export function buildOneSignalPayload({ appId = APP_ID, userId, restaurantId, su
 
 export function classifyOneSignalResponse(httpStatus, responseBody) {
   if (httpStatus < 200 || httpStatus >= 300) {
-    return { status: 'failed', providerId: null, error: `onesignal_http_${httpStatus}` };
+    return { status: 'failed', providerId: null, error: 'onesignal_http_' + httpStatus };
   }
   const providerId = responseBody && typeof responseBody.id === 'string' && responseBody.id ? responseBody.id : null;
   if (!providerId) {
