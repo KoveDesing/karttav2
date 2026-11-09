@@ -86,6 +86,7 @@ svg .pulse{animation:svgpulse 1.8s ease-out infinite;transform-box:fill-box;tran
 /* ---------- Inicio premium (v2) ---------- */
 .h2-top{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin:6px 0 16px;}
 .h2-hi{margin:0;font-size:clamp(22px,3.4vw,32px);font-weight:800;color:var(--strong);letter-spacing:-.01em;}
+.h2-biz{color:var(--accent);}
 .h2-date{margin-top:4px;font-size:13px;color:var(--muted);}
 .h2-date #hCtx{text-transform:none;}
 #hPer{max-width:100%;overflow-x:auto;}
