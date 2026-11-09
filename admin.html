@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>KARTTA · Administrador</title>
+<link rel="icon" href="favicon.png">
+<style>
+:root{--accent:#FF3145;--on-accent:#fff;--r:14px}
+:root[data-theme=dark]{--bg:#0A0A0A;--panel:#151515;--panel2:#1C1C1C;--border:#262626;--text:#E4E4E4;--strong:#fff;--muted:#8F8F8F}
+:root[data-theme=light]{--bg:#F3F3F1;--panel:#fff;--panel2:#F5F5F3;--border:#E6E6E3;--text:#2A2A2A;--strong:#0A0A0A;--muted:#777}
+@media (prefers-color-scheme:light){:root:not([data-user-theme]){--bg:#F3F3F1;--panel:#fff;--panel2:#F5F5F3;--border:#E6E6E3;--text:#2A2A2A;--strong:#0A0A0A;--muted:#777}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 64px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+h1{font-size:22px;margin:0;color:var(--strong)}h1 small{display:block;font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}
+.btn{border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:10px;padding:8px 14px;font:inherit;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+input[type=search]{width:100%;max-width:340px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font:inherit}
+input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
+.card b{display:block;font-size:24px;color:var(--strong)}.card span{color:var(--muted);font-size:12px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+th{font-size:12px;color:var(--muted);font-weight:600}tr:last-child td{border-bottom:0}
+.tbl{overflow-x:auto;padding:0}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:var(--panel2);border:1px solid var(--border)}
+.pill.ok{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.go{background:var(--accent);color:var(--on-accent);border:0;border-radius:8px;padding:6px 12px;font:inherit;font-weight:600;cursor:pointer}
+.go:hover{filter:brightness(.9)}
+#msg{padding:60px 0;text-align:center;color:var(--muted)}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="msg">Verificando tu sesión…</div>
+  <div id="main" class="hide">
+    <header>
+      <h1>Administrador <small id="who"></small></h1>
+      <div><button class="btn" id="out">Cerrar sesión</button></div>
+    </header>
+    <div class="stats" id="stats"></div>
+    <div style="margin-bottom:12px"><input type="search" id="q" placeholder="Buscar por nombre o identificador…" aria-label="Buscar restaurante"></div>
+    <div class="card tbl"><table><thead><tr><th>Restaurante</th><th>Plan</th><th>Estado</th><th>Vence</th><th>Productos</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+    <p style="color:var(--muted);font-size:12px;margin-top:14px">Acceso de solo lectura. Cada apertura de un restaurante queda registrada. La simulación de planes no modifica la facturación real.</p>
+  </div>
+</div>
+<script src="kartta-plans.js"></script>
+<script type="module" src="supabase-init.js"></script>
+<script type="module">
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDate = (d) => d ? new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+const STATUS = { trialing: 'En prueba', active: 'Activo', past_due: 'Pago pendiente', canceled: 'Cancelado', expired: 'Vencido' };
+let all = [];
+function render() {
+  const q = $('q').value.trim().toLowerCase();
+  const list = all.filter(r => !q || (r.name || '').toLowerCase().includes(q) || (r.slug || '').toLowerCase().includes(q));
+  $('rows').innerHTML = list.map(r => {
+    const end = r.status === 'trialing' ? (r.trial_end || r.current_period_end) : r.current_period_end;
+    return '<tr><td><b style="color:var(--strong)">' + esc(r.name) + '</b><br><span style="color:var(--muted);font-size:12px">/' + esc(r.slug) + (r.is_published ? '' : ' · sin publicar') + '</span></td>' +
+      '<td><span class="pill">' + esc(r.plan_name || r.plan_id || 'Free') + '</span></td>' +
+      '<td><span class="pill' + (r.status === 'active' ? ' ok' : '') + '">' + esc(STATUS[r.status] || r.status || '—') + '</span></td>' +
+      '<td>' + fmtDate(end) + '</td><td>' + (r.products ?? 0) + '</td>' +
+      '<td><button class="go" data-id="' + esc(r.id) + '">Abrir panel</button></td></tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:28px">Sin resultados.</td></tr>';
+}
+function stats() {
+  const n = (f) => all.filter(f).length;
+  const items = [['Restaurantes', all.length], ['En prueba', n(r => r.status === 'trialing')], ['Pagados activos', n(r => r.status === 'active' && r.plan_id !== 'free' && r.plan_id !== 'trial')], ['Sin publicar', n(r => !r.is_published)]];
+  $('stats').innerHTML = items.map(i => '<div class="card"><b>' + i[1] + '</b><span>' + i[0] + '</span></div>').join('');
+}
+window.KARTTA_AUTH.onChange(async (user) => {
+  const sb = window.KARTTA_SB;
+  if (!user) { location.replace('index.html#login'); return; }
+  try {
+    const a = await sb.rpc('am_i_admin');
+    if (a.error || a.data !== true) { location.replace('dashboard.html'); return; }   // la decisión real se toma en el servidor
+    const l = await sb.rpc('admin_list_restaurants');
+    if (l.error) throw l.error;
+    all = l.data || [];
+    $('who').textContent = user.email || '';
+    stats(); render();
+    $('msg').classList.add('hide'); $('main').classList.remove('hide');
+  } catch (e) { console.error(e); $('msg').textContent = 'No se pudo cargar el panel de administrador.'; }
+});
+$('q').addEventListener('input', render);
+$('rows').addEventListener('click', (e) => {
+  const b = e.target.closest('.go'); if (!b) return;
+  try { sessionStorage.removeItem('kartta_admin_plan'); } catch {}
+  location.href = 'dashboard.html?as=' + encodeURIComponent(b.dataset.id);
+});
+$('out').onclick = async () => { await window.KARTTA_AUTH.logout(); location.href = 'index.html'; };
+</script>
+</body>
+</html>
