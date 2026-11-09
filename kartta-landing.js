@@ -75,7 +75,7 @@
     { s: '#como-funciona .c3d', fx: 'scale', d: 120 },
     { s: '#como-funciona .c3d-controls', fx: 'up', d: 300 },
     { s: '#como-funciona .kx-row-cta', fx: 'up' },
-    { s: '#como-funciona .kx-promo', fx: 'card', strong: true },
+    { s: '#como-funciona .kx-promo', fx: 'up', strong: true },
     // personalización
     { s: '.kd-list', stagger: 90, kids: 'li', fx: 'left' },
     { s: '.kd-copy .btn', fx: 'pop', d: 120 },
@@ -95,12 +95,12 @@
     { s: '.diff-col.before', fx: 'left' },
     { s: '.diff-arrow', fx: 'pop', d: 260 },
     { s: '.diff-col.after', fx: 'right', d: 140 },
-    { s: '#diferencia .kx-promo', fx: 'card', strong: true },
+    { s: '#diferencia .kx-promo', fx: 'up', strong: true },
     // soluciones
     { s: '.sol-row', stagger: 70, kids: '.sol-pill', fx: 'pop' },
     { s: '.kx-disc', fx: 'scale', d: 200 },
     // precios
-    { s: '.kx-trial', fx: 'card', strong: true },
+    { s: '.kx-trial', fx: 'up', strong: true },
     { s: '.bill-wrap', fx: 'pop' },
     { s: '#pricingGrid', stagger: 120, kids: '.plan-card', fx: 'card', strong: true, live: true },
     { s: '.kx-compare-toggle', fx: 'up' },
@@ -111,7 +111,7 @@
     { s: '#faqMore', stagger: 70, kids: '.faq-item', fx: 'up' },
     { s: '#faqToggle', fx: 'pop' },
     // cta final + kove + footer
-    { s: '.kx-final .final-cta', fx: 'scale', strong: true },
+    { s: '.kx-final .final-cta', fx: 'up', strong: true },
     { s: '#kove a', fx: 'card' },
     { s: '.footer-top', stagger: 80, kids: ':scope > *', fx: 'up' }
   ];
