@@ -32,7 +32,7 @@ ${rowsHtml}${btn}
 
 /** @returns {{subject:string, html:string, text:string}|null} null si el tipo no existe. */
 export function renderEmail(type, ctx, { appUrl, restaurant }) {
-  const c = ctx || {}, plan = c.plan_name || (c.plan_id === 'pro' ? 'Pro' : c.plan_id === 'kartta' ? 'Standard' : 'tu plan');
+  const c = ctx || {}, plan = c.plan_name || (c.plan_id === 'pro' ? 'KARTTA Elite' : c.plan_id === 'kartta' ? 'KARTTA Pro' : 'tu plan');
   const receipt = () => [['Plan', `KARTTA ${plan}`], ['Modalidad', cycleEs(c.billing_cycle)], ['Importe', money(c.amount_in_cents)],
     ['Periodo', `${dateEs(c.period_start)} – ${dateEs(c.period_end)}`], ['Referencia', c.reference || '—']];
   const billing = { path: '/dashboard.html#facturacion', label: 'Ver mi facturación' };

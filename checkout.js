@@ -146,7 +146,7 @@ const fld = (n, l, v, t, ac, ph) => '<label>' + l + '<input name="' + n + '" typ
 
 $app.addEventListener('click', (e) => {
   const c = e.target.closest('[data-cycle]'); if (c && !c.disabled) { st.cycle = c.dataset.cycle; st.error = ''; draw(); return; }
-  const p = e.target.closest('[data-plan]'); if (p && !p.disabled) { st.plan = p.dataset.plan; st.error = ''; draw(); return; }
+  const p = e.target.closest('[data-plan]'); if (p && !p.disabled) { st.plan = p.dataset.plan; st.error = ''; try { if (window.KarttaTrack) KarttaTrack.event('plan_select', { element: st.plan }); } catch { /* analítica opcional */ } draw(); return; }
   if (e.target.closest('#pay')) pay();
 });
 
@@ -170,6 +170,7 @@ async function pay() {
     if (sp.error) { const e = new Error(sp.error.message); e.code = /forbidden/.test(sp.error.message) ? 'forbidden' : 'profile'; throw e; }
     const res = await api({ action: 'create', restaurant_id: rid, plan: st.plan, cycle: st.cycle });   // solo ids: el servidor fija el importe
     try { sessionStorage.removeItem('kartta_plan_choice'); } catch { /* ignorar */ }
+    try { if (window.KarttaTrack) KarttaTrack.event('checkout_start', { element: st.plan }); } catch { /* analítica opcional */ }
     await openWidget(res);
   } catch (e) {
     st.error = e.code === 'profile' ? 'No pudimos guardar tus datos de facturación. Revísalos.' : errText(e.code);

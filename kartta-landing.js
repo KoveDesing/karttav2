@@ -75,7 +75,7 @@
     { s: '#como-funciona .c3d', fx: 'scale', d: 120 },
     { s: '#como-funciona .c3d-controls', fx: 'up', d: 300 },
     { s: '#como-funciona .kx-row-cta', fx: 'up' },
-    { s: '#como-funciona .kx-promo', fx: 'card' },
+    { s: '#como-funciona .kx-promo', fx: 'card', strong: true },
     // personalización
     { s: '.kd-list', stagger: 90, kids: 'li', fx: 'left' },
     { s: '.kd-copy .btn', fx: 'pop', d: 120 },
@@ -84,23 +84,25 @@
     { s: '#asistente .kchat', fx: 'scale', d: 100 },
     // espacio propio
     { s: '.own-url', fx: 'drop', d: 160 },
+    { s: '#espacio .kx-row-cta', fx: 'up', d: 120 },
     { s: '.own-tags', stagger: 70, kids: '.own-tag', fx: 'pop' },
     { s: '.own-mock', fx: 'right', d: 120 },
     // analytics
     { s: '.analytics-grid', stagger: 110, kids: '.stat-card', fx: 'card' },
     { s: '.chart-wrap', fx: 'scale' },
+    { s: '#analytics .kx-row-cta', fx: 'up', d: 120 },
     // diferenciación
     { s: '.diff-col.before', fx: 'left' },
     { s: '.diff-arrow', fx: 'pop', d: 260 },
     { s: '.diff-col.after', fx: 'right', d: 140 },
-    { s: '#diferencia .kx-promo', fx: 'card' },
+    { s: '#diferencia .kx-promo', fx: 'card', strong: true },
     // soluciones
     { s: '.sol-row', stagger: 70, kids: '.sol-pill', fx: 'pop' },
     { s: '.kx-disc', fx: 'scale', d: 200 },
     // precios
-    { s: '.kx-trial', fx: 'card' },
+    { s: '.kx-trial', fx: 'card', strong: true },
     { s: '.bill-wrap', fx: 'pop' },
-    { s: '#pricingGrid', stagger: 120, kids: '.plan-card', fx: 'card', live: true },
+    { s: '#pricingGrid', stagger: 120, kids: '.plan-card', fx: 'card', strong: true, live: true },
     { s: '.kx-compare-toggle', fx: 'up' },
     { s: '.kx-proup', fx: 'card' },
     { s: '.plan-note', fx: 'up' },
@@ -109,16 +111,17 @@
     { s: '#faqMore', stagger: 70, kids: '.faq-item', fx: 'up' },
     { s: '#faqToggle', fx: 'pop' },
     // cta final + kove + footer
-    { s: '.kx-final .final-cta', fx: 'scale' },
+    { s: '.kx-final .final-cta', fx: 'scale', strong: true },
     { s: '#kove a', fx: 'card' },
     { s: '.footer-top', stagger: 80, kids: ':scope > *', fx: 'up' }
   ];
 
   var io, pendingHero = [], heroGo = false;
 
-  function tag(el, fx, d) {
+  function tag(el, fx, d, strong) {
     if (!el || el.hasAttribute('data-fx')) return;
     el.setAttribute('data-fx', fx);
+    if (strong) el.setAttribute('data-strong', '');
     if (d) el.style.setProperty('--kx-delay', d + 'ms');
     if (fx === 'words') splitWords(el);
   }
@@ -128,12 +131,12 @@
         if (m.stagger) {
           if (el.__kxGroup) return;
           el.__kxGroup = { step: m.stagger, base: m.d || 0, kids: [], sel: m.kids, fx: m.fx };
-          $$(m.kids, el).forEach(function (k) { tag(k, m.fx); el.__kxGroup.kids.push(k); });
+          $$(m.kids, el).forEach(function (k) { tag(k, m.fx, 0, m.strong); el.__kxGroup.kids.push(k); });
           el.setAttribute('data-kx-group', '');
           if (m.fx === 'scatter') el.__kxGroup.kids.forEach(function (k, i) { var p = SCATTER[i % SCATTER.length]; k.style.setProperty('--kx-x', p[0] + 'px'); k.style.setProperty('--kx-y', p[1] + 'px'); });
           io.observe(el);
         } else {
-          tag(el, m.fx, (m.d || 0) + (m.each ? idx * m.each : 0));
+          tag(el, m.fx, (m.d || 0) + (m.each ? idx * m.each : 0), m.strong);
           if (el.hasAttribute('data-fx')) io.observe(el);
         }
       });
@@ -172,7 +175,7 @@
     // el hero espera a que la sesión se resuelva (el texto está oculto mientras tanto), máximo 900 ms
     var started = Date.now(), done = false;
     function go() { if (done) return; done = true; flushHero(); }
-    if (!doc.body.classList.contains('auth-loading')) go();
+    if (!doc.body.classList.contains('auth-loading') || !root.classList.contains('kx-maybe')) go();
     else {
       new MutationObserver(function (m, ob) { if (!doc.body.classList.contains('auth-loading')) { ob.disconnect(); go(); } }).observe(doc.body, { attributes: true, attributeFilter: ['class'] });
       setTimeout(go, Math.max(0, 900 - (Date.now() - started)));
@@ -184,7 +187,7 @@
         var g = grid.__kxGroup, cards = $$('.plan-card', grid);
         cards.forEach(function (c) {
           if (c.__kxSeen) return; c.__kxSeen = true;
-          if (g.revealed) c.classList.add('kx-swap'); else { tag(c, 'card'); }
+          if (g.revealed) c.classList.add('kx-swap'); else { tag(c, 'card', 0, true); }
         });
         g.kids = cards.filter(function (c) { return c.hasAttribute('data-fx'); });
       }).observe(grid, { childList: true });
@@ -218,8 +221,45 @@
       }, { rootMargin: '-45% 0px -54% 0px' });
       spy.forEach(function (s) { var e = $(s[0]); if (e) sio.observe(e); });
     }
-    // al pulsar, el indicador viaja de inmediato (sin esperar al scroll)
-    btns.forEach(function (b) { b.addEventListener('click', function () { setActive(b); }); });
+    // al pulsar, el indicador viaja de inmediato (sin esperar al scroll) y el icono hace su pulso (también en móvil)
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        setActive(b);
+        if (!motion) return;
+        b.classList.remove('kx-pulse'); void b.offsetWidth; b.classList.add('kx-pulse');
+        setTimeout(function () { b.classList.remove('kx-pulse'); }, 700);
+      });
+    });
+  }
+
+  /* ---------- Parallax moderado al hacer scroll: un solo listener pasivo + rAF, solo elementos visibles ---------- */
+  function initParallax() {
+    if (!motion || !('IntersectionObserver' in window) || !matchMedia('(min-width:768px)').matches) return;
+    // k < 0: la capa se queda ligeramente atrás respecto al scroll (sensación de profundidad). ref: elemento que mide la posición.
+    var items = [
+      { el: $('.hero-visual-real'), ref: $('.hero'), k: -0.07 },
+      { el: $('.kd-art img'), ref: $('.kd-art'), k: -0.05 }
+    ].filter(function (i) { return i.el && i.ref; });
+    if (!items.length) return;
+    var live = [], ticking = false;
+    var vis = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        var it = items.filter(function (i) { return i.el === e.target; })[0];
+        it.on = e.isIntersecting; live = items.filter(function (i) { return i.on; });
+      });
+      update();
+    }, { rootMargin: '10% 0px' });
+    items.forEach(function (i) { i.el.setAttribute('data-kx-par', ''); vis.observe(i.el); });
+    function update() {
+      ticking = false;
+      var vh = window.innerHeight;
+      live.forEach(function (i) {
+        var r = i.ref.getBoundingClientRect();
+        var d = (r.top + r.height / 2 - vh / 2) * i.k;                 // 0 con el elemento centrado
+        i.el.style.setProperty('--kx-par', Math.max(-28, Math.min(28, d)).toFixed(1) + 'px');
+      });
+    }
+    window.addEventListener('scroll', function () { if (!ticking && live.length) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
   }
 
   /* ---------- Hero: parallax suave + CTAs magnéticos ---------- */
@@ -303,6 +343,7 @@
       var a = e.target.closest('[data-kx-plan]'); if (!a) return;
       var code = a.getAttribute('data-kx-plan');
       try { sessionStorage.setItem('kartta_plan_choice', JSON.stringify({ plan: code, interval: interval(), t: Date.now() })); } catch (_) {}
+      try { if (window.KarttaTrack) KarttaTrack.event('plan_select', { element: code }); } catch (_) {}
       if (window.__karttaUser) return;                           // con sesión: el href ya va al destino real
       e.preventDefault(); if (window.__karttaOpenAuth) window.__karttaOpenAuth('signup');
     });
@@ -349,14 +390,14 @@
 
   /* ---------- Sesión: la cinta y los bloques de prueba son para visitantes ---------- */
   function onAuth(u) {
-    root.classList.toggle('kx-authed', !!u);
+    root.classList.toggle('kx-authed', !!u); root.classList.remove('kx-maybe');
     syncPlanLinks();
   }
 
   /* ---------- Arranque ---------- */
   function boot() {
     try {
-      applyTrialDays(); buildRibbon(); initBar(); initPlans(); initDiscovery(); initPointer();
+      applyTrialDays(); buildRibbon(); initBar(); initPlans(); initDiscovery(); initPointer(); initParallax();
       if (motion) initMotion();
       syncPlanLinks();
       window.addEventListener('kartta:auth', function (e) { onAuth(e.detail && e.detail.user); });

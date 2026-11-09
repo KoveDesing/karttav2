@@ -1,0 +1,103 @@
+# Archivos DUPLICADOS (descargas con sufijo (n)) — borrar del repo. Revisa antes de borrar.
+ARQUITECTURA (1) (2) (3).md
+ARQUITECTURA (1) (2).md
+ARQUITECTURA (1).md
+ARQUITECTURA (3).md
+CAMBIOS_FASES (2).md
+CAMBIOS_FASES (4).md
+ESTADO (2).md
+ESTADO (3) (4).md
+ESTADO (3).md
+ESTADO (4).md
+ESTADO (5).md
+LEEME_LANDING (1).md
+core (2).js
+core (4).js
+core (6).js
+index (1).ts
+index (3).ts
+index (5).ts
+index (79).html
+index (80).html
+index (81).html
+index (82).html
+index (83).html
+index (84).html
+kartta-landing (1).css
+kartta-landing (1).js
+kartta-landing (2).css
+kartta-landing (2).js
+kartta-landing (3).css
+kartta-landing (3).js
+landing (1).html
+landing-1 (3).png
+landing-1 (4).png
+landing-1 (5) (6).png
+landing-1 (5).png
+landing-1 (6).png
+landing-2 (4).webp
+landing-2 (5).webp
+landing-2 (6).webp
+landing-2 (7) (8).webp
+landing-2 (7).webp
+landing-3 (5).jpg
+landing-3 (6).jpg
+landing-3 (7).jpg
+landing-3 (8).jpg
+landing-3 (9).jpg
+landing-4 (10).jpg
+landing-4 (6).jpg
+landing-4 (7).jpg
+landing-4 (8).jpg
+landing-4 (9).jpg
+landing-5 (10).jpg
+landing-5 (11).jpg
+landing-5 (7).jpg
+landing-5 (8).jpg
+landing-5 (9).jpg
+landing-6 (10).jpg
+landing-6 (11).jpg
+landing-6 (12).jpg
+landing-6 (8).jpg
+landing-6 (9).jpg
+landing-7 (10).png
+landing-7 (11).png
+landing-7 (12).png
+landing-7 (13).png
+landing-7 (9).png
+menu (4).html
+vercel (1).json
+vercel (2).json
+vercel (3).json
+vercel (4).json
+vercel (5).json
+
+# CONSERVAR (parecen duplicados pero son la función KARTTA AI chat; si ya está desplegada no los toques, pero muévelos a supabase/functions/<su-carpeta>/):
+index (2).ts
+core (1).js
+
+# Versiones antiguas de la landing que ya NO sirven (index.html nuevo las reemplaza):
+landing.html
+
+# Archivos de pagos sueltos en la raíz: ahora viven en supabase/functions/... y supabase/migrations/ (borrar la copia de la raíz tras subir la nueva estructura):
+wompi.js
+http.js
+mailer.js
+email-templates.js
+core.js
+billing.test.mjs
+helpers.mjs
+pg-admin.mjs
+00_stub_supabase.sql
+10_billing_tests.sql
+20_billing_tests_2.sql
+25_reminders.sql
+30_concurrency.sh
+run.sh
+20261106_kartta_payments.sql
+20261108_recordatorios_manuales.sql
+INSTALAR_PAGOS.sql
+
+# Migraciones OBSOLETAS (NO ejecutar; las reemplaza 20261109_catalogo_planes_final.sql):
+20261105_planes_free_pro_elite.sql
+20261105_planes_free_standard_pro.sql

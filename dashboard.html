@@ -647,8 +647,8 @@ import { sb, imageUrl, takePlanChoice, SUBDOMAINS_LIVE, appOrigin } from "./supa
    Toda la seguridad real está en las políticas RLS; este código solo es la interfaz.
    ====================================================================== */
 const BUCKET = 'kartta-media';
-const PLAN_RANK = { trial:0, free:0, kartta:1, standard:1, pro:2, elite:2, custom:2 }; // ids de la BD: kartta = Standard // ids antiguos (kartta/custom) se conservan por compatibilidad
-const PLAN_NAME = { trial:'Prueba gratis', free:'Free', kartta:'Standard', standard:'Standard', pro:'Pro', elite:'Pro', custom:'Pro' };
+const PLAN_RANK = { trial:0, free:0, kartta:1, standard:1, pro:2, elite:2, custom:2 }; // ids de la BD: kartta = KARTTA Pro · pro = KARTTA Elite // ids antiguos (kartta/custom) se conservan por compatibilidad
+const PLAN_NAME = { trial:'Prueba gratis', free:'Free', kartta:'KARTTA Pro', standard:'KARTTA Pro', pro:'KARTTA Elite', elite:'KARTTA Elite', custom:'KARTTA Elite' };
 const PLAN_PRICE = (function(){ const P = window.KARTTA_PLANS, o = { trial:'$0 COP / mes', free:'$0 COP / mes' }; ['kartta','pro','elite','custom'].forEach(id => { const pl = P.get(id); o[id] = P.fmt(pl.monthly) + ' / mes'; }); return o; })(); // solo para mostrar; el cobro y los límites los decide el servidor
 const PROD_LIMIT = [20, 60, 200, 1000];
 const ACCENTS = { Rojo:'#FF3145', Azul:'#3B82F6', Verde:'#22C55E', Amarillo:'#EAB308', Morado:'#8B5CF6', Naranja:'#F97316' };
@@ -1548,5 +1548,24 @@ function renderPedidos(){
 iniciar();
 
 </script>
+<script>
+/* Analítica propia KARTTA (sin cookies ni IP): contexto del restaurante, sección vista y uso de funciones. Ver TRACKER.md */
+(function(){
+  var token = null, started = false;
+  var FEATURE = { ia:'ai', metricas:'stats', pedidos:'orders', qr:'qr', fidelizacion:'loyalty', whatsapp:'whatsapp', facturacion:'billing' };
+  function boot(){
+    if (started || !window.KarttaTrack || !window.KARTTA_CTX) return; started = true;
+    var sb = window.KARTTA_CTX.sb;
+    try { sb.auth.getSession().then(function(r){ token = r && r.data && r.data.session ? r.data.session.access_token : null; }); sb.auth.onAuthStateChange(function(_e, s){ token = (s && s.access_token) || null; }); } catch (e) {}
+    KarttaTrack.setContext({ restaurantId: window.KARTTA_CTX.rid, getToken: function(){ return token; } });
+  }
+  window.addEventListener('kartta:ready', boot); boot();
+  window.addEventListener('kartta:view', function(e){
+    var v = e.detail; boot(); if (!window.KarttaTrack) return;
+    KarttaTrack.view(v); if (FEATURE[v]) KarttaTrack.feature(FEATURE[v]); if (v === 'personalizar') KarttaTrack.editor('open');
+  });
+})();
+</script>
+<script defer src="/kartta-tracker.js" data-scope="dashboard"></script>
 </body>
 </html>

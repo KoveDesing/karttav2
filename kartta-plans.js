@@ -10,16 +10,16 @@
       limits: { products: 20, tables: 5, templates: 2, users: 1, ai_credits: 20 },
       features: ['Página pública básica y menú digital', 'QR de acceso al menú', 'Edición de nombres, precios, descripciones e imágenes'],
       locked: ['Editor visual avanzado', 'Tipografías, iconos y branding', 'Analítica avanzada'] },
-    kartta: { code: 'kartta', name: 'Standard', rank: 1, monthly: 43900, recommended: true,
+    kartta: { code: 'kartta', name: 'KARTTA Pro', rank: 1, monthly: 43900, recommended: true,
       tagline: 'Profesionaliza tu presencia y personaliza tu menú.',
       limits: { products: 500, tables: 30, templates: 'all', users: 5, ai_credits: 300 },
       features: ['Todas las plantillas', 'Editor visual avanzado', 'Colores, tipografías, iconos y estilos', 'Logo y branding del restaurante', 'Analítica del restaurante', 'QR personalizado'] },
-    pro: { code: 'pro', name: 'Pro', rank: 2, monthly: 84900,
+    pro: { code: 'pro', name: 'KARTTA Elite', rank: 2, monthly: 84900,
       tagline: 'La experiencia más completa de KARTTA.',
       limits: { products: 2000, tables: 100, templates: 'all', users: 15, ai_credits: 1000 },
-      features: ['Todo lo de Standard', 'Mayor capacidad de personalización', 'Branding avanzado', 'Analítica avanzada', 'Herramientas de IA de Pro'] }
+      features: ['Todo lo de KARTTA Pro', 'Mayor capacidad de personalización', 'Branding avanzado', 'Analítica avanzada', 'Herramientas de IA de Pro'] }
   };
-  // ids antiguos → plan vigente (se conservan para no romper datos existentes)
+  // IDs internos: kartta = KARTTA Pro · pro = KARTTA Elite (se conservan por compatibilidad). Ids antiguos → plan vigente (se conservan para no romper datos existentes)
   var LEGACY = { trial: 'free', standard: 'kartta', elite: 'pro', custom: 'pro' };
   var cop = new Intl.NumberFormat('es-CO');
   function fmt(n) { return '$' + cop.format(n) + ' COP'; }

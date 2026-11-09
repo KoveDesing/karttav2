@@ -1,12 +1,31 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script>
+/* Subdominio de restaurante (slug.kartta.food): en la raíz se muestra su menú en lugar de la landing. */
+(function(){
+  var m=location.hostname.toLowerCase().match(/^([a-z0-9]+(?:-[a-z0-9]+)*)\.kartta\.food$/);
+  var RES=['www','app','m','menu','kartta','api','admin','dashboard','panel','auth','login','registro','soporte','support','ayuda','help','mail','status','docs','assets','static','cdn'];
+  if(!m||RES.indexOf(m[1])>-1||location.pathname!=='/')return;
+  document.documentElement.style.visibility='hidden';
+  fetch('/menu.html',{credentials:'same-origin'}).then(function(r){if(!r.ok)throw 0;return r.text();}).then(function(t){
+    document.open();document.write(t);document.close();document.documentElement.style.visibility='';
+  }).catch(function(){location.replace('https://kartta.food/m/'+m[1]);});
+})();
+</script>
+
+  <script>/* motion: se activa solo si el visitante no pidió menos movimiento; si el JS no carga en 3,5 s, todo se muestra igual */
+(function(){var d=document.documentElement;try{
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('kx');setTimeout(function(){if(!d.classList.contains('kx-ready'))d.classList.add('kx-failed');},3500);}
+for(var k in localStorage){if(/^sb-.+-auth-token$/.test(k)){d.classList.add('kx-maybe');break;}}
+}catch(e){}})();</script>
   <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="shortcut icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/favicon.png">
 
 <meta charset="UTF-8">
+<meta name="kartta-build" content="landing-20261109">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KARTTA — Tu restaurante. Ahora tiene sistema.</title>
 <meta name="description" content="KARTTA conecta menú digital, QR, pedidos, cocina, POS, pagos, clientes, inventario, analytics e inteligencia artificial en un solo sistema para restaurantes, cafeterías, bares, pizzerías y food trucks.">
@@ -18,6 +37,18 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="KARTTA — Tu restaurante. Ahora tiene sistema.">
 <meta name="twitter:description" content="El sistema digital que conecta la operación de tu restaurante.">
+<style>/* cinta crítica: funciona aunque kartta-landing.css/js estén en caché viejo */
+:root{--kx-ribbon-h:36px}@media(max-width:767px){:root{--kx-ribbon-h:32px}}
+html.kx-authed{--kx-ribbon-h:0px}html.kx-authed [data-kx-guest]{display:none!important}
+body{padding-top:var(--kx-ribbon-h)}
+.kx-ribbon{position:fixed;top:0;left:0;right:0;height:var(--kx-ribbon-h);z-index:400;background:#FF3145;color:#fff;overflow:hidden}
+.kx-ribbon-link{display:flex;align-items:center;height:100%;color:#fff}
+.kx-ribbon-track{display:flex;width:max-content;align-items:center;animation:kx-marquee 40s linear infinite}
+.kx-ribbon-group{display:flex;align-items:center;flex-shrink:0}
+.kx-ribbon-item{font-size:12px;font-weight:700;letter-spacing:.07em;white-space:nowrap;text-transform:uppercase;padding:0 22px}
+.kx-ribbon-sep{width:5px;height:5px;background:#fff;border-radius:1px;flex-shrink:0}
+@keyframes kx-marquee{to{transform:translate3d(-50%,0,0)}}</style>
+<link rel="preload" as="image" href="assets/landing-2.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mr+Dafoe&display=swap" rel="stylesheet">
@@ -28,8 +59,8 @@
     {"@type":"Organization","name":"KARTTA","url":"https://kartta.food/","description":"Sistema digital que conecta la operación de restaurantes, cafeterías, bares, pizzerías y food trucks."},
     {"@type":"SoftwareApplication","name":"KARTTA","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":[
       {"@type":"Offer","name":"Free","price":"0","priceCurrency":"COP"},
-      {"@type":"Offer","name":"Standard","price":"43900","priceCurrency":"COP"},
-      {"@type":"Offer","name":"Pro","price":"84900","priceCurrency":"COP"}
+      {"@type":"Offer","name":"KARTTA Pro","price":"43900","priceCurrency":"COP"},
+      {"@type":"Offer","name":"KARTTA Elite","price":"84900","priceCurrency":"COP"}
     ]},
     {"@type":"FAQPage","mainEntity":[
       {"@type":"Question","name":"¿Qué es KARTTA?","acceptedAnswer":{"@type":"Answer","text":"KARTTA es el sistema digital que conecta menú, pedidos, pagos, cocina, clientes, inventario y analítica de un negocio gastronómico en un solo lugar."}},
@@ -420,10 +451,6 @@ footer{background:var(--black);color:#B8B8B8;padding:60px 0 30px;}
 .footer-bottom{display:flex;justify-content:space-between;padding-top:24px;font-size:12.5px;color:#666;flex-wrap:wrap;gap:10px;}
 
 /* MOTION SYSTEM */
-.reveal{opacity:0;transform:translateY(22px);filter:blur(6px);transition:opacity .7s var(--ease),transform .7s var(--ease),filter .7s var(--ease);}
-.reveal.in{opacity:1;transform:translateY(0);filter:blur(0);}
-.reveal-scale{opacity:0;transform:scale(.94);filter:blur(6px);transition:opacity .7s var(--ease),transform .7s var(--ease),filter .7s var(--ease);}
-.reveal-scale.in{opacity:1;transform:scale(1);filter:blur(0);}
 @keyframes floatDash{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-6px) rotate(-2deg);}}
 @keyframes floatPhone{0%,100%{transform:translateY(0) rotate(4deg) scale(1);}50%{transform:translateY(-8px) rotate(4deg) scale(1);}}
 @keyframes floatQr{0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-5px) rotate(-5deg);}}
@@ -559,11 +586,6 @@ html{overflow-x:clip;}
 .kd-list li::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--red);margin-top:8px;flex-shrink:0;}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
 @media (max-width:900px){.kd-grid{grid-template-columns:1fr;}.kd-art{order:2;}}
-/* animaciones: solo se ocultan si JS las activa (html.kd-js); sin JS todo es visible */
-html.kd-js [data-rise]{opacity:0;transform:translateY(36px);filter:blur(6px);transition:opacity .8s var(--ease),transform .8s var(--ease),filter .8s var(--ease);}
-html.kd-js [data-rise].in{opacity:1;transform:none;filter:none;}
-html.kd-js h2[data-words] .w{display:inline-block;opacity:0;transform:translateY(.45em);filter:blur(8px);transition:opacity .7s var(--ease),transform .7s var(--ease),filter .7s var(--ease);transition-delay:calc(var(--i)*70ms);}
-html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
 
 /* DARK MODE KARTTA — solo sección "Cómo funciona" */
 #como-funciona{
@@ -644,26 +666,45 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
 }
 
 </style>
+<link rel="stylesheet" href="kartta-landing.css?v=20261109">
 <script src="kartta-plans.js"></script>
 <script type="module" src="supabase-init.js"></script>
 <script src="cookies.js" defer></script>
+<script src="kartta-landing.js?v=20261109" defer></script>
+<script defer src="/kartta-tracker.js" data-scope="site"></script>
 <script>try{var __q=new URLSearchParams(location.search);if(__q.get('error_code')==='bad_oauth_state'){history.replaceState(null,'',location.pathname+location.hash);}}catch(e){}</script>
 </head>
 <body class="auth-loading">
+<div class="kx-ribbon no-kred" data-kx-guest>
+  <a class="kx-ribbon-link" href="#" data-auth="signup" data-keep data-kt="cinta-superior" aria-label="Prueba KARTTA gratis durante 7 días. Crea tu restaurante.">
+    <div class="kx-ribbon-track" aria-hidden="true">
+      <div class="kx-ribbon-group">
+        <span class="kx-ribbon-item">Prueba KARTTA gratis durante <span data-trial-days>7</span> días</span><i class="kx-ribbon-sep"></i>
+        <span class="kx-ribbon-item">Crea tu restaurante</span><i class="kx-ribbon-sep"></i>
+        <span class="kx-ribbon-item">Descubre todo lo que puedes hacer con KARTTA</span><i class="kx-ribbon-sep"></i>
+      </div>
+      <div class="kx-ribbon-group" aria-hidden="true">
+        <span class="kx-ribbon-item">Prueba KARTTA gratis durante <span data-trial-days>7</span> días</span><i class="kx-ribbon-sep"></i>
+        <span class="kx-ribbon-item">Crea tu restaurante</span><i class="kx-ribbon-sep"></i>
+        <span class="kx-ribbon-item">Descubre todo lo que puedes hacer con KARTTA</span><i class="kx-ribbon-sep"></i>
+      </div>
+    </div>
+  </a>
+</div>
 <a class="whatsapp-fab" href="https://wa.me/573152507850?text=Hola%20Kartta%2C%20vengo%20de%20la%20web%20y%20me%20interesa%20esto" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
   <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.42 1.26 4.86L2 22l5.3-1.39a9.9 9.9 0 0 0 4.74 1.2h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2zm5.78 14.1c-.24.68-1.4 1.3-1.93 1.38-.5.08-1.13.11-1.82-.11-.42-.13-.96-.31-1.65-.6-2.9-1.25-4.79-4.16-4.93-4.35-.14-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.02-2.41.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.82 2 .89 2.14.07.14.12.31.02.5-.09.19-.14.31-.28.48-.14.16-.29.36-.42.49-.14.14-.28.28-.12.55.16.28.71 1.17 1.52 1.9 1.05.94 1.93 1.23 2.21 1.37.28.14.44.12.6-.07.16-.19.68-.79.87-1.07.18-.28.37-.23.62-.14.26.09 1.63.77 1.91.91.28.14.46.21.53.33.07.12.07.68-.17 1.36z"/></svg>
 </a>
 
 <nav id="navbar" class="kbar">
-  <button class="kbar-btn" onclick="document.getElementById('producto')?.scrollIntoView({behavior:'smooth'})">
+  <button class="kbar-btn" data-spy onclick="document.getElementById('producto')?.scrollIntoView({behavior:'smooth'})">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     <span>Inicio</span>
   </button>
-  <button class="kbar-btn" onclick="document.getElementById('como-funciona')?.scrollIntoView({behavior:'smooth'})">
+  <button class="kbar-btn" data-spy onclick="document.getElementById('como-funciona')?.scrollIntoView({behavior:'smooth'})">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5M12 17h.01"/></svg>
     <span>Cómo funciona</span>
   </button>
-  <button class="kbar-btn" onclick="document.getElementById('precios')?.scrollIntoView({behavior:'smooth'})">
+  <button class="kbar-btn" data-spy onclick="document.getElementById('precios')?.scrollIntoView({behavior:'smooth'})">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
     <span>Precios</span>
   </button>
@@ -697,44 +738,45 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
 <header class="hero" id="producto">
   <div class="wrap hero-grid">
     <div class="hero-content-shift">
-      <img class="hero-logo-mark" src="assets/landing-1.png" alt="KARTTA">
+      <img class="hero-logo-mark" src="assets/landing-1.png" alt="KARTTA" width="560" height="173" data-fx="pop" data-kx-hero data-delay="0">
     <div id="heroAnon">
-      <span class="eyebrow hero-eyebrow">TU RESTAURANTE, CONECTADO.</span>
-      <h1>Tu <span class="hl">restaurante</span>.<br>Ahora tiene <span class="hl">sistema</span>.</h1>
-      <p class="hero-sub">Tus clientes escanean, piden y pagan desde su celular. Tú solo te enfocas en hacer crecer tu negocio.</p>
+      <span class="eyebrow hero-eyebrow" data-fx="up" data-kx-hero data-delay="0">TU RESTAURANTE, CONECTADO.</span>
+      <h1 data-fx="words" data-strong data-kx-hero data-delay="60">Tu <span class="hl">restaurante</span>.<br>Ahora tiene <span class="hl">sistema</span>.</h1>
+      <p class="hero-sub" data-fx="up" data-kx-hero data-delay="420">Tus clientes escanean, piden y pagan desde su celular. Tú solo te enfocas en hacer crecer tu negocio.</p>
       <div class="hero-ctas">
-        <a data-auth="signup" href="#" class="btn btn-primary btn-lg">Quiero mi KARTTA <span class="arrow">→</span></a>
-        <a href="#como-funciona" class="btn btn-soft btn-lg"><span class="play"></span>Ver cómo funciona</a>
+        <a data-auth="signup" href="#" class="btn btn-primary btn-lg" data-kt="hero-comenzar-gratis" data-fx="pop" data-strong data-kx-hero data-delay="520">Comenzar gratis <span class="arrow">→</span></a>
+        <a href="#como-funciona" class="btn btn-soft btn-lg" data-fx="pop" data-kx-hero data-delay="600"><span class="play"></span>Ver cómo funciona</a>
       </div>
+      <p class="cta-micro" data-fx="up" data-kx-hero data-delay="680">Prueba <span data-trial-days>7</span> días gratis. El plan Free no requiere tarjeta. · ¿Ya tienes cuenta? <a href="#login" data-auth="login" class="kx-textlink">Iniciar sesión</a></p>
       <div class="hero-pills">
-        <span class="hero-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>Menú digital</span>
-        <span class="hero-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h.01M15 9h.01M9 15h.01"/></svg>Pedidos por QR</span>
-        <span class="hero-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Pagos integrados</span>
-        <span class="hero-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c1 2-1 3-1 5a2 2 0 0 0 4 0c1 2 2 3 2 5a5 5 0 0 1-10 0c0-3 2-4 5-10z"/></svg>Cocina conectada</span>
+        <span class="hero-pill" data-fx="pop" data-kx-hero data-delay="760"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>Menú digital</span>
+        <span class="hero-pill" data-fx="pop" data-kx-hero data-delay="830"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h.01M15 9h.01M9 15h.01"/></svg>Pedidos por QR</span>
+        <span class="hero-pill" data-fx="pop" data-kx-hero data-delay="900"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Pagos integrados</span>
+        <span class="hero-pill" data-fx="pop" data-kx-hero data-delay="970"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3c1 2-1 3-1 5a2 2 0 0 0 4 0c1 2 2 3 2 5a5 5 0 0 1-10 0c0-3 2-4 5-10z"/></svg>Cocina conectada</span>
       </div>
-      <div class="hero-foot">
+      <div class="hero-foot" data-fx="up" data-kx-hero data-delay="1050">
         <span class="accent">Todo conectado</span><span class="sep">·</span><span>Hecho en Colombia</span><span class="sep">·</span><span>Sin instalar nada</span>
       </div>
     </div>
     <div id="heroLoggedIn" style="display:none;">
-      <span class="eyebrow hero-eyebrow">QUÉ BUENO VERTE</span>
-      <h1 id="heroLoggedInH1">Hola,<br><span class="hl" id="heroLoggedInName">bienvenido</span>.</h1>
-      <p class="hero-sub" id="heroLoggedInSub">Tu panel te está esperando con tu menú, tus mesas y tus pedidos.</p>
-      <div class="hero-ctas">
+      <span class="eyebrow hero-eyebrow" data-fx="up" data-kx-hero>QUÉ BUENO VERTE</span>
+      <h1 id="heroLoggedInH1" data-fx="up" data-kx-hero data-delay="100">Hola,<br><span class="hl" id="heroLoggedInName">bienvenido</span>.</h1>
+      <p class="hero-sub" id="heroLoggedInSub" data-fx="up" data-kx-hero data-delay="260">Tu panel te está esperando con tu menú, tus mesas y tus pedidos.</p>
+      <div class="hero-ctas" data-fx="up" data-kx-hero data-delay="400">
         <a href="dashboard.html" class="btn btn-primary btn-lg">Ir a mi panel <span class="arrow">→</span></a>
         <a href="dashboard.html#productos" class="btn btn-soft btn-lg"><span class="play"></span>Ver mi menú</a>
       </div>
     </div>
   </div>
-  <div class="hero-visual-real">
-    <img src="assets/landing-2.webp" alt="KARTTA — menú digital, pedidos y QR en un restaurante">
+  <div class="hero-visual-real" data-fx="img" data-delay="80">
+    <img src="assets/landing-2.webp" width="900" height="573" fetchpriority="high" decoding="async" alt="KARTTA — menú digital, pedidos y QR en un restaurante">
   </div>
   </div>
 </header>
 
 
 
-<section class="on-surface">
+<section class="on-surface" id="problema">
   <div class="wrap">
     <div class="section-head">
       <h2>Antes de KARTTA, tu operación vive <span class="hl">repartida</span>.</h2>
@@ -821,6 +863,16 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
       <div class="c3d-progress"><b id="c3dNum">01</b> / 10 — <span id="c3dLabel">Escanea el QR</span></div>
       <button class="c3d-arrow" id="c3dNext" aria-label="Siguiente">→</button>
     </div>
+    <div class="kx-promo kx-promo--red no-kred" data-kx-guest>
+      <div>
+        <h3 data-fx="words" data-delay="150">Tu restaurante merece mucho más que un menú digital.</h3>
+        <p>Pedidos, cocina, pagos e inventario conectados en un solo sistema.</p>
+      </div>
+      <div class="kx-promo-act">
+        <a href="#" data-auth="signup" class="btn btn-primary btn-lg">Crear mi restaurante <span class="arrow">→</span></a>
+        <span class="kx-cta-micro">Prueba <span data-trial-days>7</span> días gratis · <a href="#precios" class="kx-textlink" style="color:#fff;text-decoration-color:rgba(255,255,255,.5)">Ver planes</a></span>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -828,7 +880,7 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
   <div class="wrap kd-grid">
     <div class="kd-copy">
       <span class="eyebrow">PERSONALIZACIÓN DEL MENÚ</span>
-      <h2 id="kdTitle2" data-words>Tu <span class="hl">menú</span>, con la <span class="hl">identidad</span> de tu restaurante.</h2>
+      <h2 id="kdTitle2">Tu <span class="hl">menú</span>, con la <span class="hl">identidad</span> de tu restaurante.</h2>
       <p>Sube tu logo y tu portada, elige tus colores y el estilo de las tarjetas. Lo que diseñas en el panel es lo que ven tus clientes al abrir el enlace o escanear el QR.</p>
       <ul class="kd-list">
         <li>Logo y portada propios</li>
@@ -837,7 +889,7 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
       </ul>
       <a class="btn btn-primary" href="#" data-auth="signup">Crear mi KARTTA</a>
     </div>
-    <figure class="kd-art" data-rise>
+    <figure class="kd-art">
       <img src="personalizacion-menu-v2.webp" width="1254" height="1254" loading="lazy" decoding="async" alt="Ejemplo de personalización de un menú digital para un restaurante ficticio: logo, colores, tipografía, portada, imágenes de productos y estilos visuales junto a un móvil con la carta.">
     </figure>
   </div>
@@ -888,6 +940,10 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
       <div class="own-tags">
         <span class="own-tag">Tu carta</span><span class="own-tag">Tus clientes</span><span class="own-tag">Tus datos</span><span class="own-tag">Tu operación</span><span class="own-tag">Tu sistema</span>
       </div>
+      <div class="kx-cta-row kx-row-start">
+        <a href="#" data-auth="signup" class="btn btn-primary">Crear mi espacio <span class="arrow">→</span></a>
+        <span class="kx-cta-micro" data-kx-guest>Prueba <span data-trial-days>7</span> días gratis</span>
+      </div>
     </div>
     <div class="own-mock" style="position:relative;overflow:hidden;">
       <img src="assets/landing-6.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.10;">
@@ -900,7 +956,7 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
   </div>
 </section>
 
-<section class="on-surface">
+<section class="on-surface" id="analytics">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">ANALYTICS</span>
@@ -933,10 +989,14 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
         <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Hoy</span>
       </div>
     </div>
+    <div class="kx-row-cta">
+      <a href="#" data-auth="signup" class="btn btn-primary">Ver mis números en KARTTA <span class="arrow">→</span></a>
+      <a href="#precios" class="btn btn-outline">Comparar planes</a>
+    </div>
   </div>
 </section>
 
-<section>
+<section id="diferencia">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">DIFERENCIACIÓN</span>
@@ -954,6 +1014,16 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
         <ul><li>Pedidos digitales en tiempo real</li><li>Cocina y caja conectadas al mismo pedido</li><li>Inventario que se descuenta solo</li><li>Un panel con el total real del día</li></ul>
       </div>
     </div>
+    <div class="kx-promo kx-promo--dark" data-kx-guest>
+      <div>
+        <h3 data-fx="words" data-delay="150">Organiza, presenta y potencia tu restaurante desde un solo lugar.</h3>
+        <p>Menú, pedidos, cocina, pagos y analítica en un mismo sistema.</p>
+      </div>
+      <div class="kx-promo-act">
+        <a href="#" data-auth="signup" class="btn btn-primary btn-lg">Quiero empezar gratis <span class="arrow">→</span></a>
+        <span class="kx-cta-micro">Prueba <span data-trial-days>7</span> días gratis</span>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -964,12 +1034,23 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
       <h2>Hecho para negocios <span class="hl">gastronómicos</span>.</h2>
       <p>KARTTA se adapta al tipo de operación que manejas.</p>
     </div>
-    <div class="sol-row">
-      <a href="#" class="sol-pill">Restaurantes</a>
-      <a href="#" class="sol-pill">Cafeterías</a>
-      <a href="#" class="sol-pill">Bares</a>
-      <a href="#" class="sol-pill">Pizzerías</a>
-      <a href="#" class="sol-pill">Food trucks</a>
+    <div class="sol-row" role="tablist" aria-label="Tipo de negocio">
+      <button type="button" class="sol-pill" role="tab" data-sol="restaurantes" aria-selected="true">Restaurantes</button>
+      <button type="button" class="sol-pill" role="tab" data-sol="cafeterias" aria-selected="false" tabindex="-1">Cafeterías</button>
+      <button type="button" class="sol-pill" role="tab" data-sol="bares" aria-selected="false" tabindex="-1">Bares</button>
+      <button type="button" class="sol-pill" role="tab" data-sol="pizzerias" aria-selected="false" tabindex="-1">Pizzerías</button>
+      <button type="button" class="sol-pill" role="tab" data-sol="foodtrucks" aria-selected="false" tabindex="-1">Food trucks</button>
+    </div>
+    <div class="kx-disc" id="kxDisc" role="tabpanel" aria-live="polite">
+      <div class="kx-disc-copy">
+        <h3>KARTTA para restaurantes</h3>
+        <p class="kx-disc-lead"></p>
+        <div class="kx-cta-row">
+          <a href="#" data-auth="signup" class="btn btn-primary">Crear mi restaurante <span class="arrow">→</span></a>
+          <span class="kx-cta-micro">Prueba <span data-trial-days>7</span> días gratis</span>
+        </div>
+      </div>
+      <ul class="kx-disc-list"></ul>
     </div>
   </div>
 </section>
@@ -981,8 +1062,23 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
       <h2>Un <span class="hl">plan</span> para cada etapa.</h2>
       <p>Tu menú, tus pedidos y tu página web viven en el mismo plan, desde el primer día. Empieza gratis y sube cuando tu negocio lo necesite.</p>
     </div>
+    <div class="kx-trial" data-kx-guest>
+      <div>
+        <span class="kx-badge"><span data-trial-days>7</span> DÍAS GRATIS</span>
+        <h3 data-fx="words" data-delay="150">Crea tu restaurante y pruébalo <span data-trial-days>7</span> días gratis.</h3>
+        <p>Accede a las funcionalidades de KARTTA durante la prueba. Después eliges el plan que mejor se ajuste a tu negocio.</p>
+        <div class="kx-cta-row"><a href="#" data-auth="signup" data-kt="precios-prueba-gratuita" class="btn btn-primary btn-lg">Comenzar mi prueba gratuita <span class="arrow">→</span></a></div>
+      </div>
+      <ol class="kx-steps"><li><b>1</b>Crea tu cuenta</li><li><b>2</b>Arma tu menú</li><li><b>3</b>Genera los QR de tus mesas</li></ol>
+    </div>
     <div class="bill-wrap"><div class="bill-toggle" role="group" aria-label="Periodo de facturación"><button type="button" data-int="monthly" aria-pressed="true">Mensual</button><button type="button" data-int="annual" aria-pressed="false">Anual<span class="off">-50%</span></button></div></div>
     <div class="pricing-grid" id="pricingGrid" aria-live="polite"></div>
+    <button type="button" class="kx-compare-toggle" id="kxCompareToggle" aria-expanded="false" aria-controls="kxCompare"><span>Comparar planes</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="kx-compare" id="kxCompare"><div><div class="kx-compare-scroll" id="kxCompareBody"></div></div></div>
+    <div class="kx-proup">
+      <div><h3>¿Tu operación crece? Pasa a KARTTA Elite.</h3><p id="kxProLimits"></p></div>
+      <a href="#" data-kx-plan="pro" class="btn btn-primary">Actualizar a Elite <span class="arrow">→</span></a>
+    </div>
     <p class="plan-note">Precios en pesos colombianos (COP). Free no requiere tarjeta. En facturación anual se cobra el total del año por adelantado. Puedes cambiar de plan cuando quieras; si no renuevas, conservas tu menú y tus datos y vuelves a Free.</p>
   </div>
 </section>
@@ -1011,7 +1107,21 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
   </div>
 </section>
 
-<section class="on-surface">
+<section class="kx-final" id="empezar">
+  <div class="wrap">
+    <div class="final-cta no-kred">
+      <h2 data-fx="words">Empieza hoy y descubre todo lo que puedes hacer con KARTTA.</h2>
+      <p>Crea tu cuenta, arma tu menú y genera los QR de tus mesas.</p>
+      <div>
+        <a href="#" data-auth="signup" data-kt="final-crear-cuenta" class="btn btn-primary btn-lg">Crear mi cuenta</a>
+        <a href="#" data-auth="signup" class="btn btn-outline btn-lg" data-kx-guest>Comenzar mi prueba gratuita</a>
+      </div>
+      <p class="kx-cta-micro">Prueba <span data-trial-days>7</span> días gratis · El plan Free no requiere tarjeta</p>
+    </div>
+  </div>
+</section>
+
+<section class="on-surface" id="kove">
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">OTRAS COSAS QUE TE PUEDEN INTERESAR</span>
@@ -1037,9 +1147,9 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
         <p>El sistema digital que conecta la operación de tu restaurante.</p>
         <a data-auth="signup" href="#" class="btn btn-primary" style="margin-top:16px;">Crear mi KARTTA</a>
       </div>
-      <div class="footer-col"><h5>Producto</h5><ul><li><a href="#">Menú digital</a></li><li><a href="#">Pedidos</a></li><li><a href="#">POS</a></li><li><a href="#">Cocina</a></li><li><a href="#">Pagos</a></li><li><a href="#">IA</a></li></ul></div>
-      <div class="footer-col"><h5>Soluciones</h5><ul><li><a href="#">Restaurantes</a></li><li><a href="#">Cafeterías</a></li><li><a href="#">Bares</a></li><li><a href="#">Pizzerías</a></li><li><a href="#">Food trucks</a></li></ul></div>
-      <div class="footer-col"><h5>Recursos</h5><ul><li><a href="#como-funciona">Cómo funciona</a></li><li><a href="#">Demo</a></li><li><a href="#">Ayuda</a></li><li><a href="#">Contacto</a></li></ul></div>
+      <div class="footer-col"><h5>Producto</h5><ul><li><a href="#personalizacion">Menú digital</a></li><li><a href="#como-funciona">Pedidos</a></li><li><a href="#como-funciona">POS</a></li><li><a href="#como-funciona">Cocina</a></li><li><a href="#como-funciona">Pagos</a></li><li><a href="#asistente">IA</a></li></ul></div>
+      <div class="footer-col"><h5>Soluciones</h5><ul><li><a href="#soluciones" data-sol="restaurantes">Restaurantes</a></li><li><a href="#soluciones" data-sol="cafeterias">Cafeterías</a></li><li><a href="#soluciones" data-sol="bares">Bares</a></li><li><a href="#soluciones" data-sol="pizzerias">Pizzerías</a></li><li><a href="#soluciones" data-sol="foodtrucks">Food trucks</a></li></ul></div>
+      <div class="footer-col"><h5>Recursos</h5><ul><li><a href="#como-funciona">Cómo funciona</a></li><li><a href="#como-funciona">Demo</a></li><li><a href="#faq">Ayuda</a></li><li><a href="https://wa.me/573152507850?text=Hola%20Kartta%2C%20vengo%20de%20la%20web" target="_blank" rel="noopener">Contacto</a></li></ul></div>
       <div class="footer-col"><h5>Legal</h5><ul><li><a href="privacidad.html">Privacidad</a></li><li><a href="terminos.html">Términos</a></li><li><a href="cookies.html">Cookies</a></li><li><a href="#" data-cookie-settings>Configurar cookies</a></li></ul></div>
     </div>
     <div class="footer-bottom"><span>© 2026 KARTTA</span><span>Hecho en Colombia</span><span>Hecho por <a href="https://koveweb.vercel.app" target="_blank" rel="noopener" style="color:#D8D8D8;text-decoration:underline;">Kove</a></span></div>
@@ -1065,7 +1175,7 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
     }
     var L=pl.limits,lim='<div class="plan-lim"><div><b>'+n(L.products)+'</b>productos</div><div><b>'+n(L.tables)+'</b>mesas</div><div><b>'+(L.templates==='all'?'Todas':L.templates)+'</b>plantillas</div><div><b>'+n(L.ai_credits)+'</b>créditos IA / mes</div></div>';
     var li=pl.features.map(function(f){return '<li>✓ '+esc(f)+'</li>'}).join('')+(pl.locked||[]).map(function(f){return '<li class="no">— Sin '+esc(f.toLowerCase())+'</li>'}).join('')+'<li>✓ '+n(L.users)+(L.users===1?' usuario administrador':' usuarios del equipo')+'</li>';
-    return '<div class="'+cls+'">'+(pl.recommended?'<span class="plan-badge">RECOMENDADO</span>':'')+'<div class="plan-name">'+esc(pl.name)+'</div><div class="plan-price">'+price+'</div>'+extra+'<div class="plan-for">'+esc(pl.tagline)+'</div>'+lim+'<ul class="plan-list">'+li+'</ul><a href="#" data-plan="'+code+'" data-auth="signup" class="btn '+(pl.recommended?'btn-primary':'btn-outline')+'"'+(code==='pro'?' style="border-color:#3A3A3A;color:#fff;"':'')+'>'+(pl.monthly===0?'Empezar gratis':'Obtener plan '+esc(pl.name))+'</a></div>';
+    return '<div class="'+cls+'">'+(pl.recommended?'<span class="plan-badge">RECOMENDADO</span>':'')+'<div class="plan-name">'+esc(pl.name)+'</div><div class="plan-price">'+price+'</div>'+extra+'<div class="plan-for">'+esc(pl.tagline)+'</div>'+lim+'<ul class="plan-list">'+li+'</ul><a href="#" data-plan="'+code+'" data-auth="signup" class="btn '+(pl.recommended?'btn-primary':'btn-outline')+'"'+(code==='pro'?' style="border-color:#3A3A3A;color:#fff;"':'')+'>'+(pl.monthly===0?'Empezar gratis':'Elegir plan '+esc(pl.name))+' <span class="arrow">→</span></a></div>';
   }
   function draw(){grid.innerHTML=P.order.map(card).join('');if(grid.dataset.logged==='1')window.__karttaPlanButtons();}
   document.querySelectorAll('.bill-toggle button').forEach(function(b){b.addEventListener('click',function(){
@@ -1077,6 +1187,7 @@ html.kd-js h2[data-words].in .w{opacity:1;transform:none;filter:none;}
   // La elección no concede nada: el servidor decide el plan y el importe.
   grid.addEventListener('click',function(e){var a=e.target.closest('[data-plan]');if(!a)return;
     try{sessionStorage.setItem('kartta_plan_choice',JSON.stringify({plan:a.dataset.plan,interval:interval,t:Date.now()}));}catch(_){}
+    try{ if(window.KarttaTrack) KarttaTrack.event('plan_select',{element:a.dataset.plan}); }catch(_){}
     if(a.dataset.logged==='1'&&a.dataset.plan!=='free')a.setAttribute('href',planHref(a.dataset.plan));});
   // lo llama el script de sesión cuando hay usuario
   window.__karttaPlanButtons=function(){grid.dataset.logged='1';grid.querySelectorAll('a[data-plan]').forEach(function(a){
@@ -1091,17 +1202,20 @@ document.addEventListener('DOMContentLoaded', function(){
 (function(){
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // promo "1 mes gratis": solo visitantes sin cuenta, una vez por sesión (se dispara al resolver la sesión)
+  // promo de prueba gratis: solo visitantes sin cuenta, una vez por sesión (se dispara al resolver la sesión)
   window.__karttaShowPromo = function(){
     try {
       if (sessionStorage.getItem('kartta_promo_shown')) return;
       var pm = document.getElementById('promoModal');
       if (!pm) return;
+      // Aparece a los 15 s (antes 4 s) y nunca encima del registro: la cinta y los CTA ya ofrecen la prueba sin interrumpir la lectura.
       setTimeout(function(){
         if (window.__karttaUser) return;
+        var am = document.getElementById('authModal');
+        if (am && am.style.display === 'flex') return;
         pm.style.display = 'flex';
         sessionStorage.setItem('kartta_promo_shown','1');
-      }, 4000);
+      }, 15000);
       document.getElementById('promoClose').addEventListener('click', function(){ pm.style.display='none'; });
       pm.addEventListener('click', function(e){ if(e.target === pm) pm.style.display='none'; });
     } catch(e){}
@@ -1126,6 +1240,7 @@ document.addEventListener('DOMContentLoaded', function(){
             var navCta = document.getElementById('navCta');
             if (!out || !inn) return;
             window.__karttaUser = user || null;
+            window.dispatchEvent(new CustomEvent('kartta:auth',{detail:{user:user||null}}));
             document.body.classList.remove('auth-loading');
 
             if (!user) {
@@ -1152,7 +1267,7 @@ document.addEventListener('DOMContentLoaded', function(){
             if (heroH1 && !primerNombre) heroH1.textContent = 'Hola, bienvenido.';
             var heroSub = document.getElementById('heroLoggedInSub');
             if (heroSub) heroSub.textContent = 'Continúa administrando tu KARTTA donde lo dejaste.';
-            document.querySelectorAll('[data-auth="signup"]:not([data-plan])').forEach(function(a){
+            document.querySelectorAll('[data-auth="signup"]:not([data-plan]):not([data-keep])').forEach(function(a){
               a.textContent = 'Ir a mi panel'; a.setAttribute('href', 'dashboard.html'); a.removeAttribute('data-auth');
             });
 
@@ -1170,20 +1285,12 @@ document.addEventListener('DOMContentLoaded', function(){
         } else if (intentos <= 0) {
           clearInterval(t);
           document.body.classList.remove('auth-loading'); // Supabase no cargó: experiencia de visitante
+          window.dispatchEvent(new CustomEvent('kartta:auth',{detail:{user:null}}));
           if (window.__karttaShowPromo) window.__karttaShowPromo();
         }
       }, 200);
     }
     esperarAuth(20);
-
-    // botón de la barra seleccionado se mantiene en rojo (móvil no tiene hover)
-    var navBtns = document.querySelectorAll('.kbar > .kbar-btn[onclick]');
-    navBtns.forEach(function(b){
-      b.addEventListener('click', function(){
-        navBtns.forEach(function(x){ x.classList.remove('selected'); });
-        b.classList.add('selected');
-      });
-    });
 
     // FAQ: abrir/cerrar con transición suave de alto (en vez del salto nativo del elemento details)
     document.querySelectorAll('.faq-item').forEach(function(det){
@@ -1340,7 +1447,14 @@ document.addEventListener('DOMContentLoaded', function(){
   });
   function restartAutoplay(){
     clearInterval(c3dTimer);
-    if(!reduce){ c3dTimer = setInterval(function(){ goTo(current+1, false); }, 5000); }
+    if(!reduce && c3dOnScreen){ c3dTimer = setInterval(function(){ goTo(current+1, false); }, 5000); }
+  }
+  var c3dOnScreen = true;
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      c3dOnScreen = es[0].isIntersecting;
+      if(c3dOnScreen) restartAutoplay(); else clearInterval(c3dTimer);
+    }, {threshold:0.2}).observe(c3dEl);
   }
   render();
   restartAutoplay();
@@ -1358,21 +1472,6 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   function kdsStart(){ if(reduce || !kdsEl) return; kdsRender(); clearInterval(kdsTimer); kdsTimer = setInterval(function(){ kdsIdx=(kdsIdx+1)%kdsStates.length; kdsRender(); }, 1500); }
   function kdsStop(){ clearInterval(kdsTimer); }
-
-  // reveal + stagger system
-  document.querySelectorAll('.section-head').forEach(function(el){ el.classList.add('reveal'); });
-  ['.chaos-card','.stat-card','.plan-card','.mod-chip','.faq-item','.sol-pill'].forEach(function(sel){
-    document.querySelectorAll(sel).forEach(function(el,i){ el.classList.add('reveal'); el.style.transitionDelay=(reduce?0:(i%8)*70)+'ms'; });
-  });
-  document.querySelectorAll('.own-mock,.explorer-panel,.chart-wrap').forEach(function(el){ el.classList.add('reveal-scale'); });
-  if('IntersectionObserver' in window){
-    var motionIo = new IntersectionObserver(function(entries){
-      entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); motionIo.unobserve(en.target); } });
-    }, {threshold:0.2});
-    document.querySelectorAll('.reveal,.reveal-scale').forEach(function(el){ motionIo.observe(el); });
-  } else {
-    document.querySelectorAll('.reveal,.reveal-scale').forEach(function(el){ el.classList.add('in'); });
-  }
 
   // idle float once hero entrance animations finish
   ['.dash-back','.phone','.qr-tag','.card-order','.card-pay','.card-ia'].forEach(function(sel){
@@ -1407,7 +1506,7 @@ document.addEventListener('DOMContentLoaded', function(){
       authMode = mode;
       var signup = mode === 'signup';
       document.getElementById('authTitle').textContent = signup ? 'Crea tu cuenta' : 'Bienvenido de vuelta';
-      document.getElementById('authSubtitle').textContent = signup ? 'Empieza gratis. Tu primer mes va por nuestra cuenta.' : 'Entra a tu panel de KARTTA.';
+      document.getElementById('authSubtitle').textContent = signup ? 'Empieza gratis y prueba KARTTA durante ' + (window.KARTTA_TRIAL_DAYS || 7) + ' días.' : 'Entra a tu panel de KARTTA.';
       document.getElementById('authNameWrap').style.display = signup ? 'block' : 'none';
       authSubmit.textContent = signup ? 'Crear mi cuenta' : 'Entrar';
       document.getElementById('authSwitchText').textContent = signup ? '¿Ya tienes cuenta?' : '¿Aún no tienes cuenta?';
@@ -1420,8 +1519,9 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementById('termsRow').style.display = authMode === 'signup' ? 'flex' : 'none';
       authSubmit.disabled = false;
     }
-    function openAuth(mode){ setAuthMode(mode); authModal.style.display = 'flex'; setTimeout(function(){ document.getElementById('authEmail').focus(); }, 60); }
+    function openAuth(mode){ try{ if(window.KarttaTrack) KarttaTrack.event(mode==='signup'?'signup_open':'login_view'); }catch(_){} setAuthMode(mode); authModal.style.display = 'flex'; setTimeout(function(){ document.getElementById('authEmail').focus(); }, 60); }
     function closeAuth(){ authModal.style.display = 'none'; }
+    window.__karttaOpenAuth = openAuth;
 
     function showAuthError(msg){ authError.textContent = msg; authError.style.display = 'block'; }
     function friendlyError(err){
@@ -1439,11 +1539,11 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     // Abrir el modal desde cualquier CTA de la web
-    document.querySelectorAll('[data-auth="login"]').forEach(function(el){
-      el.addEventListener('click', function(e){ if(window.__karttaUser) return; e.preventDefault(); openAuth('login'); });
-    });
-    document.querySelectorAll('[data-auth="signup"]').forEach(function(el){
-      el.addEventListener('click', function(e){ if(window.__karttaUser) return; e.preventDefault(); openAuth('signup'); });
+    // Delegado: también funciona con botones que se dibujan después (p. ej. planes al cambiar Mensual/Anual)
+    document.addEventListener('click', function(e){
+      var el = e.target.closest && e.target.closest('[data-auth]'); if(!el || window.__karttaUser) return;
+      var m = el.getAttribute('data-auth'); if(m !== 'login' && m !== 'signup') return;
+      e.preventDefault(); openAuth(m);
     });
     document.getElementById('authClose').addEventListener('click', closeAuth);
     authModal.addEventListener('click', function(e){ if(e.target === authModal) closeAuth(); });
@@ -1451,6 +1551,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('authSwitch').addEventListener('click', function(){ setAuthMode(authMode === 'signup' ? 'login' : 'signup'); });
 
     function afterAuth(){
+      try{ if(window.KarttaTrack) KarttaTrack.event(authMode==='signup'?'signup_complete':'login_success'); }catch(_){}
       closeAuth();
       var ok = document.createElement('div');
       ok.textContent = '¡Listo! Entrando a tu panel...';
@@ -1459,6 +1560,8 @@ document.addEventListener('DOMContentLoaded', function(){
       setTimeout(function(){ window.location.href = 'dashboard.html'; }, 900);
     }
 
+    var ktStarted = false;
+    authForm.addEventListener('input', function(){ if(ktStarted || authMode!=='signup') return; ktStarted = true; try{ if(window.KarttaTrack) KarttaTrack.event('signup_start'); }catch(_){} });
     authForm.addEventListener('submit', function(e){
       e.preventDefault();
       authError.style.display = 'none';
@@ -1523,11 +1626,11 @@ document.addEventListener('DOMContentLoaded', function(){
     var kchatText = document.getElementById('kchatText');
     var kchatSend = document.getElementById('kchatSend');
 
-    var CONTEXTO = 'Eres el asistente de KARTTA, un sistema para restaurantes, cafeterias, bares, pizzerias y food trucks en Colombia. KARTTA conecta menu digital, QR por mesa, pedidos, mesas, POS, pagos, cocina, clientes, inventario, analytics, WhatsApp, chatbot, automatizaciones e IA en un solo sistema. Planes: Free $0/mes, Standard $43.900/mes (recomendado) y Pro $84.900/mes; pago anual con 50% de descuento. Hay 1 mes gratis por dejar una resena. Responde corto, claro, en espanol colombiano natural, sin inventar funciones que no existan, y cuando tenga sentido invita a crear la cuenta.';
+    var CONTEXTO = 'Eres el asistente de KARTTA, un sistema para restaurantes, cafeterias, bares, pizzerias y food trucks en Colombia. KARTTA conecta menu digital, QR por mesa, pedidos, mesas, POS, pagos, cocina, clientes, inventario, analytics, WhatsApp, chatbot, automatizaciones e IA en un solo sistema. Planes: Free $0/mes, KARTTA Pro $43.900/mes (recomendado) y KARTTA Elite $84.900/mes; pago anual con 50% de descuento (Pro $263.400/año, Elite $509.400/año). Hay 7 dias de prueba gratis. Responde corto, claro, en espanol colombiano natural, sin inventar funciones que no existan, y cuando tenga sentido invita a crear la cuenta.';
 
     var RESPUESTAS = [
       { k:['que es','qué es','kartta es','de que se trata'], r:'KARTTA es el sistema que conecta toda la operación de tu restaurante: menú digital con QR, pedidos, cocina, pagos, POS, inventario y tus ventas. Todo en un solo lugar, sin saltar entre cinco herramientas.' },
-      { k:['plan','precio','cuesta','vale','cuanto','cuánto'], r:'Tienes tres planes: Free ($0) para empezar, Standard ($43.900/mes) con editor visual avanzado y analítica, y Pro ($84.900/mes) con la mayor capacidad. Pagando anual tienes 50% de descuento.' },
+      { k:['plan','precio','cuesta','vale','cuanto','cuánto'], r:'Tienes tres planes: Free ($0) para empezar, KARTTA Pro ($43.900/mes) con editor visual avanzado y analítica, y KARTTA Elite ($84.900/mes) con la mayor capacidad. Pagando anual tienes 50% de descuento. Puedes probar KARTTA 7 días gratis.' },
       { k:['empiezo','empezar','comenzar','registr','cuenta','probar'], r:'Muy fácil: creas tu cuenta, armas tu menú, generas los QR de tus mesas y ya puedes recibir pedidos. Dale a "Crear mi KARTTA" aquí arriba y arrancas gratis.' },
       { k:['cafeter','bar','pizzer','food truck','panader','negocio peque','sirve para'], r:'Sí, KARTTA funciona para restaurantes, cafeterías, bares, pizzerías y food trucks. Si vendes comida o bebida y recibes pedidos, te sirve.' },
       { k:['qr','escane','mesa'], r:'Cada mesa tiene su QR. Tu cliente lo escanea, ve tu menú al instante en su celular, pide y paga. Sin descargar apps ni esperar al mesero.' },
@@ -1610,34 +1713,6 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
 
-  var fine = window.matchMedia('(pointer:fine)').matches;
-
-  // magnetic primary CTAs
-  if(!reduce && fine){
-    document.querySelectorAll('.hero-ctas .btn-primary, .final-cta .btn-primary').forEach(function(btn){
-      btn.addEventListener('mousemove', function(e){
-        var r = btn.getBoundingClientRect();
-        var x = (e.clientX - r.left - r.width/2) * .10;
-        var y = (e.clientY - r.top - r.height/2) * .16;
-        btn.style.transform = 'translate('+x+'px,'+y+'px)';
-      });
-      btn.addEventListener('mouseleave', function(){ btn.style.transform=''; });
-    });
-  }
-
-  // subtle card tilt
-  if(!reduce && fine){
-    document.querySelectorAll('.stat-card,.own-mock,.plan-card').forEach(function(card){
-      card.addEventListener('mousemove', function(e){
-        var r = card.getBoundingClientRect();
-        var rx = ((e.clientY-r.top)/r.height - .5) * -2.5;
-        var ry = ((e.clientX-r.left)/r.width - .5) * 2.5;
-        card.style.transform = 'perspective(700px) rotateX('+rx+'deg) rotateY('+ry+'deg)';
-      });
-      card.addEventListener('mouseleave', function(){ card.style.transform=''; });
-    });
-  }
-
   // KARTTA siempre en rojo en cualquier texto visible
   var tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
     acceptNode: function(node){
@@ -1645,7 +1720,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if(!p || !node.nodeValue || node.nodeValue.indexOf('KARTTA') === -1) return NodeFilter.FILTER_REJECT;
       var tag = p.nodeName;
       if(tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TITLE') return NodeFilter.FILTER_REJECT;
-      if(p.closest && (p.closest('.nav-logo') || p.closest('.btn-primary') || p.closest('.hl') || p.closest('.kbar-cta'))) return NodeFilter.FILTER_REJECT;
+      if(p.closest && (p.closest('.nav-logo') || p.closest('.btn-primary') || p.closest('.hl') || p.closest('.kbar-cta') || p.closest('.no-kred'))) return NodeFilter.FILTER_REJECT;
       return NodeFilter.FILTER_ACCEPT;
     }
   });
@@ -1673,8 +1748,8 @@ document.addEventListener('DOMContentLoaded', function(){
   <div style="background:#fff;border-radius:24px;padding:36px 32px;max-width:420px;width:100%;text-align:center;position:relative;box-shadow:0 40px 80px -20px rgba(0,0,0,.4);">
     <button id="promoClose" aria-label="Cerrar" style="position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:50%;background:var(--surface);font-size:16px;color:var(--gray);">✕</button>
     <span class="eyebrow" style="justify-content:center;">OFERTA DE LANZAMIENTO</span>
-    <h3 style="font-size:26px;font-weight:800;margin:0 0 12px;line-height:1.15;">1 <span class="hl">mes gratis</span> de KARTTA para tu negocio</h3>
-    <p style="font-size:14.5px;color:var(--gray);margin:0 0 22px;">Solo por dejarnos tu reseña. Así te conocemos y más negocios como el tuyo empiezan a verte primero.</p>
+    <h3 style="font-size:26px;font-weight:800;margin:0 0 12px;line-height:1.15;"><span class="hl"><span data-trial-days>7</span> días gratis</span> de KARTTA para tu negocio</h3>
+    <p style="font-size:14.5px;color:var(--gray);margin:0 0 22px;">Crea tu restaurante y descubre todo lo que puedes hacer con KARTTA.</p>
     <a data-auth="signup" href="#" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">Crear mi KARTTA gratis</a>
   </div>
 </div>
@@ -1683,7 +1758,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <button id="authClose" aria-label="Cerrar" style="position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:50%;background:var(--surface);font-size:16px;color:var(--gray);">✕</button>
     <div style="font-family:'Mr Dafoe',cursive;font-size:30px;margin-bottom:6px;">Kar<span style="color:#FF3145;">tt</span>a</div>
     <h3 id="authTitle" style="font-size:20px;font-weight:800;margin:0 0 6px;">Crea tu cuenta</h3>
-    <p id="authSubtitle" style="font-size:13.5px;color:var(--gray);margin:0 0 22px;">Empieza gratis. Tu primer mes va por nuestra cuenta.</p>
+    <p id="authSubtitle" style="font-size:13.5px;color:var(--gray);margin:0 0 22px;">Empieza gratis y prueba KARTTA durante 7 días.</p>
 
     <form id="authForm" novalidate>
       <div id="authNameWrap">
@@ -1711,43 +1786,5 @@ document.addEventListener('DOMContentLoaded', function(){
   </div>
 </div>
 
-<script>
-/* Animaciones de las secciones KD: texto palabra por palabra + entrada con paneo hacia arriba.
-   Respeta prefers-reduced-motion y no oculta nada si JS o IntersectionObserver fallan. */
-(function(){
-  try{
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(reduce || !('IntersectionObserver' in window)) return;
-    var root = document.documentElement;
-    document.querySelectorAll('h2[data-words]').forEach(function(h){
-      var text = h.textContent.trim(), i = 0, last = null, gap = true;
-      var vis = document.createElement('span'); vis.setAttribute('aria-hidden','true');
-      function push(node){
-        if(!gap && last){ last.appendChild(node); return; }   // puntuación pegada a la palabra anterior
-        var s = document.createElement('span'); s.className = 'w'; s.style.setProperty('--i', i++);
-        s.appendChild(node); vis.appendChild(s); last = s; gap = false;
-      }
-      Array.prototype.slice.call(h.childNodes).forEach(function(n){
-        if(n.nodeType === 3){
-          n.textContent.split(/(\s+)/).forEach(function(p){
-            if(!p) return;
-            if(/^\s+$/.test(p)){ if(last) vis.appendChild(document.createTextNode(' ')); gap = true; }
-            else push(document.createTextNode(p));
-          });
-        } else if(n.nodeType === 1){ push(n.cloneNode(true)); }   // p. ej. <span class="hl">
-      });
-      var sr = document.createElement('span'); sr.className = 'sr-only'; sr.textContent = text;
-      h.textContent = ''; h.appendChild(sr); h.appendChild(vis);
-    });
-    root.classList.add('kd-js');
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
-    }, {threshold:0.15, rootMargin:'0px 0px -6% 0px'});
-    document.querySelectorAll('h2[data-words], [data-rise]').forEach(function(e){ io.observe(e); });
-    // red de seguridad: si algo no se activó en 6 s, se muestra igual
-    setTimeout(function(){ document.querySelectorAll('h2[data-words], [data-rise]').forEach(function(e){ e.classList.add('in'); }); }, 6000);
-  }catch(e){ document.documentElement.classList.remove('kd-js'); }
-})();
-</script>
 </body>
 </html>
