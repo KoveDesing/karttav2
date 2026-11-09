@@ -656,7 +656,8 @@ const MS_DEFAULT = { primary:'#FF3145', secondary:'#0A0A0A', cardStyle:'round', 
 const IMG_CFG = { producto:[640,.78,'products'], logo:[320,.85,'logo'], banner:[1200,.74,'cover'] };
 
 const $ = (id) => document.getElementById(id);
-let uid, rid, slug, negocio = {}, perfil = {}, productos = [], categorias = [], ms = { ...MS_DEFAULT }, pvDevice = 'mobile', booted = false;
+let uid, rid, slug, negocio = {}, perfil = {}, productos = [], categorias = [], ms = { ...MS_DEFAULT }, pvDevice = 'mobile', booted = false, ADMIN_MODE = false;
+const ADMIN_PLANS = [['', 'Plan real'], ['free', 'Simular Free'], ['kartta', 'Simular KARTTA Pro'], ['pro', 'Simular KARTTA Elite']];   // solo interfaz: no toca la facturación
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = (n) => '$' + Number(n || 0).toLocaleString('es-CO');
@@ -799,8 +800,10 @@ async function cargarNegocio(first){
     whatsapp: x.whatsapp || '', direccion: x.address || '', ciudad: x.city || '',
     logoPath: x.logo_path, bannerPath: x.cover_path, logo: imageUrl(x.logo_path), banner: imageUrl(x.cover_path),
     plan: vigente ? s.plan_id : 'free',
+    planReal: vigente ? s.plan_id : 'free',
     menuConfigured: x.menu_configured, onboardingCompleted: x.onboarding_completed, publicado: x.is_published,
   };
+  if (ADMIN_MODE) { let sim = ''; try { sim = sessionStorage.getItem('kartta_admin_plan') || ''; } catch {} if (ADMIN_PLANS.some(p => p[0] && p[0] === sim)) negocio.plan = sim; }
   if (first) ms = { ...MS_DEFAULT, ...(dz.data?.config || {}) };
 }
 async function guardarNegocio(cols){
@@ -1037,6 +1040,20 @@ function ktInit(){
   $('tourWelcome').classList.add('show'); setTimeout(() => $('twStart').focus(), 60);
 }
 
+function adminBar(){
+  const cur = (() => { try { return sessionStorage.getItem('kartta_admin_plan') || ''; } catch { return ''; } })();
+  const bar = document.createElement('div');
+  bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Modo administrador');
+  bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9999;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 16px;background:var(--accent);color:var(--on-accent);font:600 13px system-ui,sans-serif';
+  const label = document.createElement('span');
+  label.textContent = 'Modo administrador · solo lectura · ' + (slug || '') + ' · plan real: ' + (negocio.planReal || 'free');
+  const sel = document.createElement('select');
+  sel.style.cssText = 'font:inherit;border-radius:8px;border:0;padding:4px 8px;color:#0A0A0A';
+  ADMIN_PLANS.forEach(p => { const o = document.createElement('option'); o.value = p[0]; o.textContent = p[1]; if (p[0] === cur) o.selected = true; sel.appendChild(o); });
+  sel.onchange = () => { try { if (sel.value) sessionStorage.setItem('kartta_admin_plan', sel.value); else sessionStorage.removeItem('kartta_admin_plan'); } catch {} location.reload(); };
+  const back = document.createElement('a'); back.href = 'admin.html'; back.textContent = '← Volver al listado'; back.style.cssText = 'color:inherit;margin-left:auto;text-decoration:underline';
+  bar.append(label, sel, back); document.body.appendChild(bar);
+}
 async function iniciar(){
   
 
@@ -1049,17 +1066,24 @@ window.KARTTA_AUTH.onChange(async (user) => {
         sb.from('profiles').select('full_name,panel_name,prefs').eq('id', uid).maybeSingle(),
         sb.from('restaurant_members').select('restaurant_id').eq('user_id', uid).order('created_at').limit(1),
       ]);
-      if (!mem.data || !mem.data.length) throw new Error('sin_negocio');
-      perfil = pf.data || {}; rid = mem.data[0].restaurant_id;
+      const asId = new URLSearchParams(location.search).get('as') || '';
+      const hasMem = !!(mem.data && mem.data.length);
+      let isAdm = false;
+      if (!hasMem || asId) { try { isAdm = (await sb.rpc('am_i_admin')).data === true; } catch {} }   // el rol se decide en el servidor
+      if (isAdm && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(asId)) { if (!hasMem) { location.replace('admin.html'); return; } isAdm = false; }
+      if (!isAdm && !hasMem) throw new Error('sin_negocio');
+      ADMIN_MODE = isAdm;
+      perfil = pf.data || {}; rid = isAdm ? asId : mem.data[0].restaurant_id;
+      if (isAdm) { try { sb.rpc('admin_audit', { p_action: 'open_restaurant', p_target: rid, p_details: { sim: sessionStorage.getItem('kartta_admin_plan') || null } }); } catch {} }
       await cargarNegocio(true);
-      if (!negocio.onboardingCompleted) { location.href = 'onboarding.html'; return; }
-      { const pc = takePlanChoice(); if (pc) { try { sessionStorage.removeItem('kartta_plan_choice'); } catch {} location.replace('/checkout?plan=' + encodeURIComponent(pc.plan) + '&cycle=' + encodeURIComponent(pc.interval === 'annual' ? 'annual' : 'monthly')); return; } }   // continúa con el plan elegido en precios
+      if (!ADMIN_MODE && !negocio.onboardingCompleted) { location.href = 'onboarding.html'; return; }
+      if (!ADMIN_MODE) { const pc = takePlanChoice(); if (pc) { try { sessionStorage.removeItem('kartta_plan_choice'); } catch {} location.replace('/checkout?plan=' + encodeURIComponent(pc.plan) + '&cycle=' + encodeURIComponent(pc.interval === 'annual' ? 'annual' : 'monthly')); return; } }   // continúa con el plan elegido en precios
       if (perfil.prefs && Object.keys(perfil.prefs).length) { if (prefsLocalOK()) { try { localStorage.setItem('kartta_prefs', JSON.stringify(perfil.prefs)); } catch {} } applyPrefs(perfil.prefs); } else applyPrefs({});
       $('helloName').textContent = (perfil.panel_name || perfil.full_name || user.displayName || user.email.split('@')[0]).split(' ')[0];
       booted = true;
       await Promise.all([cargarCategorias(), cargarProductos(), cargarMesas(), cargarPedidos()]); await cargarEtiquetas();
       hydrate(); renderProductos(); renderMesas(); renderPedidos(); updateProdSummary(); updateMenuState();
-      suscribirPedidos(); ktInit();
+      suscribirPedidos(); if (!ADMIN_MODE) ktInit(); else adminBar();
       $('gate').classList.add('hidden'); $('app').classList.add('ready');
       window.KARTTA_CTX = { sb, toast, money, esc, irA, openProd, menuURL, savePrefs,
         get rid(){ return rid; }, get slug(){ return slug; }, get negocio(){ return negocio; }, get perfil(){ return perfil; },

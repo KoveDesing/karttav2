@@ -121,6 +121,14 @@ function getRequirements(userId, force = false) {
   return reqCache.get(userId);
 }
 
+const adminCache = new Map();
+function isPlatformAdmin(userId) {
+  if (!adminCache.has(userId)) {
+    adminCache.set(userId, sb.rpc("am_i_admin").then(({ data, error }) => !error && data === true).catch(() => false));
+  }
+  return adminCache.get(userId);
+}
+
 function goConsent() {
   if (!/consentimiento\.html$/.test(location.pathname)) location.replace("consentimiento.html");
 }
@@ -244,9 +252,13 @@ window.KARTTA_AUTH = {
         const user = session?.user;
         if (!user) { cb(null); return; }
         try {
-          const st = await getRequirements(user.id);
-          if (!st || st.ok !== true) { goConsent(); return; }
-          await ensureBusiness(user);
+          // Administradores de plataforma (decidido por el servidor): no son restaurantes, así que no pasan por
+          // consentimientos de dueño ni se les crea un negocio automático. Si falla la consulta, se sigue el flujo normal.
+          if (!(await isPlatformAdmin(user.id))) {
+            const st = await getRequirements(user.id);
+            if (!st || st.ok !== true) { goConsent(); return; }
+            await ensureBusiness(user);
+          }
         } catch (e) {
           console.warn("[KARTTA] No se pudo preparar la cuenta:", e);
           if (e?.code === "42501" || /requirements_pending/.test(e?.message || "")) { goConsent(); return; }
