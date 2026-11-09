@@ -92,7 +92,7 @@
     var C = M.ctx, host = $('modMetricas'); if (!host) return; var my = ++seq;
     var R = span(), money = C.money;
     host.innerHTML =
-      '<div class="vhead"><h2>Métricas</h2><p>Solo datos reales de tu menú y tus pedidos (hora de Colombia).</p></div>' +
+      '<p class="note" style="margin:0 0 12px">Solo datos reales de tu menú y tus pedidos (hora de Colombia).</p>' +
       '<div class="fbar" style="align-items:center"><div class="rng" role="group" aria-label="Período">' +
       [['7', '7 días'], ['30', '30 días'], ['90', '90 días'], ['custom', 'Personalizado']].map(function (b) { return '<button type="button" data-rng="' + b[0] + '" class="' + (st.range === b[0] ? 'on' : '') + '" aria-pressed="' + (st.range === b[0]) + '">' + b[1] + '</button>'; }).join('') + '</div>' +
       (st.range === 'custom' ? '<div class="field"><label for="mFrom">Desde</label><input id="mFrom" type="date" value="' + st.from + '" max="' + dkey(Date.now()) + '"></div><div class="field"><label for="mTo">Hasta</label><input id="mTo" type="date" value="' + st.to + '" max="' + dkey(Date.now()) + '"></div>' : '') + '</div>' +

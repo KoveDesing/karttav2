@@ -235,7 +235,7 @@
       '<div class="h-empty" id="hEmpty" style="display:none"><div><b>Aún no hay pedidos en este periodo</b><p class="note" style="margin:6px 0 12px">Tus clientes harán su primer pedido cuando abran tu menú. Comparte tu QR o tu enlace para empezar; los ingresos aparecen aquí cuando marcas un pedido como pagado.</p><div class="row"><button class="btn btn-accent btn-sm" data-goto="qr">Compartir mi QR</button><button class="btn btn-ghost btn-sm" data-href="editor.html">Personalizar mi menú</button><button class="btn btn-ghost btn-sm" data-qa="newprod">Agregar producto</button></div></div></div></section></div>' +
       '<aside class="home-side" aria-label="Accesos rápidos"><h3 class="gh" style="margin-top:0">Accesos rápidos</h3><div class="side-grid">' +
       btn('brush', 'Personalizar mi menú', 'Editor visual', 'data-href="editor.html"') + btn('plus', 'Agregar producto', 'Crear uno nuevo', 'data-qa="newprod"') + btn('list', 'Ver mis pedidos', 'Gestiona los recibidos', 'data-goto="pedidos"') + btn('up', 'Mejorar mi plan', esc(plan) + ' · ver planes', 'data-href="index.html#precios"') +
-      btn('editor', 'Mi página pública', 'Diseño y vista previa', 'data-goto="personalizar"') + btn('qr', 'Mi código QR', 'Descargar o compartir', 'data-goto="qr"') + btn('chart', 'Estadísticas completas', 'Visitas, pedidos y ventas', 'data-goto="metricas"') + btn('gear', 'Configurar restaurante', 'Datos y contacto', 'data-goto="configuracion"') + '</div></aside></div>' +
+      btn('editor', 'Mi página pública', 'Diseño y vista previa', 'data-goto="personalizar"') + btn('qr', 'Mi código QR', 'Descargar o compartir', 'data-goto="qr"') + btn('chart', 'Visitas y ventas', 'Rendimiento de tu menú', 'data-goto="metricas"') + btn('gear', 'Configurar restaurante', 'Datos y contacto', 'data-goto="configuracion"') + '</div></aside></div>' +
       '<div id="hSections" style="display:none"><div class="an-grid">' +
       '<section class="card"><h3>Productos más vendidos</h3><div id="anTop"></div></section>' +
       '<section class="card"><h3>Evolución de pedidos</h3><div id="anOrd"></div></section>' +
@@ -243,11 +243,13 @@
       '<section class="card"><h3>Actividad reciente</h3><div id="anRec"></div></section>' +
       '<section class="card"><h3>Horas de mayor actividad</h3><div id="anHr"></div><p class="note" id="anHrNote" style="margin:8px 0 0"></p></section>' +
       '<section class="card" id="anAttCard" style="display:none"><h3>Productos que requieren atención</h3><div id="anAtt"></div></section></div></div>' +
+      '<h3 class="gh" id="hMetricas">Visitas y rendimiento del menú</h3><div id="modMetricas"></div>' +
       '<h3 class="gh">Más herramientas</h3><div class="qa-grid" id="hTools">' + btn('eye', 'Menú público', 'Abrir en otra pestaña', 'data-qa="open"') + btn('share', 'Redes sociales', 'Instagram, WhatsApp, Maps…', 'data-qa="social"') + btn('users', 'Fidelización', 'Puntos y clientes', 'data-qa="loy:resumen"') + btn('card', 'Premios', 'Qué canjean con sus puntos', 'data-qa="loy:premios"') + btn('chart', 'Juegos', 'Ruleta diaria con puntos', 'data-qa="loy:juegos"') + btn('qr', 'Tarjeta de puntos', 'Diseña la del cliente', 'data-qa="loy:tarjeta"') + btn('users', 'Clientes', 'Quiénes te compran', 'data-goto="clientes"') + btn('card', 'Pagos', 'Estado de conexión', 'data-goto="pagos"') + '<span id="hMp" style="display:contents">' + mpCard() + '</span></div>';
   }
   M.home = {
     async render() {
       var host = $('homeBody'); if (!host) return; host.innerHTML = body();
+      try { if (M.views && typeof M.views.metricas === 'function') M.views.metricas(); } catch (e) { console.warn('metricas', e); }   // visitas y rendimiento ahora viven en Inicio
       await Promise.all([refresh(true), fetchExtras().then(function () { var p = $('hMp'); if (p) p.innerHTML = mpCard(); })]);
       clearInterval(st.timer); st.timer = setInterval(function () { refresh(false); }, 20000);
     }

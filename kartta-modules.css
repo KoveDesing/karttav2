@@ -155,3 +155,13 @@ svg .pulse{animation:svgpulse 1.8s ease-out infinite;transform-box:fill-box;tran
 .wa-mock-fab{position:absolute;right:14px;bottom:14px;width:48px;height:48px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px -6px rgba(0,0,0,.35);}
 .wa-mock-fab svg{width:26px;height:26px;fill:#fff;}
 @media (max-width:820px){.wa-grid{grid-template-columns:1fr;}}
+
+/* v2 — Botones de acceso rápido: color sólido del restaurante, texto e icono con contraste automático (--on-accent) */
+.qa{background:var(--accent);border-color:var(--accent);color:var(--on-accent);box-shadow:none;}
+.qa:hover{background:var(--accent-dim);border-color:var(--accent-dim);}
+.qa .qi{background:transparent;color:var(--on-accent);}
+.qa small{color:var(--on-accent);opacity:.85;}
+.qa.wide,.qa.wide:hover{background:var(--panel);border-color:var(--border);color:var(--strong);box-shadow:var(--shadow);}
+.qa.wide small{color:var(--muted);opacity:1;}
+.qa .mpi,.qa.wide .qi{background:var(--accent);color:var(--on-accent);}
+.h2-biz{overflow-wrap:anywhere;}
