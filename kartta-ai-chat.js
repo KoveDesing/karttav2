@@ -228,7 +228,7 @@
   /* ---------------- mensajes ---------------- */
   function renderWelcome() {
     const m = el.kaiMsgs; m.textContent = '';
-    const w = h('div', 'kai-welcome'); w.appendChild(h('h2', null, 'Hola 👋 ¿En qué te ayudo hoy?'));
+    const w = h('div', 'kai-welcome'); w.appendChild(h('h2', null, 'Hola, ¿en qué te ayudo hoy?'));
     w.appendChild(h('p', null, 'Pregunta sobre tu menú, productos, promociones o cómo vender más. También puedes adjuntar una foto de un producto.'));
     const sug = h('div', 'kai-sug');
     ['Escribe una descripción para mi producto estrella', 'Dame ideas de promociones para esta semana', '¿Cómo van mis pedidos de los últimos 30 días?'].forEach((t) => { const b = h('button', null, t); b.type = 'button'; b.onclick = () => { el.kaiText.value = t; autosize(); el.kaiText.focus(); }; sug.appendChild(b); });
@@ -276,7 +276,7 @@
     if (S.usage && (S.usage.limit_reached || S.usage.contact_advisor)) { S.limitDismissed = false; return showLimit(S.usage); }
     if (!navigator.onLine) { addBubble('bot', 'Parece que no tienes conexión. Revisa tu internet e intenta de nuevo.', '', true); return; }
     S.lastMsg = prompt;
-    if (retryText == null) { addBubble('me', (foto ? '📷 ' : '') + prompt); el.kaiText.value = ''; autosize(); }
+    if (retryText == null) { addBubble('me', (foto ? 'Foto adjunta · ' : '') + prompt); el.kaiText.value = ''; autosize(); }
     const typing = typingBubble(); setBusy(true); setStatus('run');
     const key = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)).replace(/[^A-Za-z0-9_-]/g, '');
     S.ctrl = new AbortController(); let bubble = null, buf = '', gotDone = false, failed = false;
@@ -313,7 +313,7 @@
           else if (ev === 'delta') { buf += d.t; textNode.nodeValue = buf; scrollEnd(); }
           else if (ev === 'replace') { buf = d.text; textNode.nodeValue = buf; }
           else if (ev === 'error') { failed = true; if (!buf) { r.row.classList.add('err'); textNode.nodeValue = d.message || 'No pude responder ahora.'; addRetry(bubble, prompt); } }
-          else if (ev === 'done') { gotDone = true; if (d.usage) { S.usage = d.usage; renderUsage(); } if (d.status === 'stopped') bubble.appendChild(h('span', 'meta', 'Respuesta detenida')); if (d.memory_saved) bubble.appendChild(h('span', 'meta', '✓ Guardado en la memoria del restaurante')); }
+          else if (ev === 'done') { gotDone = true; if (d.usage) { S.usage = d.usage; renderUsage(); } if (d.status === 'stopped') bubble.appendChild(h('span', 'meta', 'Respuesta detenida')); if (d.memory_saved) bubble.appendChild(h('span', 'meta', 'Guardado en la memoria del restaurante')); }
         }
       }
       setStatus(failed ? 'err' : 'ok'); if (foto) clearImg();

@@ -9,7 +9,7 @@
   var STYLES = ['gradient', 'solid', 'dots', 'lines', 'grid', 'diagonal', 'waves', 'rings'];
   var FONTS = { sans: 'Inter,system-ui,sans-serif', serif: 'Georgia,"Times New Roman",serif', rounded: '"Trebuchet MS","Segoe UI",system-ui,sans-serif', mono: 'ui-monospace,"SF Mono",Menlo,Consolas,monospace', display: '"Mr Dafoe","Brush Script MT",cursive' };
   var SIZES = { s: 0.9, m: 1, l: 1.12 };
-  var ICONS = { none: '', star: '★', crown: '♛', heart: '♥', coffee: '☕', flame: '🔥', gem: '◆', leaf: '❦' };
+  var ICONS = { none: '', star: '<path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.9L12 17.8 5.8 21l1.2-6.9-5-4.9 6.9-1z"/>', crown: '<path d="M3 7l4.5 4L12 4l4.5 7L21 7l-1.5 11h-15zM5 20h14v2H5z"/>', heart: '<path d="M12 21.4l-1.5-1.3C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.700 0 3.400.8 4.500 2.100C13.100 3.800 14.800 3 16.500 3 19.600 3 22 5.400 22 8.500c0 3.800-3.400 6.900-8.500 11.600z"/>', coffee: '<path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h1.5a2.5 2.5 0 0 1 0 5H17v-2h1.5a.5.5 0 0 0 0-1H17zM5 21h12v1.5H5z"/>', flame: '<path d="M12 2c1 3.5-1.5 5-2.8 7C8 10.8 7 12.3 7 14.5A5 5 0 0 0 12 20a5 5 0 0 0 5-5.500c0-2.500-1.500-4-2.500-5.500-.6 1-1.300 1.500-2 1.500 1-3 .7-5.500-.5-8.500z"/>', gem: '<path d="M6 3h12l4 6-10 13L2 9z"/>', leaf: '<path d="M20 4C10 4 4 9 4 16c0 1.700.4 3 1 4 1-4 4-7.500 9-10-4 3-6 6.500-6.800 10.500.6.300 1.200.5 1.800.5 7 0 12-6 12-17z"/>' };   // trazos SVG (viewBox 24), se pintan con currentColor
   var DEFAULTS = { bg1: '#141414', bg2: '#2A2A2A', text: '#FFFFFF', accent: '#FF3145', sec: '', pts: '', bar: '', style: 'gradient', template: 'kartta', font: 'sans', size: 'm', weight: '800', align: 'left', icon: 'none', angle: 135, show_logo: true,
     title: '', subtitle: '', membership: '', points_label: '', welcome: '', reward_msg: '', custom: '' };
   /* Plantillas: solo rellenan los campos del diseño; el dueño puede cambiarlos después. */
@@ -63,8 +63,9 @@
     var brand = el('div'); brand.style.cssText = 'display:flex;align-items:center;gap:10px;min-width:0';
     if (o.logoUrl && d.show_logo) { var im = el('img'); im.alt = ''; im.src = o.logoUrl; im.crossOrigin = 'anonymous'; im.style.cssText = 'width:' + Math.round(36 * sz) + 'px;height:' + Math.round(36 * sz) + 'px;border-radius:10px;object-fit:cover;background:#ffffff22;flex:none'; im.onerror = function () { im.remove(); }; brand.appendChild(im); }
     var nm = el('div', null, o.restaurantName || 'Mi restaurante'); nm.style.cssText = 'font-weight:' + d.weight + ';font-size:' + (15 * sz).toFixed(1) + 'px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical'; brand.appendChild(nm);
-    var tagTxt = (ICONS[d.icon] ? ICONS[d.icon] + ' ' : '') + (d.title || o.programName || 'Puntos');
-    var tag = el('div', null, tagTxt); tag.style.cssText = 'font-size:' + (11 * sz).toFixed(1) + 'px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:' + d.accent + ';' + (ctr ? '' : 'text-align:right;flex:none;max-width:45%');
+    var tagTxt = d.title || o.programName || 'Puntos';
+    var tag = el('div', null, tagTxt);
+    if (ICONS[d.icon]) { tag.insertAdjacentHTML('afterbegin', '<svg width="' + Math.round(13 * sz) + '" height="' + Math.round(13 * sz) + '" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex:none">' + ICONS[d.icon] + '</svg>'); } tag.style.cssText = 'font-size:' + (11 * sz).toFixed(1) + 'px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:6px;justify-content:' + (ctr ? 'center' : 'flex-end') + ';color:' + d.accent + ';' + (ctr ? '' : 'text-align:right;flex:none;max-width:45%');
     top.appendChild(brand); top.appendChild(tag);
     var mid = el('div'); mid.style.cssText = 'display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;' + (ctr ? 'justify-content:center' : '');
     var bal = el('div', 'kcard-bal', String(Number(o.balance || 0).toLocaleString('es-CO'))); bal.style.cssText = 'font-size:calc(clamp(38px,12vw,54px) * ' + sz + ');font-weight:' + d.weight + ';line-height:1;font-variant-numeric:tabular-nums;color:' + ptsC;

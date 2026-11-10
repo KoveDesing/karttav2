@@ -68,7 +68,7 @@
       if (eff === 'expired' || (remaining !== null && remaining < 0)) {
         html += '<div class="note warn" style="margin-top:14px"><strong>Tu suscripción ha finalizado.</strong><p style="margin:6px 0 10px">Renueva para recuperar el acceso a las herramientas de KARTTA.</p><a class="btn btn-accent btn-sm" href="/checkout">Renovar ahora</a></div>';
       } else if (remaining !== null && remaining <= 3) {
-        var urgencyTitle = remaining <= 1 ? '¡Tu suscripción está por finalizar! ❤️' : '¡Tu suscripción está por terminar! ❤️';
+        var urgencyTitle = remaining <= 1 ? '¡Tu suscripción está por finalizar!' : '¡Tu suscripción está por terminar!';
         var urgencyText = remaining === 0 ? 'Tu plan termina hoy. Renueva para seguir disfrutando de KARTTA.' :
           (remaining === 1 ? 'Tu plan termina mañana. Renueva para mantener tus herramientas activas.' :
           'Tu plan termina el ' + fmtDate(expiry) + '. Renueva para seguir disfrutando de KARTTA.');

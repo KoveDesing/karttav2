@@ -77,7 +77,7 @@
       card.append(el('div', 'kt-step', 'Paso ' + (i + 1) + ' de ' + steps.length));
       const bar = el('div', 'kt-bar'), fill = el('i'); fill.style.width = ((i + 1) / steps.length * 100) + '%'; bar.append(fill); card.append(bar);
       const h = el('h3', '', st.title); h.id = 'kt-t'; const p = el('p', '', st.text); p.id = 'kt-d'; card.append(h, p);
-      const isDone = st.done ? !!st.done() : false; if (isDone) card.append(el('div', 'kt-ok', '✓ ' + (st.doneLabel || 'Este paso ya está completo')));
+      const isDone = st.done ? !!st.done() : false; if (isDone) card.append(el('div', 'kt-ok', st.doneLabel || 'Este paso ya está completo'));
       const row = el('div', 'kt-row');
       if (i > 0) { const b = el('button', 'kt-b', '← Atrás'); b.type = 'button'; b.onclick = () => show(i - 1); row.append(b); }
       if (st.primary && !isDone) { const b = el('button', 'kt-b p', st.primary.label); b.type = 'button'; b.onclick = async () => { b.disabled = true; try { await st.primary.run(api); } finally { b.disabled = false; } }; row.append(b); }

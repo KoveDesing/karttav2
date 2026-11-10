@@ -25,7 +25,11 @@
     configuracion: ['¿Qué debo configurar primero?', '¿Qué horario conviene mostrar?'],
   };
   var DEFAULT_CHIPS = ['¿Cómo puedo vender más?', 'Explícame cómo funciona esta sección', 'Dame una idea de promoción'];
-  var REACTIONS = ['👍', '❤️', '💡', '😂'];
+  var RICON = { up: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 11v9H4v-9zM7 11l4-8a2 2 0 0 1 2 2v4h6a2 2 0 0 1 2 2.3l-1.2 6A2 2 0 0 1 17.8 20H7"/></svg>', heart: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.6-9-9.5C1.8 7 4 4 7 4c2 0 3.5 1 5 2.8C13.5 5 15 4 17 4c3 0 5.2 3 4 6.5C19.5 15.4 12 20 12 20z"/></svg>', idea: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>', smile: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 14a5 5 0 0 0 8 0M9 9.5h.01M15 9.5h.01"/></svg>' };
+  var RLABEL = { up: 'Me gusta', heart: 'Me encanta', idea: 'Idea', smile: 'Sonrisa' };
+  var RLEGACY = { '\uD83D\uDC4D': 'up', '\u2764\uFE0F': 'heart', '\uD83D\uDCA1': 'idea', '\uD83D\uDE02': 'smile', '\uD83D\uDC4B': 'smile' };   // reacciones guardadas antes del cambio a iconos
+  var CHECK_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  var REACTIONS = ['up', 'heart', 'idea', 'smile'];
   var S = { sb: null, rid: null, uid: null, cid: null, view: 'inicio', open: false, min: false, busy: false, ctrl: null, loaded: false, actions: {}, react: {}, el: {} };
   var $ = function (t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
   var LS = {
@@ -49,9 +53,9 @@
   /* La IA reacciona SOLO cuando encaja (saludo, gracias, idea); no en cada mensaje. Es una regla local, no una respuesta del modelo. */
   function aiReaction(text) {
     var t = String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-    if (/^(hola|buenas|buenos dias|buen dia|buenas tardes|buenas noches|hey|holi)\b/.test(t) && t.length < 40) return '👋';
-    if (/^(gracias|muchas gracias|mil gracias|genial gracias|perfecto gracias|te agradezco)\b/.test(t) || /\b(me encanto|me sirvio mucho|excelente ayuda)\b/.test(t)) return '❤️';
-    if (/^(se me ocurre|tengo una idea|que tal si|y si hacemos|pensaba en)\b/.test(t)) return '💡';
+    if (/^(hola|buenas|buenos dias|buen dia|buenas tardes|buenas noches|hey|holi)\b/.test(t) && t.length < 40) return 'smile';
+    if (/^(gracias|muchas gracias|mil gracias|genial gracias|perfecto gracias|te agradezco)\b/.test(t) || /\b(me encanto|me sirvio mucho|excelente ayuda)\b/.test(t)) return 'heart';
+    if (/^(se me ocurre|tengo una idea|que tal si|y si hacemos|pensaba en)\b/.test(t)) return 'idea';
     return '';
   }
 
@@ -60,17 +64,17 @@
   function addMsg(role, text, opts) {
     opts = opts || {}; var row = $('div', 'kaf-row ' + role + (opts.error ? ' err' : '')); var bub = $('div', 'kaf-bub', text); row.appendChild(bub);
     var meta = $('div', 'kaf-meta'); var time = $('span', null, clock(opts.at)); meta.appendChild(time);
-    var state = null; if (role === 'me') { state = $('span', null, opts.sent === false ? 'Enviando…' : '✓'); meta.appendChild(state); }
+    var state = null; if (role === 'me') { state = $('span', null, opts.sent === false ? 'Enviando…' : ''); if (opts.sent !== false) state.innerHTML = CHECK_SVG; meta.appendChild(state); }
     var id = opts.id || null;
     var setReaction = function (em) {
       var old = row.querySelector('.kaf-react'); if (old) old.remove();
-      if (em) { var r = $('span', 'kaf-react', em); r.setAttribute('aria-label', 'Reacción ' + em); meta.appendChild(r); }
+      em = RLEGACY[em] || em; if (em && RICON[em]) { var r = $('span', 'kaf-react', ''); r.innerHTML = RICON[em]; r.setAttribute('aria-label', 'Reacción: ' + RLABEL[em]); meta.appendChild(r); }
     };
     if (role === 'bot' && !opts.error) {
-      var rb = $('button', null, '☺'); rb.type = 'button'; rb.setAttribute('aria-label', 'Reaccionar'); rb.title = 'Reaccionar';
+      var rb = $('button', null, ''); rb.innerHTML = RICON.smile; rb.type = 'button'; rb.setAttribute('aria-label', 'Reaccionar'); rb.title = 'Reaccionar';
       rb.onclick = function (e) {
         e.stopPropagation(); var ex = meta.querySelector('.kaf-picker'); if (ex) return ex.remove();
-        var p = $('div', 'kaf-picker'); REACTIONS.forEach(function (em) { var b = $('button', null, em); b.type = 'button'; b.onclick = function () { var key = row.dataset.rid; var cur = S.react[key] === em ? '' : em; if (key) { if (cur) S.react[key] = cur; else delete S.react[key]; saveReact(); } setReaction(cur); p.remove(); }; p.appendChild(b); });
+        var p = $('div', 'kaf-picker'); REACTIONS.forEach(function (em) { var b = $('button', null, ''); b.innerHTML = RICON[em]; b.setAttribute('aria-label', RLABEL[em]); b.type = 'button'; b.onclick = function () { var key = row.dataset.rid; var cur = S.react[key] === em ? '' : em; if (key) { if (cur) S.react[key] = cur; else delete S.react[key]; saveReact(); } setReaction(cur); p.remove(); }; p.appendChild(b); });
         meta.appendChild(p); setTimeout(function () { document.addEventListener('click', function f() { p.remove(); document.removeEventListener('click', f); }, { once: true }); }, 0);
       };
       var cp = $('button', null, 'Copiar'); cp.type = 'button'; cp.onclick = function () { var t = bub.textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { cp.textContent = 'Copiado'; setTimeout(function () { cp.textContent = 'Copiar'; }, 1500); }, function () { cp.textContent = 'No se pudo'; }); };
@@ -84,7 +88,7 @@
   function typing() { var row = $('div', 'kaf-row bot'); var b = $('div', 'kaf-bub kaf-typing'); b.setAttribute('role', 'status'); b.setAttribute('aria-label', 'KARTTA AI está escribiendo'); b.appendChild($('i')); b.appendChild($('i')); b.appendChild($('i')); row.appendChild(b); S.el.body.appendChild(row); scrollEnd(); return row; }
   function chips() {
     var old = S.el.body.querySelector('.kaf-hello-wrap'); if (old) old.remove();
-    var w = $('div', 'kaf-hello-wrap'); w.appendChild($('div', 'kaf-hello', 'Hola 👋 Soy KARTTA AI. Estás en «' + (SECTIONS[S.view] || 'el panel') + '». Pregúntame lo que necesites.'));
+    var w = $('div', 'kaf-hello-wrap'); w.appendChild($('div', 'kaf-hello', 'Hola, soy KARTTA AI. Estás en «' + (SECTIONS[S.view] || 'el panel') + '». Pregúntame lo que necesites.'));
     var c = $('div', 'kaf-chips'); (CHIPS[S.view] || DEFAULT_CHIPS).forEach(function (q) { var b = $('button', 'kaf-chip', q); b.type = 'button'; b.onclick = function () { send(q); }; c.appendChild(b); });
     w.appendChild(c); S.el.body.appendChild(w);
   }
@@ -123,7 +127,7 @@
       var ct = resp.headers.get('content-type') || '';
       if (!resp.ok || ct.indexOf('application/json') >= 0) {
         var j = await resp.json().catch(function () { return {}; }); tp.remove();
-        if (me.state) me.state.textContent = '✓';
+        if (me.state) me.state.innerHTML = CHECK_SVG;
         if (resp.ok && typeof j.reply === 'string' && j.reply.trim()) {
           if (j.conversation_id) { S.cid = j.conversation_id; LS.set(kConv(), S.cid); }
           bot = addMsg('bot', j.reply.trim()); return;
@@ -131,7 +135,7 @@
         if (j.blocked && j.reply) { if (j.conversation_id) { S.cid = j.conversation_id; LS.set(kConv(), S.cid); } addMsg('bot', j.reply); return; }
         addMsg('bot', j.message || (j.error === 'monthly_limit' ? 'Alcanzaste el límite mensual de preguntas de IA de tu plan.' : 'No pude responder ahora. Intenta de nuevo en un momento.'), { error: true }); return;
       }
-      if (me.state) me.state.textContent = '✓';
+      if (me.state) me.state.innerHTML = CHECK_SVG;
       var ensureBot = function () { if (!bot) { tp.remove(); bot = addMsg('bot', ''); } return bot; };
       var reader = resp.body.getReader(), dec = new TextDecoder(), pending = '';
       while (true) {

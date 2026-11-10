@@ -74,7 +74,7 @@
     var lg = $('qrLogo'); if (lg) { lg.disabled = !logoOK; $('qrLogoNote').textContent = logoOK ? '' : (M.ctx.negocio.logo ? 'No se pudo leer tu logo para incrustarlo.' : 'Sube tu logo en Configuración para incluirlo.'); }
     // autoverificación cuando el navegador lo permite (si no, no se afirma nada)
     var v = $('qrVerify'); v.textContent = '';
-    if ('BarcodeDetector' in window) { try { new window.BarcodeDetector({ formats: ['qr_code'] }).detect(cv).then(function (r) { v.textContent = r[0] && r[0].rawValue === M.ctx.menuURL() ? '✓ Verificado: este QR abre ' + M.ctx.menuURL() : '⚠ No se pudo leer automáticamente; pruébalo con tu celular antes de imprimir.'; }, function () {}); } catch (e) {} }
+    if ('BarcodeDetector' in window) { try { new window.BarcodeDetector({ formats: ['qr_code'] }).detect(cv).then(function (r) { v.textContent = r[0] && r[0].rawValue === M.ctx.menuURL() ? 'Verificado: este QR abre ' + M.ctx.menuURL() : 'No se pudo leer automáticamente; pruébalo con tu celular antes de imprimir.'; }, function () {}); } catch (e) {} }
   }
   function render() {
     var C = M.ctx, host = $('modQr'); if (!host) return;
