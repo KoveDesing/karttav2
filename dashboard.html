@@ -17,6 +17,7 @@
 <script src="cookies.js" defer></script>
 <script src="kartta-image-ai.js" defer></script>
 <script src="kartta-imgedit.js?v=20261109" defer></script>
+<script src="kartta-upsell.js?v=20261110" defer></script>
 <script src="kartta-tour.js?v=20261034" defer></script>
 <script src="menu-design.js" defer></script>
 <link rel="manifest" href="/kartta-push.webmanifest">
@@ -142,7 +143,11 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 .pbody{padding:14px;}.pname{font-weight:800;font-size:14.5px;color:var(--strong);}.pdesc{font-size:12.5px;color:var(--muted);margin:4px 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em;}
 .pprice{font-weight:800;font-size:15px;color:var(--strong);}.pprice s{font-size:12px;color:var(--muted);font-weight:600;margin-left:6px;}
 .pcat{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;}
-.pact{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;}
+.pact{display:grid;grid-template-columns:1fr 1fr auto auto;gap:8px;margin-top:12px;align-items:stretch;}
+.pact .sw{grid-column:1/-1;width:auto;height:auto;border-radius:0;display:flex;justify-content:flex-start;padding:0 0 4px;border-top:0;font-size:12px}
+.pact .btn{width:100%;justify-content:center;min-height:36px;padding-left:10px;padding-right:10px}
+.pact [data-mv]{width:36px;padding:0}
+@media (max-width:380px){.pact{grid-template-columns:1fr 1fr}.pact [data-mv]{width:100%}}
 .empty{text-align:center;padding:44px 20px;}.empty .ic{width:56px;height:56px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
 .empty h3{font-size:17px;margin:0 0 6px;color:var(--strong);}.empty p{color:var(--muted);font-size:13.5px;margin:0 0 18px;}
 
@@ -781,6 +786,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLock(
 /* ---------- modales ---------- */
 function openLock(kind){
   const prem = kind === 'PREMIUM';
+  if (window.KARTTA_UPSELL) { const pl = rank() === 0 ? 'KARTTA Pro' : 'KARTTA Elite'; KARTTA_UPSELL.open({ plan: pl, text: 'Mejora tu experiencia con ' + pl + ' y desbloquea ' + (prem ? 'la personalización avanzada' : 'esta herramienta') + ' para tu restaurante.' }); return; }
   $('lockTitle').textContent = prem ? 'Esta función es PREMIUM' : 'Esta función es PRO';
   $('lockSub').textContent = prem ? 'Desbloquea herramientas avanzadas para personalizar tu negocio.' : 'Actualiza tu plan para desbloquear esta herramienta.';
   $('lockModal').classList.add('show');
