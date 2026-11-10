@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -30,14 +30,14 @@
 <script>
 /* aplica tema y acento guardados ANTES de pintar (evita parpadeo) */
 (function(){try{var p=JSON.parse(localStorage.getItem('kartta_prefs')||'{}');
-document.documentElement.setAttribute('data-theme',p.theme==='light'?'light':'dark');
+document.documentElement.setAttribute('data-theme',p.theme==='dark'?'dark':'light');
 if(/^#[0-9a-fA-F]{6}$/.test(p.accent||'')){var h=p.accent,c=[1,3,5].map(function(i){var v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);}),L=.2126*c[0]+.7152*c[1]+.0722*c[2];
 document.documentElement.style.setProperty('--accent',h);document.documentElement.style.setProperty('--on-accent',L>.34?'#0A0A0A':'#FFFFFF');}}catch(e){}})();
 </script>
 <style>
 :root{--accent:#FF3145;--on-accent:#FFFFFF;--accent-dim:color-mix(in srgb,var(--accent) 82%,#000);--accent-soft:color-mix(in srgb,var(--accent) 14%,transparent);--r:16px;--ease:cubic-bezier(.16,1,.3,1);}
 :root[data-theme=dark]{--bg:#0A0A0A;--panel:#151515;--panel2:#1C1C1C;--border:#262626;--text:#E4E4E4;--strong:#fff;--muted:#8F8F8F;--shadow:0 1px 0 rgba(0,0,0,.35);--ok:var(--accent);}
-:root[data-theme=light]{--bg:#F3F3F1;--panel:#FFFFFF;--panel2:#F5F5F3;--border:#E6E6E3;--text:#2A2A2A;--strong:#0A0A0A;--muted:#777;--shadow:0 1px 2px rgba(10,10,10,.05),0 14px 30px -14px rgba(10,10,10,.18);--ok:var(--accent);}
+:root[data-theme=light]{--bg:#F3F3F1;--panel:#FFFFFF;--panel2:#F5F5F3;--border:#E6E6E3;--text:#2A2A2A;--strong:#0A0A0A;--muted:#777;--shadow:0 1px 2px rgba(10,10,10,.04),0 8px 28px -10px rgba(10,10,10,.08);--ok:var(--accent);}
 *{box-sizing:border-box;}
 body{margin:0;font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);transition:background .25s ease,color .25s ease;}
 a{color:inherit;text-decoration:none;}button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;}
@@ -294,7 +294,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 .drag-over{outline:2px dashed var(--accent);outline-offset:3px}
 .pcard[draggable="true"]{cursor:grab}.pcard.dragging{opacity:.4}
 </style>
-<link rel="stylesheet" href="kartta-motion.css?v=20261110">
+<link rel="stylesheet" href="kartta-motion.css?v=20261111">
 <script src="kartta-motion.js?v=20261110" defer></script>
 <link rel="stylesheet" href="kartta-modules.css?v=20261104">
 <script src="kartta-modules.js?v=20261032" defer></script>
@@ -722,9 +722,9 @@ function syncPicker(h){
   document.querySelectorAll('.acc').forEach(a => a.classList.toggle('on', a.dataset.c.toUpperCase() === h));
 }
 function applyPrefs(p){
-  document.documentElement.setAttribute('data-theme', p.theme === 'light' ? 'light' : 'dark');
+  document.documentElement.setAttribute('data-theme', p.theme === 'dark' ? 'dark' : 'light');
   syncPicker(paintAccent(p.accent));
-  document.querySelectorAll('#themeSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === (p.theme === 'light' ? 'light' : 'dark')));
+  document.querySelectorAll('#themeSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === (p.theme === 'dark' ? 'dark' : 'light')));
 }
 /* perfil.prefs es la fuente de verdad: lo comparten el color/tema y la guía (tour). Así ninguna escritura pisa a la otra. */
 async function savePrefs(patch){
