@@ -51,7 +51,8 @@ body{padding-top:var(--kx-ribbon-h)}
 <link rel="preload" as="image" href="assets/landing-2.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mr+Dafoe&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mr+Dafoe&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mr+Dafoe&display=swap" rel="stylesheet"></noscript>
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -671,6 +672,14 @@ html{overflow-x:clip;}
 <script type="module" src="supabase-init.js"></script>
 <script src="cookies.js" defer></script>
 <script src="kartta-landing.js?v=20261109" defer></script>
+<script>
+/* Pausa las animaciones infinitas (flotación, cinta, escáner) cuando salen de pantalla: mismo efecto, menos CPU/GPU */
+(function(){ if(!('IntersectionObserver' in window)) return;
+  var io=new IntersectionObserver(function(es){ es.forEach(function(e){ e.target.style.animationPlayState=e.isIntersecting?'':'paused'; }); },{rootMargin:'80px'});
+  function go(){ document.querySelectorAll('.dash-back,.phone,.qr-tag,.float-card,.kx-ribbon-track,.qr-mark,.kbubble').forEach(function(el){ io.observe(el); }); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
+})();
+</script>
 <script defer src="/kartta-tracker.js" data-scope="site"></script>
 <script>try{var __q=new URLSearchParams(location.search);if(__q.get('error_code')==='bad_oauth_state'){history.replaceState(null,'',location.pathname+location.hash);}}catch(e){}</script>
 </head>

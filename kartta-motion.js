@@ -15,12 +15,13 @@
   function markFirst(v) {
     if (!v || v.dataset.mSeen) return;
     v.dataset.mSeen = '1'; v.classList.add('m-first');
-    setTimeout(function () { v.classList.remove('m-first'); }, 1100);
+    setTimeout(function () { v.classList.remove('m-first'); }, 750);
   }
   K.switchView = function (name) {
     var views = $$('.view');
     var next = views.filter(function (v) { return v.dataset.panel === name; })[0];
-    function clean(v) { v.classList.remove('m-leaving'); v.style.cssText = ''; v.removeAttribute('aria-hidden'); v.inert = false; }
+    // cancel(): el fundido de salida usa fill:'forwards'; si no se cancela, la vista vuelve con opacity:0 (pantalla vacía al regresar a Inicio)
+    function clean(v) { if (v._mA) { try { v._mA.cancel(); } catch (e) {} v._mA = null; } v.classList.remove('m-leaving'); v.style.cssText = ''; v.removeAttribute('aria-hidden'); v.inert = false; }
     function plain() { views.forEach(function (s) { clean(s); s.classList.toggle('active', s === next); }); }
     if (!next) return plain();
     // una transición anterior sin terminar se cierra al instante
@@ -41,9 +42,9 @@
       clean(prev); prev.classList.remove('active');
     }
     try {
-      prev.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, easing: 'ease-out', fill: 'forwards' }).onfinish = end;
+      prev._mA = prev.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 110, easing: 'ease-out', fill: 'forwards' }); prev._mA.onfinish = end;
     } catch (e) { end(); }
-    setTimeout(end, 260);
+    setTimeout(end, 180);
   };
 
   /* ---------- 2. Cifras: blur reveal cuando el dato REAL cambia ---------- */

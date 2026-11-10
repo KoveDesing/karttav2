@@ -83,7 +83,7 @@
       hit.addEventListener('pointermove', show); hit.addEventListener('pointerdown', show);
       hit.addEventListener('pointerleave', function () { tip.classList.remove('show'); cur.setAttribute('opacity', '0'); dot.setAttribute('opacity', '0'); });
     }
-    draw(); if (window.ResizeObserver) { var last = host.clientWidth; new ResizeObserver(function () { if (Math.abs(host.clientWidth - last) > 4) { last = host.clientWidth; draw(); } }).observe(host); }
+    draw(); if (window.ResizeObserver) { var last = host.clientWidth; if (host._ro) host._ro.disconnect(); host._ro = new ResizeObserver(function () { if (!host.isConnected) { host._ro.disconnect(); return; } if (Math.abs(host.clientWidth - last) > 4) { last = host.clientWidth; draw(); } }); host._ro.observe(host); }
   }
 
   /* ---------- vista ---------- */

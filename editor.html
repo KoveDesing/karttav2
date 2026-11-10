@@ -45,7 +45,9 @@ a{color:inherit}:focus-visible{outline:2px solid var(--accent);outline-offset:2p
 .tip{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:var(--strong);color:var(--bg);padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;display:flex;gap:10px;align-items:center;z-index:5;max-width:92%;box-shadow:0 8px 24px rgba(0,0,0,.25)}.tip button{font-weight:800;opacity:.8}
 .sec{margin:16px 0 8px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.sec:first-child{margin-top:6px}
 .note{font-size:12.5px;color:var(--muted);margin:0 0 12px;line-height:1.5}
-.lockbar{font-size:12.5px;font-weight:700;color:var(--warn);background:var(--panel2);border-radius:10px;padding:10px 12px;margin:0 0 12px}
+.lockbar{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--text);background:var(--panel2);border-radius:10px;padding:10px 12px;margin:0 0 12px}
+.crown{display:inline-flex;align-items:center;justify-content:center;flex:none;width:20px;height:20px;border-radius:6px;background:var(--accent);color:var(--on-accent);vertical-align:middle}.crown svg{display:block}
+.fonts button small .crown{width:16px;height:16px;border-radius:5px}.fonts button small .crown svg{width:10px;height:10px}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:8px;margin-bottom:6px}
 .tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px 9px;border:2px solid var(--border);border-radius:12px;background:var(--panel2);color:var(--strong);font-size:12px;font-weight:700;text-align:center}
 .tile svg{width:48px;height:32px;color:var(--strong)}.tile:hover{border-color:var(--muted)}
@@ -72,7 +74,7 @@ a{color:inherit}:focus-visible{outline:2px solid var(--accent);outline-offset:2p
 .media.wide .th{width:96px}.media .mb{flex:1;min-width:0}.media b{display:block;color:var(--strong);margin-bottom:6px}.media .row{display:flex;gap:6px;flex-wrap:wrap}.media .btn{min-height:34px;padding:0 12px;font-size:12px}
 .pl{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px}.pl li{display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}.pl .pt{width:42px;height:42px;border-radius:8px;background:var(--panel);object-fit:cover;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px}
 .pl .pn{flex:1;min-width:0;font-weight:700;color:var(--strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pl .pn small{display:block;color:var(--muted);font-weight:600}.pl a{font-size:12px;font-weight:700;color:var(--accent);text-decoration:none}
-.empty{text-align:center;padding:22px 10px;border:2px dashed var(--border);border-radius:14px;margin-bottom:14px}.empty .em{font-size:34px}.empty b{display:block;color:var(--strong);margin:6px 0 4px}.empty p{margin:0 0 12px;font-size:12.5px;color:var(--muted)}
+.empty{text-align:center;padding:22px 10px;border:2px dashed var(--border);border-radius:14px;margin-bottom:14px}.empty b{display:block;color:var(--strong);margin:6px 0 4px}.empty p{margin:0 0 12px;font-size:12.5px;color:var(--muted)}
 ul.bl{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px}
 ul.bl li{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);font-weight:700;color:var(--strong);cursor:grab}
 ul.bl li.off{opacity:.55}ul.bl li.drag{opacity:.4}ul.bl li .mv{margin-left:auto;display:flex;gap:4px}
@@ -134,9 +136,9 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
   <div class="banner" id="pubBanner"><span>Tu menú todavía no está publicado: los clientes no lo verán aunque publiques el diseño.</span><button class="btn primary" id="pubMenu">Publicar mi menú</button></div>
   <main class="wrap">
     <nav class="rail" id="rail" aria-label="Herramientas"></nav>
-    <aside class="drawer" id="drawer" aria-label="Opciones"><div class="dh"><h2 id="dTitle"></h2><button class="x" id="dClose" aria-label="Cerrar panel">✕</button></div><div class="db" id="dBody"></div></aside>
+    <aside class="drawer" id="drawer" aria-label="Opciones"><div class="dh"><h2 id="dTitle"></h2><button class="x" id="dClose" aria-label="Cerrar panel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="db" id="dBody"></div></aside>
     <section class="stage" id="stage">
-      <div class="tip" id="tip"><span>👋 Elige una herramienta a la izquierda o toca cualquier parte del menú para editarla.</span><button id="tipX" aria-label="Cerrar consejo">✕</button></div>
+      <div class="tip" id="tip"><span>Elige una herramienta a la izquierda o toca cualquier parte del menú para editarla.</span><button id="tipX" aria-label="Cerrar consejo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
       <div class="pvbar" id="pvBar" hidden role="status"><span>Previsualizando: <b id="pvName"></b></span><button type="button" class="btn primary" id="pvApply">Aplicar</button><button type="button" class="btn" id="pvStop">Seguir editando</button></div>
       <div class="frame" id="frame"><iframe id="pv" title="Vista previa de tu menú" src="/menu.html?preview=1"></iframe></div>
       <p class="hint">Esto es tu menú real: así lo verán tus clientes.</p>
@@ -151,7 +153,9 @@ const D = window.KARTTA_DESIGN, $ = (id) => document.getElementById(id), BUCKET 
 let rid = null, rank = 0, cfg = D.normalize({}), published = D.normalize({}), restaurant = {}, cats = [], prods = [];
 let lastSaved = '', saveTimer = null, saving = false, saveErr = null, menuPublished = true;
 let hist = [], hi = -1, lastKey = null, lastAt = 0, device = 'mobile', previewReady = false, tool = 'design', booted = false;
-const isLocked = () => rank < 3, money = (n) => '$' + Number(n || 0).toLocaleString('es-CO');
+const CROWN = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-1.5 11h-15zM5 20h14v2H5z"/></svg>';
+const crown = (t) => h('span', { class: 'crown', title: t || 'Disponible desde KARTTA Pro', 'aria-label': t || 'Disponible desde KARTTA Pro', role: 'img', html: CROWN });
+const isLocked = () => rank < 1, money = (n) => '$' + Number(n || 0).toLocaleString('es-CO');
 function toast(t, ms){ const el = $('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), ms || 2800); }
 function h(tag, attrs, ...kids){ const e = document.createElement(tag); Object.entries(attrs || {}).forEach(([k, v]) => { if (k === 'class') e.className = v; else if (k === 'html') e.innerHTML = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v); }); kids.flat().forEach(c => { if (c != null) e.append(c.nodeType ? c : document.createTextNode(c)); }); return e; }
 
@@ -210,10 +214,10 @@ function tiles(key, host, lock){
 function swt(key, host){ const i = h('input', { type: 'checkbox', onchange: () => set(key, i.checked) }); host.append(h('label', { class: 'sw' }, h('span', {}, SWITCH[key]), i)); syncers.push(() => { i.checked = !!cfg[key]; }); }
 function txt(key, host, label, max, ph, adv, multi){
   const id = 'f_' + key, i = h(multi ? 'textarea' : 'input', { id, maxlength: max, placeholder: ph || '', rows: multi ? 2 : null, type: multi ? null : 'text', oninput: () => set(key, i.value, true) });
-  host.append(h('div', { class: 'fld' }, h('label', { for: id }, label), i)); syncers.push(() => { if (document.activeElement !== i) i.value = cfg[key]; i.disabled = !!(adv && isLocked()); });
+  host.append(h('div', { class: 'fld' }, h('label', { for: id, style: adv && isLocked() ? 'display:flex;align-items:center;gap:8px' : null }, label, adv && isLocked() ? crown() : null), i)); syncers.push(() => { if (document.activeElement !== i) i.value = cfg[key]; i.disabled = !!(adv && isLocked()); });
 }
 /* ---------- v3: controles reutilizables ---------- */
-const sec = (t) => h('div', { class: 'sec' }, t), note = (...k) => h('p', { class: 'note' }, ...k);
+const sec = (t) => h('div', { class: 'sec' }, t), secPro = (t) => h('div', { class: 'sec', style: 'display:flex;align-items:center;gap:8px' }, t, isLocked() ? crown() : null), note = (...k) => h('p', { class: 'note' }, ...k);
 function acc(host, title, build, open){ const d = h('details', { class: 'acc', open: !!open }, h('summary', {}, title)), bd = h('div', { class: 'accb' }); build(bd); d.append(bd); host.append(d); return d; }
 function resetBtn(host, label, keys){ host.append(h('button', { type: 'button', class: 'btn block rst', onclick: () => replace({ ...cfg, ...Object.fromEntries(keys.map(k => [k, D.DEFAULTS[k]])) }, 'Valores recomendados restablecidos') }, label)); }
 /** Deslizador con valor visible y botón “Auto/Restablecer” (los límites son los mismos que valida la base de datos). */
@@ -255,7 +259,7 @@ function contrastWarns(){
   if (cfg.style === 'glass' || cfg.style === 'neo') m.push('con ' + (cfg.style === 'glass' ? 'cristal' : 'relieve') + ' el contraste real varía un poco: revisa la vista previa.');
   return m.filter(x => !x.startsWith('con ')).concat(m.filter(x => x.startsWith('con ')));
 }
-function lockNote(host){ if (isLocked()) host.append(h('div', { class: 'lockbar' }, '🔒 Esta herramienta es del plan Personalizado. Puedes verla, pero no usarla.')); }
+function lockNote(host){ if (isLocked()) host.append(h('div', { class: 'lockbar' }, crown(), h('span', {}, 'Herramienta de KARTTA Pro. Puedes verla, pero para usarla necesitas mejorar tu plan.'))); }
 
 /* ---------- v3: ventanas (modal accesible) y confirmaciones ---------- */
 function modal(title, build, o = {}){
@@ -486,10 +490,10 @@ const PANELS = {
     acc(b, 'Precio', a => { rng('priceSize', a, 'Tamaño', { mid: 15 }); seg('priceWeight', a, 'Grosor', WTS, { num: true }); clr('priceColor', a, 'Color del precio', 'valor de cada producto', { eff: () => D.effective(cfg).price }); });
     warnBox(b, contrastWarns);
     resetBtn(b, 'Restablecer tipografía recomendada', ['nameSize', 'nameWeight', 'nameColor', 'titleSize', 'titleWeight', 'bTitleColor', 'subSize', 'bSubColor', 'catSize', 'catWeight', 'prodNameSize', 'prodNameWeight', 'titleColor', 'prodDescSize', 'descColor', 'priceSize', 'priceWeight', 'priceColor', 'size']);
-    b.append(sec('Tipo de letra')); lockNote(b);
+    b.append(secPro('Tipo de letra')); lockNote(b);
     [['fontHeading', 'Títulos'], ['fontBody', 'Textos']].forEach(([k, n]) => {
       b.append(h('p', { class: 'note', style: 'margin:8px 0 6px;font-weight:700;color:var(--text)' }, n)); const f = h('div', { class: 'fonts' }); b.append(f);
-      D.FONTS.forEach(ft => f.append(h('button', { type: 'button', style: "font-family:'" + ft + "',sans-serif", 'data-f': ft, onclick: () => set(k, ft) }, ft, h('small', {}, isLocked() && ft !== 'Inter' ? '🔒' : ''))));
+      D.FONTS.forEach(ft => f.append(h('button', { type: 'button', style: "font-family:'" + ft + "',sans-serif", 'data-f': ft, onclick: () => set(k, ft) }, ft, h('small', {}, isLocked() && ft !== 'Inter' ? crown() : ''))));
       syncers.push(() => f.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(cfg[k] === x.dataset.f))));
     });
   },
@@ -554,9 +558,9 @@ const PANELS = {
     b.append(note('Las etiquetas se crean en ', h('a', { href: '#', style: 'color:var(--accent);font-weight:700', onclick: (e) => { e.preventDefault(); goPanel('productos'); } }, 'Productos → Etiquetas'), ' del panel y se asignan desde la ficha del producto. La foto mejorada con IA sigue en el panel.'));
   },
   sections(b){
-    b.append(sec('Anuncio y pie de página')); lockNote(b);
+    b.append(secPro('Anuncio y pie de página')); lockNote(b);
     txt('announcement', b, 'Anuncio destacado (barra de color)', 160, 'Ej: 2x1 en postres hoy', true); txt('footerText', b, 'Texto del pie', 160, 'Ej: Abierto de 8am a 8pm', true, true);
-    b.append(sec('Orden de las secciones'), note('Arrastra o usa las flechas. Encabezado y Productos siempre se muestran.'));
+    b.append(secPro('Orden de las secciones'), note('Arrastra o usa las flechas. Encabezado y Productos siempre se muestran.'));
     const ul = h('ul', { class: 'bl' }); b.append(ul); syncers.push(() => renderBlocks(ul));
   },
 };
@@ -609,7 +613,7 @@ function pushHist(key){ const snap = JSON.stringify(cfg), now = Date.now(); if (
 function afterChange(){ syncAll(); sendDesign(); scheduleSave(); }
 function set(key, value, coalesce){
   stopPreview();
-  if (D.ADVANCED.includes(key) && isLocked()) { toast('🔒 Esta opción es del plan Personalizado.'); syncAll(); return; }
+  if (D.ADVANCED.includes(key) && isLocked()) { toast('Esta opción es de KARTTA Pro.'); syncAll(); return; }
   const next = D.normalize({ ...cfg, [key]: value }); if (JSON.stringify(next) === JSON.stringify(cfg)) return;
   cfg = next; pushHist(coalesce ? key : null); afterChange();
 }
@@ -659,7 +663,7 @@ async function saveNow(){
     let r = await sb.from('menu_designs').update({ config: payload }).eq('restaurant_id', rid).eq('status', 'draft').select('id'); if (r.error) throw r.error;
     if (!r.data || !r.data.length) { r = await sb.from('menu_designs').insert({ restaurant_id: rid, status: 'draft', config: payload }).select('id'); if (r.error) throw r.error; }
     lastSaved = json;
-  } catch (e) { console.error(e); const m = String(e.message || ''); saveErr = m.includes('Premium') ? 'Esa opción requiere el plan Personalizado.' : m.includes('invalid design') ? 'Valor no válido.' : 'No se pudo guardar.'; }
+  } catch (e) { console.error(e); const m = String(e.message || ''); saveErr = m.includes('Premium') ? 'Esa opción requiere KARTTA Pro.' : m.includes('invalid design') ? 'Valor no válido.' : 'No se pudo guardar.'; }
   finally { saving = false; renderState(); }
 }
 addEventListener('beforeunload', e => { if (snapJSON() !== lastSaved) { e.preventDefault(); e.returnValue = ''; } });
@@ -667,7 +671,7 @@ async function goPanel(view){ clearTimeout(saveTimer); await saveNow(); location
 $('publish').onclick = async () => {
   if (!await confirmDlg('Publicar diseño', '¿Publicar este diseño? Se verá en tu menú público ahora mismo.', 'Publicar')) return; const b = $('publish'); b.disabled = true;
   try { await saveNow(); if (saveErr) throw new Error('save'); const pub = await sb.rpc('publish_design', { p_restaurant: rid }); if (pub.error) throw pub.error;
-    await sb.from('restaurants').update({ menu_configured: true }).eq('id', rid); published = D.normalize(cfg); renderState(); toast('✅ Publicado. Ya se ve en tu menú.'); }
+    await sb.from('restaurants').update({ menu_configured: true }).eq('id', rid); published = D.normalize(cfg); renderState(); toast('Publicado. Ya se ve en tu menú.'); }
   catch (e) { console.error(e); toast('No se pudo publicar. Intenta de nuevo.'); renderState(); }
 };
 $('discard').onclick = async () => { if (snapJSON() === JSON.stringify(D.compact(published))) return toast('No hay cambios sin publicar.'); if (!await confirmDlg('Volver al publicado', '¿Volver al diseño publicado? Puedes deshacerlo con Ctrl+Z.', 'Volver')) return; replace(published, 'Volviste al diseño publicado'); };

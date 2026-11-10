@@ -5,7 +5,7 @@
    ===================================================================== */
 :root{
   /* duraciones: rápida (controles) · base (tarjetas/paneles) · lenta (cambios de contexto) */
-  --m-fast:120ms; --m-base:220ms; --m-slow:360ms;
+  --m-fast:100ms; --m-base:160ms; --m-slow:260ms;
   /* curvas: salida suave · resorte con rebote mínimo · entrada/salida */
   --m-out:cubic-bezier(.16,1,.3,1);
   --m-spring:cubic-bezier(.34,1.32,.64,1);
@@ -38,10 +38,10 @@
 
 /* Primera visita de cada vista: títulos con blur reveal y tarjetas en cascada sutil */
 .view.m-first .vhead h2,.view.m-first .hello{animation:m-blur-in var(--m-slow) var(--m-out) both;}
-.view.m-first .vhead p,.view.m-first .hello-sub{animation:m-blur-in var(--m-slow) var(--m-out) 60ms both;}
+.view.m-first .vhead p,.view.m-first .hello-sub{animation:m-blur-in var(--m-slow) var(--m-out) 40ms both;}
 .view.m-first > .card,.view.m-first > .grid-sum > .sum,.view.m-first .three > .card,.view.m-first .mgrid > *{
   animation:m-rise var(--m-slow) var(--m-out) both;
-  animation-delay:calc(var(--m-i,0) * 45ms + 60ms);
+  animation-delay:calc(var(--m-i,0) * 30ms + 30ms);
 }
 .view.m-first > .card:nth-child(2),.view.m-first > .grid-sum > .sum:nth-child(2){--m-i:1}
 .view.m-first > .card:nth-child(3),.view.m-first > .grid-sum > .sum:nth-child(3){--m-i:2}
@@ -106,7 +106,7 @@ input,select,textarea{transition:border-color var(--m-fast) ease,box-shadow var(
 
 /* ---------- Movimiento reducido: sin desplazamientos, desenfoques ni resortes ---------- */
 @media (prefers-reduced-motion:reduce){
-  .view,.view.m-first *,.m-blur,#app.ready,.modal-bg.show,.scrim.show,#tabbar button.m-pop svg{animation:none !important;}
+  .view,.view.m-first *,.m-blur,#app.ready,.modal-bg.show,.scrim.show,#tabbar button.m-pop svg,.skel{animation:none !important;}
   #tabbar button svg{transform:none !important;transition:none !important;}
   .toast,.toast.show{transform:translate(-50%,0);}
 }

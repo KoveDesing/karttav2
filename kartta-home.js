@@ -131,14 +131,15 @@
     st.loy = (l[0].error || l[1].error) ? null : { enabled: !!(l[0].data && l[0].data.enabled), customers: (l[1].data || []).length, points: (l[1].data || []).reduce(function (s, c) { return s + c.balance; }, 0) };
   }
   async function refresh(force) {
-    if (!M.ctx || !$('kCards') || st.busy) return;
+    if (!M.ctx || !$('kCards')) return;
+    if (st.busy && Date.now() - (st.t0 || 0) < 25000) return;   // evita solicitudes duplicadas, pero una carga colgada no bloquea Inicio para siempre
     if (!force && (document.hidden || !document.querySelector('[data-panel=inicio].active'))) return;
-    st.busy = true; var my = ++st.seq, body = $('homeBody'); body.classList.add('loading');
+    st.busy = true; st.t0 = Date.now(); var my = ++st.seq, body = $('homeBody'); body.classList.add('loading');
     try {
       var r = await Promise.all([load(), loadRecent()]); if (my !== st.seq) return;
       if (r[0].error) { st.err = r[0].error; paintError(); return; }
       st.err = null; st.data = r[0].data; st.recent = r[1]; paint();
-    } catch (e) { st.err = e; paintError(); } finally { st.busy = false; body.classList.remove('loading'); }
+    } catch (e) { st.err = e; paintError(); } finally { if (my === st.seq) { st.busy = false; body.classList.remove('loading'); } }
   }
   var deb = 0; window.addEventListener('kartta:data', function () { clearTimeout(deb); deb = setTimeout(function () { refresh(false); }, 900); });
 
