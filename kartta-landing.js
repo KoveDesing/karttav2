@@ -122,7 +122,7 @@
     if (!el || el.hasAttribute('data-fx')) return;
     el.setAttribute('data-fx', fx);
     if (strong) el.setAttribute('data-strong', '');
-    if (d) el.style.setProperty('--kx-delay', d + 'ms');
+    if (d) el.style.setProperty('--kx-delay', Math.round(d * .5) + 'ms');
     if (fx === 'words') splitWords(el);
   }
   function applyMap() {
@@ -152,9 +152,9 @@
 
   function show(el, delay) {
     if (el.classList.contains('kx-in')) return;
-    if (delay != null) el.style.setProperty('--kx-delay', delay + 'ms');
+    if (delay != null) el.style.setProperty('--kx-delay', Math.round(delay * .5) + 'ms');
     el.classList.add('kx-in');
-    var total = (parseInt(el.style.getPropertyValue('--kx-delay'), 10) || 0) + (el.getAttribute('data-fx') === 'words' ? 1700 : 1500);
+    var total = (parseInt(el.style.getPropertyValue('--kx-delay'), 10) || 0) + (el.getAttribute('data-fx') === 'words' ? 1000 : 900);
     setTimeout(function () { el.classList.add('kx-done'); }, total);
   }
   function trigger(el) {
@@ -178,7 +178,7 @@
     if (!doc.body.classList.contains('auth-loading') || !root.classList.contains('kx-maybe')) go();
     else {
       new MutationObserver(function (m, ob) { if (!doc.body.classList.contains('auth-loading')) { ob.disconnect(); go(); } }).observe(doc.body, { attributes: true, attributeFilter: ['class'] });
-      setTimeout(go, Math.max(0, 900 - (Date.now() - started)));
+      setTimeout(go, Math.max(0, 400 - (Date.now() - started)));
     }
     // tarjetas de planes que se vuelven a dibujar (Mensual/Anual)
     var grid = $('#pricingGrid');
