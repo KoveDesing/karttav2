@@ -4,12 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<script>try{var __p=JSON.parse(localStorage.getItem('kartta_prefs')||'{}');document.documentElement.setAttribute('data-theme',__p.theme==='dark'?'dark':'light')}catch(e){document.documentElement.setAttribute('data-theme','light')}</script>
 <title>Editor visual — KARTTA</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=DM+Sans:wght@600&family=Playfair+Display:wght@600&family=Lora:wght@600&family=Space+Grotesk:wght@600&family=Mr+Dafoe&display=swap">
 <style>
-:root{--bg:#EEEEEC;--panel:#fff;--panel2:#F3F3F1;--text:#3C3C3C;--strong:#0A0A0A;--muted:#7A7A76;--border:#E3E3DF;--accent:#FF3145;--on-accent:#fff;--accent-dim:color-mix(in srgb,var(--accent) 82%,#000);--accent-soft:color-mix(in srgb,var(--accent) 12%,transparent);--ok:#1EA35A;--warn:#B45309;--rail:#16161A;--railtx:#B9B9B4;}
-@media (prefers-color-scheme:dark){:root{--bg:#0B0B0C;--panel:#17171A;--panel2:#212125;--text:#C8C8C4;--strong:#fff;--muted:#8D8D88;--border:#2A2A2E;--accent-soft:color-mix(in srgb,var(--accent) 22%,transparent);--warn:#F59E0B;--rail:#0E0E10}}
+:root{--bg:#F3F3F1;--panel:#fff;--panel2:#F5F5F3;--text:#2A2A2A;--strong:#0A0A0A;--muted:#777;--border:#E6E6E3;--accent:#FF3145;--on-accent:#fff;--accent-dim:color-mix(in srgb,var(--accent) 82%,#000);--accent-soft:color-mix(in srgb,var(--accent) 12%,transparent);--ok:#1EA35A;--warn:#B45309;--rail:#16161A;--railtx:#B9B9B4;}
+/* Tema igual que el dashboard: claro por defecto; oscuro solo si la persona lo eligió (profiles.prefs.theme) */
+:root[data-theme=dark]{--bg:#0A0A0A;--panel:#151515;--panel2:#1C1C1C;--text:#E4E4E4;--strong:#fff;--muted:#8F8F8F;--border:#262626;--accent-soft:color-mix(in srgb,var(--accent) 22%,transparent);--warn:#F59E0B;--rail:#0E0E0E;color-scheme:dark}
 *{box-sizing:border-box}html,body{height:100%}
 body{margin:0;font-family:Inter,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;overflow:hidden}
 button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer}
@@ -45,7 +47,7 @@ a{color:inherit}:focus-visible{outline:2px solid var(--accent);outline-offset:2p
 .tip{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:var(--strong);color:var(--bg);padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;display:flex;gap:10px;align-items:center;z-index:5;max-width:92%;box-shadow:0 8px 24px rgba(0,0,0,.25)}.tip button{font-weight:800;opacity:.8}
 .sec{margin:16px 0 8px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.sec:first-child{margin-top:6px}
 .note{font-size:12.5px;color:var(--muted);margin:0 0 12px;line-height:1.5}
-.lockbar{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--text);background:var(--panel2);border-radius:10px;padding:10px 12px;margin:0 0 12px}
+.lockbar{width:100%;border:0;text-align:left;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--text);background:var(--panel2);border-radius:10px;padding:10px 12px;margin:0 0 12px}
 .crown{display:inline-flex;align-items:center;justify-content:center;flex:none;width:20px;height:20px;border-radius:6px;background:var(--accent);color:var(--on-accent);vertical-align:middle}.crown svg{display:block}
 .fonts button small .crown{width:16px;height:16px;border-radius:5px}.fonts button small .crown svg{width:10px;height:10px}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:8px;margin-bottom:6px}
@@ -115,6 +117,8 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
 .sr{border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:8px;background:var(--panel2)}.sr input[type=text]{width:100%;min-height:40px;padding:8px 10px;border:1px solid var(--border);border-radius:9px;background:var(--panel);color:var(--strong);font:inherit;margin-top:8px}.srh{display:flex;align-items:center;gap:6px}.srh b{flex:1;color:var(--strong)}.sri svg{width:20px;height:20px;color:var(--strong)}.swm{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700}.swm input{accent-color:var(--accent);width:18px;height:18px}.sr .ferr{margin:4px 0 0}
 .mbd .note{margin-top:2px}
 @media (max-width:900px){.ov{align-items:flex-end;padding:0}.mbox,.mbox.wide{width:100%;max-height:94vh;border-radius:18px 18px 0 0}.allg{grid-template-columns:repeat(2,1fr)}.drawer{max-height:46vh}.pvbar{top:6px}}
+/* campos/listas bloqueados: el toque llega al contenedor y abre la tarjeta de mejora */
+.fld.pg input,.fld.pg textarea,.bl.pg input,.bl.pg button{pointer-events:none}.fld.pg,.bl.pg{cursor:pointer}
 </style>
 <link rel="stylesheet" href="/kartta-fields.css?v=20261103">
 </head>
@@ -147,6 +151,7 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
 </div>
 <div id="toast" role="status"></div>
 <script src="/menu-design.js"></script>
+<script src="kartta-upsell.js?v=20261110" defer></script>
 <script type="module">
 import { sb, imageUrl, SUBDOMAINS_LIVE, appOrigin } from "/supabase-init.js";
 const D = window.KARTTA_DESIGN, $ = (id) => document.getElementById(id), BUCKET = 'kartta-media';
@@ -155,6 +160,8 @@ let lastSaved = '', saveTimer = null, saving = false, saveErr = null, menuPublis
 let hist = [], hi = -1, lastKey = null, lastAt = 0, device = 'mobile', previewReady = false, tool = 'design', booted = false;
 const CROWN = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-1.5 11h-15zM5 20h14v2H5z"/></svg>';
 const crown = (t) => h('span', { class: 'crown', title: t || 'Disponible desde KARTTA Pro', 'aria-label': t || 'Disponible desde KARTTA Pro', role: 'img', html: CROWN });
+const FEAT = { fontHeading: 'Tipografía de títulos', fontBody: 'Tipografía de textos', blocks: 'El orden de las secciones', announcement: 'El anuncio destacado', footerText: 'El texto del pie' };
+const upsell = (f) => window.KARTTA_UPSELL ? KARTTA_UPSELL.open({ plan: 'KARTTA Pro', feature: f }) : toast('Esta opción es de KARTTA Pro.');
 const isLocked = () => rank < 1, money = (n) => '$' + Number(n || 0).toLocaleString('es-CO');
 function toast(t, ms){ const el = $('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), ms || 2800); }
 function h(tag, attrs, ...kids){ const e = document.createElement(tag); Object.entries(attrs || {}).forEach(([k, v]) => { if (k === 'class') e.className = v; else if (k === 'html') e.innerHTML = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v); }); kids.flat().forEach(c => { if (c != null) e.append(c.nodeType ? c : document.createTextNode(c)); }); return e; }
@@ -214,7 +221,7 @@ function tiles(key, host, lock){
 function swt(key, host){ const i = h('input', { type: 'checkbox', onchange: () => set(key, i.checked) }); host.append(h('label', { class: 'sw' }, h('span', {}, SWITCH[key]), i)); syncers.push(() => { i.checked = !!cfg[key]; }); }
 function txt(key, host, label, max, ph, adv, multi){
   const id = 'f_' + key, i = h(multi ? 'textarea' : 'input', { id, maxlength: max, placeholder: ph || '', rows: multi ? 2 : null, type: multi ? null : 'text', oninput: () => set(key, i.value, true) });
-  host.append(h('div', { class: 'fld' }, h('label', { for: id, style: adv && isLocked() ? 'display:flex;align-items:center;gap:8px' : null }, label, adv && isLocked() ? crown() : null), i)); syncers.push(() => { if (document.activeElement !== i) i.value = cfg[key]; i.disabled = !!(adv && isLocked()); });
+  host.append(h('div', { class: 'fld', onclick: () => { if (adv && isLocked()) upsell(FEAT[key]); } }, h('label', { for: id, style: adv && isLocked() ? 'display:flex;align-items:center;gap:8px' : null }, label, adv && isLocked() ? crown() : null), i)); syncers.push(() => { if (document.activeElement !== i) i.value = cfg[key]; i.disabled = !!(adv && isLocked()); i.parentNode.classList.toggle('pg', !!(adv && isLocked())); });
 }
 /* ---------- v3: controles reutilizables ---------- */
 const sec = (t) => h('div', { class: 'sec' }, t), secPro = (t) => h('div', { class: 'sec', style: 'display:flex;align-items:center;gap:8px' }, t, isLocked() ? crown() : null), note = (...k) => h('p', { class: 'note' }, ...k);
@@ -259,7 +266,7 @@ function contrastWarns(){
   if (cfg.style === 'glass' || cfg.style === 'neo') m.push('con ' + (cfg.style === 'glass' ? 'cristal' : 'relieve') + ' el contraste real varía un poco: revisa la vista previa.');
   return m.filter(x => !x.startsWith('con ')).concat(m.filter(x => x.startsWith('con ')));
 }
-function lockNote(host){ if (isLocked()) host.append(h('div', { class: 'lockbar' }, crown(), h('span', {}, 'Herramienta de KARTTA Pro. Puedes verla, pero para usarla necesitas mejorar tu plan.'))); }
+function lockNote(host){ if (isLocked()) host.append(h('button', { type: 'button', class: 'lockbar', onclick: () => upsell() }, crown(), h('span', {}, 'Herramienta de KARTTA Pro. Puedes verla; toca aquí para mejorar tu plan.'))); }
 
 /* ---------- v3: ventanas (modal accesible) y confirmaciones ---------- */
 function modal(title, build, o = {}){
@@ -561,7 +568,7 @@ const PANELS = {
     b.append(secPro('Anuncio y pie de página')); lockNote(b);
     txt('announcement', b, 'Anuncio destacado (barra de color)', 160, 'Ej: 2x1 en postres hoy', true); txt('footerText', b, 'Texto del pie', 160, 'Ej: Abierto de 8am a 8pm', true, true);
     b.append(secPro('Orden de las secciones'), note('Arrastra o usa las flechas. Encabezado y Productos siempre se muestran.'));
-    const ul = h('ul', { class: 'bl' }); b.append(ul); syncers.push(() => renderBlocks(ul));
+    const ul = h('ul', { class: 'bl', onclick: () => { if (isLocked()) upsell(FEAT.blocks); } }); b.append(ul); syncers.push(() => renderBlocks(ul));
   },
 };
 function rootNoop(){}
@@ -581,7 +588,7 @@ async function saveMedia(col, path){
   sendData(); syncAll(); toast(path ? 'Imagen actualizada.' : 'Imagen quitada.');
 }
 function renderBlocks(ul){
-  const locked = isLocked(); ul.innerHTML = ''; const vis = cfg.blocks, all = vis.concat(D.BLOCKS.filter(b => !vis.includes(b)));
+  const locked = isLocked(); ul.classList.toggle('pg', locked); ul.innerHTML = ''; const vis = cfg.blocks, all = vis.concat(D.BLOCKS.filter(b => !vis.includes(b)));
   all.forEach((b, i) => {
     const on = vis.includes(b), req = b === 'header' || b === 'items';
     const cb = h('input', { type: 'checkbox', 'aria-label': 'Mostrar ' + BLOCK_LABEL[b], onchange: () => { let n; if (!cb.checked) n = vis.filter(x => x !== b); else { n = vis.slice(); const di = D.BLOCKS.indexOf(b), at = n.findIndex(x => D.BLOCKS.indexOf(x) > di); n.splice(at < 0 ? n.length : at, 0, b); } set('blocks', n); } });
@@ -613,7 +620,7 @@ function pushHist(key){ const snap = JSON.stringify(cfg), now = Date.now(); if (
 function afterChange(){ syncAll(); sendDesign(); scheduleSave(); }
 function set(key, value, coalesce){
   stopPreview();
-  if (D.ADVANCED.includes(key) && isLocked()) { toast('Esta opción es de KARTTA Pro.'); syncAll(); return; }
+  if (D.ADVANCED.includes(key) && isLocked()) { upsell(FEAT[key]); syncAll(); return; }
   const next = D.normalize({ ...cfg, [key]: value }); if (JSON.stringify(next) === JSON.stringify(cfg)) return;
   cfg = next; pushHist(coalesce ? key : null); afterChange();
 }
@@ -698,12 +705,13 @@ const ACCENT_DEFAULT = '#FF3145';
 let accentUid = null;
 function accentOk(h) { return /^#[0-9a-fA-F]{6}$/.test(h || ''); }
 function onAccentFor(h) { const c = [1, 3, 5].map(i => { const v = parseInt(h.substr(i, 2), 16) / 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return (.2126 * c[0] + .7152 * c[1] + .0722 * c[2]) > .34 ? '#0A0A0A' : '#FFFFFF'; }
+function paintTheme(t) { document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light'); }
 function paintAccent(h) { const x = accentOk(h) ? h : ACCENT_DEFAULT, st = document.documentElement.style; st.setProperty('--accent', x); st.setProperty('--on-accent', onAccentFor(x)); }
 async function syncAccent(uid) {
-  try { const r = await sb.from('profiles').select('prefs').eq('id', uid).maybeSingle(); if (uid !== accentUid) return; paintAccent(r.data && r.data.prefs && r.data.prefs.accent); }
+  try { const r = await sb.from('profiles').select('prefs').eq('id', uid).maybeSingle(); if (uid !== accentUid) return; paintAccent(r.data && r.data.prefs && r.data.prefs.accent); paintTheme(r.data && r.data.prefs && r.data.prefs.theme); }
   catch (err) { console.warn('accent', err); }
 }
-try { const bc = new BroadcastChannel('kartta-accent'); bc.onmessage = ev => { const d = ev.data || {}; if (d.uid && d.uid === accentUid) paintAccent(d.accent); }; } catch {}
+try { const bc = new BroadcastChannel('kartta-accent'); bc.onmessage = ev => { const d = ev.data || {}; if (d.uid && d.uid === accentUid) { paintAccent(d.accent); paintTheme(d.theme); } }; } catch {}
 document.addEventListener('visibilitychange', () => { if (!document.hidden && accentUid) syncAccent(accentUid); });
 addEventListener('focus', () => { if (accentUid) syncAccent(accentUid); });
 async function boot(user){
