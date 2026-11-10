@@ -726,6 +726,7 @@ async function savePrefs(patch){
   if (prefsLocalOK()) { try { localStorage.setItem('kartta_prefs', JSON.stringify(p)); } catch {} }
   applyPrefs(p);
   const { error } = await sb.from('profiles').update({ prefs: p }).eq('id', uid);
+  if (!error && patch.accent) { try { const bc = new BroadcastChannel('kartta-accent'); bc.postMessage({ uid, accent: p.accent }); bc.close(); } catch {} }   // el editor abierto se actualiza sin recargar
   if (error) { console.warn(error); const m = $('accMsg'); if (m && patch.accent) m.textContent = 'Se aplicó en este dispositivo, pero no se pudo guardar en tu cuenta. Inténtalo de nuevo.'; }
   else { const m = $('accMsg'); if (m && patch.accent) { m.textContent = 'Color guardado en tu cuenta.'; clearTimeout(savePrefs._t); savePrefs._t = setTimeout(() => { m.textContent = ''; }, 2500); } }
 }
