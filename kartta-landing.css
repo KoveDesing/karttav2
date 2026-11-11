@@ -44,16 +44,16 @@ html.kx:not(.kx-failed) [data-fx]:not([data-fx="words"]):not(.kx-in){opacity:0;}
 html.kx:not(.kx-failed) [data-fx="words"]:not(.kx-in) .kx-w{opacity:0;}
 html.kx:not(.kx-failed) [data-fx]:not([data-fx="words"]).kx-in:not(.kx-done){
   animation:
-    kx-fade var(--kx-tf,.35s) ease-out var(--kx-delay,0ms) backwards,
-    kx-blur var(--kx-tf,.35s) ease-out var(--kx-delay,0ms) backwards,
-    kx-move var(--kx-t,.55s) var(--kx-ez,var(--kx-out)) var(--kx-delay,0ms) backwards,
-    kx-grow var(--kx-t,.55s) var(--kx-ez,var(--kx-out)) var(--kx-delay,0ms) backwards;
+    kx-fade var(--kx-tf,.6s) ease-out var(--kx-delay,0ms) backwards,
+    kx-blur var(--kx-tf,.6s) ease-out var(--kx-delay,0ms) backwards,
+    kx-move var(--kx-t,.95s) var(--kx-ez,var(--kx-out)) var(--kx-delay,0ms) backwards,
+    kx-grow var(--kx-t,.95s) var(--kx-ez,var(--kx-out)) var(--kx-delay,0ms) backwards;
 }
 html.kx:not(.kx-failed) [data-fx="words"].kx-in:not(.kx-done) .kx-w{
   animation:
-    kx-fade .32s ease-out calc(var(--kx-delay,0ms) + var(--i,0)*30ms) backwards,
-    kx-blur .32s ease-out calc(var(--kx-delay,0ms) + var(--i,0)*30ms) backwards,
-    kx-move .55s var(--kx-ez,var(--kx-spring-soft)) calc(var(--kx-delay,0ms) + var(--i,0)*30ms) backwards;
+    kx-fade .55s ease-out calc(var(--kx-delay,0ms) + var(--i,0)*55ms) backwards,
+    kx-blur .55s ease-out calc(var(--kx-delay,0ms) + var(--i,0)*55ms) backwards,
+    kx-move .9s var(--kx-ez,var(--kx-spring-soft)) calc(var(--kx-delay,0ms) + var(--i,0)*55ms) backwards;
 }
 .kx-w{display:inline-block;--kx-y:.6em;--kx-b:8px;}
 
@@ -61,15 +61,15 @@ html.kx:not(.kx-failed) [data-fx="words"].kx-in:not(.kx-done) .kx-w{
    Jerarquía: secundarios (texto de apoyo, listas, FAQ, pies) = ease-out sin rebote;
    intermedios (títulos, tarjetas, imágenes) = resorte suave (~3 %);
    protagonistas ([data-strong]: título y CTA del hero, planes, bloques de prueba) = resorte marcado (~10 %). */
-[data-fx="up"]{--kx-y:26px;--kx-b:7px;--kx-t:0.47s;--kx-ez:var(--kx-out);}
-[data-fx="scale"]{--kx-s:.92;--kx-y:22px;--kx-b:7px;--kx-t:0.55s;--kx-ez:var(--kx-spring-soft);}
+[data-fx="up"]{--kx-y:26px;--kx-b:7px;--kx-t:.85s;--kx-ez:var(--kx-out);}
+[data-fx="scale"]{--kx-s:.92;--kx-y:22px;--kx-b:7px;--kx-t:1s;--kx-ez:var(--kx-spring-soft);}
 [data-fx="card"]{--kx-s:.9;--kx-y:40px;--kx-b:8px;--kx-ez:var(--kx-spring-soft);}
-[data-fx="pop"]{--kx-s:.72;--kx-y:10px;--kx-b:0px;--kx-t:0.44s;--kx-tf:0.22s;--kx-ez:var(--kx-spring-soft);}
-[data-fx="left"]{--kx-x:-56px;--kx-b:7px;--kx-t:0.5s;--kx-ez:var(--kx-out);}
-[data-fx="right"]{--kx-x:56px;--kx-b:7px;--kx-t:0.5s;--kx-ez:var(--kx-out);}
+[data-fx="pop"]{--kx-s:.72;--kx-y:10px;--kx-b:0px;--kx-t:.8s;--kx-tf:.4s;--kx-ez:var(--kx-spring-soft);}
+[data-fx="left"]{--kx-x:-56px;--kx-b:7px;--kx-t:.9s;--kx-ez:var(--kx-out);}
+[data-fx="right"]{--kx-x:56px;--kx-b:7px;--kx-t:.9s;--kx-ez:var(--kx-out);}
 [data-fx="drop"]{--kx-y:-26px;--kx-s:.9;--kx-b:4px;--kx-ez:var(--kx-spring-soft);}
-[data-fx="img"]{--kx-s:.86;--kx-y:34px;--kx-b:12px;--kx-t:0.61s;--kx-tf:0.44s;--kx-ez:var(--kx-spring-soft);}
-[data-fx="scatter"]{--kx-s:.7;--kx-b:6px;--kx-t:0.55s;--kx-ez:var(--kx-spring-soft);}
+[data-fx="img"]{--kx-s:.86;--kx-y:34px;--kx-b:12px;--kx-t:1.1s;--kx-tf:.8s;--kx-ez:var(--kx-spring-soft);}
+[data-fx="scatter"]{--kx-s:.7;--kx-b:6px;--kx-t:1s;--kx-ez:var(--kx-spring-soft);}
 [data-fx="words"]{--kx-ez:var(--kx-spring-soft);}
 [data-fx][data-strong]{--kx-ez:var(--kx-spring);}
 @media (max-width:767px){
@@ -94,7 +94,7 @@ html.kx:not(.kx-failed) [data-fx="words"].kx-in:not(.kx-done) .kx-w{
 .hero .cta-micro{margin-top:-8px;margin-bottom:22px;}
 
 /* ---------- 4. Barra inferior ---------- */
-html.kx .kbar{animation:kx-bar-in .5s var(--kx-spring) 0s backwards;}
+html.kx .kbar{animation:kx-bar-in .8s var(--kx-spring) .15s backwards;}
 @keyframes kx-bar-in{from{translate:0 160%;opacity:0;}}
 .kbar-btn,.kbar-cta,.kbar-avatar-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent;position:relative;z-index:1;}
 .kbar-btn svg{transition:translate .6s var(--kx-spring-soft),rotate .6s var(--kx-spring-soft),scale .6s var(--kx-spring-soft);transform-origin:50% 60%;}
@@ -183,7 +183,7 @@ html body .plan-card.featured:hover{--kx-ty:-10px;}
 .kx-promo p{margin:0;font-size:16.5px;max-width:52ch;color:var(--gray);}
 #como-funciona .kx-promo{color:#fff;}
 #como-funciona .kx-promo p,#como-funciona .kx-promo .kx-cta-micro{color:#A7A7A7;}
-.kx-promo .hl,.kx-trial .hl,.kx-final .hl{border-radius:7px;padding:.02em .2em;}
+.kx-promo .hl,.kx-trial .hl,.kx-final .hl{border-radius:0;padding:.02em .2em;}
 .kx-promo-act{display:flex;flex-direction:column;align-items:flex-start;gap:10px;}
 @media (max-width:760px){.kx-promo{grid-template-columns:1fr;}}
 
@@ -264,6 +264,6 @@ html body .plan-card.featured:hover{--kx-ty:-10px;}
 /* Hero visual (candidato a LCP): nunca parte de opacidad 0; entra con escala + desenfoque para que se pinte desde el primer frame */
 html.kx:not(.kx-failed) .hero-visual-real[data-fx]:not(.kx-in){opacity:1;scale:var(--kx-s);translate:0 var(--kx-y);filter:blur(var(--kx-b));}
 html.kx:not(.kx-failed) .hero-visual-real[data-fx].kx-in:not(.kx-done){animation:
-  kx-blur .55s var(--kx-out) var(--kx-delay,0ms) backwards,
-  kx-move .65s var(--kx-spring) var(--kx-delay,0ms) backwards,
-  kx-grow .65s var(--kx-spring) var(--kx-delay,0ms) backwards;}
+  kx-blur .9s var(--kx-out) var(--kx-delay,0ms) backwards,
+  kx-move 1.1s var(--kx-spring) var(--kx-delay,0ms) backwards,
+  kx-grow 1.1s var(--kx-spring) var(--kx-delay,0ms) backwards;}

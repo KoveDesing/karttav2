@@ -10,7 +10,7 @@
   'use strict';
   var SECTIONS = {
     inicio: 'Panel principal', productos: 'Productos', menu: 'Editor del menú', personalizar: 'Editor visual', configuracion: 'Configuración', dominio: 'Dominio',
-    pedidos: 'Pedidos', metricas: 'Estadísticas', qr: 'Código QR', mesas: 'Mesas', clientes: 'Clientes', fidelizacion: 'Fidelización', pagos: 'Pagos', politicas: 'Políticas', soporte: 'Soporte',
+    pedidos: 'Pedidos', metricas: 'Estadísticas', qr: 'Código QR', mesas: 'Mesas', inventario: 'Inventario', clientes: 'Clientes', fidelizacion: 'Fidelización', pagos: 'Pagos', politicas: 'Políticas', soporte: 'Soporte',
   };
   var CHIPS = {
     inicio: ['¿Cómo va mi restaurante este mes?', '¿Qué puedo hacer para vender más?', '¿Qué debería mejorar primero?'],
@@ -20,6 +20,7 @@
     metricas: ['¿Qué productos se venden más?', '¿Qué días tengo más movimiento?', 'Explícame estas métricas sencillo'],
     pedidos: ['¿Cómo organizo mejor los pedidos en hora pico?', '¿Cómo reduzco el tiempo de entrega?'],
     mesas: ['¿Cómo uso los QR de mesa?', '¿Cómo reparto los QR en el local?'],
+    inventario: ['¿Cómo registro una entrada de inventario?', '¿Qué pasa cuando un producto se agota?'],
     clientes: ['¿Cómo fidelizo a mis clientes?', '¿Cómo traigo de vuelta a clientes inactivos?'],
     fidelizacion: ['¿Cuántos puntos por compra me conviene dar?', 'Sugiere recompensas para mi restaurante', '¿Cómo diseño una tarjeta atractiva?'],
     configuracion: ['¿Qué debo configurar primero?', '¿Qué horario conviene mostrar?'],

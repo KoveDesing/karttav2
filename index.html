@@ -27,16 +27,25 @@ for(var k in localStorage){if(/^sb-.+-auth-token$/.test(k)){d.classList.add('kx-
 <meta charset="UTF-8">
 <meta name="kartta-build" content="landing-20261109">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KARTTA — Tu restaurante. Ahora tiene sistema.</title>
-<meta name="description" content="KARTTA conecta menú digital, QR, pedidos, cocina, POS, pagos, clientes, inventario, analytics e inteligencia artificial en un solo sistema para restaurantes, cafeterías, bares, pizzerías y food trucks.">
+<title>KARTTA — Menú digital QR y pedidos para restaurantes</title>
+<meta name="description" content="KARTTA es el software para restaurantes en Colombia: menú digital con QR, sistema de pedidos, mesas, pagos, inventario y clientes en un solo lugar. Empieza gratis.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#FF3145">
 <link rel="canonical" href="https://kartta.food/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="KARTTA — Tu restaurante. Ahora tiene sistema.">
-<meta property="og:description" content="Menú, pedidos, pagos, cocina, clientes, inventario e inteligencia artificial. Todo conectado en un solo sistema.">
+<meta property="og:site_name" content="KARTTA">
+<meta property="og:locale" content="es_CO">
+<meta property="og:image" content="https://kartta.food/assets/landing-2.webp">
+<meta property="og:image:width" content="900">
+<meta property="og:image:height" content="573">
+<meta property="og:image:alt" content="KARTTA: menú digital, pedidos y gestión para restaurantes">
+<meta property="og:title" content="KARTTA — Menú digital QR y pedidos para restaurantes">
+<meta property="og:description" content="Menú digital con QR, pedidos, mesas, pagos, inventario y clientes. Todo conectado en un solo sistema para tu restaurante.">
 <meta property="og:url" content="https://kartta.food/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="KARTTA — Tu restaurante. Ahora tiene sistema.">
-<meta name="twitter:description" content="El sistema digital que conecta la operación de tu restaurante.">
+<meta name="twitter:title" content="KARTTA — Menú digital QR y pedidos para restaurantes">
+<meta name="twitter:image" content="https://kartta.food/assets/landing-2.webp">
+<meta name="twitter:description" content="Menú digital con QR, pedidos, pagos e inventario para restaurantes en Colombia.">
 <style>/* cinta crítica: funciona aunque kartta-landing.css/js estén en caché viejo */
 :root{--kx-ribbon-h:36px}@media(max-width:767px){:root{--kx-ribbon-h:32px}}
 html.kx-authed{--kx-ribbon-h:0px}html.kx-authed [data-kx-guest]{display:none!important}
@@ -51,14 +60,40 @@ body{padding-top:var(--kx-ribbon-h)}
 <link rel="preload" as="image" href="assets/landing-2.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mr+Dafoe&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mr+Dafoe&display=swap" rel="stylesheet"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mr+Dafoe&display=block">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mr+Dafoe&display=block" rel="stylesheet">
+<style>/* Fuente de respaldo con las métricas de Inter: si hubiera que usarla, el texto no salta de tamaño (sin CLS) */
+@font-face{font-family:'Inter Fallback';src:local('Arial'),local('Helvetica Neue'),local('Helvetica');size-adjust:107.64%;ascent-override:89.79%;descent-override:22.36%;line-gap-override:0%;}
+/* Pantalla de carga: solo la primera vez de cada sesión. El logotipo aparece cuando la tipografía ya está lista (nunca con una letra provisional). */
+#kBoot{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;background:#0A0A0A;transition:opacity .5s ease,visibility .5s;}
+html.kboot #kBoot{display:flex;}html.kboot{overflow:hidden;}
+#kBoot.out{opacity:0;visibility:hidden;}
+#kBoot span{font-family:'Mr Dafoe',cursive;font-weight:400;font-size:clamp(60px,13vw,112px);line-height:1;color:#fff;opacity:0;filter:blur(16px);transform:translateY(10px) scale(.98);}
+#kBoot span b{font-weight:400;color:#FF3145;}
+#kBoot.go span{opacity:1;filter:blur(0);transform:none;transition:opacity .9s var(--ease,cubic-bezier(.16,1,.3,1)),filter .9s var(--ease,cubic-bezier(.16,1,.3,1)),transform .9s var(--ease,cubic-bezier(.16,1,.3,1));}
+@media (prefers-reduced-motion:reduce){#kBoot span{filter:none;transform:none;}#kBoot.go span{transition:opacity .3s linear;}}</style>
+<script>
+/* Espera a que Inter y Mr Dafoe estén descargadas antes de mostrar la página (máx. 2,8 s; después se muestra igual). */
+(function(){var d=document,h=d.documentElement,seen=0,fin=0;
+try{seen=sessionStorage.getItem('kboot');}catch(e){}
+if(seen||!d.fonts||!d.fonts.load||/^(?!www\.)[a-z0-9-]+\.kartta\.food$/i.test(location.hostname))return;   // no en subdominios de restaurantes
+h.classList.add('kboot');
+function whenEl(fn){var el=d.getElementById('kBoot');if(el)fn(el);else d.addEventListener('DOMContentLoaded',function(){var e=d.getElementById('kBoot');if(e)fn(e);else h.classList.remove('kboot');});}
+function done(){if(fin)return;fin=1;
+  whenEl(function(el){el.classList.add('go');   /* el logotipo aparece con enfoque progresivo */
+    setTimeout(function(){h.classList.remove('kboot');el.classList.add('out');
+      try{sessionStorage.setItem('kboot','1');}catch(e){}
+      setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},700);},1100);});}
+Promise.all([d.fonts.load('400 1em "Mr Dafoe"'),d.fonts.load('400 1em Inter'),d.fonts.load('800 1em Inter')]).then(done,done);
+setTimeout(done,2800);})();
+</script>
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
   "@graph":[
-    {"@type":"Organization","name":"KARTTA","url":"https://kartta.food/","description":"Sistema digital que conecta la operación de restaurantes, cafeterías, bares, pizzerías y food trucks."},
-    {"@type":"SoftwareApplication","name":"KARTTA","applicationCategory":"BusinessApplication","operatingSystem":"Web","offers":[
+    {"@type":"WebSite","name":"KARTTA","url":"https://kartta.food/","inLanguage":"es-CO"},
+    {"@type":"Organization","name":"KARTTA","url":"https://kartta.food/","logo":"https://kartta.food/favicon.png","description":"Sistema digital que conecta la operación de restaurantes, cafeterías, bares, pizzerías y food trucks."},
+    {"@type":"SoftwareApplication","name":"KARTTA","url":"https://kartta.food/","description":"Software para restaurantes: menú digital con QR, pedidos, mesas, pagos, inventario y clientes.","applicationCategory":"BusinessApplication","operatingSystem":"Web","inLanguage":"es-CO","offers":[
       {"@type":"Offer","name":"Free","price":"0","priceCurrency":"COP"},
       {"@type":"Offer","name":"KARTTA Pro","price":"43900","priceCurrency":"COP"},
       {"@type":"Offer","name":"KARTTA Elite","price":"84900","priceCurrency":"COP"}
@@ -70,10 +105,9 @@ body{padding-top:var(--kx-ribbon-h)}
       {"@type":"Question","name":"¿Puedo recibir pedidos?","acceptedAnswer":{"@type":"Answer","text":"Sí. Los pedidos entran en tiempo real y quedan visibles para cocina y para caja."}},
       {"@type":"Question","name":"¿KARTTA tiene POS?","acceptedAnswer":{"@type":"Answer","text":"Sí. KARTTA incluye un punto de venta conectado directamente con los pedidos y el inventario."}},
       {"@type":"Question","name":"¿Puedo administrar mi restaurante desde un solo lugar?","acceptedAnswer":{"@type":"Answer","text":"Sí, ese es el propósito de KARTTA: reunir menú, pedidos, cocina, pagos, clientes e inventario en un mismo sistema."}},
-      {"@type":"Question","name":"¿Qué incluye la IA?","acceptedAnswer":{"@type":"Answer","text":"La IA de KARTTA responde preguntas sobre tu operación y analiza las fotos de tus productos para sugerirte mejoras."}},
+      {"@type":"Question","name":"¿Qué incluye la IA?","acceptedAnswer":{"@type":"Answer","text":"El asistente de IA de KARTTA responde preguntas sobre tu operación y te ayuda a trabajar con tu menú, tus pedidos y tus datos."}},
       {"@type":"Question","name":"¿Puedo tener una web propia?","acceptedAnswer":{"@type":"Answer","text":"Sí. Cada negocio puede tener su propio espacio público dentro de KARTTA, con su menú y su marca."}},
-      {"@type":"Question","name":"¿Qué diferencia existe entre KARTTA y KARTTA Pro?","acceptedAnswer":{"@type":"Answer","text":"KARTTA Pro añade funciones para operaciones más grandes, como multi-sede, automatizaciones e inventario avanzado."}},
-      {"@type":"Question","name":"¿Qué incluye el plan personalizado?","acceptedAnswer":{"@type":"Answer","text":"El plan personalizado está pensado para negocios que necesitan una experiencia y una configuración hechas a la medida de su operación."}}
+      {"@type":"Question","name":"¿Qué planes tiene KARTTA?","acceptedAnswer":{"@type":"Answer","text":"KARTTA tiene un plan Free sin costo y dos planes de pago, KARTTA Pro y KARTTA Elite, con más productos, mesas, usuarios y créditos de IA. Los precios y límites están en la sección de planes."}}
     ]}
   ]
 }
@@ -89,7 +123,7 @@ body{padding-top:var(--kx-ribbon-h)}
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto;} *{animation:none !important; transition:none !important;} }
-body{margin:0;font-family:'Inter',-apple-system,sans-serif;color:var(--black);background:var(--white);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden;}
+body{margin:0;font-family:'Inter','Inter Fallback',-apple-system,sans-serif;color:var(--black);background:var(--white);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden;}
 img{max-width:100%;display:block;}
 a{color:inherit;text-decoration:none;}
 button{font-family:inherit;border:none;background:none;cursor:pointer;}
@@ -243,7 +277,7 @@ section{padding:clamp(60px,8vw,112px) 0;position:relative;}
 .hero-logo-mark{height:clamp(64px,8vw,112px);width:auto;margin-bottom:22px;}
 .hero-eyebrow{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--gray);text-transform:uppercase;margin:0 0 16px;justify-content:flex-start;display:flex;}
 .hero h1{font-size:clamp(36px,5.4vw,62px);font-weight:800;line-height:1.12;letter-spacing:-0.01em;margin:0 0 24px;}
-.hl{background:#FF3145;color:#fff;padding:2px 10px;font-weight:inherit;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
+.hl{background:#FF3145;color:#fff;padding:2px 10px;border-radius:0;font-weight:inherit;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
 .hero-sub{font-size:clamp(16.5px,1.6vw,19px);color:var(--gray);max-width:50ch;margin:0 auto 32px;}
 .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px;}
 .btn-soft{background:#FFFFFF;color:var(--black);box-shadow:6px 6px 14px rgba(10,10,10,.08),-6px -6px 14px rgba(255,255,255,.9);border:none;}
@@ -671,19 +705,12 @@ html{overflow-x:clip;}
 <script src="kartta-plans.js"></script>
 <script type="module" src="supabase-init.js"></script>
 <script src="cookies.js" defer></script>
-<script src="kartta-landing.js?v=20261110" defer></script>
-<script>
-/* Pausa las animaciones infinitas (flotación, cinta, escáner) cuando salen de pantalla: mismo efecto, menos CPU/GPU */
-(function(){ if(!('IntersectionObserver' in window)) return;
-  var io=new IntersectionObserver(function(es){ es.forEach(function(e){ e.target.style.animationPlayState=e.isIntersecting?'':'paused'; }); },{rootMargin:'80px'});
-  function go(){ document.querySelectorAll('.dash-back,.phone,.qr-tag,.float-card,.kx-ribbon-track,.qr-mark,.kbubble').forEach(function(el){ io.observe(el); }); }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
-})();
-</script>
+<script src="kartta-landing.js?v=20261109" defer></script>
 <script defer src="/kartta-tracker.js" data-scope="site"></script>
 <script>try{var __q=new URLSearchParams(location.search);if(__q.get('error_code')==='bad_oauth_state'){history.replaceState(null,'',location.pathname+location.hash);}}catch(e){}</script>
 </head>
 <body class="auth-loading">
+<div id="kBoot" aria-hidden="true"><span>Kar<b>tt</b>a</span></div>
 <div class="kx-ribbon no-kred" data-kx-guest>
   <a class="kx-ribbon-link" href="#" data-auth="signup" data-keep data-kt="cinta-superior" aria-label="Prueba KARTTA gratis durante 7 días. Crea tu restaurante.">
     <div class="kx-ribbon-track" aria-hidden="true">
@@ -1104,10 +1131,9 @@ html{overflow-x:clip;}
     <div id="faqMore" style="display:none;">
       <details class="faq-item"><summary>¿KARTTA tiene POS?</summary><div class="faq-body"><p>Sí. KARTTA incluye un punto de venta conectado directamente con los pedidos y el inventario.</p></div></details>
       <details class="faq-item"><summary>¿Puedo administrar mi restaurante desde un solo lugar?</summary><div class="faq-body"><p>Sí, ese es el propósito de KARTTA: reunir menú, pedidos, cocina, pagos, clientes e inventario en un mismo sistema.</p></div></details>
-      <details class="faq-item"><summary>¿Qué incluye la IA?</summary><div class="faq-body"><p>La IA de KARTTA responde preguntas sobre tu operación y analiza las fotos de tus productos para sugerirte mejoras.</p></div></details>
+      <details class="faq-item"><summary>¿Qué incluye la IA?</summary><div class="faq-body"><p>El asistente de IA de KARTTA responde preguntas sobre tu operación y te ayuda a trabajar con tu menú, tus pedidos y tus datos.</p></div></details>
       <details class="faq-item"><summary>¿Puedo tener una web propia?</summary><div class="faq-body"><p>Sí. Cada negocio puede tener su propio espacio público dentro de KARTTA, con su menú y su marca.</p></div></details>
-      <details class="faq-item"><summary>¿Qué diferencia existe entre KARTTA y KARTTA Pro?</summary><div class="faq-body"><p>KARTTA Pro añade funciones para operaciones más grandes, como multi-sede, automatizaciones e inventario avanzado.</p></div></details>
-      <details class="faq-item"><summary>¿Qué incluye el plan personalizado?</summary><div class="faq-body"><p>El plan personalizado está pensado para negocios que necesitan una experiencia y una configuración hechas a la medida de su operación.</p></div></details>
+      <details class="faq-item"><summary>¿Qué planes tiene KARTTA?</summary><div class="faq-body"><p>KARTTA tiene un plan Free sin costo y dos planes de pago, KARTTA Pro y KARTTA Elite, con más productos, mesas, usuarios y créditos de IA. Los precios y límites están en la sección de planes.</p></div></details>
     </div>
     <button id="faqToggle" class="btn-soft" style="display:flex;margin:20px auto 0;border-radius:999px;padding:10px 20px;font-size:13.5px;font-weight:600;gap:6px;">
       <span id="faqToggleLabel">Ver más preguntas</span>

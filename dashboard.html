@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+<html lang="es" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -7,18 +7,15 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" rel="stylesheet"></noscript>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="kartta-plans.js"></script>
 <script type="module" src="supabase-init.js"></script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script type="module" src="kartta-onesignal.js?v=20261107-onesignal3"></script>
 <script src="cookies.js" defer></script>
-<script src="kartta-image-ai.js" defer></script>
 <script src="kartta-imgedit.js?v=20261109" defer></script>
-<script src="kartta-upsell.js?v=20261110" defer></script>
-<script src="kartta-tour.js?v=20261034" defer></script>
+<script src="kartta-tour.js?v=20261110" defer></script>
 <script src="menu-design.js" defer></script>
 <link rel="manifest" href="/kartta-push.webmanifest">
 <link rel="apple-touch-icon" href="/favicon.png">
@@ -30,14 +27,14 @@
 <script>
 /* aplica tema y acento guardados ANTES de pintar (evita parpadeo) */
 (function(){try{var p=JSON.parse(localStorage.getItem('kartta_prefs')||'{}');
-document.documentElement.setAttribute('data-theme',p.theme==='dark'?'dark':'light');
+document.documentElement.setAttribute('data-theme',p.theme==='light'?'light':'dark');
 if(/^#[0-9a-fA-F]{6}$/.test(p.accent||'')){var h=p.accent,c=[1,3,5].map(function(i){var v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);}),L=.2126*c[0]+.7152*c[1]+.0722*c[2];
 document.documentElement.style.setProperty('--accent',h);document.documentElement.style.setProperty('--on-accent',L>.34?'#0A0A0A':'#FFFFFF');}}catch(e){}})();
 </script>
 <style>
 :root{--accent:#FF3145;--on-accent:#FFFFFF;--accent-dim:color-mix(in srgb,var(--accent) 82%,#000);--accent-soft:color-mix(in srgb,var(--accent) 14%,transparent);--r:16px;--ease:cubic-bezier(.16,1,.3,1);}
 :root[data-theme=dark]{--bg:#0A0A0A;--panel:#151515;--panel2:#1C1C1C;--border:#262626;--text:#E4E4E4;--strong:#fff;--muted:#8F8F8F;--shadow:0 1px 0 rgba(0,0,0,.35);--ok:var(--accent);}
-:root[data-theme=light]{--bg:#F3F3F1;--panel:#FFFFFF;--panel2:#F5F5F3;--border:#E6E6E3;--text:#2A2A2A;--strong:#0A0A0A;--muted:#777;--shadow:0 1px 2px rgba(10,10,10,.04),0 8px 28px -10px rgba(10,10,10,.08);--ok:var(--accent);}
+:root[data-theme=light]{--bg:#F3F3F1;--panel:#FFFFFF;--panel2:#F5F5F3;--border:#E6E6E3;--text:#2A2A2A;--strong:#0A0A0A;--muted:#777;--shadow:0 1px 2px rgba(10,10,10,.05),0 14px 30px -14px rgba(10,10,10,.18);--ok:var(--accent);}
 *{box-sizing:border-box;}
 body{margin:0;font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);transition:background .25s ease,color .25s ease;}
 a{color:inherit;text-decoration:none;}button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;}
@@ -143,11 +140,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 .pbody{padding:14px;}.pname{font-weight:800;font-size:14.5px;color:var(--strong);}.pdesc{font-size:12.5px;color:var(--muted);margin:4px 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em;}
 .pprice{font-weight:800;font-size:15px;color:var(--strong);}.pprice s{font-size:12px;color:var(--muted);font-weight:600;margin-left:6px;}
 .pcat{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;}
-.pact{display:grid;grid-template-columns:1fr 1fr auto auto;gap:8px;margin-top:12px;align-items:stretch;}
-.pact .sw{grid-column:1/-1;width:auto;height:auto;border-radius:0;display:flex;justify-content:flex-start;padding:0 0 4px;border-top:0;font-size:12px}
-.pact .btn{width:100%;justify-content:center;min-height:36px;padding-left:10px;padding-right:10px}
-.pact [data-mv]{width:36px;padding:0}
-@media (max-width:380px){.pact{grid-template-columns:1fr 1fr}.pact [data-mv]{width:100%}}
+.pact{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;}
 .empty{text-align:center;padding:44px 20px;}.empty .ic{width:56px;height:56px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
 .empty h3{font-size:17px;margin:0 0 6px;color:var(--strong);}.empty p{color:var(--muted);font-size:13.5px;margin:0 0 18px;}
 
@@ -163,32 +156,20 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 
 /* editor + preview */
 .editor{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:20px;align-items:start;}
-.pvpanel{position:sticky;top:16px;}
-.pvbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;flex-wrap:wrap;}
-.pvstage{background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:18px;display:flex;justify-content:center;overflow:hidden;}
-.pv-pc{width:100%;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:#fff;}
-.pv-pc .chrome{height:28px;background:#ECECEA;display:flex;align-items:center;gap:6px;padding:0 12px;}.pv-pc .chrome i{width:8px;height:8px;border-radius:50%;background:#C9C9C6;}
-.pv-pc .scr{max-height:620px;overflow-y:auto;}
-.pv-phone{width:320px;max-width:100%;border:9px solid #111;border-radius:36px;overflow:hidden;background:#fff;box-shadow:0 20px 40px -16px rgba(0,0,0,.5);}
-.pv-phone .scr{height:600px;overflow-y:auto;}
-/* menú renderizado (preview) */
-.mp{--p:#FF3145;--s:#0A0A0A;--rad:18px;--fs:1;font-family:Inter,sans-serif;background:#fff;color:#111;font-size:calc(14px*var(--fs));}
-.mp .ban{height:130px;background:var(--s) center/cover;position:relative;}
-.mp .prof{display:flex;align-items:flex-end;gap:14px;padding:0 18px;margin-top:-34px;position:relative;}
-.mp .logo{width:76px;height:76px;border-radius:50%;background:var(--p);border:4px solid #fff;color:#fff;font-weight:800;font-size:28px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}.mp .logo img{width:100%;height:100%;object-fit:cover;}
-.mp .nm{font-weight:800;font-size:calc(19px*var(--fs));line-height:1.15;padding-bottom:4px;}
-.mp .meta{display:flex;flex-wrap:wrap;gap:8px;padding:10px 18px 0;font-size:calc(12px*var(--fs));color:#666;align-items:center;}
-.mp .meta a{color:var(--p);font-weight:700;}.mp .tag{padding:0 18px;font-size:calc(12.5px*var(--fs));color:#777;margin-top:8px;}
-.mp .ex{font-size:10px;background:#F1F1EF;border-radius:99px;padding:2px 7px;}
-.mp .cat{font-weight:800;font-size:calc(12px*var(--fs));text-transform:uppercase;letter-spacing:.05em;color:var(--s);padding:18px 18px 8px;}
-.mp .it{display:flex;gap:12px;margin:0 14px 10px;padding:12px;border:1px solid #EEE;border-radius:var(--rad);align-items:center;background:#fff;}
-.mp.soft .it{border:none;box-shadow:0 8px 20px -10px rgba(0,0,0,.2);}
-.mp .it img{width:62px;height:62px;border-radius:calc(var(--rad)*.6);object-fit:cover;flex-shrink:0;}
-.mp .it .t{font-weight:700;}.mp .it .d{font-size:calc(12px*var(--fs));color:#777;margin-top:2px;}
-.mp .it .pr{font-weight:800;margin-top:4px;}.mp .it .pr s{font-weight:500;color:#999;font-size:.85em;margin-left:5px;}
-.mp .add{margin-left:auto;flex-shrink:0;width:34px;height:34px;border-radius:99px;background:var(--p);color:#fff;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;}
-.mp.outline .add{background:#fff;color:var(--p);border:2px solid var(--p);}
-.mp .none{padding:34px 18px;text-align:center;color:#999;font-size:13px;}
+/* vista previa interactiva del menú (teléfono) */
+.mpv-wrap{display:flex;justify-content:center;padding:22px 0 8px;}
+.mpv-phone{position:relative;width:min(100%,312px);aspect-ratio:312/640;padding:10px;border-radius:46px;background:#0B0B0B;box-shadow:0 0 0 1.5px #333 inset,0 28px 56px -22px rgba(0,0,0,.65);}
+.mpv-island{position:absolute;z-index:3;top:18px;left:50%;width:76px;height:20px;margin-left:-38px;border-radius:99px;background:#0B0B0B;pointer-events:none;}
+.mpv-screen{position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:#fff;isolation:isolate;}
+.mpv-screen iframe{position:absolute;left:0;top:0;width:390px;height:844px;border:0;transform-origin:0 0;background:#fff;opacity:0;transition:opacity .25s ease;}
+.mpv-screen.ready iframe{opacity:1;}
+.mpv-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:13px;color:#777;background:#fff;transition:opacity .2s ease;}
+.mpv-screen.ready .mpv-load{opacity:0;pointer-events:none;}
+.mpv-actions{display:grid;gap:12px;margin-top:18px;}
+.mpv-actions>.btn{width:100%;justify-content:center;}
+.mpv-quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;}
+.mpv-quick .btn{justify-content:center;text-align:center;}
+@media (prefers-reduced-motion:reduce){.mpv-screen iframe,.mpv-load{transition:none;}}
 
 /* chat IA */
 .aiwrap{position:relative;}
@@ -237,7 +218,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
   #tabbar{display:flex;position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:200;background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:6px;gap:4px;box-shadow:var(--shadow);}
   #tabbar button{flex:1;min-height:48px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;font-weight:700;color:var(--muted);}
   #tabbar button.active{background:var(--accent);color:var(--on-accent);}
-  .editor{grid-template-columns:1fr;}.pvpanel{position:static;}
+  .editor{grid-template-columns:1fr;}
   .f2{grid-template-columns:1fr;}
   .pgrid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
   .hello{font-size:clamp(32px,9vw,44px);}
@@ -257,14 +238,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 .urlprev .addr .tld{color:var(--strong);font-weight:700;}
 .urlprev .cap{padding:9px 14px;font-size:12.5px;color:var(--muted);}
 .fmsg{font-size:12.5px;margin:8px 0 0;min-height:18px;color:var(--muted);}.fmsg.ok{color:var(--ok);}.fmsg.bad{color:#E5484D;}
-.styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:16px;}
-.stylec{text-align:left;padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--panel2);transition:border-color .15s,transform .15s var(--ease),background .15s;}
-.stylec:hover{border-color:var(--accent);transform:translateY(-2px);}
-.stylec[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);}
-.stylec b{display:block;font-size:13.5px;color:var(--strong);margin-bottom:4px;}.stylec span{font-size:12px;color:var(--muted);line-height:1.45;}
 .notice{padding:12px 14px;border-radius:12px;background:var(--panel2);border:1px solid var(--border);font-size:13px;color:var(--text);margin-bottom:14px;}
-.iares{margin-top:16px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;}
-.iares img{width:100%;max-width:420px;border-radius:16px;border:1px solid var(--border);aspect-ratio:1/1;object-fit:cover;background:var(--panel2);}
 .attach{display:flex;align-items:center;gap:10px;padding:10px 14px 0;}
 .attach img{width:48px;height:48px;border-radius:10px;object-fit:cover;border:1px solid var(--border);}
 .attach span{font-size:12.5px;color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -277,7 +251,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 @media (prefers-reduced-motion:reduce){.skel{animation:none}}
 
 /* etiquetas + foto IA */
-#tagModal,#aiPhotoModal{z-index:600}
+#tagModal{z-index:600}
 .tagpick{display:flex;flex-wrap:wrap;gap:8px}
 .tagpick button{border:0;background:none;padding:3px;border-radius:99px;opacity:.5;cursor:pointer}
 .tagpick button[aria-pressed="true"]{opacity:1;box-shadow:0 0 0 2px var(--accent)}
@@ -287,30 +261,27 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 .palx{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:6px}
 .palx button{height:38px;border-radius:10px;border:2px solid var(--border);font-weight:800;font-size:12px}
 .palx button[aria-pressed="true"]{border-color:var(--strong);box-shadow:0 0 0 2px var(--accent)}
-.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
-.cmp figure{margin:0;text-align:center;font-size:12px;color:var(--muted)}
-.cmp img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;border:1px solid var(--border);background:var(--panel2)}
-.cmp b{display:block;color:var(--strong);margin-bottom:6px}
 .drag-over{outline:2px dashed var(--accent);outline-offset:3px}
 .pcard[draggable="true"]{cursor:grab}.pcard.dragging{opacity:.4}
 </style>
-<link rel="stylesheet" href="kartta-motion.css?v=20261111">
-<script src="kartta-motion.js?v=20261110" defer></script>
+<link rel="stylesheet" href="kartta-motion.css?v=20261031">
+<script src="kartta-motion.js?v=20261031" defer></script>
 <link rel="stylesheet" href="kartta-modules.css?v=20261104">
 <script src="kartta-modules.js?v=20261032" defer></script>
+<script src="kartta-inventory.js?v=20261110" defer></script>
 <script src="kartta-billing.js?v=20261106-onesignal1" defer></script>
-<script src="kartta-metrics.js?v=20261110" defer></script>
+<script src="kartta-metrics.js?v=20261034" defer></script>
 <script src="kartta-qr.js?v=20261031" defer></script>
 <script src="kartta-whatsapp.js?v=20261104" defer></script>
 <script src="kartta-card.js?v=20261102" defer></script>
 <script src="kartta-loyalty.js?v=20261102" defer></script>
-<script src="kartta-home.js?v=20261110" defer></script>
+<script src="kartta-home.js?v=20261034" defer></script>
 <link rel="stylesheet" href="kartta-support.css?v=20261101">
 <script src="kartta-support.js?v=20261101" defer></script>
 <link rel="stylesheet" href="kartta-ai-chat.css?v=20261034">
 <script src="kartta-ai-chat.js?v=20261103a" defer></script>
 <link rel="stylesheet" href="kartta-ai-float.css?v=20261102">
-<script src="kartta-ai-float.js?v=20261103a" defer></script>
+<script src="kartta-ai-float.js?v=20261110" defer></script>
 </head>
 <body>
 
@@ -336,6 +307,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
     <button class="sb-item" data-view="pedidos"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v4H4zM4 12h16M4 16h10M4 20h6"/></svg>Pedidos</button>
     <button class="sb-item" data-view="qr"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h3v3M21 14v.01M14 21h3M21 17v4"/></svg>Código QR</button>
     <button class="sb-item" data-view="mesas"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18M5 9v10M19 9v10M8 9V5h8v4"/></svg>Mesas y QR</button>
+    <button class="sb-item" data-view="inventario"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v9"/></svg>Inventario</button>
     <button class="sb-item" data-view="clientes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-4 4-6 7-6s5.5 2 7 6"/></svg>Clientes</button>
     <button class="sb-item" data-view="fidelizacion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>Fidelización</button>
     <button class="sb-item" data-view="pagos"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 5h20v14H2zM2 10h20"/></svg>Pagos</button>
@@ -441,29 +413,30 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
             <input type="file" id="bannerFile" accept="image/*" hidden>
             <p class="sub" style="margin:12px 0 0">Tu logo, nombre y dirección se editan en <a href="#" data-goto="configuracion" style="color:var(--accent);font-weight:700">Configuración</a>.</p>
           </div>
-          <div class="card" id="imgAiCard">
-            <div class="row between"><div><h3>Fotos de producto con IA</h3><p class="sub">Mejora la foto de un producto con 6 estilos. El resultado es una propuesta: revísalo antes de usarlo.</p></div><span class="pill pend" id="iaQuotaPill" role="status">—</span></div>
-            <div class="notice" id="iaLock" hidden></div>
-            <div class="styles" id="iaStyles" role="group" aria-label="Estilo de imagen"></div>
-            <div class="field"><label>Foto de referencia</label>
-              <div class="imgbox"><div class="imgprev" id="iaPrev">Sin foto</div><div class="row"><button type="button" class="btn btn-ghost btn-sm" id="iaPick">Subir foto</button><button type="button" class="btn btn-ghost btn-sm" id="iaClear">Quitar</button></div></div>
-              <input type="file" id="iaFile" accept="image/jpeg,image/png,image/webp" hidden>
+          <div class="card" id="menuPvCard">
+            <div class="row between"><div><h3>Así ven tu menú tus clientes</h3><p class="sub">Es tu menú real: tus productos, fotos, precios y diseño. Desplázate, cambia de categoría y abre productos como lo haría un cliente.</p></div><span class="pill pend" id="mpvState" role="status">—</span></div>
+            <div class="mpv-wrap">
+              <div class="mpv-phone" id="mpvPhone">
+                <i class="mpv-island" aria-hidden="true"></i>
+                <div class="mpv-screen" id="mpvScreen">
+                  <iframe id="mpvFrame" title="Vista previa interactiva de tu menú" referrerpolicy="same-origin"></iframe>
+                  <div class="mpv-load" id="mpvLoad" role="status">Cargando tu menú…</div>
+                </div>
+              </div>
             </div>
-            <div class="field"><label for="iaInstr">Indicaciones (opcional)</label><textarea id="iaInstr" maxlength="500" placeholder="Ej: que se vea en una mesa de madera clara"></textarea></div>
-            <button type="button" class="btn btn-accent" id="iaGen">Generar imagen</button>
-            <p class="fmsg" id="iaMsg" role="status" aria-live="polite"></p>
-            <div class="iares" id="iaRes" hidden>
-              <img id="iaOut" alt="Imagen generada por IA, pendiente de tu revisión">
-              <p class="sub" style="margin:0">Los modelos de IA pueden cambiar textos o logos del empaque. Revisa bien antes de usarla. Tu imagen actual no se reemplaza hasta que confirmes.</p>
-              <div class="row"><button type="button" class="btn btn-ghost" id="iaAgain">Generar otra</button><button type="button" class="btn btn-ghost" id="iaDown">Descargar</button><button type="button" class="btn btn-accent" id="iaUse">Usar en producto</button><button type="button" class="btn btn-ghost" id="iaCancel">Cancelar</button></div>
-              <div id="iaPickProd" hidden class="field"><label for="iaProd">¿En qué producto la usamos?</label><select id="iaProd"></select><div class="row" style="margin-top:10px"><button type="button" class="btn btn-accent" id="iaConfirm">Confirmar y usar</button></div></div>
+            <div class="mpv-actions">
+              <a class="btn btn-accent" href="editor.html" id="mpvOpen">Abrir editor</a>
+              <div class="mpv-quick">
+                <a class="btn btn-ghost btn-sm" href="editor.html#design">Personalizar diseño</a>
+                <a class="btn btn-ghost btn-sm" href="editor.html#colors">Cambiar colores</a>
+                <a class="btn btn-ghost btn-sm" href="editor.html#text">Editar tipografía</a>
+                <a class="btn btn-ghost btn-sm" href="editor.html#banner">Personalizar banner</a>
+                <a class="btn btn-ghost btn-sm" href="editor.html#products">Organizar productos y categorías</a>
+                <a class="btn btn-ghost btn-sm" href="editor.html#templates">Configurar apariencia</a>
+              </div>
             </div>
           </div>
           <button class="lockrow" data-lock="PREMIUM" hidden><span>Personalización avanzada (tipografías, secciones, CSS)</span><span class="badge-lock"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex:none"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-1.5 11h-15zM5 20h14v2H5z"/></svg>PREMIUM</span></button>
-        </div>
-        <div class="pvpanel" hidden>
-          <div class="pvbar"><strong style="color:var(--strong)">Vista previa</strong><div class="seg" id="pvDevice"><button data-v="pc">PC</button><button data-v="mobile" class="on">Celular</button></div></div>
-          <div class="pvstage" id="pvStage"></div>
         </div>
       </div>
     </section>
@@ -554,6 +527,9 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
       <div class="card empty" id="mesasEmpty"><div class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9h18M5 9v10M19 9v10M8 9V5h8v4"/></svg></div><h3>Aún no tienes mesas</h3><p>Crea una mesa para generar su código QR.</p><button class="btn btn-accent" data-newmesa>Crear mesa</button></div>
     </section>
 
+    <!-- INVENTARIO -->
+    <section class="view" data-panel="inventario"><div id="modInventory"></div></section>
+
     <!-- CLIENTES -->
     <section class="view" data-panel="clientes">
       <div class="vhead"><h2>Clientes</h2><p>Se agregan solos con cada pedido, ordenados por cuánto te han comprado.</p></div>
@@ -611,24 +587,10 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
     <div class="row" style="margin-top:14px"><button class="btn btn-ghost" id="tgClose" style="flex:1">Cerrar</button></div>
   </div>
 </div>
-<div class="modal-bg" id="aiPhotoModal" role="dialog" aria-modal="true" aria-labelledby="apTitle">
-  <div class="modal">
-    <h3 id="apTitle">¿Mejorar esta foto con inteligencia artificial?</h3>
-    <div id="apAsk"><p class="sub">La IA puede dejar tu producto sobre fondo blanco de estudio, con luz suave y aspecto profesional. <b>Mantiene tu producto tal como es</b>; tú decides si usas el resultado y siempre conservas tu foto original.</p>
-      <label class="sw" style="border:0;padding:0 0 14px;font-size:12.5px">Recordar mi respuesta solo en esta sesión<input type="checkbox" id="apRemember"></label>
-      <div class="row"><button class="btn btn-accent" id="apYes" style="flex:1">Sí, mejorar con IA</button><button class="btn btn-ghost" id="apNo" style="flex:1">No, usar imagen original</button></div></div>
-    <div id="apBusy" hidden><p class="sub" id="apBusyMsg">Generando tu foto… puede tardar hasta 1 minuto.</p></div>
-    <div id="apCmp" hidden><div class="cmp"><figure><b>Original</b><img id="apOrig" alt="Foto original"></figure><figure><b>Mejorada con IA</b><img id="apNew" alt="Foto mejorada con inteligencia artificial"></figure></div>
-      <p class="sub" id="apQuota" style="margin:0 0 12px;font-size:12px"></p>
-      <p class="sub" style="font-size:12px">Revisa que sea tu producto real, con sus ingredientes y presentación. Si algo no coincide, rechaza el resultado.</p>
-      <div class="row"><button class="btn btn-accent" id="apAccept" style="flex:1">Usar la mejorada</button><button class="btn btn-ghost" id="apRetry">Intentar otra vez</button><button class="btn btn-ghost" id="apCancel">Usar la original</button></div></div>
-    <p class="sub" id="apErr" style="color:#E5484D;margin-top:10px" hidden></p>
-  </div>
-</div>
 <div class="modal-bg" id="prodModal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
   <div class="modal lg">
     <h3 id="pmTitle">Nuevo producto</h3><p class="sub">Lo básico para publicarlo en tu menú.</p>
-    <div class="field"><label>Imagen</label><div class="imgbox"><div class="imgprev" id="pmPrev">Sin imagen</div><div class="row"><button type="button" class="btn btn-ghost btn-sm" id="pmPick">Elegir imagen</button><button type="button" class="btn btn-ghost btn-sm" id="pmRestore" hidden>Restaurar foto original</button><button type="button" class="btn btn-danger btn-sm" id="pmDelImg">Quitar</button></div></div><input type="file" id="pmFile" accept="image/*" hidden></div>
+    <div class="field"><label>Imagen</label><div class="imgbox"><div class="imgprev" id="pmPrev">Sin imagen</div><div class="row"><button type="button" class="btn btn-ghost btn-sm" id="pmPick">Elegir imagen</button><button type="button" class="btn btn-ghost btn-sm" id="pmRestore" hidden>Volver a la foto original</button><button type="button" class="btn btn-danger btn-sm" id="pmDelImg">Quitar</button></div></div><input type="file" id="pmFile" accept="image/*" hidden></div>
     <div class="field"><label>Nombre</label><input type="text" id="pmNombre" maxlength="70" placeholder="Hamburguesa clásica"></div>
     <div class="f2"><div class="field"><label>Precio (COP)</label><input type="number" id="pmPrecio" min="0" placeholder="25000"></div><div class="field"><label>Categoría</label><input type="text" id="pmCat" maxlength="40" placeholder="Hamburguesas" list="catList"><datalist id="catList"></datalist></div></div>
     <div class="field"><label>Descripción</label><textarea id="pmDesc" maxlength="200" placeholder="Ingredientes, tamaño, lo que lo hace especial…"></textarea></div>
@@ -661,7 +623,7 @@ const MS_DEFAULT = { primary:'#FF3145', secondary:'#0A0A0A', cardStyle:'round', 
 const IMG_CFG = { producto:[640,.78,'products'], logo:[320,.85,'logo'], banner:[1200,.74,'cover'] };
 
 const $ = (id) => document.getElementById(id);
-let uid, rid, slug, negocio = {}, perfil = {}, productos = [], categorias = [], ms = { ...MS_DEFAULT }, pvDevice = 'mobile', booted = false, ADMIN_MODE = false;
+let uid, rid, slug, negocio = {}, perfil = {}, productos = [], categorias = [], ms = { ...MS_DEFAULT }, booted = false, ADMIN_MODE = false;
 const ADMIN_PLANS = [['', 'Plan real'], ['free', 'Simular Free'], ['kartta', 'Simular KARTTA Pro'], ['pro', 'Simular KARTTA Elite']];   // solo interfaz: no toca la facturación
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -722,9 +684,9 @@ function syncPicker(h){
   document.querySelectorAll('.acc').forEach(a => a.classList.toggle('on', a.dataset.c.toUpperCase() === h));
 }
 function applyPrefs(p){
-  document.documentElement.setAttribute('data-theme', p.theme === 'dark' ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', p.theme === 'light' ? 'light' : 'dark');
   syncPicker(paintAccent(p.accent));
-  document.querySelectorAll('#themeSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === (p.theme === 'dark' ? 'dark' : 'light')));
+  document.querySelectorAll('#themeSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === (p.theme === 'light' ? 'light' : 'dark')));
 }
 /* perfil.prefs es la fuente de verdad: lo comparten el color/tema y la guía (tour). Así ninguna escritura pisa a la otra. */
 async function savePrefs(patch){
@@ -734,7 +696,7 @@ async function savePrefs(patch){
   if (prefsLocalOK()) { try { localStorage.setItem('kartta_prefs', JSON.stringify(p)); } catch {} }
   applyPrefs(p);
   const { error } = await sb.from('profiles').update({ prefs: p }).eq('id', uid);
-  if (!error && (patch.accent || patch.theme)) { try { const bc = new BroadcastChannel('kartta-accent'); bc.postMessage({ uid, accent: p.accent, theme: p.theme }); bc.close(); } catch {} }   // el editor abierto se actualiza sin recargar
+  if (!error && patch.accent) { try { const bc = new BroadcastChannel('kartta-accent'); bc.postMessage({ uid, accent: p.accent }); bc.close(); } catch {} }   // el editor abierto se actualiza sin recargar
   if (error) { console.warn(error); const m = $('accMsg'); if (m && patch.accent) m.textContent = 'Se aplicó en este dispositivo, pero no se pudo guardar en tu cuenta. Inténtalo de nuevo.'; }
   else { const m = $('accMsg'); if (m && patch.accent) { m.textContent = 'Color guardado en tu cuenta.'; clearTimeout(savePrefs._t); savePrefs._t = setTimeout(() => { m.textContent = ''; }, 2500); } }
 }
@@ -755,7 +717,8 @@ $('accReset').addEventListener('click', () => { clearTimeout(accSaveT); savePref
 $('themeSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) savePrefs({ theme: b.dataset.v }); });
 
 /* ---------- navegación ---------- */
-const VIEWS = ['inicio','productos','menu','personalizar','configuracion','ia','dominio','pedidos','mesas','clientes','metricas','qr','pagos','whatsapp','fidelizacion','soporte','facturacion','politicas'];
+const VIEWS = ['inicio','productos','menu','personalizar','configuracion','ia','dominio','pedidos','mesas','inventario','clientes','metricas','qr','pagos','whatsapp','fidelizacion','soporte','facturacion','politicas'];
+let curView = 'inicio';
 function irA(view){
   let goMetrics = false;
   if (view === 'metricas') { view = 'inicio'; goMetrics = true; }   // Métricas ahora vive dentro de Inicio
@@ -765,7 +728,8 @@ function irA(view){
   document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === view || (view === 'menu' && b.dataset.view === 'personalizar' && b.closest('#tabbar'))));
   $('sidebar').classList.remove('open'); $('scrim').classList.remove('show');
   if (location.hash !== '#' + view) history.replaceState(null, '', '#' + view);
-  if (view === 'personalizar') { renderPreview(); if (rid && window.KARTTA_IMAGE_AI) iaLoad(); }
+  curView = view;
+  if (view === 'personalizar') mpvShow();
   window.scrollTo({ top: 0 });
   window.dispatchEvent(new CustomEvent('kartta:view', { detail: view }));
   if (goMetrics) setTimeout(() => { const el = document.getElementById('hMetricas'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 500);
@@ -786,7 +750,6 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLock(
 /* ---------- modales ---------- */
 function openLock(kind){
   const prem = kind === 'PREMIUM';
-  if (window.KARTTA_UPSELL) { const pl = rank() === 0 ? 'KARTTA Pro' : 'KARTTA Elite'; KARTTA_UPSELL.open({ plan: pl, text: 'Mejora tu experiencia con ' + pl + ' y desbloquea ' + (prem ? 'la personalización avanzada' : 'esta herramienta') + ' para tu restaurante.' }); return; }
   $('lockTitle').textContent = prem ? 'Esta función es PREMIUM' : 'Esta función es PRO';
   $('lockSub').textContent = prem ? 'Desbloquea herramientas avanzadas para personalizar tu negocio.' : 'Actualiza tu plan para desbloquear esta herramienta.';
   $('lockModal').classList.add('show');
@@ -825,7 +788,7 @@ async function guardarNegocio(cols){
 
 
 /* =====================================================================================
-   ETIQUETAS · FOTO CON IA AL SUBIR · ORDENAR ARRASTRANDO · EXPORTAR MENÚ
+   ETIQUETAS · ORDENAR ARRASTRANDO · EXPORTAR MENÚ
    ===================================================================================== */
 let etiquetas = [], tagLinks = {}, catTagLinks = {};
 const TAG_PAL = [['#C2410C', '#FFFFFF'], ['#B91C1C', '#FFFFFF'], ['#15803D', '#FFFFFF'], ['#1D4ED8', '#FFFFFF'], ['#7E22CE', '#FFFFFF'], ['#111827', '#FFFFFF'], ['#FACC15', '#111827'], ['#FDBA74', '#431407'], ['#86EFAC', '#052E16'], ['#BAE6FD', '#082F49'], ['#FBCFE8', '#500724'], ['#E5E7EB', '#111827']];
@@ -903,32 +866,8 @@ $('tgSave').onclick = async () => {
   $('tgSave').disabled = false;
 };
 
-/* --- foto con IA al subir (solo plan Pro; el dueño decide y conserva su original) --- */
-let aiSession = null, apResult = null;   // aiSession: 'yes'|'no' solo mientras esta pestaña esté abierta
-const apShow = (k) => { ['apAsk', 'apBusy', 'apCmp'].forEach(id => { $(id).hidden = id !== k; }); $('apErr').hidden = true; };
-function apClose(){ $('aiPhotoModal').classList.remove('show'); }
-function askAi(){
-  pmAi = null; if (!isPro() || !window.KARTTA_IMAGE_AI || !pmImage || typeof pmImage !== 'object' || aiSession === 'no') return;
-  $('apOrig').src = pmImage.url; $('apRemember').checked = false; apShow('apAsk'); $('aiPhotoModal').classList.add('show');
-  if (aiSession === 'yes') runAi(); else setTimeout(() => $('apYes').focus(), 50);
-}
-async function runAi(){
-  apShow('apBusy');
-  try {
-    const f = new File([pmImage.blob], 'foto.jpg', { type: 'image/jpeg' });
-    const r = await window.KARTTA_IMAGE_AI.generate({ restaurantId: rid, image: f, style: 'estudio-blanco', instructions: '' });
-    if (!r?.image_url) throw new Error('Sin imagen'); apResult = r; $('apNew').src = r.image_url;
-    $('apQuota').textContent = r.daily_limit != null ? 'Te quedan ' + r.remaining_today + ' de ' + r.daily_limit + ' imágenes hoy (se comparten con todo tu equipo).' : ''; apShow('apCmp'); $('apRetry').disabled = r.remaining_today === 0; $('apAccept').focus();
-  } catch (e) { apShow('apAsk'); $('apErr').textContent = (e.message || 'No se pudo mejorar la foto.') + ' Tu foto original no cambió.'; $('apErr').hidden = false; }
-}
-$('apYes').onclick = () => { if ($('apRemember').checked) aiSession = 'yes'; runAi(); };
-$('apNo').onclick = () => { if ($('apRemember').checked) aiSession = 'no'; pmAi = null; apClose(); };
-$('apRetry').onclick = runAi;
-$('apCancel').onclick = () => { pmAi = null; apClose(); toast('Se usará tu foto original.'); };
-$('apAccept').onclick = () => { pmAi = { generation_id: apResult.generation_id }; $('pmPrev').innerHTML = `<img src="${esc(apResult.image_url)}" alt="Foto mejorada con IA">`; apClose(); toast('Listo: se usará la foto mejorada al guardar. Tu original se conserva.'); };
-$('aiPhotoModal').onclick = (e) => { if (e.target.id === 'aiPhotoModal' && $('apBusy').hidden) { pmAi = null; apClose(); } };
 $('pmRestore').onclick = async () => {
-  const p = productos.find(x => x.id === editId); if (!p?.originalPath || !confirm('¿Volver a tu foto original? La versión con IA dejará de mostrarse.')) return;
+  const p = productos.find(x => x.id === editId); if (!p?.originalPath || !confirm('¿Volver a tu foto original? La versión actual dejará de mostrarse.')) return;
   const { error } = await sb.from('products').update({ image_path: p.originalPath, original_image_path: null }).eq('id', editId);
   if (error) return toast('No se pudo restaurar.'); toast('Foto original restaurada.'); closeProd(); await refrescarProductos();
 };
@@ -988,8 +927,8 @@ const KT_STEPS = [
     view: 'productos', target: '#btnNuevoProducto', done: () => productos.length > 0, btn: 'Agregar mi primer producto', run: (t) => { t.pause(); openProd(); } },
   { id: 'categorias', title: 'Organiza por categorías', text: 'Al crear un producto escribe su categoría (por ejemplo: Hamburguesas, Bebidas o Postres). Se crean solas y tu menú queda agrupado y fácil de recorrer.',
     view: 'productos', target: '#btnNuevoProducto', done: () => categorias.length > 0, btn: 'Agregar un producto con categoría', run: (t) => { t.pause(); openProd(); } },
-  { id: 'fotos', title: 'Fotos que se antojan', text: 'Sube una foto en cada producto. Si tienes plan Pro, en Personalizar → «Fotos de producto con IA» puedes generar una versión mejorada: tú decides si la usas, y tu foto original no se reemplaza hasta que confirmes.',
-    view: 'personalizar', target: '#imgAiCard', done: () => productos.some(p => p.imagenPath), btn: 'Ir a mis productos', run: (t) => { t.pause(); irA('productos'); } },
+  { id: 'fotos', title: 'Fotos que se antojan', text: 'Sube una foto real en cada producto: un menú con buenas fotos se entiende más rápido y vende más. Puedes recortarla antes de guardar.',
+    view: 'productos', target: '#btnNuevoProducto', done: () => productos.some(p => p.imagenPath), btn: 'Agregar foto a un producto', run: (t) => { t.pause(); irA('productos'); } },
   { id: 'personalizar', title: 'Personaliza tu menú', text: 'En el editor visual eliges plantilla, colores, forma de las fotos, logo y banner, y ves el resultado real antes de publicar.',
     view: 'personalizar', target: '#btnSaveMenu', done: () => !!negocio.menuConfigured, doneLabel: 'Ya publicaste un diseño', btn: 'Abrir el editor visual', run: () => { location.href = 'editor.html'; } },
   { id: 'contacto', title: 'Contacto y pedidos', text: 'Agrega tu WhatsApp y teléfono para que tus clientes te encuentren. Los pedidos que hagan desde tu menú llegan a la sección «Pedidos» del panel.',
@@ -1098,7 +1037,7 @@ window.KARTTA_AUTH.onChange(async (user) => {
       $('gate').classList.add('hidden'); $('app').classList.add('ready');
       window.KARTTA_CTX = { sb, toast, money, esc, irA, openProd, menuURL, savePrefs,
         get rid(){ return rid; }, get slug(){ return slug; }, get negocio(){ return negocio; }, get perfil(){ return perfil; },
-        get productos(){ return productos; }, get pedidos(){ return pedidos; }, renderPedidos: () => renderPedidos() };
+        get productos(){ return productos; }, get pedidos(){ return pedidos; }, renderPedidos: () => renderPedidos(), refrescarProductos: () => refrescarProductos() };
       window.dispatchEvent(new Event('kartta:ready'));
       irA(location.hash.slice(1) || 'inicio');
     } catch (e) { console.error(e); $('gateMsg').textContent = 'Tu cuenta no tiene un negocio asociado todavía.'; }
@@ -1226,7 +1165,7 @@ const copy = async (t) => { try { await navigator.clipboard.writeText(t); toast(
 $('copyMenu').onclick = $('menuCopy').onclick = () => copy(menuURL());
 
 /* ---------- productos ---------- */
-let editId = null, pmImage, pmSel = new Set(), pmAi = null;   // pmImage: undefined = sin cambios, '' = quitar, {blob,url} = nueva
+let editId = null, pmImage, pmSel = new Set();   // pmImage: undefined = sin cambios, '' = quitar, {blob,url} = nueva
 async function cargarCategorias(){
   const { data, error } = await sb.from('categories').select('id,name').eq('restaurant_id', rid);
   if (error) throw error; categorias = data || [];
@@ -1285,7 +1224,7 @@ function openProd(id){
   $('pmTitle').textContent = id ? 'Editar producto' : 'Nuevo producto';
   $('pmNombre').value = p?.nombre || ''; $('pmPrecio').value = p?.precio ?? ''; $('pmCat').value = p?.categoria || ''; $('pmDesc').value = p?.descripcion || '';
   $('pmDisp').checked = p ? p.disponible !== false : true;
-  pmSel = new Set(p ? (tagLinks[p.id] || []) : []); pmAi = null; renderPmTags();
+  pmSel = new Set(p ? (tagLinks[p.id] || []) : []); renderPmTags();
   $('pmPrev').innerHTML = p?.imagen ? `<img src="${esc(p.imagen)}" alt="">` : 'Sin imagen';
   $('pmRestore').hidden = !(p && p.originalPath);
   $('pmAdv').innerHTML = (isPro()
@@ -1302,11 +1241,11 @@ $('pmCancel').onclick = closeProd; $('prodModal').onclick = e => { if (e.target.
 $('pmPick').onclick = () => $('pmFile').click();
 $('pmFile').onchange = async () => {
   const f = $('pmFile').files[0]; if (!f) return;
-  try { const blob = await fileToBlob(f, IMG_CFG.producto[0], IMG_CFG.producto[1]); pmImage = { blob, url: URL.createObjectURL(blob) }; pmAi = null; $('pmPrev').innerHTML = `<img src="${pmImage.url}" alt="">`; askAi(); }
+  try { const blob = await fileToBlob(f, IMG_CFG.producto[0], IMG_CFG.producto[1]); pmImage = { blob, url: URL.createObjectURL(blob) }; $('pmPrev').innerHTML = `<img src="${pmImage.url}" alt="">`; }
   catch { toast('No se pudo usar esa imagen.'); }
   $('pmFile').value = '';
 };
-$('pmDelImg').onclick = () => { pmImage = ''; pmAi = null; $('pmPrev').innerHTML = 'Sin imagen'; };
+$('pmDelImg').onclick = () => { pmImage = ''; $('pmPrev').innerHTML = 'Sin imagen'; };
 $('pmSave').onclick = async () => {
   const nombre = $('pmNombre').value.trim(), precio = Number($('pmPrecio').value);
   if (!nombre) return toast('Ponle un nombre al producto.');
@@ -1325,13 +1264,6 @@ $('pmSave').onclick = async () => {
     if (old && 'image_path' in row && old.imagenPath && old.imagenPath !== row.image_path && !old.originalPath) borrarImagen(old.imagenPath);
     // Etiquetas (RPC atómica; si fallara, el producto ya quedó guardado)
     try { const { error } = await sb.rpc('set_product_tags', { p_product: pid, p_tags: [...pmSel] }); if (error) throw error; } catch (e) { console.warn(e); toast('El producto se guardó, pero no se pudieron guardar las etiquetas.'); }
-    // Foto mejorada con IA aceptada por el dueño: se aplica DESPUÉS de guardar y la original se conserva
-    if (pmAi && pmAi.generation_id) {
-      try {
-        const r = await window.KARTTA_IMAGE_AI.applyToProduct({ restaurantId: rid, generationId: pmAi.generation_id, productId: pid });
-        if (r.previous_image_path) await sb.from('products').update({ original_image_path: r.previous_image_path }).eq('id', pid);
-      } catch (e) { console.warn(e); toast('El producto se guardó con tu foto original; no se pudo aplicar la mejorada.'); }
-    }
     toast(editId ? 'Producto actualizado.' : 'Producto creado.'); closeProd(); await refrescarProductos();
   } catch (e) {
     console.error(e);
@@ -1356,132 +1288,82 @@ function fillEditor(){
   $('msPrimary').value = ms.primary; $('msSecondary').value = ms.secondary; $('msTagline').value = ms.tagline || '';
   $('msImgs').checked = ms.showImages; $('msDescs').checked = ms.showDescriptions; $('msPrices').checked = ms.showPrices;
   document.querySelectorAll('[data-seg]').forEach(s => s.querySelectorAll('button').forEach(b => b.classList.toggle('on', ms[s.dataset.seg] === b.dataset.v)));
-  document.querySelectorAll('#pvDevice button').forEach(b => b.classList.toggle('on', b.dataset.v === pvDevice));
 }
 [['msPrimary','primary','value'],['msSecondary','secondary','value'],['msTagline','tagline','value'],['msImgs','showImages','checked'],['msDescs','showDescriptions','checked'],['msPrices','showPrices','checked']]
   .forEach(([id, key, prop]) => $(id).addEventListener('input', () => { ms[key] = $(id)[prop]; renderPreview(); }));
 document.querySelectorAll('[data-seg]').forEach(s => s.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; ms[s.dataset.seg] = b.dataset.v; s.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); renderPreview(); }));
-$('pvDevice').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; pvDevice = b.dataset.v; fillEditor(); renderPreview(); });
 /* El diseño se edita y publica en editor.html (borrador + publicar). El editor antiguo quedó retirado para no pisar tus cambios. */
 
 function mapsURL(){ return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(negocio.direccion || ''); }
-function renderPreview(){
-  const stage = $('pvStage'); if (!stage || !$('app').classList.contains('ready')) return;
-  const nombre = negocio.nombre || 'Tu negocio';
-  const rad = { round:18, soft:16, square:4 }[ms.cardStyle] ?? 18, fs = { s:.9, m:1, l:1.12 }[ms.size] ?? 1;
-  const cats = new Map(); productos.filter(p => p.disponible !== false).forEach(p => { const c = p.categoria || 'Otros'; if (!cats.has(c)) cats.set(c, []); cats.get(c).push(p); });
-  let body = '';
-  cats.forEach((items, c) => {
-    body += `<div class="cat">${esc(c)}</div>` + items.map(p => {
-      const d = Number(p.descuento || 0);
-      return `<div class="it">${ms.showImages && p.imagen ? `<img src="${esc(p.imagen)}" alt="">` : ''}<div style="min-width:0"><div class="t">${esc(p.nombre)}</div>${ms.showDescriptions && p.descripcion ? `<div class="d">${esc(p.descripcion)}</div>` : ''}${ms.showPrices ? `<div class="pr">${money(finalPrice(p))}${d > 0 ? `<s>${money(p.precio)}</s>` : ''}</div>` : ''}</div><div class="add">+</div></div>`;
-    }).join('');
-  });
-  if (!body) body = '<div class="none">Agrega productos para ver tu menú aquí.</div>';
-  const html = `<div class="mp ${ms.cardStyle === 'soft' ? 'soft' : ''} ${ms.buttonStyle === 'outline' ? 'outline' : ''}" style="--p:${esc(ms.primary)};--s:${esc(ms.secondary)};--rad:${rad}px;--fs:${fs}">
-    <div class="ban" style="${negocio.banner ? `background-image:url(${esc(negocio.banner)})` : ''}"></div>
-    <div class="prof"><div class="logo">${negocio.logo ? `<img src="${esc(negocio.logo)}" alt="">` : esc(nombre[0].toUpperCase())}</div><div class="nm">${esc(nombre)}</div></div>
-    ${ms.tagline ? `<div class="tag">${esc(ms.tagline)}</div>` : ''}
-    <div class="meta">${negocio.direccion ? `<a href="${mapsURL()}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px">${PIN} Ver ubicación</a>` : ''}</div>
-    ${body}<div style="height:24px"></div></div>`;
-  stage.innerHTML = pvDevice === 'pc'
-    ? `<div class="pv-pc"><div class="chrome"><i></i><i></i><i></i></div><div class="scr">${html}</div></div>`
-    : `<div class="pv-phone"><div class="scr">${html}</div></div>`;
+/* ---------- vista previa interactiva: el menú público REAL dentro de un teléfono ----------
+   Reutiliza menu.html en modo ?preview=1 (el mismo que usa el editor). Se le envían por postMessage los datos
+   reales del restaurante (logo, banner, categorías, productos, etiquetas) y el diseño vigente. Se carga solo al
+   abrir «Personalizar» y se actualiza cuando cambian productos, perfil o diseño. */
+const MPV = { dirty: true, ready: false, timer: null, seq: 0, payload: null };
+const mpvActive = () => curView === 'personalizar';
+function mpvFit(){
+  const sc = $('mpvScreen'), fr = $('mpvFrame'); if (!sc || !fr || !sc.clientWidth) return;
+  const k = sc.clientWidth / 390; fr.style.transform = 'scale(' + k + ')'; fr.style.height = Math.ceil(sc.clientHeight / k) + 'px';
 }
+function mpvStatus(){
+  const el = $('mpvState'); if (!el) return;
+  el.textContent = negocio.publicado ? 'Menú publicado' : 'Aún sin publicar'; el.className = 'pill ' + (negocio.publicado ? 'ok' : 'pend');
+}
+async function mpvBuild(){
+  const D = window.KARTTA_DESIGN, cols = 'id,category_id,name,description,price,discount_percent,image_path,is_available,sort_order';
+  const [r, ds, cq, pq] = await Promise.all([
+    sb.from('restaurants').select('name,description,address,whatsapp,logo_path,cover_path,is_published').eq('id', rid).single(),
+    sb.from('menu_designs').select('status,config').eq('restaurant_id', rid),
+    sb.from('categories').select('id,name,sort_order,is_visible').eq('restaurant_id', rid).order('sort_order'),
+    sb.from('products').select(cols + ',ingredients,allergens,serving,extra_info').eq('restaurant_id', rid).eq('is_active', true).order('sort_order'),
+  ]);
+  if (r.error) throw r.error;
+  let prods = pq.data;
+  if (pq.error) { const f = await sb.from('products').select(cols).eq('restaurant_id', rid).eq('is_active', true).order('sort_order'); if (f.error) throw f.error; prods = f.data; }
+  const cats = (cq.data || []).filter(c => c.is_visible !== false); prods = prods || [];
+  try {   // etiquetas activas de productos y categorías
+    const [tg, pl, cl] = await Promise.all([
+      sb.from('product_tags').select('id,name,bg,fg,style,icon,sort_order,requires_confirmation').eq('restaurant_id', rid).eq('is_active', true).order('sort_order'),
+      sb.from('product_tag_links').select('product_id,tag_id').eq('restaurant_id', rid),
+      sb.from('category_tag_links').select('category_id,tag_id').eq('restaurant_id', rid)]);
+    const byId = new Map((tg.data || []).map(t => [t.id, t]));
+    prods.forEach(x => { x.tags = (pl.data || []).filter(l => l.product_id === x.id).map(l => byId.get(l.tag_id)).filter(Boolean); });
+    cats.forEach(x => { x.tags = (cl.data || []).filter(l => l.category_id === x.id).map(l => byId.get(l.tag_id)).filter(Boolean); });
+  } catch (e) { console.warn(e); }
+  const rows = ds.data || [], draft = rows.find(x => x.status === 'draft'), pub = rows.find(x => x.status === 'published');
+  const cfg = D.compact(D.normalize((draft || pub || {}).config || {}));
+  return { restaurant: r.data, categories: cats, products: prods, design: cfg };
+}
+async function mpvSend(){
+  const fr = $('mpvFrame'); if (!fr || !MPV.ready || !fr.contentWindow) return;
+  const my = ++MPV.seq;
+  try {
+    const menu = await mpvBuild(); if (my !== MPV.seq) return;
+    MPV.dirty = false; mpvStatus();
+    fr.contentWindow.postMessage({ type: 'kartta-clean', on: true }, location.origin);   // modo cliente: los toques navegan, no seleccionan bloques
+    fr.contentWindow.postMessage({ type: 'kartta-data', menu }, location.origin);
+    $('mpvScreen').classList.add('ready');
+  } catch (e) {
+    console.error(e); const l = $('mpvLoad'); if (l) { l.innerHTML = 'No se pudo cargar la vista previa.<br><button class="btn btn-ghost btn-sm" id="mpvRetry" style="margin-top:10px">Reintentar</button>'; $('mpvScreen').classList.remove('ready'); }
+  }
+}
+function mpvRefresh(){ clearTimeout(MPV.timer); MPV.timer = setTimeout(mpvSend, 350); }
+function mpvShow(){
+  if (!rid) return; mpvStatus();
+  const fr = $('mpvFrame'); if (!fr) return;
+  if (!fr.getAttribute('src')) { fr.setAttribute('src', '/menu.html?preview=1'); return; }   // el iframe avisa con «kartta-ready»
+  mpvFit(); if (MPV.dirty && MPV.ready) mpvRefresh();
+}
+function renderPreview(){ MPV.dirty = true; if (mpvActive() && MPV.ready) mpvRefresh(); }   // se llama al cambiar productos, perfil o diseño
+window.addEventListener('message', (e) => {
+  const fr = $('mpvFrame'); if (!fr || e.source !== fr.contentWindow || e.origin !== location.origin) return;
+  if (e.data && e.data.type === 'kartta-ready') { MPV.ready = true; mpvFit(); mpvSend(); }
+});
+window.addEventListener('resize', () => { if (mpvActive()) mpvFit(); });
+document.addEventListener('click', (e) => { if (e.target.id === 'mpvRetry') { $('mpvLoad').textContent = 'Cargando tu menú…'; mpvSend(); } });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && mpvActive() && MPV.ready) mpvRefresh(); });
 
 /* El chat de IA (historial, memoria, cuotas, foto) vive en kartta-ai-chat.js */
-
-/* ---------- referencia: reduce y aplana (fondo blanco) para enviar al servidor ---------- */
-function refBlob(file, maxSide, q){
-  return new Promise((resolve, reject) => {
-    const img = new Image(), url = URL.createObjectURL(file);
-    img.onload = () => {
-      const k = Math.min(1, maxSide / Math.max(img.width, img.height));
-      const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
-      URL.revokeObjectURL(url); c.toBlob(b => b ? resolve(b) : reject(new Error('bad')), 'image/jpeg', q);
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('bad')); }; img.src = url;
-  });
-}
-
-/* ---------- KARTTA Images AI (Pro: 5 imágenes exitosas por día y restaurante) ---------- */
-let iaStyle = null, iaFile = null, iaGen = null, iaQuota = null, iaBusy = false;
-const IAI = () => window.KARTTA_IMAGE_AI;
-function iaMsg(t, kind){ const m = $('iaMsg'); m.textContent = t || ''; m.className = 'fmsg ' + (kind || ''); }
-function iaRender(){
-  const st = IAI()?.STYLES || [];
-  $('iaStyles').innerHTML = st.map(x => `<button type="button" class="stylec" data-style="${x.id}" aria-pressed="${iaStyle === x.id}"><b>${esc(x.name)}</b><span>${esc(x.desc)}</span></button>`).join('');
-  const ok = iaQuota?.plan_ok === true, left = iaQuota?.remaining ?? 0;
-  $('iaQuotaPill').textContent = iaQuota ? (ok ? `Imágenes de hoy: ${iaQuota.used} de ${iaQuota.limit} · quedan ${left}` : 'Plan Pro') : '—';
-  $('iaGen').disabled = iaBusy || !ok || left <= 0 || !iaStyle || !iaFile;
-  $('iaGen').textContent = iaBusy ? 'Generando… puede tardar hasta 1 minuto' : 'Generar imagen';
-  $('iaAgain').disabled = iaBusy || left <= 0;
-  const lock = $('iaLock');
-  if (iaQuota && !ok) { lock.hidden = false; lock.innerHTML = `La generación de imágenes con IA es exclusiva del plan Pro${iaPrice ? ' (' + esc(iaPrice) + ' / mes)' : ''}. Tus demás herramientas del menú siguen disponibles. <button type="button" class="btn btn-accent btn-sm" data-lock="PRO" style="margin-left:6px">Mejorar plan</button>`; }
-  else if (iaQuota && left <= 0) { lock.hidden = false; lock.textContent = 'Ya usaste tus 5 imágenes de hoy. Se reinician a medianoche (hora de Colombia).'; }
-  else lock.hidden = true;
-}
-let iaPrice = '';
-async function iaLoad(){
-  try { iaQuota = await IAI().quota(rid); } catch (e) { console.warn(e); iaQuota = null; }
-  try { // precio real desde la tabla de planes (no se escribe a mano)
-    const { data } = await sb.from('plans').select('*').eq('id', 'pro').maybeSingle();
-    const v = data && data.monthly_price_cop; if (Number(v) > 0) iaPrice = money(v);
-  } catch {}
-  iaRender();
-}
-$('iaStyles').addEventListener('click', e => { const b = e.target.closest('[data-style]'); if (!b) return; iaStyle = b.dataset.style; iaRender(); });
-$('iaPick').onclick = () => $('iaFile').click();
-function iaClearFile(){ iaFile = null; $('iaPrev').textContent = 'Sin foto'; $('iaFile').value = ''; iaRender(); }
-$('iaClear').onclick = iaClearFile;
-$('iaFile').onchange = async () => {
-  const f = $('iaFile').files[0]; if (!f) return;
-  if (!['image/jpeg','image/png','image/webp'].includes(f.type)) { iaMsg('Usa una imagen JPG, PNG o WEBP.', 'bad'); $('iaFile').value = ''; return; }
-  try {
-    iaFile = new File([await refBlob(f, 1536, .9)], 'referencia.jpg', { type: 'image/jpeg' });
-    const u = URL.createObjectURL(iaFile); $('iaPrev').innerHTML = `<img src="${u}" alt="Foto de referencia seleccionada">`; iaMsg('');
-  } catch { iaMsg('No se pudo leer esa imagen.', 'bad'); iaFile = null; }
-  iaRender();
-};
-async function iaGenerate(){
-  if (iaBusy || !iaStyle || !iaFile) return;
-  iaBusy = true; iaMsg(''); iaRender(); $('iaPickProd').hidden = true;
-  try {
-    const r = await IAI().generate({ restaurantId: rid, image: iaFile, style: iaStyle, instructions: $('iaInstr').value.trim() });
-    if (!r?.image_url) throw new Error('Sin imagen');
-    iaGen = { ...r, url: r.image_url };
-    if (iaQuota && r.daily_limit != null) iaQuota = { ...iaQuota, limit: r.daily_limit, remaining: r.remaining_today, used: r.daily_limit - r.remaining_today };
-    $('iaOut').src = r.image_url; $('iaRes').hidden = false; iaMsg('Imagen lista. Revísala antes de usarla.', 'ok');
-  } catch (e) {
-    iaMsg(e.message || 'No se pudo generar la imagen.', 'bad');
-    try { iaQuota = await IAI().quota(rid); } catch {}
-  } finally { iaBusy = false; iaRender(); }
-}
-$('iaGen').onclick = iaGenerate; $('iaAgain').onclick = iaGenerate;
-$('iaCancel').onclick = () => { iaGen = null; $('iaRes').hidden = true; $('iaOut').removeAttribute('src'); $('iaPickProd').hidden = true; iaMsg(''); };
-$('iaDown').onclick = async () => {
-  if (!iaGen?.url) return;
-  try { const b = await (await fetch(iaGen.url)).blob(); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'kartta-imagen-ia.png'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
-  catch { window.open(iaGen.url, '_blank', 'noopener'); }
-};
-$('iaUse').onclick = () => {
-  if (!productos.length) return iaMsg('Primero crea un producto para poder usarla.', 'bad');
-  $('iaProd').innerHTML = '<option value="">Elige un producto…</option>' + productos.map(p => `<option value="${esc(p.id)}">${esc(p.nombre)}</option>`).join('');
-  $('iaPickProd').hidden = false; $('iaProd').focus();
-};
-$('iaConfirm').onclick = async () => {
-  const pid = $('iaProd').value; if (!pid) return iaMsg('Elige el producto donde la quieres usar.', 'bad');
-  const nombre = productos.find(p => p.id === pid)?.nombre || 'ese producto';
-  if (!confirm(`¿Usar esta imagen en “${nombre}”? La imagen actual se conserva guardada.`)) return;
-  const btn = $('iaConfirm'); btn.setAttribute('aria-busy', 'true');
-  try {
-    await IAI().applyToProduct({ restaurantId: rid, generationId: iaGen.generation_id, productId: pid });
-    await refrescarProductos(); iaMsg(`Listo: “${nombre}” ya usa la nueva imagen.`, 'ok'); toast('Imagen aplicada al producto.');
-    $('iaPickProd').hidden = true;
-  } catch (e) { iaMsg(e.message || 'No se pudo aplicar la imagen.', 'bad'); }
-  finally { btn.removeAttribute('aria-busy'); }
-};
 
 /* ---------- volver arriba ---------- */
 (function(){
