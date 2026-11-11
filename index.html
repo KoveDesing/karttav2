@@ -60,8 +60,9 @@ body{padding-top:var(--kx-ribbon-h)}
 <link rel="preload" as="image" href="assets/landing-2.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mr+Dafoe&display=block">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mr+Dafoe&display=block" rel="stylesheet">
+<link rel="preload" href="/fonts/MrDafoe-Regular.woff" as="font" type="font/woff" crossorigin>
+<link rel="stylesheet" href="/fonts/mr-dafoe.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>/* Fuente de respaldo con las métricas de Inter: si hubiera que usarla, el texto no salta de tamaño (sin CLS) */
 @font-face{font-family:'Inter Fallback';src:local('Arial'),local('Helvetica Neue'),local('Helvetica');size-adjust:107.64%;ascent-override:89.79%;descent-override:22.36%;line-gap-override:0%;}
 /* Pantalla de carga: solo la primera vez de cada sesión. El logotipo aparece cuando la tipografía ya está lista (nunca con una letra provisional). */
@@ -705,7 +706,15 @@ html{overflow-x:clip;}
 <script src="kartta-plans.js"></script>
 <script type="module" src="supabase-init.js"></script>
 <script src="cookies.js" defer></script>
-<script src="kartta-landing.js?v=20261109" defer></script>
+<script src="kartta-landing.js?v=20261110" defer></script>
+<script>
+/* Pausa las animaciones infinitas (flotación, cinta, escáner) cuando salen de pantalla: mismo efecto, menos CPU/GPU */
+(function(){ if(!('IntersectionObserver' in window)) return;
+  var io=new IntersectionObserver(function(es){ es.forEach(function(e){ e.target.style.animationPlayState=e.isIntersecting?'':'paused'; }); },{rootMargin:'80px'});
+  function go(){ document.querySelectorAll('.dash-back,.phone,.qr-tag,.float-card,.kx-ribbon-track,.qr-mark,.kbubble').forEach(function(el){ io.observe(el); }); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
+})();
+</script>
 <script defer src="/kartta-tracker.js" data-scope="site"></script>
 <script>try{var __q=new URLSearchParams(location.search);if(__q.get('error_code')==='bad_oauth_state'){history.replaceState(null,'',location.pathname+location.hash);}}catch(e){}</script>
 </head>

@@ -4,14 +4,16 @@
 <meta name="description" content="Cómo KARTTA trata tus datos personales: qué recoge, para qué, con quién y cómo ejercer tus derechos.">
 <link rel="canonical" href="https://kartta.food/privacidad.html">
 <link rel="icon" type="image/png" href="/favicon.png"><link rel="shortcut icon" href="/favicon.ico">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/MrDafoe-Regular.woff" as="font" type="font/woff" crossorigin>
+<link rel="stylesheet" href="/fonts/mr-dafoe.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="legal.css">
 </head><body><main><div class="card">
 <!-- TEXTO BASE v1.0 basado en lo que hace hoy la aplicación. Revisar con abogado (Ley 1581 de 2012). Si cambias el contenido, sube la versión en public.legal_documents (privacy). -->
 <a class="brand" href="/" aria-label="KARTTA, volver al inicio">Kar<span>tt</span>a</a>
 <h1>Política de privacidad y tratamiento de datos</h1><small>Versión 1.0</small>
 
-<h2>1. Responsable</h2><p><span class="pend">[PENDIENTE: razón social, NIT, dirección y correo de contacto del responsable]</span>. Canal para consultas y ejercicio de derechos: <span class="pend">[PENDIENTE: correo]</span>.</p>
+<h2>1. Responsable</h2><p>KARTTA es operada por <b>Diana Carolina Luna Bautista</b> (persona natural), NIT 63.551.947-2, con domicilio en CR 6 # 2-3, Floridablanca, Santander, Colombia; es la responsable del tratamiento de los datos de tu cuenta. Canal para consultas, reclamos y ejercicio de derechos: <a href="mailto:carito.luna.23@hotmail.com">carito.luna.23@hotmail.com</a> · +57 315 357 7961.</p>
 <h2>2. Qué datos tratamos</h2>
 <ul><li><b>Cuenta:</b> correo y contraseña (la contraseña la gestiona Supabase Auth y no la vemos en claro). Si entras con Google, recibimos tu nombre, correo y foto de perfil; nunca tu contraseña de Google.</li>
 <li><b>Verificación de edad:</b> te pedimos la fecha de nacimiento solo para comprobar que tienes 18 años o más. <b>No la guardamos</b>: conservamos únicamente que eres mayor de edad y cuándo se verificó.</li>
@@ -23,11 +25,11 @@
 <h2>4. Autorización y base legal</h2><p>Tratamos tus datos con tu autorización informada al registrarte y aceptar esta política, y cuando sea necesario para ejecutar el servicio que solicitas o cumplir la ley. Puedes revocar la autorización cuando no lo impida un deber legal o contractual.</p>
 <h2 id="ubicacion">5. Ubicación</h2><p>KARTTA <b>no solicita ni recoge tu ubicación</b>; además, la configuración del sitio desactiva el acceso del navegador a la geolocalización. Las direcciones que escribas para tu negocio son datos que tú ingresas.</p>
 <h2>6. Proveedores que procesan información</h2>
-<ul><li><b>Supabase:</b> autenticación, base de datos, archivos y funciones del servidor.</li><li><b>Vercel:</b> alojamiento del sitio.</li><li><b>Google:</b> inicio de sesión con Google y tipografías (Google Fonts).</li><li><b>jsDelivr y cdnjs:</b> entrega de librerías de código.</li><li><b>Google Gemini:</b> asistente de IA, cuando esté activo; el texto que le escribes se envía a ese servicio para responderte. No escribas datos sensibles en el chat.</li></ul>
-<p>Estos proveedores pueden tratar datos en servidores fuera de Colombia (transferencia internacional). Región del proyecto en Supabase: <span class="pend">[PENDIENTE: confirmar región]</span>.</p>
-<h2>7. Conservación</h2><p>Conservamos tus datos mientras tu cuenta esté activa y, después de su cierre, durante <span class="pend">[PENDIENTE: plazo]</span> o el tiempo que exija la ley. Los registros de aceptación se conservan para poder demostrar tu consentimiento.</p>
-<h2 id="seguridad">8. Seguridad de la cuenta y de los datos</h2><p>Usamos conexiones cifradas y reglas de acceso en la base de datos para que cada negocio solo vea sus propios datos. Tu sesión se mantiene en tu navegador hasta que cierres sesión. Si pierdes acceso o sospechas un uso indebido, escríbenos a <span class="pend">[PENDIENTE: correo]</span>. Si ocurre un incidente que te afecte, te lo informaremos por correo.</p>
-<h2 id="derechos">9. Tus derechos</h2><p>Puedes conocer, actualizar y rectificar tus datos, solicitar prueba de la autorización, ser informado del uso que les damos, revocar la autorización y pedir la supresión de tus datos, y presentar quejas ante la Superintendencia de Industria y Comercio (SIC). Para ejercerlos, o para cerrar tu cuenta y eliminar los datos asociados, escríbenos a <span class="pend">[PENDIENTE: correo]</span>.</p>
+<ul><li><b>Supabase:</b> autenticación, base de datos, archivos y funciones del servidor.</li><li><b>Vercel:</b> alojamiento del sitio.</li><li><b>Google:</b> inicio de sesión con Google y la tipografía Inter (Google Fonts). La tipografía Mr Dafoe se sirve desde KARTTA.</li><li><b>jsDelivr y cdnjs:</b> entrega de librerías de código.</li><li><b>Google Gemini:</b> asistente de IA, cuando esté activo; el texto que le escribes se envía a ese servicio para responderte. No escribas datos sensibles en el chat.</li></ul>
+<p>Estos proveedores pueden tratar datos en servidores fuera de Colombia (transferencia internacional). La base de datos de KARTTA está alojada en Supabase, región Canadá (Central).</p>
+<h2>7. Conservación</h2><p>Conservamos tus datos mientras tu cuenta esté activa y, después de su cierre, solo el tiempo necesario para cumplir obligaciones legales, contables y tributarias (que pueden alcanzar hasta 10 años para los soportes contables) y para atender reclamos; después los eliminamos o anonimizamos. Los registros de aceptación se conservan para poder demostrar tu consentimiento.</p>
+<h2 id="seguridad">8. Seguridad de la cuenta y de los datos</h2><p>Usamos conexiones cifradas y reglas de acceso en la base de datos para que cada negocio solo vea sus propios datos. Tu sesión se mantiene en tu navegador hasta que cierres sesión. Si pierdes acceso o sospechas un uso indebido, escríbenos a <a href="mailto:carito.luna.23@hotmail.com">carito.luna.23@hotmail.com</a>. Si ocurre un incidente que te afecte, te lo informaremos por correo.</p>
+<h2 id="derechos">9. Tus derechos</h2><p>Puedes conocer, actualizar y rectificar tus datos, solicitar prueba de la autorización, ser informado del uso que les damos, revocar la autorización y pedir la supresión de tus datos, y presentar quejas ante la Superintendencia de Industria y Comercio (SIC). Para ejercerlos, o para cerrar tu cuenta y eliminar los datos asociados, escríbenos a <a href="mailto:carito.luna.23@hotmail.com">carito.luna.23@hotmail.com</a>.</p>
 <h2>10. Menores de edad</h2><p>KARTTA no está dirigida a menores de 18 años y no permite su uso. Si detectamos una cuenta de un menor, bloqueamos el acceso y no recopilamos más datos.</p>
 <h2>11. Cambios</h2><p>Si esta política cambia de forma relevante, publicaremos la nueva versión y te pediremos aceptarla otra vez.</p>
 

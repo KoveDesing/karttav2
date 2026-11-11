@@ -1,0 +1,3 @@
+/* Mr Dafoe (SIL Open Font License, ver fonts/OFL.txt) alojada en KARTTA.
+   font-display:block → mientras carga NO se muestra otra letra; el texto aparece ya con la tipografía correcta. */
+@font-face{font-family:'Mr Dafoe';font-style:normal;font-weight:400;font-display:block;src:url('/fonts/MrDafoe-Regular.woff') format('woff');}
