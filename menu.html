@@ -8,7 +8,8 @@
 <meta name="description" content="Menú digital, pide desde tu celular.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{
   --white:#FFFFFF; --black:#0A0A0A; --red:#FF3145;
@@ -153,7 +154,7 @@ html[data-bs="outline"] .madd{background:transparent;color:var(--red);border:2px
 .mcat-title .ct-tags{display:inline-flex;margin-left:8px;vertical-align:middle;text-transform:none;letter-spacing:0;}
 
 /* buscador, destacados, favoritos y barra inferior */
-.msearch{display:none;padding:10px 16px 0;background:var(--bg);}
+.msearch{display:none;padding:10px 16px 12px;background:var(--bg);position:relative;z-index:10;}
 .msearch.on{display:block;}
 .msearch input{width:100%;min-height:44px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--tx);padding:0 18px;font:inherit;font-size:calc(14px*var(--fs));}
 .msearch input:focus{outline:2px solid var(--red);outline-offset:1px;}
@@ -602,30 +603,6 @@ function applyDesign(raw){
   document.documentElement.classList.toggle('anim-off', MS.anim === 'none');
 }
 
-/* SEO de cada menú público: título, descripción, canonical, Open Graph y datos estructurados propios del restaurante.
-   La página de una mesa (QR) no se indexa. Solo se usan datos reales del restaurante. */
-function seoMenu(n, img){
-  if (PREVIEW) return;
-  const head = document.head;
-  const meta = (key, val, by) => { by = by || 'name'; let el = head.querySelector('meta[' + by + '="' + key + '"]'); if (!el) { el = document.createElement('meta'); el.setAttribute(by, key); head.appendChild(el); } el.setAttribute('content', val); };
-  const name = n.name || 'Menú', own = n.slug ? 'https://' + n.slug + '.kartta.food/' : '';
-  const desc = ((n.description || '').trim() || ('Menú digital de ' + name + '. Mira los productos y haz tu pedido desde tu celular.')).replace(/\s+/g, ' ').slice(0, 155);
-  const title = name + ' — Menú digital';
-  document.title = title; meta('description', desc);
-  meta('robots', qToken ? 'noindex, nofollow' : 'index, follow, max-image-preview:large');
-  if (own) { let c = head.querySelector('link[rel="canonical"]'); if (!c) { c = document.createElement('link'); c.rel = 'canonical'; head.appendChild(c); } c.href = own; meta('og:url', own, 'property'); }
-  meta('og:type', 'website', 'property'); meta('og:site_name', 'KARTTA', 'property'); meta('og:locale', 'es_CO', 'property');
-  meta('og:title', title, 'property'); meta('og:description', desc, 'property');
-  meta('twitter:card', img ? 'summary_large_image' : 'summary'); meta('twitter:title', title); meta('twitter:description', desc);
-  if (img) { meta('og:image', img, 'property'); meta('twitter:image', img); }
-  if (own && !qToken) {
-    const ld = { '@context': 'https://schema.org', '@type': 'Restaurant', name: name, url: own, hasMenu: own };
-    if (n.description) ld.description = n.description; if (img) ld.image = img; if (n.address) ld.address = { '@type': 'PostalAddress', streetAddress: n.address, addressLocality: n.city || undefined, addressCountry: 'CO' };
-    if (n.public_phone) ld.telephone = n.public_phone;
-    let el = document.getElementById('ldMenu'); if (!el) { el = document.createElement('script'); el.type = 'application/ld+json'; el.id = 'ldMenu'; head.appendChild(el); } el.textContent = JSON.stringify(ld);
-  }
-}
-
 function paint(menu){
   MENU = menu; loadFav();
   const negocio = menu.restaurant || {};
@@ -666,7 +643,6 @@ function paint(menu){
     d.appendChild(a); tagEl.after(d);
   }
   document.title = (negocio.name || 'Menú') + ' — KARTTA';
-  seoMenu(negocio, banner || logo);
   if (mesa && TS) { const tag = document.getElementById('mesaTag'); tag.style.display = 'inline-block'; tag.textContent = 'Mesa ' + mesa; }
   document.documentElement.style.setProperty('--hh', hd.offsetHeight + 'px');
 
@@ -1056,7 +1032,6 @@ document.getElementById('btnConfirmarPedido').addEventListener('click', async ()
     if (msg.includes('invalid_customer_session')) { if (cust && cust.logout) cust.logout(true); errEl.textContent = 'Tu sesión de cliente venció. Identifícate de nuevo para sumar puntos.'; errEl.classList.add('show'); return; }
     if (msg.includes('identity_required')) { errEl.textContent = 'Este restaurante pide identificarte con tu teléfono para pedir.'; errEl.classList.add('show'); if (cust) cust.open(); return; }
     errEl.textContent = msg.includes('restaurant_closed') ? 'El restaurante acaba de cerrar y no recibe pedidos por ahora.'
-      : msg.includes('insufficient stock') ? 'Un producto de tu pedido se agotó o no alcanza para esa cantidad. Revisa tu pedido y ajusta las cantidades.'
       : msg.includes('some items unavailable') ? 'Algún producto de tu pedido ya no está disponible. Actualiza el menú y revisa tu pedido.'
       : msg.includes('too many orders') ? 'El restaurante está recibiendo muchos pedidos. Intenta de nuevo en un momento.'
       : 'No pudimos enviar tu pedido. Revisa tu conexión e intenta de nuevo.';
