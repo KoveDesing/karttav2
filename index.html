@@ -60,9 +60,7 @@ body{padding-top:var(--kx-ribbon-h)}
 <link rel="preload" as="image" href="assets/landing-2.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" href="/fonts/MrDafoe-Regular.woff" as="font" type="font/woff" crossorigin>
-<link rel="stylesheet" href="/fonts/mr-dafoe.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mr+Dafoe&display=swap" rel="stylesheet">
 <style>/* Fuente de respaldo con las métricas de Inter: si hubiera que usarla, el texto no salta de tamaño (sin CLS) */
 @font-face{font-family:'Inter Fallback';src:local('Arial'),local('Helvetica Neue'),local('Helvetica');size-adjust:107.64%;ascent-override:89.79%;descent-override:22.36%;line-gap-override:0%;}
 /* Pantalla de carga: solo la primera vez de cada sesión. El logotipo aparece cuando la tipografía ya está lista (nunca con una letra provisional). */
@@ -182,7 +180,7 @@ body{padding-bottom:96px;}
 
 .kbar-dropdown{
   position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%) translateY(6px);
-  background:rgba(20,20,20,.97);backdrop-filter:blur(20px);border-radius:16px;padding:8px;
+  background:rgba(20,20,20,.97);border-radius:16px;padding:8px;
   min-width:190px;box-shadow:0 20px 50px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);
   opacity:0;visibility:hidden;pointer-events:none;
   transition:opacity .16s ease,transform .16s ease;
@@ -237,7 +235,7 @@ section{padding:clamp(60px,8vw,112px) 0;position:relative;}
 .cta-micro{font-size:12.5px;color:var(--gray);margin-top:10px;}
 
 /* NAV */
-.nav{position:sticky;top:0;z-index:300;background:rgba(10,10,10,.38);backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 1px 0 rgba(255,255,255,.04) inset;transition:background .3s ease;}
+.nav{position:sticky;top:0;z-index:300;background:rgba(10,10,10,.94);/* sin backdrop-filter: desenfocar el fondo en cada frame del scroll era lo que más ralentizaba la web */border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 1px 0 rgba(255,255,255,.04) inset;transition:background .3s ease;}
 .nav.scrolled{background:rgba(10,10,10,.82);}
 .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:72px;}
 .nav.scrolled{box-shadow:0 12px 30px -20px rgba(0,0,0,.6);}
@@ -702,11 +700,11 @@ html{overflow-x:clip;}
 }
 
 </style>
-<link rel="stylesheet" href="kartta-landing.css?v=20261110">
+<link rel="stylesheet" href="kartta-landing.css?v=20261112">
 <script src="kartta-plans.js"></script>
 <script type="module" src="supabase-init.js"></script>
 <script src="cookies.js" defer></script>
-<script src="kartta-landing.js?v=20261110" defer></script>
+<script src="kartta-landing.js?v=20261112" defer></script>
 <script>
 /* Pausa las animaciones infinitas (flotación, cinta, escáner) cuando salen de pantalla: mismo efecto, menos CPU/GPU */
 (function(){ if(!('IntersectionObserver' in window)) return;
@@ -1788,7 +1786,7 @@ document.addEventListener('DOMContentLoaded', function(){
 })();
 });
 </script>
-<div id="promoModal" style="position:fixed;inset:0;background:rgba(10,10,10,.65);backdrop-filter:blur(8px);z-index:420;display:none;align-items:center;justify-content:center;padding:20px;">
+<div id="promoModal" style="position:fixed;inset:0;background:rgba(10,10,10,.78);z-index:420;display:none;align-items:center;justify-content:center;padding:20px;">
   <div style="background:#fff;border-radius:24px;padding:36px 32px;max-width:420px;width:100%;text-align:center;position:relative;box-shadow:0 40px 80px -20px rgba(0,0,0,.4);">
     <button id="promoClose" aria-label="Cerrar" style="position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:50%;background:var(--surface);font-size:16px;color:var(--gray);">✕</button>
     <span class="eyebrow" style="justify-content:center;">OFERTA DE LANZAMIENTO</span>
@@ -1797,7 +1795,7 @@ document.addEventListener('DOMContentLoaded', function(){
     <a data-auth="signup" href="#" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">Crear mi KARTTA gratis</a>
   </div>
 </div>
-<div id="authModal" style="position:fixed;inset:0;background:rgba(10,10,10,.65);backdrop-filter:blur(8px);z-index:430;display:none;align-items:center;justify-content:center;padding:20px;">
+<div id="authModal" style="position:fixed;inset:0;background:rgba(10,10,10,.78);z-index:430;display:none;align-items:center;justify-content:center;padding:20px;">
   <div style="background:#fff;border-radius:24px;padding:32px;max-width:400px;width:100%;position:relative;box-shadow:0 40px 80px -20px rgba(0,0,0,.4);">
     <button id="authClose" aria-label="Cerrar" style="position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:50%;background:var(--surface);font-size:16px;color:var(--gray);">✕</button>
     <div style="font-family:'Mr Dafoe',cursive;font-size:30px;margin-bottom:6px;">Kar<span style="color:#FF3145;">tt</span>a</div>

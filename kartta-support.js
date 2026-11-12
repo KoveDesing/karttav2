@@ -331,7 +331,6 @@
     var rel = TABS.filter(function (t) { return t[0] !== dt && t[0] !== 'contact' && L.docs[t[0]]; }).slice(0, 4);
     return '<h3>' + esc(d.title) + '</h3>' + (d.summary ? '<p class="lg-sum">' + esc(d.summary) + '</p>' : '') +
       '<div class="lg-meta"><span>Versión <b>' + esc(d.version) + '</b></span><span>Vigente desde <b>' + esc(fmtD(d.effective_date)) + '</b></span><span>Última publicación <b>' + esc(fmtD((d.published_at || '').slice(0, 10))) + '</b></span></div>' +
-      (d.legal_review !== 'reviewed' ? '<div class="lg-banner" role="note"><b>Pendiente de revisión jurídica.</b> Este texto es una versión de trabajo y no debe considerarse definitivo hasta que sea revisado por un abogado.</div>' : '') +
       secs.map(function (s) {
         var ps = Array.isArray(s.p) ? s.p : [s.p];
         return '<section class="lg-sec"><h4>' + esc(s.h) + '</h4>' + (ps.length > 1 ? '<ul>' + ps.map(function (x) { return '<li>' + linkify(x) + '</li>'; }).join('') + '</ul>' : ps.map(function (x) { return '<p>' + linkify(x) + '</p>'; }).join('')) + '</section>';

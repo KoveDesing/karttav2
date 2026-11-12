@@ -36,7 +36,7 @@ section[id]{scroll-margin-top:calc(var(--kx-ribbon-h) + 8px);}
 
 /* ---------- 2. Sistema de entradas ---------- */
 @keyframes kx-fade{from{opacity:0;}}
-@keyframes kx-blur{from{filter:blur(var(--kx-b,8px));}}
+@keyframes kx-blur{from{filter:blur(var(--kx-b,4px));}}
 @keyframes kx-move{from{translate:var(--kx-x,0px) var(--kx-y,0px);}}
 @keyframes kx-grow{from{scale:var(--kx-s,1);}}
 
@@ -55,18 +55,18 @@ html.kx:not(.kx-failed) [data-fx="words"].kx-in:not(.kx-done) .kx-w{
     kx-blur .32s ease-out calc(var(--kx-delay,0ms) + var(--i,0)*30ms) backwards,
     kx-move .55s var(--kx-ez,var(--kx-spring-soft)) calc(var(--kx-delay,0ms) + var(--i,0)*30ms) backwards;
 }
-.kx-w{display:inline-block;--kx-y:.6em;--kx-b:8px;}
+.kx-w{display:inline-block;--kx-y:.6em;--kx-b:4px;}
 
 /* variantes: distancias, escala, desenfoque y CURVA (--kx-ez).
    Jerarquía: secundarios (texto de apoyo, listas, FAQ, pies) = ease-out sin rebote;
    intermedios (títulos, tarjetas, imágenes) = resorte suave (~3 %);
    protagonistas ([data-strong]: título y CTA del hero, planes, bloques de prueba) = resorte marcado (~10 %). */
-[data-fx="up"]{--kx-y:26px;--kx-b:7px;--kx-t:0.47s;--kx-ez:var(--kx-out);}
-[data-fx="scale"]{--kx-s:.92;--kx-y:22px;--kx-b:7px;--kx-t:0.55s;--kx-ez:var(--kx-spring-soft);}
-[data-fx="card"]{--kx-s:.9;--kx-y:40px;--kx-b:8px;--kx-ez:var(--kx-spring-soft);}
+[data-fx="up"]{--kx-y:26px;--kx-b:3px;--kx-t:0.47s;--kx-ez:var(--kx-out);}
+[data-fx="scale"]{--kx-s:.92;--kx-y:22px;--kx-b:3px;--kx-t:0.55s;--kx-ez:var(--kx-spring-soft);}
+[data-fx="card"]{--kx-s:.9;--kx-y:40px;--kx-b:4px;--kx-ez:var(--kx-spring-soft);}
 [data-fx="pop"]{--kx-s:.72;--kx-y:10px;--kx-b:0px;--kx-t:0.44s;--kx-tf:0.22s;--kx-ez:var(--kx-spring-soft);}
-[data-fx="left"]{--kx-x:-56px;--kx-b:7px;--kx-t:0.5s;--kx-ez:var(--kx-out);}
-[data-fx="right"]{--kx-x:56px;--kx-b:7px;--kx-t:0.5s;--kx-ez:var(--kx-out);}
+[data-fx="left"]{--kx-x:-56px;--kx-b:3px;--kx-t:0.5s;--kx-ez:var(--kx-out);}
+[data-fx="right"]{--kx-x:56px;--kx-b:3px;--kx-t:0.5s;--kx-ez:var(--kx-out);}
 [data-fx="drop"]{--kx-y:-26px;--kx-s:.9;--kx-b:4px;--kx-ez:var(--kx-spring-soft);}
 [data-fx="img"]{--kx-s:.86;--kx-y:34px;--kx-b:12px;--kx-t:0.61s;--kx-tf:0.44s;--kx-ez:var(--kx-spring-soft);}
 [data-fx="scatter"]{--kx-s:.7;--kx-b:6px;--kx-t:0.55s;--kx-ez:var(--kx-spring-soft);}
@@ -267,3 +267,6 @@ html.kx:not(.kx-failed) .hero-visual-real[data-fx].kx-in:not(.kx-done){animation
   kx-blur .55s var(--kx-out) var(--kx-delay,0ms) backwards,
   kx-move .65s var(--kx-spring) var(--kx-delay,0ms) backwards,
   kx-grow .65s var(--kx-spring) var(--kx-delay,0ms) backwards;}
+
+/* Rendimiento: las animaciones infinitas se pausan cuando su elemento no está en pantalla (lo gestiona kartta-landing.js) */
+.kx-off,.kx-off *,.kx-off::before,.kx-off::after{animation-play-state:paused !important;}

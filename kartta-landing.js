@@ -409,3 +409,17 @@
   }
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', boot); else boot();
 })();
+
+/* Rendimiento: pausa las animaciones infinitas (cinta, flotados, escáner QR) mientras no se ven.
+   Así el navegador no repinta nada fuera de pantalla y el scroll se mantiene fluido. */
+(function () {
+  'use strict';
+  if (!('IntersectionObserver' in window)) return;
+  function start() {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { e.target.classList.toggle('kx-off', !e.isIntersecting); });
+    }, { rootMargin: '160px 0px' });
+    document.querySelectorAll('.kx-ribbon-track,.qr-mark,.dash-back,.phone,.qr-tag,.float-card,.hero-visual-real,.kbubble').forEach(function (el) { io.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
