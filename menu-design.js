@@ -41,7 +41,7 @@
     // v3 (todo opcional; los valores por defecto reproducen exactamente el diseño anterior)
     template: '', style: 'flat', anim: 'subtle', bannerTitle: '', showAbout: false,
     hAlign: 'auto', hVert: 'center', bannerH: 'auto', imgRatio: 'auto', imgFit: 'cover', imgPos: 'center', shadow: 'auto',
-    navBar: 'solid', navFloating: false, navLabels: true, socialPlace: 'footer', socialShape: 'circle', socialDir: 'row', social: [],
+    navBar: 'solid', navFloating: false, navLabels: true, socialPlace: 'footer', socialShape: 'circle', socialDir: 'row', social: [], wa: {}, btn: {}, bgx: {}, hbgx: {}, tx: {}, rt: {}, els: [],
   };
   Object.keys(INTS).forEach(k => { DEFAULTS[k] = k in INT_DEF ? INT_DEF[k] : null; });
   WEIGHTS.forEach(k => { DEFAULTS[k] = null; });
@@ -76,8 +76,164 @@
     WEIGHTS.forEach(k => { o[k] = Number.isInteger(c[k]) && c[k] >= 400 && c[k] <= 900 && c[k] % 100 === 0 ? c[k] : null; });
     HEXOPT.forEach(k => { o[k] = c[k] === '' || c[k] == null ? '' : hex(c[k], ''); });
     o.social = normSocial(c.social);
+    o.wa = normWa(c.wa); o.btn = normBtn(c.btn);
+    o.bgx = normGrad(c.bgx); o.hbgx = normGrad(c.hbgx); o.tx = normTx(c.tx); o.rt = normRt(c.rt); o.els = normEls(c.els);
     o.v = 2;
     return o;
+  }
+
+  /* ---------- Apariencia del botón de WhatsApp (wa) y de los botones del menú (btn) ----------
+   * Solo APARIENCIA. El número y el interruptor viven en restaurants (set_whatsapp_button). Todo es opcional: sin claves = diseño de siempre. */
+  const inEnum = (v, a) => a.includes(v);
+  const intIn = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi;
+  function normWa(r) {
+    const c = r && typeof r === 'object' && !Array.isArray(r) ? r : {}, o = {};
+    if (HEX.test(c.bg || '')) o.bg = c.bg; if (HEX.test(c.ic || '')) o.ic = c.ic;
+    if (intIn(c.sz, 44, 72)) o.sz = c.sz; if (inEnum(c.pos, ['br', 'bl', 'bc'])) o.pos = c.pos;
+    if (intIn(c.r, 0, 36)) o.r = c.r; if (inEnum(c.sh, ['none', 'soft', 'strong'])) o.sh = c.sh;
+    if (intIn(c.op, 60, 100)) o.op = c.op; if (inEnum(c.variant, ['circle', 'pill'])) o.variant = c.variant;
+    const lb = str(c.label, 24).trim(); if (lb) o.label = lb; const m = str(c.msg, 200).trim(); if (m) o.msg = m;
+    return o;
+  }
+  function normBtn(r) {
+    const c = r && typeof r === 'object' && !Array.isArray(r) ? r : {}, o = {};
+    if (HEX.test(c.bg || '')) o.bg = c.bg; if (HEX.test(c.fg || '')) o.fg = c.fg; if (HEX.test(c.bdc || '')) o.bdc = c.bdc;
+    if (intIn(c.r, 0, 32)) o.r = c.r; if (inEnum(c.sh, ['none', 'soft', 'strong'])) o.sh = c.sh; if (inEnum(c.sz, ['s', 'm', 'l'])) o.sz = c.sz;
+    if (intIn(c.bd, 0, 3)) o.bd = c.bd; if (intIn(c.wt, 400, 900) && c.wt % 100 === 0) o.wt = c.wt; if (inEnum(c.hov, ['none', 'lift', 'dark', 'scale'])) o.hov = c.hov;
+    return o;
+  }
+  const BSH = { none: 'none', soft: '0 4px 12px -4px rgba(0,0,0,.28)', strong: '0 10px 22px -6px rgba(0,0,0,.45)' };
+  /** Variables y marcas del diseño para botones. Cada propiedad solo se activa si el dueño la definió. */
+  function applyButtons(c, root) {
+    const s = root.style, d = root.dataset, b = c.btn || {};
+    ['--b-bg', '--b-fg', '--b-r', '--b-sh', '--b-bd', '--b-bdc', '--b-wt'].forEach(k => s.removeProperty(k));
+    ['bbg', 'bfg', 'br', 'bsh', 'bbd', 'bwt', 'bsz', 'bh'].forEach(k => delete d[k]);
+    if (b.bg) { s.setProperty('--b-bg', b.bg); d.bbg = '1'; } if (b.fg) { s.setProperty('--b-fg', b.fg); d.bfg = '1'; }
+    if (b.r != null) { s.setProperty('--b-r', b.r + 'px'); d.br = '1'; } if (b.sh) { s.setProperty('--b-sh', BSH[b.sh]); d.bsh = '1'; }
+    if (b.bd != null) { s.setProperty('--b-bd', b.bd + 'px'); s.setProperty('--b-bdc', b.bdc || b.bg || c.primary); d.bbd = '1'; }
+    if (b.wt) { s.setProperty('--b-wt', b.wt); d.bwt = '1'; } if (b.sz && b.sz !== 'm') d.bsz = b.sz; if (b.hov && b.hov !== 'none') d.bh = b.hov;
+    const w = c.wa || {};
+    ['--wa-bg', '--wa-ic', '--wa-sz', '--wa-r', '--wa-sh', '--wa-op'].forEach(k => s.removeProperty(k));
+    if (w.bg) s.setProperty('--wa-bg', w.bg); if (w.ic) s.setProperty('--wa-ic', w.ic); if (w.sz) s.setProperty('--wa-sz', w.sz + 'px');
+    if (w.r != null) s.setProperty('--wa-r', w.r === 36 ? '50%' : w.r + 'px'); if (w.sh) s.setProperty('--wa-sh', BSH[w.sh]); if (w.op) s.setProperty('--wa-op', (w.op / 100).toFixed(2));
+    if (window.KARTTA_WA && window.KARTTA_WA.style) window.KARTTA_WA.style(w);
+  }
+
+  /* ---------- Fase 2: degradados (bgx/hbgx), estilo por texto (tx), texto por palabras (rt) y elementos (els) ---------- */
+  const TX_SLOTS = ['name', 'tag', 'btitle', 'cat', 'pname', 'pdesc', 'price', 'ann', 'foot'];
+  const TX_LABEL = { name: 'Nombre del negocio', tag: 'Subtítulo del encabezado', btitle: 'Título del banner', cat: 'Títulos de categoría', pname: 'Nombre del producto', pdesc: 'Descripción del producto', price: 'Precio', ann: 'Anuncio', foot: 'Texto del pie' };
+  const TX_SEL = { name: '.mheader h1', tag: '.mheader .tag', btitle: '.mheader .btitle', cat: '.mcat-title', pname: '.mitem .name', pdesc: '.mi-desc', price: '.mitem .price', ann: '#announce', foot: '#footText' };
+  const EL_KINDS = ['h', 'p', 'btn', 'div', 'sp', 'promo', 'quote'];
+  const EL_ANCHORS = ['header', 'announcement', 'categories', 'items', 'footer'];
+  const EL_MAX = 20;
+  function normGrad(r) {
+    const c = r && typeof r === 'object' && !Array.isArray(r) ? r : {};
+    if (!HEX.test(c.c1 || '') || !HEX.test(c.c2 || '')) return {};
+    const o = { t: c.t === 'radial' ? 'radial' : 'linear', a: intIn(c.a, 0, 360) ? c.a : 180, c1: c.c1, c2: c.c2 };
+    if (HEX.test(c.c3 || '')) o.c3 = c.c3; return o;
+  }
+  const gradCss = (g) => !g || !g.c1 ? '' : (g.t === 'radial' ? 'radial-gradient(circle at 50% 25%,' : 'linear-gradient(' + g.a + 'deg,') + g.c1 + ',' + g.c2 + (g.c3 ? ',' + g.c3 : '') + ')';
+  function normTx(r) {
+    const c = r && typeof r === 'object' && !Array.isArray(r) ? r : {}, out = {};
+    TX_SLOTS.forEach(k => {
+      const e = c[k]; if (!e || typeof e !== 'object') return; const o = {};
+      if (e.it === true) o.it = true; if (e.up === true) o.up = true; if (intIn(e.ls, 1, 8)) o.ls = e.ls;
+      if (inEnum(e.al, ['left', 'center', 'right'])) o.al = e.al; if (inEnum(e.ts, ['soft', 'strong'])) o.ts = e.ts; if (FONTS.includes(e.ff)) o.ff = e.ff;
+      if (Object.keys(o).length) out[k] = o;
+    });
+    return out;
+  }
+  function normRuns(v) {
+    if (!Array.isArray(v)) return [];
+    const out = [];
+    v.forEach(e => {
+      if (out.length >= 40 || !e || typeof e !== 'object' || typeof e.t !== 'string') return;
+      const t = str(e.t, 40); if (!t) return; const o = { t };
+      if (HEX.test(e.c || '')) o.c = e.c; if (e.b === true) o.b = true; if (e.i === true) o.i = true; if (intIn(e.s, 70, 220)) o.s = e.s;
+      out.push(o);
+    });
+    return out;
+  }
+  function normRt(r) {
+    const c = r && typeof r === 'object' && !Array.isArray(r) ? r : {}, out = {};
+    ['tag', 'bt'].forEach(k => { const a = normRuns(c[k]); if (a.length) out[k] = a; });
+    return out;
+  }
+  function normEls(arr) {
+    const out = [], ids = new Set(); if (!Array.isArray(arr)) return out;
+    arr.forEach(e => {
+      if (out.length >= EL_MAX || !e || typeof e !== 'object' || !EL_KINDS.includes(e.k) || typeof e.id !== 'string' || !/^[a-z0-9]{3,8}$/.test(e.id) || ids.has(e.id)) return;
+      ids.add(e.id); const o = { id: e.id, k: e.k };
+      const t = str(e.t, 200); if (t) o.t = t; const x = str(e.x, 300); if (x) o.x = x;
+      const u = typeof e.u === 'string' ? e.u.trim() : ''; if (URL_OK.test(u) || /^wa:[0-9]{7,15}$/.test(u)) o.u = u;
+      ['c', 'bg', 'bg2'].forEach(k => { if (HEX.test(e[k] || '')) o[k] = e[k]; });
+      if (inEnum(e.al, ['l', 'c', 'r'])) o.al = e.al; if (intIn(e.sz, 12, 40)) o.sz = e.sz; if (intIn(e.h, 8, 80)) o.h = e.h;
+      if (intIn(e.dx, -40, 40) && e.dx) o.dx = e.dx; if (intIn(e.dy, -80, 80) && e.dy) o.dy = e.dy;
+      o.af = EL_ANCHORS.includes(e.af) ? e.af : 'items'; o.n = intIn(e.n, 0, 30) ? e.n : 0;
+      if (e.off === true) o.off = true;
+      const r = normRuns(e.r); if (r.length && r.map(z => z.t).join('') === (o.t || '')) o.r = r;
+      out.push(o);
+    });
+    return out;
+  }
+  /** Rellena un nodo con texto; si hay "runs" (palabras con estilo) y coinciden con el texto, las dibuja como <span>. Siempre textContent (nada de HTML). */
+  function renderRuns(node, text, runs) {
+    node.textContent = '';
+    if (Array.isArray(runs) && runs.length && runs.map(r => r.t).join('') === text) {
+      runs.forEach(r => {
+        if (!r.c && !r.b && !r.i && !r.s) { node.appendChild(document.createTextNode(r.t)); return; }
+        const sp = document.createElement('span'); sp.textContent = r.t;
+        if (r.c) sp.style.color = r.c; if (r.b) sp.style.fontWeight = '800'; if (r.i) sp.style.fontStyle = 'italic'; if (r.s) sp.style.fontSize = r.s + '%';
+        node.appendChild(sp);
+      });
+    } else node.textContent = text;
+  }
+  const elHref = (u) => (typeof u === 'string' && /^wa:[0-9]{7,15}$/.test(u) ? 'https://wa.me/' + u.slice(3) : URL_OK.test(u || '') ? u : '');
+  /** Construye el nodo de un elemento (solo DOM seguro). */
+  function renderEl(e) {
+    const box = document.createElement('div'); box.className = 'kel'; box.dataset.id = e.id; box.dataset.k = e.k; box.dataset.el = 'el:' + e.id;
+    if (e.al) box.style.textAlign = { l: 'left', c: 'center', r: 'right' }[e.al];
+    if (e.dx || e.dy) box.style.transform = 'translate(' + (e.dx || 0) + '%,' + (e.dy || 0) + 'px)';
+    const col = (n) => { if (e.c) n.style.color = e.c; if (e.sz) n.style.fontSize = e.sz + 'px'; return n; };
+    const href = elHref(e.u);
+    if (e.k === 'h' || e.k === 'p' || e.k === 'quote') {
+      const n = col(document.createElement(e.k === 'h' ? 'h2' : e.k === 'p' ? 'p' : 'blockquote')); n.className = 'kel-' + e.k; renderRuns(n, e.t || '', e.r); box.appendChild(n);
+    } else if (e.k === 'btn') {
+      const a = document.createElement(href ? 'a' : 'span'); a.className = 'kel-btn'; a.textContent = e.t || 'Ver más';
+      if (href) { a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+      if (e.bg) a.style.background = e.bg; if (e.c) a.style.color = e.c; if (e.sz) a.style.fontSize = e.sz + 'px'; box.appendChild(a);
+    } else if (e.k === 'div') {
+      const hr = document.createElement('hr'); hr.className = 'kel-hr'; if (e.c) hr.style.borderColor = e.c; box.appendChild(hr);
+    } else if (e.k === 'sp') {
+      box.style.height = (e.h || 24) + 'px'; box.setAttribute('aria-hidden', 'true');
+    } else if (e.k === 'promo') {
+      const c = document.createElement(href ? 'a' : 'div'); c.className = 'kel-promo';
+      if (href) { c.href = href; c.target = '_blank'; c.rel = 'noopener noreferrer'; }
+      c.style.background = 'linear-gradient(135deg,' + (e.bg || '#FF3145') + ',' + (e.bg2 || e.bg || '#0A0A0A') + ')'; if (e.c) c.style.color = e.c;
+      const t = document.createElement('b'); renderRuns(t, e.t || '', e.r); if (e.sz) t.style.fontSize = e.sz + 'px'; c.appendChild(t);
+      if (e.x) { const x = document.createElement('span'); x.textContent = e.x; c.appendChild(x); }
+      box.appendChild(c);
+    }
+    return box;
+  }
+  /** Reglas CSS de "estilo por texto" (solo valores ya normalizados: enums, enteros y fuentes de la lista). */
+  function txCss(tx) {
+    let css = '';
+    TX_SLOTS.forEach(k => {
+      const e = tx && tx[k]; if (!e) return; const r = [];
+      if (e.it) r.push('font-style:italic'); if (e.up) r.push('text-transform:uppercase'); if (e.ls) r.push('letter-spacing:' + (e.ls * 0.5) + 'px');
+      if (e.al) r.push('text-align:' + e.al); if (e.ts) r.push('text-shadow:' + (e.ts === 'soft' ? '0 1px 3px rgba(0,0,0,.35)' : '0 2px 8px rgba(0,0,0,.6)'));
+      if (e.ff) r.push("font-family:'" + e.ff + "',-apple-system,sans-serif"); if (r.length) css += 'html ' + TX_SEL[k] + '{' + r.join(';') + '}';
+    });
+    return css;
+  }
+  function applyExtras(c, root) {
+    const s = root.style, d = root.dataset;
+    const bg = gradCss(c.bgx), hb = gradCss(c.hbgx);
+    if (bg) { s.setProperty('--bgx', bg); d.bgx = '1'; } else { s.removeProperty('--bgx'); delete d.bgx; }
+    if (hb) { s.setProperty('--hbgx', hb); d.hbgx = '1'; } else { s.removeProperty('--hbgx'); delete d.hbgx; }
+    let st = document.getElementById('kdTx'); const css = txCss(c.tx);
+    if (!css) { if (st) st.remove(); } else { if (!st) { st = document.createElement('style'); st.id = 'kdTx'; document.head.appendChild(st); } if (st.textContent !== css) st.textContent = css; }
   }
 
   /* ---------- Redes sociales (se guardan como [{t, u, m?, on?}]; u = https o, en WhatsApp, solo dígitos) ---------- */
@@ -181,11 +337,12 @@
     d.dk = lum(c.background) < .25 ? '1' : '0'; d.big = (c.nameSize || 0) >= 32 || (c.titleSize || 0) >= 32 ? '1' : '0';
     // Un banner alto no debe quedarse fijo arriba tapando el menú
     d.hsticky = c.blocks[0] === 'header' && c.bannerH === 'auto' ? '1' : '0';
+    applyButtons(c, root); applyExtras(c, root);
     loadFonts(c);
     return c;
   }
   function loadFonts(c) {
-    const need = [...new Set([c.fontHeading, c.fontBody])].filter(f => f !== 'Inter');
+    const need = [...new Set([c.fontHeading, c.fontBody].concat(Object.values(c.tx || {}).map(e => e.ff).filter(Boolean)))].filter(f => f !== 'Inter');
     let el = document.getElementById('kdFonts');
     if (!need.length) { if (el) el.remove(); return; }
     const href = 'https://fonts.googleapis.com/css2?' + need.map(f => 'family=' + encodeURIComponent(f).replace(/%20/g, '+') + ':wght@400;600;700;800').join('&') + '&display=swap';
@@ -244,7 +401,7 @@
     { id: 'postres', group: 'classic', name: 'Dulce', desc: 'Suave y acogedor.', cfg: { template: 'postres', primary: '#C2185B', secondary: '#4A1128', background: '#FFF8FA', surface: '#FCE8EF', cardStyle: 'round', imageShape: 'rounded', headerStyle: 'centered', buttonStyle: 'outline' } },
   ];
   /** Lo que se CONSERVA al cambiar de plantilla: textos, redes, qué se muestra u oculta y las opciones avanzadas del plan. */
-  const KEEP_ON_TEMPLATE = ADVANCED.concat(['tagline', 'bannerTitle', 'showAbout', 'social', 'showImages', 'showDescriptions', 'showPrices', 'showTags', 'showSearch', 'showHighlights', 'showCategoriesNav', 'showAddress', 'showNav']);
+  const KEEP_ON_TEMPLATE = ADVANCED.concat(['tagline', 'bannerTitle', 'showAbout', 'social', 'showImages', 'showDescriptions', 'showPrices', 'showTags', 'showSearch', 'showHighlights', 'showCategoriesNav', 'showAddress', 'showNav', 'wa', 'els', 'rt']);
   /** Lo que se RESTABLECE (se avisa al dueño): colores, estilo, estructura, tamaños de letra, tarjetas y barra inferior. */
   const RESET_ON_TEMPLATE = 'colores, estilo, estructura, tamaños de letra, tarjetas y barra inferior';
   function applyTemplate(cfg, t) {
@@ -259,5 +416,5 @@
   function mix(a, b, t) { const A = [1, 3, 5].map(i => parseInt(a.substr(i, 2), 16)), B = [1, 3, 5].map(i => parseInt(b.substr(i, 2), 16)); return '#' + A.map((v, i) => Math.round(v * t + B[i] * (1 - t)).toString(16).padStart(2, '0')).join('').toUpperCase(); }
 
   window.KARTTA_DESIGN = { validTag, tagEl, tagsRow, DEFAULTS, ENUM, INTS, WEIGHTS, HEXOPT, FONTS, BLOCKS, ADVANCED, TEMPLATES, RESET_ON_TEMPLATE, normalize, compact, apply, applyTemplate, radiusOf, contrast, effective, lum,
-    SOCIAL_TYPES, SOCIAL_LABEL, SOCIAL_ICON, ALLERGENS, parseSocialInput, socialHref, socialVisible, renderSocial };
+    TX_SLOTS, TX_LABEL, TX_SEL, EL_KINDS, EL_ANCHORS, EL_MAX, gradCss, renderRuns, renderEl, elHref, SOCIAL_TYPES, SOCIAL_LABEL, SOCIAL_ICON, ALLERGENS, parseSocialInput, socialHref, socialVisible, renderSocial };
 })();

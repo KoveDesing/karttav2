@@ -119,6 +119,23 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
 @media (max-width:900px){.ov{align-items:flex-end;padding:0}.mbox,.mbox.wide{width:100%;max-height:94vh;border-radius:18px 18px 0 0}.allg{grid-template-columns:repeat(2,1fr)}.drawer{max-height:46vh}.pvbar{top:6px}}
 /* campos/listas bloqueados: el toque llega al contenedor y abre la tarjeta de mejora */
 .fld.pg input,.fld.pg textarea,.bl.pg input,.bl.pg button{pointer-events:none}.fld.pg,.bl.pg{cursor:pointer}
+
+/* buscador de herramientas */
+.rail .rs{color:var(--railtx);border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:4px}
+.tsr{position:fixed;inset:0;z-index:110;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;padding:9vh 16px 16px}.tsr.show{display:flex}
+.tsb{width:min(520px,100%);max-height:80vh;display:flex;flex-direction:column;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:16px;box-shadow:0 24px 60px -20px rgba(0,0,0,.45);overflow:hidden}
+.tsb input{width:100%;min-height:52px;padding:0 18px;border:0;border-bottom:1px solid var(--border);background:transparent;color:var(--strong);font:inherit;font-size:15px;outline:0}
+.tsl{overflow-y:auto;padding:6px;margin:0;list-style:none}.tsl button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:10px 12px;border-radius:10px;color:var(--strong);font-weight:700;font-size:13.5px}
+.tsl button:hover,.tsl button.on{background:var(--panel2)}.tsl small{color:var(--muted);font-weight:600;font-size:11.5px;white-space:nowrap}.tse{padding:22px 16px;text-align:center;color:var(--muted);font-size:13px}
+.tflash{animation:tfl 1.8s ease-out}@keyframes tfl{0%,40%{box-shadow:0 0 0 3px var(--accent);border-radius:8px}100%{box-shadow:0 0 0 3px transparent}}
+@media (max-width:900px){.rail .rs{min-width:56px;flex:0 0 56px;border-bottom:0;border-right:1px solid rgba(255,255,255,.08)}.tsr{padding-top:4vh}}
+
+.lyrs{display:flex;flex-direction:column;gap:4px;margin:6px 0 10px}.lyr{display:flex;align-items:center;gap:4px;border:1px solid var(--border);background:var(--panel);border-radius:10px;padding:2px 4px;min-height:38px}
+.lyr.child{margin-left:18px}.lyr.sel{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}.lyr.off .ll{opacity:.5}.lyr.over{outline:2px dashed var(--accent)}.lyr.dragging{opacity:.4}
+.lyr .lg{width:14px;color:var(--muted);cursor:grab;font-size:12px;letter-spacing:-2px;user-select:none}.lyr .ll{flex:1;display:flex;align-items:center;gap:8px;text-align:left;border:0;background:transparent;font:600 13px/1.2 inherit;font-family:inherit;color:inherit;cursor:pointer;padding:8px 4px;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.lyr .la{border:0;background:transparent;color:var(--muted);cursor:pointer;width:28px;height:28px;border-radius:8px;font-size:13px}.lyr .la:hover:not(:disabled){background:var(--panel2);color:inherit}.lyr .la:disabled{opacity:.3;cursor:default}
+.wd{border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:5px 9px;font:inherit;font-size:13px;cursor:pointer;color:inherit}.wd[aria-pressed=true]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--panel));box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}
+.wdc{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}.wdt{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.wdt input[type=color]{width:34px;height:32px;padding:0;border:1px solid var(--border);border-radius:8px;background:transparent}.wdt .btn{min-height:32px;padding:0 10px}.wde{margin:10px 0}
 </style>
 <link rel="stylesheet" href="/kartta-fields.css?v=20261103">
 </head>
@@ -173,12 +190,18 @@ const TOOLS = [
   ['design', 'Diseño', I('<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/>')],
   ['banner', 'Banner', I('<rect x="3" y="4" width="18" height="9" rx="2"/><path d="M3 17h12M3 21h8"/>')],
   ['text', 'Texto', I('<path d="M4 7V5h16v2M12 5v14M9 19h6"/>')],
+  ['textfx', 'Texto por elemento', I('<path d="M5 18l5-13 5 13M7 14h6M18 6v6M21 9h-6"/>')],
   ['colors', 'Colores', I('<path d="M12 22a10 10 0 1 1 10-10c0 2.6-2 3-4 3h-2a2 2 0 0 0-1 3.7c.7.5.4 3.3-3 3.3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16.5" cy="10" r="1"/>')],
+  ['bg', 'Fondo', I('<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 15l6-6 5 5 3-3 4 4"/>')],
   ['cards', 'Tarjetas', I('<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/>')],
   ['nav', 'Navegación', I('<rect x="3" y="14" width="18" height="6" rx="3"/><path d="M7 17h.01M12 17h.01M17 17h.01M5 8h14M5 4h8"/>')],
   ['social', 'Redes', I('<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/>')],
+  ['buttons', 'Botones', I('<rect x="3" y="8" width="18" height="8" rx="4"/><path d="M8 12h8"/>')],
+  ['whatsapp', 'WhatsApp', I('<path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/>')],
   ['products', 'Productos', I('<path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/>')],
   ['sections', 'Secciones', I('<path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/>')],
+  ['elements', 'Elementos', I('<rect x="3" y="3" width="8" height="8" rx="2"/><circle cx="17" cy="7" r="4"/><path d="M3 17h8M3 21h8M17 14v8M14 18h6"/>')],
+  ['layers', 'Capas', I('<path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5M3 17l9 5 9-5" opacity=".6"/>')],
 ];
 const W = (x) => `<svg viewBox="0 0 48 32" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${x}</svg>`;
 const L = '<path d="M5 25h26M5 29h16" opacity=".45"/>';
@@ -289,7 +312,9 @@ let previewTpl = null; const thumbWins = new Map();
 const shownCfg = () => (previewTpl ? D.applyTemplate(cfg, previewTpl) : cfg);
 function startPreview(t){ previewTpl = t; $('pvName').textContent = t.name; $('pvBar').hidden = false; sendDesign(); }
 function stopPreview(){ if (!previewTpl) return; previewTpl = null; $('pvBar').hidden = true; sendDesign(); }
-function applyTpl(t){ stopPreview(); replace(D.applyTemplate(cfg, t)); toast('Plantilla “' + t.name + '” aplicada. Se restablecieron ' + D.RESET_ON_TEMPLATE + '; se conservaron tus textos, redes y opciones. Puedes deshacer con Ctrl+Z.', 6500); }
+const FREE_TPL = ['clasico', 'oscuro'];
+const tplLocked = (t) => isLocked() && !FREE_TPL.includes(t.id);
+function applyTpl(t){ if (tplLocked(t)) { stopPreview(); upsell('La plantilla «' + t.name + '»'); return false; } stopPreview(); replace(D.applyTemplate(cfg, t)); toast('Plantilla “' + t.name + '” aplicada. Se restablecieron ' + D.RESET_ON_TEMPLATE + '; se conservaron tus textos, redes y opciones. Puedes deshacer con Ctrl+Z.', 6500); }
 const SAMPLE = { categories: [{ id: 's1', name: 'Entradas', tags: [] }, { id: 's2', name: 'Platos fuertes', tags: [] }], products: [
   { id: 'x1', category_id: 's1', name: 'Nachos de la casa', description: 'Con queso fundido y guacamole.', price: 18900, discount_percent: 0, image_path: null, is_available: true, tags: [{ id: 'xt', name: 'Nuevo', bg: '#FF3145', fg: '#FFFFFF', style: 'solid' }] },
   { id: 'x2', category_id: 's1', name: 'Ensalada fresca', description: 'Hojas verdes y vinagreta.', price: 14500, discount_percent: 0, image_path: null, is_available: true, tags: [] },
@@ -305,8 +330,8 @@ function mountThumb(host, t){
   const sc = () => { fr.style.transform = 'scale(' + (host.clientWidth / 390) + ')'; }; sc(); requestAnimationFrame(sc); thumbWins.set(fr.contentWindow, t);
 }
 function tplCard(t, onApply){
-  const host = h('div', { class: 'tcv' }), card = h('div', { class: 'tc' }, host, h('div', { class: 'tcm' }, h('b', {}, t.name, t.recommended ? h('em', {}, 'Recomendada') : null), h('span', { class: 'tcd' }, t.desc)),
-    h('div', { class: 'tcb' }, h('button', { type: 'button', class: 'btn', 'aria-label': 'Previsualizar la plantilla ' + t.name, onclick: () => { if (onApply) onApply(false); startPreview(t); } }, 'Vista previa'), h('button', { type: 'button', class: 'btn primary', 'aria-label': 'Usar la plantilla ' + t.name, onclick: () => { applyTpl(t); if (onApply) onApply(true); } }, 'Usar')));
+  const host = h('div', { class: 'tcv' }), card = h('div', { class: 'tc' }, host, h('div', { class: 'tcm' }, h('b', { style: 'display:flex;align-items:center;gap:6px' }, t.name, tplLocked(t) ? crown('Disponible desde KARTTA Pro') : null, t.recommended ? h('em', {}, 'Recomendada') : null), h('span', { class: 'tcd' }, t.desc)),
+    h('div', { class: 'tcb' }, h('button', { type: 'button', class: 'btn', 'aria-label': 'Previsualizar la plantilla ' + t.name, onclick: () => { if (onApply) onApply(false); startPreview(t); } }, 'Vista previa'), h('button', { type: 'button', class: 'btn primary', 'aria-label': 'Usar la plantilla ' + t.name, onclick: () => { if (applyTpl(t) !== false && onApply) onApply(true); } }, 'Usar')));
   const mark = () => card.classList.toggle('cur', cfg.template === t.id); mark(); syncers.push(mark);
   const io = new IntersectionObserver((es) => { if (es.some(e => e.isIntersecting)) { io.disconnect(); mountThumb(host, t); } }, { root: null, rootMargin: '200px' }); io.observe(host);
   return card;
@@ -448,6 +473,163 @@ function productRow(p){
     h('div', { class: 'pa' }, av, ib(ICON.up, 'Subir ' + p.name, () => moveProd(p, -1), i <= 0), ib(ICON.down, 'Bajar ' + p.name, () => moveProd(p, 1), i >= grp.length - 1), ib(ICON.edit, 'Editar ' + p.name, () => openProductForm(p)), ib(ICON.copy, 'Duplicar ' + p.name, () => dupProd(p)), ib(ICON.del, 'Eliminar ' + p.name, () => delProd(p))));
 }
 
+/* ---------- Botones y WhatsApp: apariencia dentro del diseño (borrador/publicado); límites iguales a los de la base de datos ---------- */
+const needPlan = (min, f) => { if (window.KARTTA_UPSELL) KARTTA_UPSELL.open(min >= 2 ? { plan: 'KARTTA Elite', feature: f, title: 'Esta opción es de KARTTA Elite', text: f + ' está incluida en KARTTA Elite.' , href: 'index.html#precios' } : { plan: 'KARTTA Pro', feature: f }); else toast(min >= 2 ? 'Esta opción es de KARTTA Elite.' : 'Esta opción es de KARTTA Pro.'); };
+function setSub(key, sub, val, min, label, coalesce){
+  if (rank < min) { needPlan(min, label); syncAll(); return; }
+  const o = { ...(cfg[key] || {}) }; if (val === '' || val == null) delete o[sub]; else o[sub] = val;
+  set(key, o, coalesce);
+}
+const subTitle = (t, min) => h('div', { class: 'sec', style: 'display:flex;align-items:center;gap:8px' }, t, rank < min ? crown(min >= 2 ? 'Disponible en KARTTA Elite' : 'Disponible desde KARTTA Pro') : null);
+function subSeg(key, sub, host, label, opts, min, def){
+  const g = h('div', { class: 'segc', role: 'group', 'aria-label': label });
+  opts.forEach(([v, t]) => g.append(h('button', { type: 'button', 'data-v': String(v), 'aria-pressed': 'false', onclick: () => setSub(key, sub, v === def ? '' : v, min, label) }, t)));
+  host.append(h('div', { class: 'fld' }, h('div', { class: 'rgh' }, h('label', {}, label, rank < min ? crown(min >= 2 ? 'Disponible en KARTTA Elite' : 'Disponible desde KARTTA Pro') : null)), g));
+  syncers.push(() => g.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(String((cfg[key] || {})[sub] ?? def) === b.dataset.v))));
+}
+function subRng(key, sub, host, label, mn, mx, def, min, unit = 'px'){
+  const id = 'sr_' + key + sub, inp = h('input', { type: 'range', id, min: mn, max: mx, step: 1, 'aria-label': label, oninput: () => setSub(key, sub, Number(inp.value) === def ? '' : Number(inp.value), min, label, true) }), val = h('output', { for: id });
+  const rs = h('button', { type: 'button', class: 'lnk', onclick: () => setSub(key, sub, '', min, label) }, 'Restablecer');
+  host.append(h('div', { class: 'fld rg' }, h('div', { class: 'rgh' }, h('label', { for: id }, label, rank < min ? crown(min >= 2 ? 'Disponible en KARTTA Elite' : 'Disponible desde KARTTA Pro') : null), val, rs), inp));
+  syncers.push(() => { const v = (cfg[key] || {})[sub]; inp.value = v ?? def; val.textContent = (v ?? def) + unit; rs.style.visibility = v == null ? 'hidden' : 'visible'; });
+}
+function subClr(key, sub, host, label, def, min){
+  const i = h('input', { type: 'color', 'aria-label': 'Color de ' + label.toLowerCase(), oninput: () => setSub(key, sub, i.value.toUpperCase(), min, label, true) });
+  const hx = h('input', { type: 'text', class: 'hx', maxlength: 7, spellcheck: 'false', placeholder: 'Auto', 'aria-label': 'Código hexadecimal de ' + label.toLowerCase(),
+    oninput: () => { let v = hx.value.trim(); if (v && !v.startsWith('#')) v = '#' + v; const ok = /^#[0-9a-fA-F]{6}$/.test(v); hx.classList.toggle('bad', !!hx.value.trim() && !ok); if (ok) setSub(key, sub, v.toUpperCase(), min, label, true); }, onblur: () => { hx.classList.remove('bad'); syncAll(); } });
+  const au = h('button', { type: 'button', class: 'lnk', onclick: () => setSub(key, sub, '', min, label) }, 'Auto');
+  host.append(h('div', { class: 'cw' }, i, h('span', { class: 'cwl' }, label, rank < min ? crown('Disponible desde KARTTA Pro') : null), hx, au));
+  syncers.push(() => { const v = (cfg[key] || {})[sub]; i.value = v || def; if (document.activeElement !== hx) hx.value = v || ''; au.style.visibility = v ? 'visible' : 'hidden'; });
+}
+function subTxt(key, sub, host, label, max, ph, min, multi){
+  const id = 'st_' + key + sub, i = h(multi ? 'textarea' : 'input', { id, maxlength: max, placeholder: ph || '', rows: multi ? 2 : null, type: multi ? null : 'text', oninput: () => setSub(key, sub, i.value.trim() === '' ? '' : i.value, min, label, true) });
+  host.append(h('div', { class: 'fld', onclick: () => { if (rank < min) needPlan(min, label); } }, h('label', { for: id }, label, rank < min ? crown(min >= 2 ? 'Disponible en KARTTA Elite' : 'Disponible desde KARTTA Pro') : null), i));
+  syncers.push(() => { if (document.activeElement !== i) i.value = (cfg[key] || {})[sub] || ''; });
+}
+/* WhatsApp: número e interruptor viven en el restaurante (no en el borrador) y se guardan con la misma función de siempre */
+const WA_C = [['57', 'Colombia', 10, 10], ['52', 'México', 10, 10], ['1', 'EE. UU. / Canadá', 10, 10], ['34', 'España', 9, 9], ['51', 'Perú', 9, 9], ['56', 'Chile', 9, 9], ['593', 'Ecuador', 9, 9], ['58', 'Venezuela', 10, 10], ['507', 'Panamá', 8, 8], ['506', 'Costa Rica', 8, 8], ['502', 'Guatemala', 8, 8], ['598', 'Uruguay', 8, 8], ['591', 'Bolivia', 8, 8], ['595', 'Paraguay', 9, 9], ['55', 'Brasil', 10, 11], ['44', 'Reino Unido', 10, 10], ['351', 'Portugal', 9, 9]];
+function waNational(cc, raw){
+  const r = WA_C.find(c => c[0] === cc); if (!r) return null; let d = String(raw == null ? '' : raw).replace(/\D/g, '').replace(/^0+/, '');
+  if (d.length > r[3] && d.indexOf(cc) === 0 && d.length - cc.length >= r[2] && d.length - cc.length <= r[3]) d = d.slice(cc.length);
+  if (d.length < r[2] || d.length > r[3]) return null; if (cc === '57' && d.charAt(0) !== '3') return null; return d;
+}
+const waDigits = () => { if (!restaurant.whatsapp_enabled) return null; const cc = restaurant.whatsapp_country_code || '57', n = waNational(cc, restaurant.whatsapp); return n ? cc + n : null; };
+
+/* ---------- Fase 2: fondos con degradado, estilo por texto, elementos, capas, palabra por palabra ---------- */
+const txRank = (o) => { const v = Object.values(o || {}); return !v.length ? 0 : v.some(e => e.ts || e.ff) ? 2 : 1; };
+const gRank = (g) => !g || !g.c1 ? 0 : (g.t === 'radial' || g.c3 ? 2 : 1);
+const elsRank = (a) => !a.length ? 0 : (a.length > 6 || a.some(e => e.k === 'promo' || e.r || e.dx || e.dy)) ? 2 : 1;
+function commit(key, val, min, label, coalesce){ if (rank < min) { needPlan(min, label); syncAll(); return false; } set(key, val, coalesce); return true; }
+const gSet = (key, patch, label, coalesce) => { const cur = cfg[key] || {}, seed = cur.c1 ? {} : { t: 'linear', a: 180, c1: cfg.primary, c2: cfg.secondary }, n = { ...seed, ...cur, ...patch }; Object.keys(n).forEach(k => { if (n[k] == null || n[k] === '') delete n[k]; }); if (patch.t === 'none') return commit(key, {}, 0, label); return commit(key, n, gRank(n), label, coalesce); };
+const txSet = (slot, prop, val, label, coalesce) => { const o = JSON.parse(JSON.stringify(cfg.tx || {})); o[slot] = { ...(o[slot] || {}) }; if (val === false || val == null || val === '' || val === 0) delete o[slot][prop]; else o[slot][prop] = val; if (!Object.keys(o[slot]).length) delete o[slot]; commit('tx', o, txRank(o), label, coalesce); };
+const rtSet = (key, runs, label) => { const o = { ...(cfg.rt || {}) }; if (runs && runs.length) o[key] = runs; else delete o[key]; commit('rt', o, Object.keys(o).length ? 2 : 0, label); };
+const EL_LABEL = { h: 'Título', p: 'Párrafo', quote: 'Cita', btn: 'Botón con enlace', div: 'Separador', sp: 'Espacio', promo: 'Tarjeta promo' };
+const EL_ICON = { h: '<path d="M5 5v14M19 5v14M5 12h14"/>', p: '<path d="M4 6h16M4 10h16M4 14h16M4 18h9"/>', quote: '<path d="M7 7h4v6H5a4 4 0 0 1 2-6zM15 7h4v6h-6a4 4 0 0 1 2-6z"/>', btn: '<rect x="3" y="8" width="18" height="8" rx="4"/><path d="M8 12h8"/>', div: '<path d="M3 12h18"/>', sp: '<path d="M12 3v18M8 7l4-4 4 4M8 17l4 4 4-4"/>', promo: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 10h6M7 14h9"/>' };
+const AN_LABEL = { header: 'Encabezado', announcement: 'Anuncio', categories: 'Categorías', items: 'Productos', footer: 'Pie de página' };
+let selEl = null;
+const newId = () => { let s; do { s = Math.random().toString(36).slice(2, 8); } while (s.length < 3 || (cfg.els || []).some(e => e.id === s)); return s; };
+const elOf = (id) => (cfg.els || []).find(e => e.id === id);
+const reindex = (arr) => { EL_ANCH().forEach(a => { arr.filter(e => e.af === a).sort((x, y) => x.n - y.n).forEach((e, i) => { e.n = i; }); }); return arr; };
+const EL_ANCH = () => D.EL_ANCHORS;
+function setEls(arr, label, coalesce){ arr = reindex(arr.map(e => ({ ...e }))); const need = elsRank(arr); return commit('els', arr, need, need >= 2 && rank < 2 ? (arr.length > 6 ? 'Más de 6 elementos' : 'Las opciones avanzadas de elementos (tarjeta promo, arrastre libre y texto palabra por palabra)') : label, coalesce); }
+function updEl(id, patch, coalesce){ const arr = (cfg.els || []).map(e => { if (e.id !== id) return { ...e }; const n = { ...e, ...patch }; Object.keys(n).forEach(k => { if (n[k] === undefined || n[k] === '' || n[k] === null || n[k] === false && k !== 'off') delete n[k]; }); if (n.off === false) delete n.off; return n; }); return setEls(arr, 'Elementos', coalesce); }
+function addEl(kind){
+  if (rank < 1) return needPlan(1, 'Elementos del menú'); if (kind === 'promo' && rank < 2) return needPlan(2, 'La tarjeta promo');
+  const max = rank >= 2 ? D.EL_MAX : 6; if ((cfg.els || []).length >= max) { toast(rank >= 2 ? 'Llegaste al máximo de ' + D.EL_MAX + ' elementos.' : 'Tu plan permite hasta 6 elementos. Con KARTTA Elite puedes tener ' + D.EL_MAX + '.'); if (rank < 2) needPlan(2, 'Más elementos'); return; }
+  const base = { h: { t: 'Título nuevo' }, p: { t: 'Escribe aquí tu texto' }, quote: { t: 'Una frase que te represente' }, btn: { t: 'Reservar mesa' }, div: {}, sp: { h: 24 }, promo: { t: 'Promo de hoy', x: 'Cuéntales a tus clientes por qué pedir hoy' } }[kind];
+  const id = newId(); if (setEls([...(cfg.els || []), { id, k: kind, af: 'header', n: 99, ...base }], 'Elementos')) { selEl = id; openTool('elements', true); }
+}
+const parseElUrl = (raw) => { const v = String(raw || '').trim(); if (!v) return { u: '' }; if (/^[+\d\s().-]{7,22}$/.test(v) && v.replace(/\D/g, '').length >= 7) return { u: 'wa:' + v.replace(/\D/g, '').slice(0, 15) }; const p = D.parseSocialInput('web', v); return p.error ? { error: p.error } : { u: p.u }; };
+const subSw = (host, label, get, setf) => { const i = h('input', { type: 'checkbox', onchange: () => setf(i.checked) }); host.append(h('label', { class: 'sw' }, h('span', {}, label), i)); syncers.push(() => { i.checked = !!get(); }); };
+function elField(host, label, get, setf, o = {}){
+  const id = 'ef_' + Math.random().toString(36).slice(2, 7), i = h(o.multi ? 'textarea' : 'input', { id, maxlength: o.max || 200, placeholder: o.ph || '', rows: o.multi ? 2 : null, type: o.multi ? null : 'text', oninput: () => setf(i.value) });
+  host.append(h('div', { class: 'fld' }, h('label', { for: id }, label), i)); syncers.push(() => { if (document.activeElement !== i) i.value = get() || ''; }); return i;
+}
+function elClr(host, label, get, setf, def){
+  const i = h('input', { type: 'color', 'aria-label': label, oninput: () => setf(i.value.toUpperCase(), true) }), au = h('button', { type: 'button', class: 'lnk', onclick: () => setf('') }, 'Auto');
+  host.append(h('div', { class: 'cw' }, i, h('span', { class: 'cwl' }, label), au)); syncers.push(() => { i.value = get() || def; au.style.visibility = get() ? 'visible' : 'hidden'; });
+}
+function elRng(host, label, mn, mx, get, setf, def, unit = 'px', min = 1){
+  const id = 'er_' + Math.random().toString(36).slice(2, 7), inp = h('input', { type: 'range', id, min: mn, max: mx, step: 1, oninput: () => setf(Number(inp.value), true) }), val = h('output', { for: id });
+  host.append(h('div', { class: 'fld rg' }, h('div', { class: 'rgh' }, h('label', { for: id }, label, rank < min ? crown(min >= 2 ? 'Disponible en KARTTA Elite' : 'Disponible desde KARTTA Pro') : null), val), inp)); syncers.push(() => { const v = get(); inp.value = v ?? def; val.textContent = (v ?? def) + unit; });
+}
+/** Edición palabra por palabra: cada palabra se elige y recibe su propio color, negrita, cursiva y tamaño. Solo Elite. */
+function wordEd(host, getText, getRuns, setRuns, label){
+  const wrap = h('div', { class: 'wde' }), chips = h('div', { class: 'wdc', role: 'group', 'aria-label': 'Palabras' }), sel = new Set();
+  const tokens = () => (String(getText() || '').match(/\S+\s*/g) || []);
+  const styles = () => { const t = tokens(), r = getRuns() || []; return r.length === t.length && r.map(x => x.t).join('') === t.join('') ? r.map(x => ({ c: x.c, b: x.b, i: x.i, s: x.s })) : t.map(() => ({})); };
+  const apply = (patch) => { if (rank < 2) return needPlan(2, 'Edición palabra por palabra'); if (!sel.size) return toast('Toca primero una o varias palabras.'); const t = tokens(), st = styles();
+    const runs = t.map((w, i) => { const o = { t: w, ...st[i] }; if (sel.has(i)) Object.assign(o, patch); Object.keys(o).forEach(k => { if (o[k] === undefined || o[k] === false || o[k] === null || (k === 's' && o[k] === 100)) delete o[k]; }); return o; });
+    setRuns(runs.some(r => Object.keys(r).length > 1) ? runs : []); };
+  const draw = () => { chips.innerHTML = ''; const t = tokens(), st = styles(); wrap.dataset.n = t.length;
+    if (!t.length) { chips.append(h('p', { class: 'note' }, 'Escribe primero el texto.')); return; }
+    if (t.length > 40 || t.some(w => w.length > 40)) { chips.append(h('p', { class: 'note warn' }, 'Máximo 40 palabras de hasta 40 letras cada una para editar palabra por palabra.')); return; }
+    t.forEach((w, i) => { const s = st[i] || {}, b = h('button', { type: 'button', class: 'wd', 'aria-pressed': String(sel.has(i)), onclick: () => { sel.has(i) ? sel.delete(i) : sel.add(i); draw(); } }, w.trim());
+      if (s.c) b.style.color = s.c; if (s.b) b.style.fontWeight = '800'; if (s.i) b.style.fontStyle = 'italic'; chips.append(b); }); };
+  const col = h('input', { type: 'color', 'aria-label': 'Color de las palabras elegidas', value: '#FF3145', onchange: () => apply({ c: col.value.toUpperCase() }) });
+  const szs = h('select', { 'aria-label': 'Tamaño de las palabras elegidas', onchange: () => { apply({ s: Number(szs.value) }); szs.value = ''; } }, h('option', { value: '' }, 'Tamaño'), ...[[80, 'Más pequeña'], [100, 'Normal'], [125, 'Grande'], [160, 'Muy grande'], [200, 'Enorme']].map(([v, t]) => h('option', { value: v }, t)));
+  const tb = h('div', { class: 'wdt' }, col, h('button', { type: 'button', class: 'btn', 'aria-label': 'Negrita', onclick: () => { const st = styles(); apply({ b: ![...sel].every(i => st[i] && st[i].b) }); } }, h('b', {}, 'B')), h('button', { type: 'button', class: 'btn', 'aria-label': 'Cursiva', onclick: () => { const st = styles(); apply({ i: ![...sel].every(i => st[i] && st[i].i) }); } }, h('i', {}, 'I')), szs,
+    h('button', { type: 'button', class: 'btn', onclick: () => { tokens().forEach((_, i) => sel.add(i)); draw(); } }, 'Todas'), h('button', { type: 'button', class: 'btn', onclick: () => { if (rank < 2) return needPlan(2, 'Edición palabra por palabra'); sel.clear(); setRuns([]); } }, 'Quitar formato'));
+  wrap.append(h('div', { class: 'rgh' }, h('label', {}, label || 'Palabra por palabra', rank < 2 ? crown('Disponible en KARTTA Elite') : null)), chips, tb, h('p', { class: 'note' }, 'Toca una o varias palabras y cámbiales el color, la negrita, la cursiva o el tamaño. Si cambias el texto, el formato por palabra se reinicia.'));
+  host.append(wrap); syncers.push(draw);
+}
+function elEditor(host, e){
+  const k = e.k, ch = (p, co) => updEl(e.id, p, co);
+  host.append(h('div', { class: 'sec', style: 'display:flex;align-items:center;gap:8px' }, EL_LABEL[k], h('button', { type: 'button', class: 'lnk', style: 'margin-left:auto', onclick: () => { selEl = null; openTool('elements', true); } }, 'Cerrar edición')));
+  if (k === 'sp') elRng(host, 'Alto del espacio', 8, 80, () => elOf(e.id)?.h, v => ch({ h: v }, true), 24);
+  else if (k !== 'div') {
+    elField(host, k === 'promo' ? 'Título de la promo' : k === 'btn' ? 'Texto del botón' : 'Texto', () => elOf(e.id)?.t, v => ch({ t: v }, true), { multi: k === 'p' || k === 'quote', max: k === 'btn' ? 40 : 200 });
+    if (k === 'promo') elField(host, 'Descripción', () => elOf(e.id)?.x, v => ch({ x: v }, true), { multi: true, max: 300 });
+  }
+  if (k === 'btn' || k === 'promo') { const er = h('div', { class: 'ferr', role: 'alert' }); const i = elField(host, k === 'btn' ? 'Enlace del botón (https:// o número de WhatsApp)' : 'Enlace (opcional)', () => { const u = elOf(e.id)?.u || ''; return u.startsWith('wa:') ? '+' + u.slice(3) : u; }, () => {}, { max: 255, ph: 'https://… o 300 123 4567' });
+    i.oninput = null; i.onchange = () => { const r = parseElUrl(i.value); er.textContent = r.error || ''; if (!r.error) ch({ u: r.u }); }; host.append(er); }
+  if (k !== 'sp') {
+    if (k === 'btn') elClr(host, 'Color del botón', () => elOf(e.id)?.bg, (v, co) => ch({ bg: v }, co), '#FF3145');
+    if (k === 'promo') { elClr(host, 'Color inicial del degradado', () => elOf(e.id)?.bg, (v, co) => ch({ bg: v }, co), '#FF3145'); elClr(host, 'Color final del degradado', () => elOf(e.id)?.bg2, (v, co) => ch({ bg2: v }, co), '#0A0A0A'); }
+    elClr(host, k === 'div' ? 'Color de la línea' : 'Color del texto', () => elOf(e.id)?.c, (v, co) => ch({ c: v }, co), '#0A0A0A');
+    if (k !== 'div') elRng(host, 'Tamaño del texto', 12, 40, () => elOf(e.id)?.sz, v => ch({ sz: v }, true), k === 'h' ? 22 : 14);
+    if (k !== 'div') { const g = h('div', { class: 'segc', role: 'group', 'aria-label': 'Alineación' }); [['l', 'Izquierda'], ['c', 'Centro'], ['r', 'Derecha']].forEach(([v, t]) => g.append(h('button', { type: 'button', 'data-v': v, 'aria-pressed': 'false', onclick: () => ch({ al: v === 'l' ? '' : v }) }, t)));
+      host.append(h('div', { class: 'fld' }, h('div', { class: 'rgh' }, h('label', {}, 'Alineación')), g)); syncers.push(() => g.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String((elOf(e.id)?.al || 'l') === b.dataset.v)))); }
+  }
+  const an = h('select', { id: 'elAf', 'aria-label': 'Dónde se coloca', onchange: () => ch({ af: an.value, n: 99 }) }, ...D.EL_ANCHORS.map(a => h('option', { value: a }, 'Después de: ' + AN_LABEL[a])));
+  host.append(h('div', { class: 'fld' }, h('label', { for: 'elAf' }, 'Posición en el menú'), an)); syncers.push(() => { an.value = elOf(e.id)?.af || 'items'; });
+  host.append(h('div', { class: 'two1' }, h('button', { type: 'button', class: 'btn', onclick: () => moveEl(e.id, -1) }, '↑ Subir'), h('button', { type: 'button', class: 'btn', onclick: () => moveEl(e.id, 1) }, '↓ Bajar')));
+  host.append(subTitle('Posición libre (arrástralo en la vista previa)', 2)); elRng(host, 'Desplazamiento horizontal', -40, 40, () => elOf(e.id)?.dx, v => ch({ dx: v }, true), 0, '%', 2); elRng(host, 'Desplazamiento vertical', -80, 80, () => elOf(e.id)?.dy, v => ch({ dy: v }, true), 0, 'px', 2);
+  if (['h', 'p', 'quote', 'promo'].includes(k)) wordEd(host, () => elOf(e.id)?.t, () => elOf(e.id)?.r, runs => ch({ r: runs && runs.length ? runs : '' }), 'Texto palabra por palabra');
+  host.append(h('div', { class: 'two1' }, h('button', { type: 'button', class: 'btn', onclick: () => dupEl(e.id) }, 'Duplicar'), h('button', { type: 'button', class: 'btn danger', onclick: () => delEl(e.id) }, 'Eliminar')));
+}
+function moveEl(id, dir){ const e = elOf(id); if (!e) return; const same = (cfg.els || []).filter(x => x.af === e.af).sort((a, b) => a.n - b.n), i = same.findIndex(x => x.id === id), j = i + dir; if (j < 0 || j >= same.length) return; const arr = (cfg.els || []).map(x => ({ ...x })); arr.find(x => x.id === same[i].id).n = same[j].n; arr.find(x => x.id === same[j].id).n = same[i].n; if (arr.find(x => x.id === same[i].id).n === arr.find(x => x.id === same[j].id).n) arr.find(x => x.id === same[i].id).n += dir; setEls(arr, 'Elementos'); }
+function delEl(id){ if (rank < 1) return; if (setEls((cfg.els || []).filter(e => e.id !== id), 'Elementos')) { if (selEl === id) selEl = null; openTool('elements', true); } }
+function dupEl(id){ const e = elOf(id); if (!e) return; if ((cfg.els || []).length >= (rank >= 2 ? D.EL_MAX : 6)) return toast('Llegaste al máximo de elementos de tu plan.'); const nid = newId(); if (setEls([...(cfg.els || []), { ...e, id: nid, n: (e.n || 0) + 1 }], 'Elementos')) { selEl = nid; openTool('elements', true); } }
+function blocksSet(arr){ set('blocks', arr); }
+function layerRow(label, o = {}){
+  const r = h('div', { class: 'lyr' + (o.sel ? ' sel' : '') + (o.off ? ' off' : '') + (o.child ? ' child' : ''), draggable: o.drag ? 'true' : 'false', tabindex: 0 });
+  if (o.drag) { r.addEventListener('dragstart', ev => { ev.dataTransfer.setData('text/plain', o.drag); ev.dataTransfer.effectAllowed = 'move'; r.classList.add('dragging'); }); r.addEventListener('dragend', () => r.classList.remove('dragging')); }
+  if (o.drop) { r.addEventListener('dragover', ev => { ev.preventDefault(); r.classList.add('over'); }); r.addEventListener('dragleave', () => r.classList.remove('over')); r.addEventListener('drop', ev => { ev.preventDefault(); r.classList.remove('over'); o.drop(ev.dataTransfer.getData('text/plain')); }); }
+  r.append(h('span', { class: 'lg', 'aria-hidden': 'true' }, o.drag ? '⋮⋮' : ''), h('button', { type: 'button', class: 'll', onclick: o.open || null }, o.icon ? h('span', { class: 'li', html: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + o.icon + '</svg>' }) : null, label));
+  (o.actions || []).forEach(a => r.append(h('button', { type: 'button', class: 'la', title: a[1], 'aria-label': a[1], onclick: a[2], disabled: a[3] ? 'true' : null }, a[0])));
+  return r;
+}
+function buildLayers(host){
+  host.innerHTML = '';
+  const bl = cfg.blocks, hidden = D.BLOCKS.filter(b => !bl.includes(b)), els = cfg.els || [];
+  const moveBlock = (id, to) => { const a = bl.filter(x => x !== id); a.splice(Math.max(0, Math.min(a.length, to)), 0, id); blocksSet(a); };
+  const dropOnBlock = (target) => (data) => { const [t, id] = data.split(':'); if (t === 'e') { const arr = els.map(e => ({ ...e })); const e = arr.find(x => x.id === id); if (!e) return; e.af = target; e.n = 99; setEls(arr, 'Elementos'); } else if (t === 'b' && id !== target) { moveBlock(id, bl.indexOf(target)); } };
+  const dropOnEl = (target) => (data) => { const [t, id] = data.split(':'); if (t !== 'e' || id === target.id) return; const arr = els.map(e => ({ ...e })); const e = arr.find(x => x.id === id), tg = arr.find(x => x.id === target.id); e.af = tg.af; e.n = tg.n - 0.5; setEls(arr, 'Elementos'); };
+  const BI = { header: '<rect x="3" y="4" width="18" height="9" rx="2"/><path d="M3 17h12"/>', announcement: '<path d="M4 11v2a1 1 0 0 0 1 1h2l5 4V6L7 10H5a1 1 0 0 0-1 1zM16 9a4 4 0 0 1 0 6"/>', categories: '<path d="M5 8h14M5 12h14M5 16h9"/>', items: '<path d="M6 7h12l1 13H5L6 7z"/>', footer: '<rect x="3" y="14" width="18" height="6" rx="2"/>' };
+  host.append(note('Tu menú de arriba hacia abajo. Arrastra para reordenar, mueve elementos entre secciones, o usa el ojo para mostrar u ocultar.'));
+  bl.forEach((b, i) => {
+    const must = b === 'header' || b === 'items';
+    host.append(layerRow(AN_LABEL[b], { icon: BI[b], drag: 'b:' + b, drop: dropOnBlock(b), open: () => openTool({ header: 'banner', announcement: 'sections', categories: 'nav', items: 'products', footer: 'sections' }[b]),
+      actions: [[i > 0 ? '↑' : '', 'Subir', () => moveBlock(b, i - 1), i === 0], [i < bl.length - 1 ? '↓' : '', 'Bajar', () => moveBlock(b, i + 1), i === bl.length - 1], [must ? '' : '◉', 'Ocultar sección', () => blocksSet(bl.filter(x => x !== b)), must]] }));
+    els.filter(e => e.af === b).sort((x, y) => x.n - y.n).forEach(e => host.append(layerRow(EL_LABEL[e.k] + (e.t ? ': ' + e.t.slice(0, 22) : ''), { child: true, icon: EL_ICON[e.k], sel: selEl === e.id, off: !!e.off, drag: 'e:' + e.id, drop: dropOnEl(e), open: () => { selEl = e.id; openTool('elements'); },
+      actions: [[e.off ? '○' : '◉', e.off ? 'Mostrar' : 'Ocultar', () => updEl(e.id, { off: !e.off })], ['⧉', 'Duplicar', () => dupEl(e.id)], ['✕', 'Eliminar', () => delEl(e.id)]] })));
+  });
+  hidden.forEach(b => host.append(layerRow(AN_LABEL[b] + ' (oculto)', { off: true, icon: BI[b], actions: [['○', 'Mostrar sección', () => { const a = bl.slice(); const order = D.BLOCKS; let pos = a.findIndex(x => order.indexOf(x) > order.indexOf(b)); if (pos < 0) pos = a.length; a.splice(pos, 0, b); blocksSet(a); }]] })));
+  els.filter(e => !bl.includes(e.af)).forEach(e => host.append(layerRow(EL_LABEL[e.k] + ' (en sección oculta)', { child: true, off: true, icon: EL_ICON[e.k], open: () => { selEl = e.id; openTool('elements'); } })));
+  host.append(h('div', { class: 'sec' }, 'Siempre disponibles'), layerRow('Botón de WhatsApp', { icon: '<path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/>', open: () => openTool('whatsapp') }), layerRow('Redes y contacto', { icon: '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/>', open: () => openTool('social') }));
+  host.append(h('button', { type: 'button', class: 'btn block', onclick: () => openTool('elements') }, 'Añadir un elemento'));
+}
 const PANELS = {
   templates(b){ tplGallery(b); },
   design(b){
@@ -523,6 +705,91 @@ const PANELS = {
     resetBtn(b, 'Restablecer barra inferior', ['navBar', 'navFloating', 'navLabels', 'navH', 'navIconSize', 'navRadius', 'navBg', 'navIcon', 'navActive']);
     b.append(sec('Categorías')); swt('showCategoriesNav', b); tiles('navStyle', b);
     b.append(sec('Buscar y destacados')); swt('showSearch', b); swt('showHighlights', b);
+  },
+  buttons(b){
+    lockNote(b);
+    b.append(note('Cambia el aspecto de los botones del menú: el “+” de cada producto, “Agregar” y “Ver pedido”. Tus clientes ven los cambios solo cuando publicas.'));
+    b.append(subTitle('Colores', 1)); subClr('btn', 'bg', b, 'Fondo del botón', '#FF3145', 1); subClr('btn', 'fg', b, 'Texto e icono', '#FFFFFF', 1);
+    b.append(subTitle('Forma', 1)); subRng('btn', 'r', b, 'Redondeo', 0, 32, 14, 1); subSeg('btn', 'sz', b, 'Tamaño', [['s', 'Pequeño'], ['m', 'Normal'], ['l', 'Grande']], 1, 'm'); subSeg('btn', 'sh', b, 'Sombra', [['', 'Según estilo'], ['none', 'Ninguna'], ['soft', 'Suave'], ['strong', 'Fuerte']], 1, '');
+    b.append(subTitle('Detalles avanzados', 2)); subRng('btn', 'bd', b, 'Grosor del borde', 0, 3, 0, 2); subClr('btn', 'bdc', b, 'Color del borde', '#FF3145', 2);
+    subSeg('btn', 'wt', b, 'Peso del texto', [['', 'Auto'], [600, 'Semi'], [700, 'Negrita'], [800, 'Extra']], 2, '');
+    subSeg('btn', 'hov', b, 'Al pasar el cursor o tocar', [['none', 'Nada'], ['lift', 'Elevar'], ['scale', 'Agrandar'], ['dark', 'Oscurecer']], 2, 'none');
+    warnBox(b, () => { const o = cfg.btn || {}, m = []; if ((o.bg || o.fg) && D.contrast(o.fg || '#FFFFFF', o.bg || cfg.primary) < 3) m.push('el texto del botón casi no contrasta con su fondo.'); return m; });
+    b.append(h('button', { type: 'button', class: 'btn block rst', onclick: () => { if (rank < 1) return needPlan(1, 'Botones'); replace({ ...cfg, btn: {} }, 'Botones restablecidos'); } }, 'Restablecer botones'));
+    b.append(note('El estilo “Relleno / Con borde” del “+” sigue en Diseño. Los botones de WhatsApp tienen su propia sección.'));
+  },
+  whatsapp(b){
+    b.append(note('El botón flotante de WhatsApp que ven tus clientes. El número y el interruptor se guardan al instante (no esperan a “Publicar”); la apariencia sigue el borrador.'));
+    const on = h('input', { type: 'checkbox', role: 'switch' }), cc = h('select', { 'aria-label': 'Indicativo del país' }, ...WA_C.map(c => h('option', { value: c[0] }, c[1] + ' (+' + c[0] + ')'))), num = h('input', { type: 'text', inputmode: 'tel', autocomplete: 'tel-national', maxlength: 24, placeholder: '300 123 4567', 'aria-label': 'Número de WhatsApp' }), hint = h('p', { class: 'note', role: 'status' });
+    const sv = h('button', { type: 'button', class: 'btn primary' }, 'Guardar número');
+    on.checked = !!restaurant.whatsapp_enabled; cc.value = restaurant.whatsapp_country_code || '57'; num.value = waNational(cc.value, restaurant.whatsapp) || restaurant.whatsapp || '';
+    const chk = () => { const t = num.value.trim(), n = waNational(cc.value, t); let ok = true, m = ''; if (!t) { ok = !on.checked; m = on.checked ? 'Escribe tu número de WhatsApp para activar el botón.' : 'Sin número: el botón no se mostrará.'; } else if (!n) { ok = false; m = 'Ese número no es válido para el país elegido.'; } else m = 'Tus clientes abrirán wa.me/' + cc.value + n; hint.textContent = m; hint.className = 'note' + (ok ? '' : ' warn'); sv.disabled = !ok; return ok; };
+    [on, cc, num].forEach(x => x.addEventListener('input', chk)); chk();
+    sv.onclick = async () => { if (!chk()) return; sv.disabled = true;
+      const { data, error } = await sb.rpc('set_whatsapp_button', { p_restaurant_id: rid, p_enabled: on.checked, p_country_code: cc.value, p_number: num.value.trim() });
+      if (error) { toast(/forbidden/.test(error.message) ? 'Solo el propietario o un administrador puede cambiar esto.' : /invalid/.test(error.message) ? 'Ese número no es válido para el país elegido.' : 'No se pudo guardar. Intenta de nuevo.'); chk(); return; }
+      const d = data || {}; restaurant.whatsapp_enabled = !!d.enabled; restaurant.whatsapp_country_code = d.country_code || cc.value; restaurant.whatsapp = d.number || ''; num.value = restaurant.whatsapp; sendData(); toast(d.enabled ? 'Botón de WhatsApp activado.' : 'Guardado. El botón está desactivado.'); chk(); };
+    b.append(sec('Número y visibilidad'), h('label', { class: 'sw' }, h('span', {}, 'Mostrar el botón en mi menú'), on), h('div', { class: 'fld' }, h('label', {}, 'Número de WhatsApp'), h('div', { class: 'two1' }, cc, num)), hint, sv);
+    lockNote(b);
+    b.append(subTitle('Apariencia', 1)); subClr('wa', 'bg', b, 'Color del botón', '#25D366', 1); subClr('wa', 'ic', b, 'Color del icono', '#FFFFFF', 1);
+    subRng('wa', 'sz', b, 'Tamaño', 44, 72, 60, 1); subSeg('wa', 'pos', b, 'Posición', [['br', 'Derecha'], ['bc', 'Centro'], ['bl', 'Izquierda']], 1, 'br');
+    subSeg('wa', 'sh', b, 'Sombra', [['', 'Según estilo'], ['none', 'Ninguna'], ['soft', 'Suave'], ['strong', 'Fuerte']], 1, ''); subRng('wa', 'op', b, 'Opacidad', 60, 100, 100, 1, '%');
+    b.append(subTitle('Mensaje inicial', 1)); subTxt('wa', 'msg', b, 'Mensaje que se escribe solo', 200, 'Hola, quisiera hacer un pedido', 1, true);
+    b.append(subTitle('Estilo avanzado', 2)); subSeg('wa', 'variant', b, 'Forma', [['circle', 'Círculo'], ['pill', 'Con texto']], 2, 'circle'); subTxt('wa', 'label', b, 'Texto del botón (solo “Con texto”)', 24, 'Escríbenos', 2); subRng('wa', 'r', b, 'Redondeo exacto', 0, 36, 36, 2);
+    b.append(h('button', { type: 'button', class: 'btn block rst', onclick: () => { if (rank < 1) return needPlan(1, 'Apariencia de WhatsApp'); replace({ ...cfg, wa: {} }, 'Apariencia de WhatsApp restablecida'); } }, 'Restablecer apariencia'));
+    b.append(note('El botón solo aparece si está activado y el número es válido. Si tienes WhatsApp también en “Redes”, ese icono es independiente.'));
+  },
+  bg(b){
+    lockNote(b);
+    b.append(note('Fondos con degradado para toda la página y para el encabezado. Tus clientes los ven cuando publicas. El color sólido sigue en “Colores”.'));
+    const PRE = [['Atardecer', '#FF3145', '#FF9A3C', 135], ['Océano', '#0E7490', '#2563EB', 160], ['Bosque', '#1EA35A', '#0F2A1D', 180], ['Noche', '#0A0A0A', '#3B1F4A', 180], ['Crema', '#FFF8F0', '#F3DFC8', 180], ['Menta', '#E8F4EC', '#CDEBD8', 160]];
+    const mk = (key, title) => {
+      b.append(subTitle(title, 1));
+      const g = h('div', { class: 'segc', role: 'group', 'aria-label': title });
+      [['none', 'Sólido'], ['linear', 'Lineal'], ['radial', 'Radial']].forEach(([v, t]) => g.append(h('button', { type: 'button', 'data-v': v, 'aria-pressed': 'false', onclick: () => { if (v === 'none') return gSet(key, { t: 'none' }, title); const cur = cfg[key] || {}; gSet(key, { t: v, a: cur.a ?? 180 }, 'Degradado ' + (v === 'radial' ? 'radial' : 'lineal')); } }, t, v === 'radial' && rank < 2 ? crown('Disponible en KARTTA Elite') : null)));
+      b.append(h('div', { class: 'fld' }, g)); syncers.push(() => g.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String((cfg[key] && cfg[key].t || 'none') === x.dataset.v))));
+      const pre = h('div', { class: 'tiles' }); PRE.forEach(([n, c1, c2, a]) => pre.append(h('button', { type: 'button', class: 'tile', title: n, onclick: () => gSet(key, { t: 'linear', a, c1, c2, c3: '' }, 'Degradado') }, h('span', { style: 'display:block;height:26px;border-radius:7px;background:linear-gradient(' + a + 'deg,' + c1 + ',' + c2 + ')' }), n))); b.append(pre);
+      const gc = (sub, label, def, min) => { const i = h('input', { type: 'color', 'aria-label': label, oninput: () => gSet(key, { [sub]: i.value.toUpperCase() }, label, true) }), au = h('button', { type: 'button', class: 'lnk', onclick: () => gSet(key, sub === 'c3' ? { c3: '' } : { t: 'none' }, label) }, sub === 'c3' ? 'Quitar' : 'Sin degradado');
+        b.append(h('div', { class: 'cw' }, i, h('span', { class: 'cwl' }, label, rank < min ? crown(min >= 2 ? 'Disponible en KARTTA Elite' : 'Disponible desde KARTTA Pro') : null), au)); syncers.push(() => { const v = (cfg[key] || {})[sub]; i.value = v || def(); au.style.visibility = (cfg[key] || {}).c1 && (sub !== 'c3' || v) ? 'visible' : 'hidden'; }); };
+      gc('c1', 'Color inicial', () => cfg.primary, 1); gc('c2', 'Color final', () => cfg.secondary, 1); gc('c3', 'Color intermedio (3 colores)', () => cfg.surface, 2);
+      const rg = h('input', { type: 'range', min: 0, max: 360, step: 5, 'aria-label': 'Ángulo', oninput: () => gSet(key, { a: Number(rg.value) }, 'Degradado', true) }), ro = h('output', {});
+      b.append(h('div', { class: 'fld rg' }, h('div', { class: 'rgh' }, h('label', {}, 'Ángulo (solo lineal)'), ro), rg)); syncers.push(() => { const v = (cfg[key] || {}).a ?? 180; rg.value = v; ro.textContent = v + '°'; rg.disabled = (cfg[key] || {}).t !== 'linear'; });
+    };
+    mk('bgx', 'Fondo de la página'); mk('hbgx', 'Fondo del encabezado');
+    warnBox(b, () => { const g = cfg.bgx, m = []; if (g && g.c1 && [g.c1, g.c2, g.c3].filter(Boolean).some(c => D.contrast(cfg.textColor, c) < 3)) m.push('el texto de tu menú casi no contrasta con algún color del fondo.'); const hg = cfg.hbgx; if (hg && hg.c1 && [hg.c1, hg.c2, hg.c3].filter(Boolean).some(c => D.contrast('#FFFFFF', c) < 3)) m.push('el texto blanco del encabezado casi no se verá sobre algún color del degradado.'); return m; });
+    b.append(note('Si el encabezado tiene foto de banner, la foto se ve encima del degradado.'));
+  },
+  textfx(b){
+    lockNote(b);
+    b.append(note('Cada texto tiene su propio estilo, independiente de los demás. Colores, tamaños y pesos están en “Texto”.'));
+    D.TX_SLOTS.forEach(slot => acc(b, D.TX_LABEL[slot], bd => {
+      const lab = 'Estilo por texto';
+      subSw(bd, 'Cursiva', () => cfg.tx && cfg.tx[slot] && cfg.tx[slot].it, v => txSet(slot, 'it', v ? true : false, lab));
+      subSw(bd, 'MAYÚSCULAS', () => cfg.tx && cfg.tx[slot] && cfg.tx[slot].up, v => txSet(slot, 'up', v ? true : false, lab));
+      elRng(bd, 'Espaciado entre letras', 0, 8, () => cfg.tx && cfg.tx[slot] && cfg.tx[slot].ls, v => txSet(slot, 'ls', v, lab, true), 0, '', 1);
+      const sg = (prop, label, opts, min) => { const g = h('div', { class: 'segc', role: 'group', 'aria-label': label }); opts.forEach(([v, t]) => g.append(h('button', { type: 'button', 'data-v': v, 'aria-pressed': 'false', onclick: () => txSet(slot, prop, v, label) }, t)));
+        bd.append(h('div', { class: 'fld' }, h('div', { class: 'rgh' }, h('label', {}, label, rank < min ? crown(min >= 2 ? 'Disponible en KARTTA Elite' : 'Disponible desde KARTTA Pro') : null)), g)); syncers.push(() => g.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(((cfg.tx && cfg.tx[slot] && cfg.tx[slot][prop]) || '') === x.dataset.v)))); };
+      sg('al', 'Alineación', [['', 'Auto'], ['left', 'Izquierda'], ['center', 'Centro'], ['right', 'Derecha']], 1);
+      sg('ts', 'Sombra del texto', [['', 'Ninguna'], ['soft', 'Suave'], ['strong', 'Fuerte']], 2);
+      const ff = h('select', { 'aria-label': 'Tipografía de este texto', onchange: () => txSet(slot, 'ff', ff.value, 'Tipografía por texto') }, h('option', { value: '' }, 'Según el diseño'), ...D.FONTS.map(f => h('option', { value: f }, f)));
+      bd.append(h('div', { class: 'fld' }, h('div', { class: 'rgh' }, h('label', {}, 'Tipografía de este texto', rank < 2 ? crown('Disponible en KARTTA Elite') : null)), ff)); syncers.push(() => { ff.value = (cfg.tx && cfg.tx[slot] && cfg.tx[slot].ff) || ''; });
+      if (slot === 'tag') wordEd(bd, () => cfg.tagline, () => cfg.rt && cfg.rt.tag, runs => rtSet('tag', runs, 'Texto palabra por palabra'), 'Subtítulo palabra por palabra (escríbelo en “Texto”)');
+      if (slot === 'btitle') wordEd(bd, () => cfg.bannerTitle, () => cfg.rt && cfg.rt.bt, runs => rtSet('bt', runs, 'Texto palabra por palabra'), 'Título del banner palabra por palabra');
+      bd.append(h('button', { type: 'button', class: 'btn block rst', onclick: () => { const o = JSON.parse(JSON.stringify(cfg.tx || {})); delete o[slot]; commit('tx', o, txRank(o), lab); } }, 'Restablecer este texto'));
+    }));
+  },
+  elements(b){
+    lockNote(b);
+    b.append(note('Añade piezas a tu menú: títulos, párrafos, botones con enlace, separadores y tarjetas. Pro: hasta 6. Elite: hasta ' + D.EL_MAX + ', tarjeta promo, arrastre libre y texto palabra por palabra.'));
+    const g = h('div', { class: 'tiles' }); D.EL_KINDS.forEach(k => g.append(h('button', { type: 'button', class: 'tile', onclick: () => addEl(k) }, h('span', { html: '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + EL_ICON[k] + '</svg>' }), EL_LABEL[k], k === 'promo' && rank < 2 ? crown('Disponible en KARTTA Elite') : null)));
+    b.append(sec('Biblioteca de elementos'), g);
+    const list = h('div', { class: 'lyrs' }), ed = h('div'); b.append(sec('En tu menú'), list, ed);
+    syncers.push(() => { list.innerHTML = ''; const a = cfg.els || []; if (!a.length) list.append(h('p', { class: 'note' }, 'Todavía no añades elementos.')); a.forEach(e => list.append(layerRow(EL_LABEL[e.k] + (e.t ? ': ' + e.t.slice(0, 22) : ''), { icon: EL_ICON[e.k], sel: selEl === e.id, off: !!e.off, open: () => { selEl = e.id; openTool('elements', true); } }))); });
+    if (selEl && elOf(selEl)) elEditor(ed, elOf(selEl)); else selEl = null;
+  },
+  layers(b){
+    lockNote(b);
+    const host = h('div', { class: 'lyrs' }); b.append(host); syncers.push(() => buildLayers(host));
   },
   social(b){
     socRows = socFromCfg();
@@ -606,6 +873,62 @@ function moveBlock(b, d){ const n = cfg.blocks.slice(), i = n.indexOf(b), j = i 
 
 /* ---------- barra lateral + panel ---------- */
 function buildRail(){ const r = $('rail'); TOOLS.forEach(([id, name, ico]) => r.append(h('button', { type: 'button', 'data-t': id, 'aria-pressed': 'false', onclick: () => openTool(id === tool && !$('drawer').classList.contains('closed') && matchMedia('(max-width:900px)').matches ? null : id) }, h('span', { html: ico }), name))); }
+
+/* ---------- buscador de herramientas: encuentra cualquier opción del editor y la abre ---------- */
+const SYN = { templates: 'plantilla plantillas modelo tema estilo completo', design: 'estilo visual cabecera encabezado lista cuadricula tarjeta botones densidad esquinas redondeo bordes', banner: 'banner portada imagen logo titulo subtitulo encabezado', text: 'texto tipografia fuente letra tamano grosor titulo nombre precio descripcion', colors: 'color colores paleta fondo acento texto botones borde', cards: 'tarjetas productos imagen foto forma sombra espaciado etiquetas', nav: 'navegacion barra inferior botones iconos pestanas menu', bg: 'fondo degradado gradiente color fondo encabezado radial lineal', textfx: 'texto cursiva mayusculas espaciado alineacion sombra tipografia palabra por palabra subtitulo titulo banner', elements: 'elementos biblioteca titulo parrafo boton enlace separador espacio tarjeta promo cita anadir', layers: 'capas orden mover arrastrar ocultar mostrar secciones elementos', buttons: 'botones boton agregar pedido color redondeo sombra borde hover tamano texto ver pedido mas', whatsapp: 'whatsapp wasap celular numero telefono contacto mensaje boton flotante chat', social: 'redes sociales instagram whatsapp facebook tiktok enlaces contacto', products: 'productos platos precio foto descuento categorias crear editar', sections: 'secciones orden anuncio pie bloques footer' };
+const nrm = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const SEL = '.sec,summary,label,.cwl,.sw span,.tile,.btn,.note b';
+const tsText = (el) => { const t = el.classList.contains('cwl') && el.firstChild ? el.firstChild.textContent : el.textContent; return (t || '').replace(/\s+/g, ' ').trim().replace(/^Aa(?=[A-ZÁÉÍÓÚÑ])/, ''); };
+let tsIndex = null, tsEl = null, tsSel = 0, tsRes = [];
+function tsBuild(){
+  tsIndex = []; const keep = syncers.slice();
+  TOOLS.forEach(([id, name]) => {
+    tsIndex.push({ tool: id, text: name, nt: nrm(name), syn: nrm(SYN[id] || ''), top: true });
+    if (id === 'templates' || id === 'products') return;
+    try {
+      const box = document.createElement('div'); syncers.length = 0; PANELS[id](box); const seen = new Set();
+      box.querySelectorAll(SEL).forEach(el => { const t = tsText(el); if (t.length < 2 || t.length > 70 || seen.has(t)) return; seen.add(t); tsIndex.push({ tool: id, text: t, nt: nrm(t), syn: nrm(name + ' ' + (SYN[id] || '')) }); });
+    } catch (e) { console.warn('search index', id, e); }
+  });
+  syncers.length = 0; keep.forEach(f => syncers.push(f));
+}
+function tsFind(q){
+  const toks = nrm(q).split(/\s+/).filter(Boolean); if (!toks.length) return [];
+  const direct = [], loose = [];
+  tsIndex.forEach(e => { if (toks.every(t => e.nt.includes(t))) direct.push(e); else if (toks.every(t => (e.nt + ' ' + e.syn).includes(t))) loose.push(e); });
+  return direct.concat(loose).slice(0, 40);
+}
+function tsRender(){
+  const q = tsEl.querySelector('input').value, ul = tsEl.querySelector('.tsl'); tsRes = tsFind(q); tsSel = 0; ul.innerHTML = '';
+  if (!q.trim()) { ul.append(h('li', { class: 'tse' }, 'Escribe lo que buscas: productos, botones, colores, fuente, banner, redes…')); return; }
+  if (!tsRes.length) { ul.append(h('li', { class: 'tse' }, 'No encontré nada con «' + q.trim() + '». Prueba con otra palabra.')); return; }
+  tsRes.forEach((e, i) => ul.append(h('li', {}, h('button', { type: 'button', class: i === 0 ? 'on' : '', onclick: () => tsGo(e) }, h('span', {}, e.text), h('small', {}, e.top ? 'Herramienta' : TOOLS.find(t => t[0] === e.tool)[1])))));
+}
+function tsGo(e){
+  tsClose(); openTool(e.tool); if (e.top) return;
+  setTimeout(() => {
+    const body = $('dBody'); const hit = [...body.querySelectorAll(SEL)].find(el => tsText(el) === e.text); if (!hit) return;
+    for (let n = hit.parentElement; n && n !== body; n = n.parentElement) if (n.tagName === 'DETAILS') n.open = true;
+    hit.scrollIntoView({ block: 'center', behavior: 'smooth' }); hit.classList.add('tflash'); setTimeout(() => hit.classList.remove('tflash'), 1900);
+  }, 60);
+}
+function tsClose(){ if (tsEl) tsEl.classList.remove('show'); }
+function tsOpen(){
+  if (!tsIndex) tsBuild();
+  if (!tsEl) {
+    const inp = h('input', { type: 'search', placeholder: 'Buscar una herramienta u opción…', 'aria-label': 'Buscar en el editor', autocomplete: 'off', oninput: tsRender });
+    tsEl = h('div', { class: 'tsr', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Buscar en el editor', onclick: (e) => { if (e.target === tsEl) tsClose(); } }, h('div', { class: 'tsb' }, inp, h('ul', { class: 'tsl' })));
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { tsClose(); return; }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); const bs = tsEl.querySelectorAll('.tsl button'); if (!bs.length) return; bs[tsSel].classList.remove('on'); tsSel = (tsSel + (e.key === 'ArrowDown' ? 1 : bs.length - 1)) % bs.length; bs[tsSel].classList.add('on'); bs[tsSel].scrollIntoView({ block: 'nearest' }); }
+      if (e.key === 'Enter' && tsRes[tsSel]) { e.preventDefault(); tsGo(tsRes[tsSel]); }
+    });
+    document.body.append(tsEl);
+  }
+  tsEl.classList.add('show'); const i = tsEl.querySelector('input'); i.value = ''; tsRender(); setTimeout(() => i.focus(), 30);
+}
+function buildSearch(){ const r = $('rail'); r.prepend(h('button', { type: 'button', class: 'rs', 'aria-label': 'Buscar en el editor', title: 'Buscar (/)', onclick: tsOpen }, h('span', { html: I('<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>') }), 'Buscar'));
+  addEventListener('keydown', (e) => { const tg = (e.target.tagName || '').toLowerCase(); if (((e.key === '/' && !['input', 'textarea', 'select'].includes(tg)) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) && booted) { e.preventDefault(); tsOpen(); } }); }
 function openTool(id, keep){
   const dr = $('drawer'); if (!id) { dr.classList.add('closed'); document.querySelectorAll('#rail button').forEach(b => b.setAttribute('aria-pressed', 'false')); fit(); return; }
   tool = id; dr.classList.remove('closed'); syncers.length = 0;
@@ -633,7 +956,7 @@ addEventListener('keydown', e => { const mod = e.ctrlKey || e.metaKey, tg = (e.t
 
 /* ---------- vista previa (el menú real en un iframe) ---------- */
 const pv = $('pv');
-const restPayload = () => ({ name: restaurant.name, description: restaurant.description, address: restaurant.address, whatsapp: restaurant.whatsapp, logo_path: restaurant.logo_path, cover_path: restaurant.cover_path });
+const restPayload = () => ({ name: restaurant.name, description: restaurant.description, address: restaurant.address, whatsapp: restaurant.whatsapp, wa_button: waDigits(), logo_path: restaurant.logo_path, cover_path: restaurant.cover_path });
 const menuPayload = () => ({ restaurant: restPayload(), categories: cats.filter(c => c.is_visible !== false), products: prods, design: D.compact(shownCfg()) });
 function sendData(){ if (previewReady) pv.contentWindow.postMessage({ type: 'kartta-data', menu: menuPayload() }, location.origin); }
 function sendDesign(){ if (previewReady) pv.contentWindow.postMessage({ type: 'kartta-design', design: D.compact(shownCfg()) }, location.origin); }
@@ -641,6 +964,8 @@ addEventListener('message', e => { if (e.origin !== location.origin) return; con
   if (thumbWins.has(e.source)) { if (m.type === 'kartta-ready') e.source.postMessage({ type: 'kartta-data', menu: thumbMenu(thumbWins.get(e.source)) }, location.origin); return; }
   if (e.source !== pv.contentWindow) return;
   if (m.type === 'kartta-ready') { previewReady = true; sendData(); pv.contentWindow.postMessage({ type: 'kartta-clean', on: $('clean').checked }, location.origin); fit(); }
+  else if (m.type === 'kartta-move') { if (typeof m.id === 'string' && Number.isInteger(m.dx) && Number.isInteger(m.dy) && elOf(m.id)) { selEl = m.id; if (!updEl(m.id, { dx: m.dx, dy: m.dy })) sendDesign(); } }
+  else if (m.type === 'kartta-click' && typeof m.el === 'string' && m.el.startsWith('el:')) { const id = m.el.slice(3); if (elOf(id)) { selEl = id; openTool('elements'); } }
   else if (m.type === 'kartta-click') { const map = { header: 'banner', announcement: 'sections', categories: 'nav', items: 'products', footer: 'sections', social: 'social' }; openTool(map[m.el] || 'design'); pv.contentWindow.postMessage({ type: 'kartta-select', el: m.el }, location.origin); } });
 $('pvApply').onclick = () => { if (previewTpl) applyTpl(previewTpl); }; $('pvStop').onclick = stopPreview;
 $('clean').onchange = () => pv.contentWindow.postMessage({ type: 'kartta-clean', on: $('clean').checked }, location.origin);
@@ -720,7 +1045,7 @@ async function boot(user){
     const mem = await sb.from('restaurant_members').select('restaurant_id,role').eq('user_id', user.uid).order('created_at').limit(1);
     if (!mem.data || !mem.data.length) throw new Error('sin_negocio'); if (!['owner', 'admin'].includes(mem.data[0].role)) throw new Error('sin_permiso');
     rid = mem.data[0].restaurant_id;
-    const [r, sub, ds] = await Promise.all([sb.from('restaurants').select('name,slug,description,whatsapp,address,logo_path,cover_path,is_published').eq('id', rid).single(), sb.from('subscriptions').select('plan_id,status,current_period_end').eq('restaurant_id', rid).maybeSingle(), sb.from('menu_designs').select('status,config').eq('restaurant_id', rid)]);
+    const [r, sub, ds] = await Promise.all([sb.from('restaurants').select('name,slug,description,whatsapp,whatsapp_enabled,whatsapp_country_code,address,logo_path,cover_path,is_published').eq('id', rid).single(), sb.from('subscriptions').select('plan_id,status,current_period_end').eq('restaurant_id', rid).maybeSingle(), sb.from('menu_designs').select('status,config').eq('restaurant_id', rid)]);
     if (r.error) throw r.error; restaurant = r.data; $('viewPub').href = SUBDOMAINS_LIVE ? 'https://' + restaurant.slug + '.kartta.food' : appOrigin() + '/m/' + encodeURIComponent(restaurant.slug); $('bizTitle').textContent = '· ' + (restaurant.name || '');
     const s = sub.data, vig = s && ['active', 'trialing'].includes(s.status) && (!s.current_period_end || new Date(s.current_period_end) > new Date());
     if (vig) { const p = await sb.from('plans').select('limits').eq('id', s.plan_id).maybeSingle(); rank = Number(p.data?.limits?.rank || 0); }
@@ -728,7 +1053,7 @@ async function boot(user){
     published = D.normalize(pub ? pub.config : {}); cfg = D.normalize(draft ? draft.config : (pub ? pub.config : {})); lastSaved = draft ? JSON.stringify(D.compact(draft.config)) : '';
     await loadCatalog(); menuPublished = !!restaurant.is_published; $('pubBanner').classList.toggle('show', !menuPublished);
     const firstRun = !pub && !(draft && Object.keys(D.compact(draft.config)).length > 1);
-    buildRail(); hist = [JSON.stringify(cfg)]; hi = 0; booted = true;
+    buildRail(); buildSearch(); hist = [JSON.stringify(cfg)]; hi = 0; booted = true;
     const want = (location.hash || '').slice(1); openTool(TOOLS.some(t => t[0] === want) ? want : (matchMedia('(max-width:900px)').matches ? null : 'design')); renderState();
     $('gate').classList.add('hidden'); $('app').classList.add('ready'); fit(); if (previewReady) sendData();
     let seen = false; try { seen = !!localStorage.getItem('kartta_tpl_seen_' + rid); } catch {} if (firstRun && !seen) firstRunTemplates();
