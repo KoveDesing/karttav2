@@ -641,7 +641,7 @@ function applyDesign(raw){
 function paint(menu){
   MENU = menu; loadFav();
   const negocio = menu.restaurant || {};
-  if (window.KARTTA_WA) window.KARTTA_WA.set(negocio.wa_button, { preview: PREVIEW });   // botón flotante de WhatsApp (el servidor solo lo envía si está activo y válido)
+  if (window.KARTTA_WA) window.KARTTA_WA.set(negocio.wa_button || (PREVIEW ? '570000000000' : ''), { preview: PREVIEW });   // botón flotante de WhatsApp (el servidor solo lo envía si está activo y válido)
   applyDesign(menu.design);
   const logo = imageUrl(negocio.logo_path), banner = imageUrl(negocio.cover_path);
   document.getElementById('bizName').textContent = negocio.name || 'Menú';

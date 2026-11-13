@@ -729,6 +729,7 @@ const PANELS = {
       const { data, error } = await sb.rpc('set_whatsapp_button', { p_restaurant_id: rid, p_enabled: on.checked, p_country_code: cc.value, p_number: num.value.trim() });
       if (error) { toast(/forbidden/.test(error.message) ? 'Solo el propietario o un administrador puede cambiar esto.' : /invalid/.test(error.message) ? 'Ese número no es válido para el país elegido.' : 'No se pudo guardar. Intenta de nuevo.'); chk(); return; }
       const d = data || {}; restaurant.whatsapp_enabled = !!d.enabled; restaurant.whatsapp_country_code = d.country_code || cc.value; restaurant.whatsapp = d.number || ''; num.value = restaurant.whatsapp; sendData(); toast(d.enabled ? 'Botón de WhatsApp activado.' : 'Guardado. El botón está desactivado.'); chk(); };
+    if (!waDigits()) b.append(h('p', { class: 'note warn', role: 'status' }, 'Ahora el botón NO está activo para tus clientes (falta activarlo o guardar un número válido). En la vista previa ves un botón de ejemplo para que puedas personalizarlo.'));
     b.append(sec('Número y visibilidad'), h('label', { class: 'sw' }, h('span', {}, 'Mostrar el botón en mi menú'), on), h('div', { class: 'fld' }, h('label', {}, 'Número de WhatsApp'), h('div', { class: 'two1' }, cc, num)), hint, sv);
     lockNote(b);
     b.append(subTitle('Apariencia', 1)); subClr('wa', 'bg', b, 'Color del botón', '#25D366', 1); subClr('wa', 'ic', b, 'Color del icono', '#FFFFFF', 1);
