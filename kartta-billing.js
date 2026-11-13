@@ -6,7 +6,7 @@
   var K = window.KARTTA_MODS; if (!K) return;
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return K.esc(s); };
-  var C = null, data = null, busy = false;
+  var C = null, data = null, usage = null, busy = false;
 
   var fmtMoney = function (n) { return '$' + new Intl.NumberFormat('es-CO').format(Number(n) || 0) + ' COP'; };
   var fmtDate = function (iso) {
@@ -37,6 +37,27 @@
     return expiryDay === null || today === null ? null : Math.round(expiryDay - today);
   }
 
+  /* Uso del plan (my_plan_usage): productos, mesas, usuarios y créditos de IA frente a los límites del plan. */
+  function bar(label, used, limit) {
+    used = Number(used) || 0; limit = Number(limit) || 0;
+    var pct = limit > 0 ? Math.min(100, Math.round(used / limit * 100)) : 0;
+    var cls = pct >= 100 ? 'bad' : pct >= 80 ? 'warn' : 'ok';
+    var color = cls === 'bad' ? '#FF3145' : cls === 'warn' ? '#EAB308' : '#22C55E';
+    return '<div style="margin:0 0 14px"><div style="display:flex;justify-content:space-between;gap:10px;font-size:13.5px;margin-bottom:6px"><span>' + esc(label) + '</span><strong>' +
+      used.toLocaleString('es-CO') + ' / ' + (limit ? limit.toLocaleString('es-CO') : '—') + '</strong></div>' +
+      '<div role="progressbar" aria-label="' + esc(label) + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '" style="height:8px;border-radius:99px;background:rgba(128,128,128,.25);overflow:hidden"><div style="height:100%;width:' + pct + '%;background:' + color + '"></div></div>' +
+      (pct >= 100 ? '<p class="note warn" style="margin:6px 0 0">Llegaste al límite de tu plan. Mejora tu plan para agregar más.</p>' : pct >= 80 ? '<p class="note" style="margin:6px 0 0">Estás cerca del límite de tu plan.</p>' : '') + '</div>';
+  }
+  function usageCard() {
+    if (!usage || !usage.limits) return '';
+    var l = usage.limits, u = usage.usage || {}, ai = usage.ai || {};
+    var users = (Number(u.users) || 0) + (Number(u.pending_invites) || 0);
+    return '<div class="card"><h3 style="margin-top:0">Mi plan: ' + esc(usage.plan_name || usage.plan_id || 'Free') + '</h3>' +
+      bar('Productos', u.products, l.products) + bar('Mesas', u.tables, l.tables) + bar('Usuarios', users, l.users) +
+      bar('Créditos de IA este mes', ai.used, ai.quota) +
+      (ai.period_end ? '<p class="sub" style="margin:0">Los créditos de IA se renuevan el ' + fmtDate(ai.period_end) + '.</p>' : '') + '</div>';
+  }
+
   function view() {
     var host = $('modBilling'); if (!host) return;
     if (!data) { host.innerHTML = '<div class="card"><p class="sub" style="margin:0">Cargando tu facturación…</p></div>'; return; }
@@ -46,6 +67,7 @@
       '<h2 style="margin:0 0 4px">Facturación</h2><p class="sub" style="margin:0">Tu plan, tus pagos y la renovación.</p></div>' +
       '<a class="btn btn-accent" href="/checkout">' + (paid && eff === 'active' ? 'Cambiar o renovar plan' : 'Elegir un plan') + '</a></div></div>';
 
+    html += usageCard();
     if (!s) {
       html += '<div class="card"><p class="sub" style="margin:0">Todavía no hay una suscripción asociada a este restaurante.</p></div>';
     } else {
@@ -98,7 +120,9 @@
     try {
       var r = await C.sb.rpc('billing_my_overview', { p_restaurant: C.rid });
       if (r.error) throw r.error;
-      data = r.data; view();
+      data = r.data;
+      try { var ru = await C.sb.rpc('my_plan_usage', { p_restaurant_id: C.rid }); usage = ru.error ? null : ru.data; } catch (e2) { usage = null; }
+      view();
     } catch (e) {
       var host = $('modBilling');
       if (host) host.innerHTML = '<div class="card"><p class="note warn" style="margin:0">No pudimos cargar tu facturación. Si el problema continúa, escribe a soporte.</p></div>';
@@ -119,5 +143,5 @@
   }
 
   document.addEventListener('click', function (e) { var b = e.target.closest('[data-bill]'); if (b) act(b.dataset.bill); });
-  K.views.facturacion = function () { C = K.ctx || window.KARTTA_CTX; if (!C) return; data = null; view(); load(); };
+  K.views.facturacion = function () { C = K.ctx || window.KARTTA_CTX; if (!C) return; data = null; usage = null; view(); load(); };
 })();

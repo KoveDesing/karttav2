@@ -11,7 +11,7 @@
     let p = null;
     try { p = await error.context.json(); } catch (_) {}
     const MSG = {
-      plan_required: 'La generación de imágenes con IA es exclusiva del plan Pro.',
+      plan_required: 'La generación de imágenes con IA es exclusiva de KARTTA Elite.',
       subscription_inactive: 'Tu plan no está activo. Revisa tu suscripción.',
       forbidden: 'Solo el dueño o un administrador puede usar esta función.',
       daily_limit: 'Ya usaste tus 5 imágenes de hoy. Se reinician a medianoche (hora de Colombia).',

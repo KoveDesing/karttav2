@@ -275,7 +275,8 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 <link rel="stylesheet" href="kartta-modules.css?v=20261104">
 <script src="kartta-modules.js?v=20261032" defer></script>
 <script src="kartta-inventory.js?v=20261110" defer></script>
-<script src="kartta-billing.js?v=20261106-onesignal1" defer></script>
+<script src="kartta-billing.js?v=20261113-plan" defer></script>
+<script src="kartta-team.js?v=20261113" defer></script>
 <script src="kartta-metrics.js?v=20261110" defer></script>
 <script src="kartta-qr.js?v=20261031" defer></script>
 <script src="kartta-whatsapp.js?v=20261104" defer></script>
@@ -320,6 +321,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
     <button class="sb-item" data-view="whatsapp"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/><path d="M9 9.5c.3 2 2.5 4.2 4.5 4.5l1.3-1.2-1.8-1-.8.6c-.7-.3-1.5-1.1-1.8-1.8l.6-.8-1-1.8z"/></svg>Botón de WhatsApp</button>
     <div class="sb-label">Ayuda</div>
     <button class="sb-item" data-view="facturacion"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Facturación</button>
+    <button class="sb-item" data-view="equipo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-4 3.5-6 6.5-6s5.5 2 6.5 6M17 4.5a3.5 3.5 0 0 1 0 7M18 14.2c2 .6 3.4 2.6 3.9 5.8"/></svg>Equipo</button>
     <button class="sb-item" data-view="soporte"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M12 8v4M12 16v.01"/></svg>Soporte y reportes<span class="lk" id="lkSupport" hidden>0</span></button>
     <button class="sb-item" data-view="politicas"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.2 8.2-8 9-4.8-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Políticas y privacidad</button>
     <div class="sb-foot">
@@ -548,6 +550,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
     <section class="view" data-panel="fidelizacion"><div id="modLoyalty"></div></section>
     <section class="view" data-panel="soporte"><div id="modSupport"></div></section>
     <section class="view" data-panel="facturacion"><div id="modBilling"></div></section>
+    <section class="view" data-panel="equipo"><div id="modTeam"></div></section>
     <section class="view" data-panel="politicas"><div id="modLegal"></div></section>
   </main>
 </div>
@@ -620,10 +623,10 @@ import { sb, imageUrl, takePlanChoice, SUBDOMAINS_LIVE, appOrigin } from "./supa
    Toda la seguridad real está en las políticas RLS; este código solo es la interfaz.
    ====================================================================== */
 const BUCKET = 'kartta-media';
-const PLAN_RANK = { trial:0, free:0, kartta:1, standard:1, pro:2, elite:2, custom:2 }; // ids de la BD: kartta = KARTTA Pro · pro = KARTTA Elite // ids antiguos (kartta/custom) se conservan por compatibilidad
+const PLAN_RANK = { trial:1, free:0, kartta:1, standard:1, pro:2, elite:2, custom:3 }; // ids de la BD: kartta = KARTTA Pro · pro = KARTTA Elite // ids antiguos (kartta/custom) se conservan por compatibilidad
 const PLAN_NAME = { trial:'Prueba gratis', free:'Free', kartta:'KARTTA Pro', standard:'KARTTA Pro', pro:'KARTTA Elite', elite:'KARTTA Elite', custom:'KARTTA Elite' };
 const PLAN_PRICE = (function(){ const P = window.KARTTA_PLANS, o = { trial:'$0 COP / mes', free:'$0 COP / mes' }; ['kartta','pro','elite','custom'].forEach(id => { const pl = P.get(id); o[id] = P.fmt(pl.monthly) + ' / mes'; }); return o; })(); // solo para mostrar; el cobro y los límites los decide el servidor
-const PROD_LIMIT = [20, 60, 200, 1000];
+const PROD_LIMIT = [20, 500, 2000, 1000]; // respaldo; el valor real viene de plans.limits (servidor)
 const ACCENTS = { Rojo:'#FF3145', Azul:'#3B82F6', Verde:'#22C55E', Amarillo:'#EAB308', Morado:'#8B5CF6', Naranja:'#F97316' };
 const MS_DEFAULT = { primary:'#FF3145', secondary:'#0A0A0A', cardStyle:'round', buttonStyle:'solid', size:'m', showImages:true, showDescriptions:true, showPrices:true, tagline:'' };
 const IMG_CFG = { producto:[640,.78,'products'], logo:[320,.85,'logo'], banner:[1200,.74,'cover'] };
@@ -635,10 +638,11 @@ const ADMIN_PLANS = [['', 'Plan real'], ['free', 'Simular Free'], ['kartta', 'Si
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const CHECK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>', PIN = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
 const money = (n) => '$' + Number(n || 0).toLocaleString('es-CO');
-const rank = () => PLAN_RANK[negocio.plan || 'free'] ?? 0;
-const isPro = () => rank() >= 2;
-const isPremium = () => rank() >= 3;
-const prodLimit = () => PROD_LIMIT[Math.min(rank(), 3)];
+const rank = () => (negocio.rankDb ?? PLAN_RANK[negocio.plan || 'free']) ?? 0;
+// Descuentos y personalización de producto: desde KARTTA Pro (rank ≥ 1), igual que el trigger de la base de datos.
+const isPro = () => rank() >= 1;
+const isPremium = () => rank() >= 1;
+const prodLimit = () => negocio.maxProducts ?? PROD_LIMIT[Math.min(rank(), 3)];
 
 function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2600); }
 
@@ -723,7 +727,7 @@ $('accReset').addEventListener('click', () => { clearTimeout(accSaveT); savePref
 $('themeSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) savePrefs({ theme: b.dataset.v }); });
 
 /* ---------- navegación ---------- */
-const VIEWS = ['inicio','productos','menu','personalizar','configuracion','ia','dominio','pedidos','mesas','inventario','clientes','metricas','qr','pagos','whatsapp','fidelizacion','soporte','facturacion','politicas'];
+const VIEWS = ['inicio','productos','menu','personalizar','configuracion','ia','dominio','pedidos','mesas','inventario','clientes','metricas','qr','pagos','whatsapp','fidelizacion','soporte','facturacion','equipo','politicas'];
 let curView = 'inicio';
 function irA(view){
   let goMetrics = false;
@@ -775,6 +779,9 @@ async function cargarNegocio(first){
   if (r.error) throw r.error;
   const x = r.data, s = su.data;
   const vigente = s && ['active', 'trialing'].includes(s.status) && (!s.current_period_end || new Date(s.current_period_end) > new Date());
+  // Rango y límites reales del plan vigente (los decide la base de datos; Free si no hay suscripción vigente).
+  let planLim = null;
+  try { const pl = await sb.from('plans').select('limits').eq('id', vigente ? s.plan_id : 'free').maybeSingle(); planLim = pl.data?.limits || null; } catch (e) { console.warn('[KARTTA] límites del plan', e); }
   slug = x.slug;
   negocio = {
     nombre: x.name, descripcion: x.description || '', telefono: x.public_phone || pr.data?.contact_phone || '',
@@ -782,9 +789,11 @@ async function cargarNegocio(first){
     logoPath: x.logo_path, bannerPath: x.cover_path, logo: imageUrl(x.logo_path), banner: imageUrl(x.cover_path),
     plan: vigente ? s.plan_id : 'free',
     planReal: vigente ? s.plan_id : 'free',
+    rankDb: planLim && Number.isFinite(Number(planLim.rank)) ? Number(planLim.rank) : undefined,
+    maxProducts: planLim && Number(planLim.max_products) > 0 ? Number(planLim.max_products) : undefined,
     menuConfigured: x.menu_configured, onboardingCompleted: x.onboarding_completed, publicado: x.is_published,
   };
-  if (ADMIN_MODE) { let sim = ''; try { sim = sessionStorage.getItem('kartta_admin_plan') || ''; } catch {} if (ADMIN_PLANS.some(p => p[0] && p[0] === sim)) negocio.plan = sim; }
+  if (ADMIN_MODE) { let sim = ''; try { sim = sessionStorage.getItem('kartta_admin_plan') || ''; } catch {} if (ADMIN_PLANS.some(p => p[0] && p[0] === sim)) { negocio.plan = sim; negocio.rankDb = undefined; negocio.maxProducts = undefined; } }
   if (first) ms = { ...MS_DEFAULT, ...(dz.data?.config || {}) };
 }
 async function guardarNegocio(cols){
@@ -1225,7 +1234,7 @@ function updateProdSummary(){
   const lim = prodLimit(); $('sumProd').innerHTML = `${productos.length} <small>/ ${lim}</small>`; $('sumProdBar').style.width = Math.min(100, productos.length / lim * 100) + '%';
 }
 function openProd(id){
-  if (!id && productos.length >= prodLimit()) return openLock('PRO');
+  if (!id && productos.length >= prodLimit()) { toast('Llegaste al límite de ' + prodLimit() + ' productos de tu plan.'); return openLock('PRO'); }
   editId = id || null; pmImage = undefined;
   const p = id ? productos.find(x => x.id === id) : null;
   $('pmTitle').textContent = id ? 'Editar producto' : 'Nuevo producto';
@@ -1239,7 +1248,7 @@ function openProd(id){
       : `<button type="button" class="lockrow" data-lock="PRO"><span>Agregar descuento</span><span class="badge-lock"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex:none"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-1.5 11h-15zM5 20h14v2H5z"/></svg>PRO</span></button>`)
     + (isPremium()
       ? `<div class="field"><label>Personalización avanzada (extras, opciones)</label><input type="text" id="pmPers" maxlength="120" value="${esc(p?.personalizacion || '')}" placeholder="Ej: Sin cebolla, término de la carne…"></div>`
-      : `<button type="button" class="lockrow" data-lock="PREMIUM"><span>Personalización avanzada</span><span class="badge-lock"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex:none"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-1.5 11h-15zM5 20h14v2H5z"/></svg>PREMIUM</span></button>`);
+      : `<button type="button" class="lockrow" data-lock="PRO"><span>Personalización avanzada</span><span class="badge-lock"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex:none"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-1.5 11h-15zM5 20h14v2H5z"/></svg>PRO</span></button>`);
   $('prodModal').classList.add('show'); setTimeout(() => $('pmNombre').focus(), 50);
 }
 function closeProd(){ $('prodModal').classList.remove('show'); if (typeof ktAfter === 'function') ktAfter(); }
@@ -1275,9 +1284,9 @@ $('pmSave').onclick = async () => {
   } catch (e) {
     console.error(e);
     const m = String(e.message || '');
-    if (m.includes('product limit')) { closeProd(); openLock('PRO'); }
-    else if (m.includes('Pro plan')) toast('Los descuentos requieren el plan PRO.');
-    else if (m.includes('Premium')) toast('La personalización avanzada requiere el plan PREMIUM.');
+    if (m.includes('product limit')) { closeProd(); toast('Llegaste al límite de productos de tu plan.'); openLock('PRO'); }
+    else if (m.includes('discounts require')) toast('Los descuentos están disponibles desde KARTTA Pro.');
+    else if (m.includes('customization requires')) toast('La personalización avanzada está disponible desde KARTTA Pro.');
     else toast('No se pudo guardar el producto.');
   }
   $('pmSave').disabled = false;
@@ -1420,7 +1429,7 @@ function renderMesas(){
 async function nuevaMesa(){
   const n = prompt('Número o nombre de la mesa (ej: 4, Terraza 2):'); if (!n || !n.trim()) return;
   const { error } = await sb.from('restaurant_tables').insert({ restaurant_id: rid, label: n.trim().slice(0, 40) });
-  if (error) return toast(error.code === '23505' ? 'Ya existe una mesa con ese nombre.' : 'No se pudo crear la mesa.');
+  if (error) return toast(error.code === '23505' ? 'Ya existe una mesa con ese nombre.' : /table limit/.test(error.message || '') ? 'Llegaste al límite de mesas de tu plan. Mejora tu plan para agregar más.' : 'No se pudo crear la mesa.');
   toast('Mesa creada.'); await cargarMesas(); renderMesas();
 }
 $('btnNuevaMesa').onclick = nuevaMesa;

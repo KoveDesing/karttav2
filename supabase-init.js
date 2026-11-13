@@ -144,6 +144,8 @@ function ensureBusiness(user) {
   if (!user) return Promise.resolve(null);
   if (ensured.has(user.id)) return ensured.get(user.id);
   const p = (async () => {
+    // Si alguien invitó a este correo a un restaurante, se acepta ANTES de decidir si hace falta crear uno propio.
+    try { await sb.rpc("accept_my_invites"); } catch (e) { console.warn("[KARTTA] invitaciones", e); }
     const { data: mem, error } = await sb
       .from("restaurant_members").select("restaurant_id").eq("user_id", user.id).limit(1);
     if (error) throw error;
