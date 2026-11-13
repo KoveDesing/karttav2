@@ -1,12 +1,17 @@
 ARCHIVOS CORREGIDOS O NUEVOS (copiar a la raiz del repo, misma ruta)
 
 MODIFICADOS
-- dashboard.html       plan/limites reales desde la BD (trial=Pro), descuentos y personalizacion desde Pro, mensajes de limite, vista Equipo
+- dashboard.html       SE QUITO la generacion de imagenes con IA (boton 'Volver a la foto original' y restos); plan/limites reales desde la BD (trial=Pro), descuentos y personalizacion desde Pro, mensajes de limite, vista Equipo
 - kartta-billing.js    tarjeta "Mi plan" (productos, mesas, usuarios, IA)
 - supabase-init.js     acepta invitaciones de equipo antes de crear un restaurante nuevo
-- kartta-image-ai.js   mensaje correcto: imagenes IA solo en KARTTA Elite
 
 NUEVOS
 - kartta-upsell.js     ventana "Mejora tu plan" (la pedian dashboard y editor)
 - kartta-team.js       pantalla Equipo: invitar, ver y quitar usuarios
 - fonts/               MrDafoe-Regular.woff, mr-dafoe.css, OFL.txt (las paginas pedian /fonts/...)
+
+LIMPIEZA
+- limpiar_duplicados.sh  borra copias "(n)" identicas al original. Sin argumentos solo muestra; con --borrar borra.
+  NO toca los duplicados distintos (23): revisalos a mano (ver LIMPIEZA_REPO.txt).
+
+ELIMINAR DEL REPO: kartta-image-ai.js (el script limpiar_duplicados.sh --borrar tambien lo borra).

@@ -256,7 +256,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 .btn:active:not(:disabled){transform:scale(.98);}.btn[aria-busy="true"]{opacity:.7;pointer-events:none;}
 @media (prefers-reduced-motion:reduce){.skel{animation:none}}
 
-/* etiquetas + foto IA */
+/* etiquetas */
 #tagModal{z-index:600}
 .tagpick{display:flex;flex-wrap:wrap;gap:8px}
 .tagpick button{border:0;background:none;padding:3px;border-radius:99px;opacity:.5;cursor:pointer}
@@ -599,7 +599,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 <div class="modal-bg" id="prodModal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
   <div class="modal lg">
     <h3 id="pmTitle">Nuevo producto</h3><p class="sub">Lo básico para publicarlo en tu menú.</p>
-    <div class="field"><label>Imagen</label><div class="imgbox"><div class="imgprev" id="pmPrev">Sin imagen</div><div class="row"><button type="button" class="btn btn-ghost btn-sm" id="pmPick">Elegir imagen</button><button type="button" class="btn btn-ghost btn-sm" id="pmRestore" hidden>Volver a la foto original</button><button type="button" class="btn btn-danger btn-sm" id="pmDelImg">Quitar</button></div></div><input type="file" id="pmFile" accept="image/*" hidden></div>
+    <div class="field"><label>Imagen</label><div class="imgbox"><div class="imgprev" id="pmPrev">Sin imagen</div><div class="row"><button type="button" class="btn btn-ghost btn-sm" id="pmPick">Elegir imagen</button><button type="button" class="btn btn-danger btn-sm" id="pmDelImg">Quitar</button></div></div><input type="file" id="pmFile" accept="image/*" hidden></div>
     <div class="field"><label>Nombre</label><input type="text" id="pmNombre" maxlength="70" placeholder="Hamburguesa clásica"></div>
     <div class="f2"><div class="field"><label>Precio (COP)</label><input type="number" id="pmPrecio" min="0" placeholder="25000"></div><div class="field"><label>Categoría</label><input type="text" id="pmCat" maxlength="40" placeholder="Hamburguesas" list="catList"><datalist id="catList"></datalist></div></div>
     <div class="field"><label>Descripción</label><textarea id="pmDesc" maxlength="200" placeholder="Ingredientes, tamaño, lo que lo hace especial…"></textarea></div>
@@ -618,7 +618,7 @@ import { sb, imageUrl, takePlanChoice, SUBDOMAINS_LIVE, appOrigin } from "./supa
    ESTRUCTURA DE DATOS (Supabase) — ver docs/ARQUITECTURA.md
    restaurants / restaurant_private / restaurant_members / subscriptions
    categories / products / menu_designs (borrador + publicado)
-   restaurant_tables / orders / order_items / restaurant_slug_history / image_generations
+   restaurant_tables / orders / order_items / restaurant_slug_history
    Imágenes: Storage bucket "kartta-media" → {restaurant_id}/{carpeta}/{archivo}.jpg
    Toda la seguridad real está en las políticas RLS; este código solo es la interfaz.
    ====================================================================== */
@@ -882,11 +882,6 @@ $('tgSave').onclick = async () => {
   $('tgSave').disabled = false;
 };
 
-$('pmRestore').onclick = async () => {
-  const p = productos.find(x => x.id === editId); if (!p?.originalPath || !confirm('¿Volver a tu foto original? La versión actual dejará de mostrarse.')) return;
-  const { error } = await sb.from('products').update({ image_path: p.originalPath, original_image_path: null }).eq('id', editId);
-  if (error) return toast('No se pudo restaurar.'); toast('Foto original restaurada.'); closeProd(); await refrescarProductos();
-};
 
 /* --- ordenar productos arrastrando (y con botones para teclado) --- */
 let dragId = null;
@@ -1195,12 +1190,12 @@ async function ensureCategoria(nombre){
 }
 async function cargarProductos(){
   const { data, error } = await sb.from('products')
-    .select('id,name,description,price,discount_percent,customization,image_path,original_image_path,is_available,category_id,sort_order').eq('restaurant_id', rid).order('sort_order').order('name');
+    .select('id,name,description,price,discount_percent,customization,image_path,is_available,category_id,sort_order').eq('restaurant_id', rid).order('sort_order').order('name');
   if (error) { console.error(error); toast('No pude cargar tus productos.'); return; }
   productos = (data || []).map(p => ({
     id: p.id, nombre: p.name, precio: Number(p.price), descripcion: p.description || '', imagenPath: p.image_path,
     imagen: imageUrl(p.image_path), categoria: categorias.find(c => c.id === p.category_id)?.name || '',
-    disponible: p.is_available, descuento: p.discount_percent, personalizacion: p.customization || '', originalPath: p.original_image_path || null, orden: p.sort_order,
+    disponible: p.is_available, descuento: p.discount_percent, personalizacion: p.customization || '', orden: p.sort_order,
   }));
 }
 async function refrescarProductos(){ await cargarProductos(); await cargarEtiquetas(); renderProductos(); updateProdSummary(); updateMenuState(); renderPreview(); }
@@ -1242,7 +1237,6 @@ function openProd(id){
   $('pmDisp').checked = p ? p.disponible !== false : true;
   pmSel = new Set(p ? (tagLinks[p.id] || []) : []); renderPmTags();
   $('pmPrev').innerHTML = p?.imagen ? `<img src="${esc(p.imagen)}" alt="">` : 'Sin imagen';
-  $('pmRestore').hidden = !(p && p.originalPath);
   $('pmAdv').innerHTML = (isPro()
       ? `<div class="field"><label>Descuento (%)</label><input type="number" id="pmDesc2" min="0" max="90" value="${p?.descuento || 0}"></div>`
       : `<button type="button" class="lockrow" data-lock="PRO"><span>Agregar descuento</span><span class="badge-lock"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex:none"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-1.5 11h-15zM5 20h14v2H5z"/></svg>PRO</span></button>`)
@@ -1277,7 +1271,7 @@ $('pmSave').onclick = async () => {
     let pid = editId;
     if (editId) { const { error } = await sb.from('products').update(row).eq('id', editId); if (error) throw error; }
     else { const { data, error } = await sb.from('products').insert({ ...row, restaurant_id: rid }).select('id').single(); if (error) throw error; pid = data.id; }
-    if (old && 'image_path' in row && old.imagenPath && old.imagenPath !== row.image_path && !old.originalPath) borrarImagen(old.imagenPath);
+    if (old && 'image_path' in row && old.imagenPath && old.imagenPath !== row.image_path) borrarImagen(old.imagenPath);
     // Etiquetas (RPC atómica; si fallara, el producto ya quedó guardado)
     try { const { error } = await sb.rpc('set_product_tags', { p_product: pid, p_tags: [...pmSel] }); if (error) throw error; } catch (e) { console.warn(e); toast('El producto se guardó, pero no se pudieron guardar las etiquetas.'); }
     toast(editId ? 'Producto actualizado.' : 'Producto creado.'); closeProd(); await refrescarProductos();
