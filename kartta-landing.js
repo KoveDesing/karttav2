@@ -158,7 +158,7 @@
     setTimeout(function () { el.classList.add('kx-done'); }, total);
   }
   function trigger(el) {
-    if (el.hasAttribute('data-kx-hero') && !heroGo) { pendingHero.push(el); return; }
+    if (!heroGo) { pendingHero.push(el); return; }   // nada se anima hasta que las tipografías y la sesión estén listas: todo entra junto
     var g = el.__kxGroup;
     if (g) { g.kids.forEach(function (k, i) { show(k, g.base + (i % 9) * g.step); }); g.revealed = true; return; }
     show(el);
@@ -175,11 +175,14 @@
     // el hero espera a que la sesión se resuelva (el texto está oculto mientras tanto), máximo 900 ms
     var started = Date.now(), done = false;
     function go() { if (done) return; done = true; flushHero(); }
-    if (!doc.body.classList.contains('auth-loading') || !root.classList.contains('kx-maybe')) go();
-    else {
-      new MutationObserver(function (m, ob) { if (!doc.body.classList.contains('auth-loading')) { ob.disconnect(); go(); } }).observe(doc.body, { attributes: true, attributeFilter: ['class'] });
-      setTimeout(go, Math.max(0, 400 - (Date.now() - started)));
+    function afterFonts() {
+      if (!doc.body.classList.contains('auth-loading') || !root.classList.contains('kx-maybe')) go();
+      else {
+        new MutationObserver(function (m, ob) { if (!doc.body.classList.contains('auth-loading')) { ob.disconnect(); go(); } }).observe(doc.body, { attributes: true, attributeFilter: ['class'] });
+        setTimeout(go, Math.max(0, 400 - (Date.now() - started)));
+      }
     }
+    if (window.__kxFonts) afterFonts(); else doc.addEventListener('kx:fonts', afterFonts, { once: true });
     // tarjetas de planes que se vuelven a dibujar (Mensual/Anual)
     var grid = $('#pricingGrid');
     if (grid && grid.__kxGroup) {
