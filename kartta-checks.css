@@ -1,0 +1,14 @@
+/* KARTTA — casillas y botones de opción con diseño propio (reemplaza el cuadrito por defecto del navegador) */
+input[type=checkbox],input[type=radio]{-webkit-appearance:none;appearance:none;flex:none;width:22px;height:22px;margin:0;vertical-align:middle;cursor:pointer;
+  background:var(--panel2,#292929);border:1.5px solid var(--border,#3a3a3a);border-radius:7px;display:inline-grid;place-content:center;transition:background .15s,border-color .15s,box-shadow .15s,transform .1s}
+input[type=radio]{border-radius:50%}
+input[type=checkbox]::after{content:"";width:6px;height:11px;border:solid var(--on-accent,#fff);border-width:0 2.5px 2.5px 0;transform:rotate(45deg) scale(0);margin-top:-2px;transition:transform .15s ease}
+input[type=radio]::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--on-accent,#fff);transform:scale(0);transition:transform .15s ease}
+input[type=checkbox]:checked,input[type=radio]:checked{background:var(--accent,var(--red,#FF5A4D));border-color:transparent}
+input[type=checkbox]:checked::after{transform:rotate(45deg) scale(1)}
+input[type=radio]:checked::after{transform:scale(1)}
+input[type=checkbox]:hover,input[type=radio]:hover{border-color:var(--accent,var(--red,#FF5A4D))}
+input[type=checkbox]:active,input[type=radio]:active{transform:scale(.92)}
+input[type=checkbox]:focus-visible,input[type=radio]:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,var(--red,#FF5A4D)) 30%,transparent)}
+input[type=checkbox]:disabled,input[type=radio]:disabled{opacity:.45;cursor:not-allowed}
+@media (prefers-reduced-motion:reduce){input[type=checkbox],input[type=radio],input[type=checkbox]::after,input[type=radio]::after{transition:none}}

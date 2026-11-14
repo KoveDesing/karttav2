@@ -133,7 +133,7 @@
   async function act(kind) {
     if (busy) return; busy = true;
     try {
-      if (kind === 'cancel' && !window.confirm('¿Cancelar la renovación? Conservarás tu plan hasta el final del periodo pagado.')) return;
+      if (kind === 'cancel' && !await KDialog.confirm({ title: 'Cancelar renovación', message: '¿Cancelar la renovación? Conservarás tu plan hasta el final del periodo pagado.', ok: 'Cancelar renovación', cancel: 'Volver', danger: true })) return;
       var r = await C.sb.rpc(kind === 'cancel' ? 'billing_cancel_subscription' : 'billing_resume_subscription', { p_restaurant: C.rid });
       if (r.error) throw r.error;
       C.toast(kind === 'cancel' ? 'Renovación cancelada. Conservas el acceso hasta el final del periodo.' : 'Renovación reanudada.');

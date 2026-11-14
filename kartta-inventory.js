@@ -129,7 +129,7 @@
     if (prod) prod.onchange = function () { var p = (C.productos || []).find(function (x) { return x.id === prod.value; }); if (p && !nm.value.trim()) nm.value = p.nombre; sync(); };
     sync(); $('invCancel').onclick = close;
     if (it) $('invDel').onclick = async function () {
-      if (!confirm('¿Quitar «' + it.name + '» del inventario? Se conserva su historial y el producto del menú no se borra.')) return;
+      if (!await KDialog.confirm({ title: 'Quitar del inventario', message: '¿Quitar «' + it.name + '» del inventario? Se conserva su historial y el producto del menú no se borra.', ok: 'Quitar', danger: true })) return;
       lock(true); try { var r = await C.sb.rpc('inventory_deactivate_item', { p_item: it.id }); if (r.error) throw r.error; close(); C.toast('Artículo quitado del inventario.'); await refresh(); } catch (e) { setErr(errText(e)); lock(false); }
     };
     $('invOk').onclick = async function () {

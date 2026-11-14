@@ -76,9 +76,9 @@
     var email = $('teamEmail').value.trim().toLowerCase(), role = $('teamRole').value;
     run(function () { return C.sb.rpc('invite_member', { p_restaurant_id: C.rid, p_email: email, p_role: role }); }, 'Invitación creada. La persona debe entrar a kartta.food con ' + email + '.');
   });
-  document.addEventListener('click', function (e) {
+  document.addEventListener('click', async function (e) {
     var rm = e.target.closest('[data-team-rm]'), rv = e.target.closest('[data-team-rv]');
-    if (rm) { if (!window.confirm('¿Quitar a esta persona del equipo? Perderá el acceso al panel.')) return; run(function () { return C.sb.rpc('remove_member', { p_restaurant_id: C.rid, p_user_id: rm.dataset.teamRm }); }, 'Persona quitada del equipo.'); }
+    if (rm) { if (!await KDialog.confirm({ title: 'Quitar del equipo', message: '¿Quitar a esta persona del equipo? Perderá el acceso al panel.', ok: 'Quitar', danger: true })) return; run(function () { return C.sb.rpc('remove_member', { p_restaurant_id: C.rid, p_user_id: rm.dataset.teamRm }); }, 'Persona quitada del equipo.'); }
     if (rv) run(function () { return C.sb.rpc('revoke_invite', { p_invite_id: rv.dataset.teamRv }); }, 'Invitación cancelada.');
   });
   K.views.equipo = function () { C = K.ctx || window.KARTTA_CTX; if (!C) return; team = null; denied = false; view(); load(); };

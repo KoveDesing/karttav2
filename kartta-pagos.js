@@ -91,11 +91,11 @@
   });
   document.addEventListener('click', async function (e) {
     var r = e.target.closest('[data-pg-range]'); if (r && $('modPagos') && $('modPagos').contains(r)) { range = r.dataset.pgRange; refresh(); return; }
-    if (e.target.id === 'pgDisc') { if (!window.confirm('¿Desconectar Wompi? Tus clientes dejarán de ver «Pagar en línea». El historial se conserva.')) return; var x = await call({ action: 'disconnect' }); if (x.error) window.alert(ERR[x.error] || 'No se pudo desconectar.'); refresh(); }
+    if (e.target.id === 'pgDisc') { if (!await KDialog.confirm({ title: 'Desconectar Wompi', message: 'Tus clientes dejarán de ver «Pagar en línea». El historial se conserva.', ok: 'Desconectar', danger: true })) return; var x = await call({ action: 'disconnect' }); if (x.error) KDialog.alert({ title: 'Wompi', message: ERR[x.error] || 'No se pudo desconectar.' }); refresh(); }
   });
   document.addEventListener('change', async function (e) {
     if (e.target.id === 'pgSt') { st = e.target.value; refresh(); }
-    if (e.target.id === 'pgEnable') { var r = await C.sb.rpc('set_online_payments', { p_rid: C.rid, p_enabled: e.target.checked }); if (r.error) window.alert('No se pudo cambiar. Intenta de nuevo.'); refresh(); }
+    if (e.target.id === 'pgEnable') { var r = await C.sb.rpc('set_online_payments', { p_rid: C.rid, p_enabled: e.target.checked }); if (r.error) KDialog.alert({ title: 'Wompi', message: 'No se pudo cambiar. Intenta de nuevo.' }); refresh(); }
   });
 
   var prev = K.views.pagos;

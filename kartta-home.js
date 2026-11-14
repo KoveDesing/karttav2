@@ -125,7 +125,7 @@
   }
   async function fetchExtras() {
     var C = M.ctx;
-    var a = await C.sb.from('payment_accounts').select('provider,status,display_name,last_error,connected_at').eq('restaurant_id', C.rid).eq('provider', 'mercadopago').maybeSingle();
+    var a = await C.sb.from('payment_accounts').select('provider,status,display_name,last_error,connected_at').eq('restaurant_id', C.rid).eq('provider', 'wompi').maybeSingle();
     st.mp = a.error ? { unavailable: true } : (a.data || { status: 'none' });
     var l = await Promise.all([C.sb.from('loyalty_settings').select('enabled').eq('restaurant_id', C.rid).maybeSingle(), C.sb.from('loyalty_customers').select('balance').eq('restaurant_id', C.rid).limit(5000)]);
     st.loy = (l[0].error || l[1].error) ? null : { enabled: !!(l[0].data && l[0].data.enabled), customers: (l[1].data || []).length, points: (l[1].data || []).reduce(function (s, c) { return s + c.balance; }, 0) };
@@ -223,8 +223,8 @@
   var btn = function (icon, title, sub, attr) { return '<button type="button" class="qa" ' + attr + '><span class="qi">' + svg(icon) + '</span><span>' + title + '<small>' + sub + '</small></span></button>'; };
   function mpCard() {
     var a = st.mp || { status: 'none' }, on = a.status === 'connected';
-    var sub = a.unavailable ? 'No disponible por ahora' : on ? 'Conectado como ' + esc(a.display_name || 'tu cuenta') : a.status === 'error' ? esc(a.last_error || 'Error de conexión') : 'Conecta tu cuenta para cobrar online';
-    return '<div class="qa wide mp"><span class="qi mpi">' + svg('card') + '</span><span style="flex:1;min-width:0">Mercado Pago<small>' + sub + '</small></span><label class="cc-open" title="' + (on ? 'Desconectar' : 'Conectar') + '"><input type="checkbox" id="mpSwitch" role="switch" ' + (on ? 'checked ' : '') + (a.unavailable ? 'disabled ' : '') + 'aria-label="Mercado Pago ' + (on ? 'conectado' : 'desconectado') + '"><span>' + (on ? 'Conectado' : 'Apagado') + '</span></label></div>';
+    var sub = a.unavailable ? 'No disponible por ahora' : on ? 'Conectado como ' + esc(a.display_name || 'tu cuenta') : a.status === 'error' ? esc(a.last_error || 'Error de conexión') : 'Conecta tu cuenta Wompi para cobrar los pedidos online';
+    return '<div class="qa wide mp"><span class="qi mpi">' + svg('card') + '</span><span style="flex:1;min-width:0">Wompi · cobros en línea<small>' + sub + '</small></span><label class="cc-open" title="' + 'Configurar en Pagos' + '"><input type="checkbox" id="mpSwitch" role="switch" ' + (on ? 'checked ' : '') + (a.unavailable ? 'disabled ' : '') + 'aria-label="Wompi ' + (on ? 'conectado' : 'desconectado') + '"><span>' + (on ? 'Conectado' : 'Apagado') + '</span></label></div>';
   }
   function body() {
     var C = M.ctx, nombre = ((C.negocio && C.negocio.nombre) || (C.perfil && (C.perfil.panel_name || C.perfil.full_name)) || '').trim();   // saludo: nombre del restaurante
@@ -343,9 +343,8 @@
   async function reloadMp() { await fetchExtras(); var p = $('hMp'); if (p) p.innerHTML = mpCard(); if (M.views.pagos && document.querySelector('[data-panel=pagos].active')) M.views.pagos(); }
   document.addEventListener('change', async function (e) {
     if (e.target.id !== 'mpSwitch') return; var sw = e.target, want = sw.checked;
-    if (want) { sw.checked = false; openMp(); return; }
-    if (!await KDialog.confirm({ title: 'Desconectar Mercado Pago', message: '¿Desconectar Mercado Pago? Se borrará el token guardado.', ok: 'Desconectar', danger: true })) { sw.checked = true; return; }
-    sw.disabled = true; var r = await mpCall('disconnect'); if (r.error) { M.ctx.toast(r.error); sw.checked = true; sw.disabled = false; return; } M.ctx.toast('Mercado Pago desconectado.'); await reloadMp();
+    sw.checked = !want;   /* la conexión se administra en Pagos: ahí se pegan las claves de Wompi */
+    var nb = document.querySelector('[data-view="pagos"]'); if (nb) nb.click();
   });
   document.addEventListener('click', async function (e) {
     if (e.target.closest('#socSave')) return saveSocial();

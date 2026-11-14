@@ -27,6 +27,7 @@
     '.kd-btn:focus-visible{outline:2px solid var(--accent,var(--red,#FF3145));outline-offset:2px}' +
     '@media (max-width:480px){.kd-bg{align-items:flex-end;padding:12px}.kd-card{max-width:none}.kd-row .kd-btn{flex:1}}' +
     '@media (prefers-reduced-motion:reduce){.kd-bg,.kd-card,.kd-btn{transition:none!important}}';
+  css += '.kd-brand{display:block;margin:0 0 14px;font-family:"Mr Dafoe",cursive;font-size:26px;line-height:1;color:var(--strong,#fff);letter-spacing:.01em;text-align:left}.kd-brand span{color:var(--accent,var(--red,#FF3145))}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   function el(tag, cls, txt) { var n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; }
@@ -36,6 +37,7 @@
       var prev = document.activeElement, n = 'kd' + Math.random().toString(36).slice(2, 8), done = false;
       var bg = el('div', 'kd-bg'), card = el('div', 'kd-card');
       bg.setAttribute('role', 'dialog'); bg.setAttribute('aria-modal', 'true'); bg.setAttribute('aria-labelledby', n + 't');
+      var br = el('div', 'kd-brand'); br.setAttribute('aria-hidden', 'true'); br.innerHTML = 'Kar<span>tt</span>a'; card.appendChild(br);
       var h = el('h3', null, o.title || ''); h.id = n + 't'; card.appendChild(h);
       if (o.message) card.appendChild(el('p', null, o.message));
       function close(val) {
