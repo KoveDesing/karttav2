@@ -1068,7 +1068,10 @@ document.getElementById('btnConfirmarPedido').addEventListener('click', async ()
   if (cartCount() === 0) { errEl.textContent = 'Tu pedido está vacío.'; errEl.classList.add('show'); return; }
   const cust = window.KARTTA_CUSTOMER, ctok = cust && cust.token ? cust.token() : null;
   if (!TS) { applyOrderMode(); return; }
-  if (cust && cust.required && !ctok) { errEl.textContent = 'Este restaurante pide identificarte con tu teléfono para pedir.'; errEl.classList.add('show'); cust.open(); return; }
+  if (cust && !ctok && ((cust.required && !cust.phoneOk(telefono)) || (cust.wantsCard && cust.wantsCard() && !cust.phoneOk(telefono)))) {
+    errEl.textContent = cust.required ? 'Este restaurante pide tu número de WhatsApp para recibir el pedido.' : 'Escribe tu número de WhatsApp para sumar puntos, o desmarca «Sumar puntos con este pedido».';
+    errEl.classList.add('show'); return;
+  }
   if (!nombre && !ctok) { errEl.textContent = 'Cuéntanos tu nombre para enviar el pedido.'; errEl.classList.add('show'); return; }
 
   const btn = document.getElementById('btnConfirmarPedido');
@@ -1079,9 +1082,9 @@ document.getElementById('btnConfirmarPedido').addEventListener('click', async ()
     if (error) throw error;
     document.getElementById('successMsg').textContent =
       `Pedido #${data.code} · Mesa ${data.table || mesa || '—'} · ${moneyCO(data.total)}. Tu pedido quedó registrado y el restaurante ya puede verlo.${ctok ? ' Tus puntos se suman cuando el restaurante confirme el pago.' : ''}`;
-    if (cust && cust.refresh) cust.refresh();
     document.getElementById('cartView').style.display = 'none';
     document.getElementById('successView').style.display = 'block';
+    if (cust && cust.afterOrder) cust.afterOrder({ id: data.order_id, code: data.code, total: data.total, table: data.table || mesa }, nombre, telefono);   // ticket + enlace de la tarjeta
     cart = {}; renderCart();
     prepararPagoOnline(data.order_id);
   } catch (e) {
@@ -1089,7 +1092,7 @@ document.getElementById('btnConfirmarPedido').addEventListener('click', async ()
     const msg = String(e?.message || '');
     if (msg.includes('invalid_table_session') || msg.includes('table_disabled')) { tsClear(); applyOrderMode(); errEl.textContent = msg.includes('table_disabled') ? 'Esta mesa fue desactivada. Avisa al personal.' : 'Tu sesión de mesa venció. Escanea de nuevo el QR de tu mesa para pedir.'; errEl.classList.add('show'); return; }
     if (msg.includes('invalid_customer_session')) { if (cust && cust.logout) cust.logout(true); errEl.textContent = 'Tu sesión de cliente venció. Identifícate de nuevo para sumar puntos.'; errEl.classList.add('show'); return; }
-    if (msg.includes('identity_required')) { errEl.textContent = 'Este restaurante pide identificarte con tu teléfono para pedir.'; errEl.classList.add('show'); if (cust) cust.open(); return; }
+    if (msg.includes('identity_required')) { errEl.textContent = 'Este restaurante pide tu número de WhatsApp para recibir el pedido.'; errEl.classList.add('show'); return; }
     errEl.textContent = msg.includes('restaurant_closed') ? 'El restaurante acaba de cerrar y no recibe pedidos por ahora.'
       : msg.includes('some items unavailable') ? 'Algún producto de tu pedido ya no está disponible. Actualiza el menú y revisa tu pedido.'
       : msg.includes('too many orders') ? 'El restaurante está recibiendo muchos pedidos. Intenta de nuevo en un momento.'

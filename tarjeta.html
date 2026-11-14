@@ -52,12 +52,14 @@ import { sb, imageUrl } from "/supabase-init.js";
 const $ = (id) => document.getElementById(id);
 const toast = (m) => { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 3200); };
 const fmt = (n) => Number(n || 0).toLocaleString('es-CO');
-const ERR = { reward_limit_reached: 'Ya usaste este premio el máximo de veces permitido.', reward_sold_out: 'Este premio ya se agotó.', invalid_customer_session: 'Tu sesión venció. Vuelve al menú y verifica tu teléfono.', insufficient_points: 'Aún no tienes puntos suficientes para este premio.', too_many_pending: 'Ya tienes 3 canjes pendientes. Muéstralos en el local primero.', reward_not_available: 'Ese premio ya no está disponible.', already_played: 'Ya jugaste hoy. ¡Vuelve mañana!', disabled: 'Esta función no está activa por ahora.' };
+const ERR = { reward_limit_reached: 'Ya usaste este premio el máximo de veces permitido.', reward_sold_out: 'Este premio ya se agotó.', invalid_customer_session: 'Tu tarjeta venció en este celular. Vuelve al menú y crea tu tarjeta con tu nombre y número.', insufficient_points: 'Aún no tienes puntos suficientes para este premio.', too_many_pending: 'Ya tienes 3 canjes pendientes. Muéstralos en el local primero.', reward_not_available: 'Ese premio ya no está disponible.', already_played: 'Ya jugaste hoy. ¡Vuelve mañana!', disabled: 'Esta función no está activa por ahora.' };
 const errMsg = (e) => { const m = String(e?.message || ''); for (const k in ERR) if (m.includes(k)) return ERR[k]; return 'No se pudo completar. Intenta de nuevo.'; };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-/* /t/<restaurante>: la tarjeta se abre con la sesión verificada del cliente (OTP). Los enlaces secretos antiguos ya no dan acceso. */
+/* /t/<restaurante>?k=<clave>: la tarjeta se abre con la clave personal del enlace que recibe el cliente tras su compra (sin códigos SMS).
+   La clave se guarda en este celular y se quita de la barra de direcciones. */
 const slug = decodeURIComponent((new URLSearchParams(location.search).get('t') || (location.pathname.match(/^\/t\/([^/?#]+)/) || [])[1] || '')).trim().toLowerCase();
 const SKEY = 'kartta_cs_' + slug;
+try { const k = new URLSearchParams(location.search).get('k'); if (k && /^[A-Za-z0-9_-]{32,128}$/.test(k)) { localStorage.setItem(SKEY, k); history.replaceState(null, '', '/t/' + encodeURIComponent(slug)); } } catch {}
 const getSess = () => { try { const t = localStorage.getItem(SKEY); return t && /^[A-Za-z0-9_-]{32,128}$/.test(t) ? t : null; } catch { return null; } };
 let token = getSess();
 const KIND = { earn: 'Compra', welcome: 'Bienvenida', redeem: 'Canje', refund: 'Devolución', adjust: 'Ajuste', game: 'Ruleta' };
@@ -66,12 +68,12 @@ let data = null;
 function bad(title, msg) { $('app').innerHTML = ''; const d = document.createElement('div'); d.className = 'center'; const h = document.createElement('h1'); h.textContent = title; const p = document.createElement('p'); p.textContent = msg; d.append(h, p); $('app').appendChild(d); }
 
 async function load() {
-  if (UUID.test(slug)) return bad('Enlace retirado', 'Por seguridad, las tarjetas ya no se abren con enlaces secretos. Entra al menú de tu restaurante y verifica tu teléfono.');
+  if (UUID.test(slug)) return bad('Enlace retirado', 'Este enlace ya no es válido. Entra al menú de tu restaurante y abre «Mi tarjeta».');
   token = getSess();
   if (!slug || !token) { location.replace(slug ? '/m/' + encodeURIComponent(slug) : '/'); return; }
   const { data: d, error } = await sb.rpc('get_my_loyalty', { p_slug: slug, p_session: token });
   if (error) return bad('No pudimos cargar tu tarjeta', 'Revisa tu conexión e intenta de nuevo.');
-  if (!d) { try { localStorage.removeItem(SKEY); } catch {} return bad('Tu sesión venció', 'Vuelve al menú y verifica tu teléfono para ver tu tarjeta.'); }
+  if (!d) { try { localStorage.removeItem(SKEY); } catch {} return bad('Tu enlace ya no es válido', 'Vuelve al menú, abre «Mi tarjeta» y regístrate con tu nombre y número. Si ya tenías tarjeta, usa el enlace que guardaste.'); }
   data = d;
   document.title = 'Mi tarjeta · ' + d.restaurant.name; render();
 }

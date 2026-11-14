@@ -41,7 +41,7 @@
 
   function shell(inner) {
     var host = $('modLoyalty');
-    host.innerHTML = '<div class="vhead"><h2>Fidelización</h2><p>Clientes verificados, puntos, recompensas y la tarjeta digital de cada cliente.</p></div>' +
+    host.innerHTML = '<div class="vhead"><h2>Fidelización</h2><p>Clientes, puntos, recompensas y la tarjeta digital de cada cliente.</p></div>' +
       '<div class="rng" role="tablist" style="margin-bottom:16px;max-width:100%;overflow-x:auto">' + TABS.map(function (t) { return '<button type="button" role="tab" data-ltab="' + t[0] + '" aria-selected="' + (tab === t[0]) + '" class="' + (tab === t[0] ? 'on' : '') + '">' + t[1] + (t[0] === 'canjes' && pending().length ? ' (' + pending().length + ')' : '') + '</button>'; }).join('') + '</div>' + inner;
   }
   function render() {
@@ -52,17 +52,17 @@
   function tResumen() {
     var bal = customers.reduce(function (s, c) { return s + c.balance; }, 0), given = customers.reduce(function (s, c) { return s + c.lifetime; }, 0);
     var delivered = reds.filter(function (x) { return x.status === 'delivered'; }).length;
-    if (!S.enabled) return '<div class="card empty"><h3>Activa tu programa de puntos</h3><p>Tus clientes verifican su teléfono con un código, reciben su tarjeta digital y acumulan puntos cada vez que un pedido suyo queda pagado.</p><button class="btn btn-accent" data-lact="enable">Activar programa</button></div>';
+    if (!S.enabled) return '<div class="card empty"><h3>Activa tu programa de puntos</h3><p>Tus clientes se registran con su nombre y su número de WhatsApp al hacer el pedido (sin códigos), reciben su ticket con el enlace de su tarjeta digital y acumulan puntos cada vez que un pedido suyo queda pagado.</p><button class="btn btn-accent" data-lact="enable">Activar programa</button></div>';
     var kp = function (l, n, d) { return '<div class="kpi"><div class="l">' + l + '</div><div class="n">' + n + '</div><div class="d">' + d + '</div></div>'; };
     var empty = customers.length ? '' : '<div class="card empty"><h3>Aún no hay clientes</h3><p>Tus clientes se registran al escanear el QR de su mesa y tocar «Mi tarjeta». También puedes crear uno tú.</p><div class="row" style="justify-content:center"><button class="btn btn-accent" data-ltab="clientes">Crear cliente</button><button class="btn btn-ghost" data-lact="copymenu">Copiar enlace del menú</button></div></div>';
-    return '<div class="kpis">' + kp('Clientes', fmt(stats ? stats.total : customers.length), stats ? fmt(stats.verified) + ' con teléfono verificado' : 'con consentimiento registrado') + kp('Puntos en circulación', fmt(bal), 'saldo actual de todos') + kp('Puntos otorgados', fmt(given), 'histórico') + kp('Canjes pendientes', pending().length, 'por entregar') + kp('Canjes entregados', delivered, 'últimos 200') + '</div>' + empty +
+    return '<div class="kpis">' + kp('Clientes', fmt(stats ? stats.total : customers.length), stats ? fmt(stats.verified) + ' con pedidos' : 'con consentimiento registrado') + kp('Puntos en circulación', fmt(bal), 'saldo actual de todos') + kp('Puntos otorgados', fmt(given), 'histórico') + kp('Canjes pendientes', pending().length, 'por entregar') + kp('Canjes entregados', delivered, 'últimos 200') + '</div>' + empty +
       '<div class="card"><div class="row between"><div><h3>Programa activo</h3><p class="sub" style="margin:0">' + esc(S.program_name) + ' · ' + S.points_per_1000 + ' pts por cada $1.000 · bienvenida ' + S.welcome_points + ' pts</p></div><button class="btn btn-ghost btn-sm" data-lact="disable">Pausar programa</button></div></div>';
   }
 
   function tClientes() {
     var list = customers.filter(function (c) { var s = q.toLowerCase(); return !s || (c.name || '').toLowerCase().indexOf(s) >= 0 || c.phone.indexOf(s.replace(/\D/g, '') || '§') >= 0; });
     var kp = function (l, n, d) { return '<div class="kpi"><div class="l">' + l + '</div><div class="n">' + n + '</div><div class="d">' + d + '</div></div>'; };
-    var st = stats ? '<div class="kpis" style="margin-bottom:14px">' + kp('Clientes', fmt(stats.total), fmt(stats.verified) + ' verificados') + kp('Nuevos (30 días)', fmt(stats.new_30d), 'registrados') + kp('Recurrentes', fmt(stats.recurring), '2 o más pedidos') + kp('Con premio disponible', fmt(stats.with_rewards), 'ya pueden canjear') + '</div>' +
+    var st = stats ? '<div class="kpis" style="margin-bottom:14px">' + kp('Clientes', fmt(stats.total), fmt(stats.verified) + ' con teléfono') + kp('Nuevos (30 días)', fmt(stats.new_30d), 'registrados') + kp('Recurrentes', fmt(stats.recurring), '2 o más pedidos') + kp('Con premio disponible', fmt(stats.with_rewards), 'ya pueden canjear') + '</div>' +
       ((stats.top || []).length ? '<div class="card" style="margin-bottom:14px"><h3>Más puntos</h3>' + stats.top.map(function (t) { return '<div class="row between" style="padding:4px 0"><span>' + esc(t.name || t.phone) + '</span><strong>' + fmt(t.balance) + ' pts</strong></div>'; }).join('') + '</div>' : '') : '';
     return st + '<div class="fbar"><div class="field"><label for="lq">Buscar</label><input id="lq" type="search" value="' + esc(q) + '" placeholder="Nombre o teléfono" autocomplete="off"></div><div class="row"><button class="btn btn-accent" data-lact="newcust">+ Nuevo cliente</button><button class="btn btn-ghost" data-lact="export">Exportar CSV</button></div></div>' +
       '<div id="lnew"></div>' +
@@ -85,10 +85,10 @@
       '<div class="field"><label for="pName">Nombre del programa</label><input id="pName" maxlength="40" value="' + esc(S.program_name) + '"></div>' +
       num('pPer', 'Puntos por cada $1.000 COP', S.points_per_1000, 0, 1000, 'Ej.: 10 → un pedido de $25.000 da 250 puntos.') + num('pMin', 'Pedido mínimo para sumar ($)', S.min_order_total, 0, 10000000) + num('pWel', 'Bono de bienvenida (puntos)', S.welcome_points, 0, 10000, 'Se da una sola vez al registrarse.') +
       '<div class="field"><label for="pTerms">Condiciones (opcional)</label><textarea id="pTerms" maxlength="600" rows="3">' + esc(S.terms || '') + '</textarea></div>' +
-      '<label class="row" style="gap:8px;font-size:13px;align-items:flex-start"><input type="checkbox" id="pReq"' + (S.require_identity ? ' checked' : '') + ' style="margin-top:3px"> Exigir teléfono verificado para pedir (si no lo marcas, el cliente puede pedir sin tarjeta y no suma puntos).</label>' +
+      '<label class="row" style="gap:8px;font-size:13px;align-items:flex-start"><input type="checkbox" id="pReq"' + (S.require_identity ? ' checked' : '') + ' style="margin-top:3px"> Exigir el número de WhatsApp para pedir (si no lo marcas, el cliente puede pedir sin tarjeta y no suma puntos).</label>' +
       '<label class="row" style="gap:8px;font-size:13px;align-items:flex-start"><input type="checkbox" id="pTierOn"' + (S.tiers_enabled ? ' checked' : '') + ' style="margin-top:3px"> Habilitar niveles de cliente (se calculan con los puntos históricos).</label>' +
       '<div style="display:grid;gap:8px">' + trow(0) + trow(1) + trow(2) + '<p class="note">Deja vacío el nombre de un nivel para no usarlo. El primero suele empezar en 0.</p></div>' +
-      '<p class="note">Los puntos se suman automáticamente cuando un pedido de un cliente <strong>verificado</strong> queda <strong>pagado</strong> (en efectivo, cuando tú marcas el pago). Si el pago se desmarca o el pedido se cancela, los puntos se revierten sin borrar el historial. Un pedido nunca suma dos veces.</p>' +
+      '<p class="note">Los puntos se suman automáticamente cuando un pedido de un cliente <strong>registrado</strong> queda <strong>pagado</strong> (en efectivo, cuando tú marcas el pago). Si el pago se desmarca o el pedido se cancela, los puntos se revierten sin borrar el historial. Un pedido nunca suma dos veces.</p>' +
       '<div><button class="btn btn-accent" data-lact="saverules">Guardar reglas</button></div></div>';
   }
   function tPremios() {
