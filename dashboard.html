@@ -93,9 +93,9 @@ input,select,textarea{font-family:inherit;color:var(--strong);}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}.row.between{justify-content:space-between;}
 
 .field{margin-bottom:14px;}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px;color:var(--text);}
-.field input[type=text],.field input[type=number],.field input[type=tel],.field textarea,.field select{width:100%;min-height:44px;padding:11px 13px;border:1px solid var(--border);border-radius:12px;font-size:14px;background:var(--panel2);transition:border-color .15s ease,box-shadow .15s ease;}
+.field input:not([type]),.field input[type=text],.field input[type=number],.field input[type=tel],.field input[type=email],.field input[type=search],.field input[type=password],.field input[type=url],.field input[type=date],.field input[type=time],.field input[type=datetime-local],.field textarea,.field select{width:100%;min-height:44px;padding:11px 13px;border:1px solid var(--border);border-radius:12px;font-size:14px;background:var(--panel2);transition:border-color .15s ease,box-shadow .15s ease;}
 .field textarea{resize:vertical;min-height:84px;line-height:1.5;}
-.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.field input:not([type]):focus,.field input[type=text]:focus,.field input[type=number]:focus,.field input[type=tel]:focus,.field input[type=email]:focus,.field input[type=search]:focus,.field input[type=password]:focus,.field input[type=url]:focus,.field input[type=date]:focus,.field input[type=time]:focus,.field input[type=datetime-local]:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-radius:12px;background:var(--panel2);padding:4px;cursor:pointer;}
 .seg{display:inline-flex;background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:3px;gap:2px;}
@@ -1221,6 +1221,8 @@ function renderProductos(){
   });
   initDrag(g);
   g.querySelectorAll('[data-ed]').forEach(b => b.onclick = () => openProd(b.dataset.ed));
+  /* clic en cualquier parte de la tarjeta abre la edición (menos interruptor, botones y arrastre) */
+  g.querySelectorAll('.pcard').forEach(c => { c.style.cursor = 'pointer'; c.addEventListener('click', e => { if (e.target.closest('button,label,input,a,select')) return; openProd(c.dataset.pid); }); });
   g.querySelectorAll('[data-dl]').forEach(b => b.onclick = () => delProd(b.dataset.dl));
   g.querySelectorAll('[data-av]').forEach(i => i.onchange = async () => {
     const { error } = await sb.from('products').update({ is_available: i.checked }).eq('id', i.dataset.av);
