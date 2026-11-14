@@ -38,6 +38,10 @@
       "destination": "/tarjeta.html?t=:token"
     },
     {
+      "source": "/pago/:ref",
+      "destination": "/pago.html"
+    },
+    {
       "source": "/checkout",
       "destination": "/checkout.html"
     },
@@ -104,6 +108,23 @@
     },
     {
       "source": "/tarjeta.html",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/pago.html",
       "headers": [
         {
           "key": "X-Robots-Tag",

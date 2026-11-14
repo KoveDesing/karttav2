@@ -15,3 +15,10 @@ LIMPIEZA
   NO toca los duplicados distintos (23): revisalos a mano (ver LIMPIEZA_REPO.txt).
 
 ELIMINAR DEL REPO: kartta-image-ai.js (el script limpiar_duplicados.sh --borrar tambien lo borra).
+
+=== WOMPI (pagos de pedidos por restaurante) ===
+Archivos nuevos/modificados: pago.html, kartta-pagos.js (vista Pagos), menu.html (botón "Pagar en línea"),
+dashboard.html (pill de pago separado del estado del pedido + script), vercel.json (/pago/:ref, noindex/no-store),
+supabase/functions/{wompi-connect,order-checkout,wompi-order-webhook} (YA desplegadas en Supabase).
+La migración SQL ya está aplicada en Supabase (wompi_pagos_pedidos_por_restaurante_1).
+URL de eventos de cada restaurante: https://ifbvdjvukygvvgiyzgav.supabase.co/functions/v1/wompi-order-webhook?rid=<ID_RESTAURANTE> (se muestra en Pagos).

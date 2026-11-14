@@ -277,6 +277,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 <script src="kartta-inventory.js?v=20261110" defer></script>
 <script src="kartta-billing.js?v=20261113-plan" defer></script>
 <script src="kartta-team.js?v=20261113" defer></script>
+<script src="kartta-pagos.js?v=20261113" defer></script>
 <script src="kartta-metrics.js?v=20261110" defer></script>
 <script src="kartta-qr.js?v=20261031" defer></script>
 <script src="kartta-whatsapp.js?v=20261104" defer></script>
@@ -1432,7 +1433,7 @@ $('btnNuevaMesa').onclick = nuevaMesa;
 const ESTADOS = ['nuevo', 'preparando', 'listo', 'entregado'], ELABEL = { nuevo:'Nuevo', preparando:'Preparando', listo:'Listo', entregado:'Entregado', cancelado:'Cancelado' };
 let pedidos = [];
 async function cargarPedidos(){
-  const sel = 'id,table_label,customer_name,customer_phone,status,total,paid,created_at,order_items(name,quantity)';
+  const sel = 'id,table_label,customer_name,customer_phone,status,total,paid,payment_status,payment_method,created_at,order_items(name,quantity)';
   const q = (cols) => sb.from('orders').select(cols).eq('restaurant_id', rid).order('created_at', { ascending: false }).limit(200);
   const { data, error } = await q(sel);
   if (error) { console.error(error); toast('No pude cargar los pedidos.'); return; }
@@ -1455,7 +1456,7 @@ function renderPedidos(){
     const el = document.createElement('div'); el.className = 'ped';
     el.innerHTML = `<div class="top"><div><div class="mesa">Mesa ${esc(o.table_label || '—')}${` <span style="font-weight:600;color:var(--muted);font-size:12px">#${esc(String(o.id).slice(-4).toUpperCase())}</span>`}</div><div class="cli">${esc(o.customer_name || 'Cliente')}${o.customer_phone ? ' · ' + esc(o.customer_phone) : ''}</div></div><span class="st ${est}">${ELABEL[est] || est}</span></div>
         <div class="items">${(o.order_items || []).map(i => `${i.quantity}x ${esc(i.name)}`).join(' · ') || 'Sin productos'}</div>
-        <div class="bot"><strong style="color:var(--strong)">${money(total)} <span class="pill ${o.paid ? 'ok' : 'pend'}">${o.paid ? 'Pagado' : 'Sin pagar'}</span></strong><div class="row">${!o.paid && !cancelado ? `<button class="btn btn-ghost btn-sm" data-pay="${o.id}">Marcar pagado</button>` : ''}${!cancelado && est !== 'entregado' && !o.paid ? `<button class="btn btn-ghost btn-sm" data-cancel="${o.id}">Cancelar</button>` : ''}<button class="btn btn-ghost btn-sm" data-hist="${o.id}">Historial</button>${sig ? `<button class="btn btn-accent btn-sm" data-adv="${o.id}" data-n="${sig}">Avanzar a ${ELABEL[sig]}</button>` : ''}</div></div>`;
+        <div class="bot"><strong style="color:var(--strong)">${money(total)} <span class="pill ${o.paid ? 'ok' : (o.payment_status === 'declined' ? 'bad' : (o.payment_status === 'pending' ? 'warn' : 'pend'))}">${o.paid ? 'Pagado' + (o.payment_method === 'wompi' ? ' · en línea' : '') : (o.payment_status === 'declined' ? 'Pago rechazado' : (o.payment_status === 'pending' ? 'Pago pendiente' : 'Sin pagar'))}</span></strong><div class="row">${!o.paid && !cancelado ? `<button class="btn btn-ghost btn-sm" data-pay="${o.id}">Marcar pagado</button>` : ''}${!cancelado && est !== 'entregado' && !o.paid ? `<button class="btn btn-ghost btn-sm" data-cancel="${o.id}">Cancelar</button>` : ''}<button class="btn btn-ghost btn-sm" data-hist="${o.id}">Historial</button>${sig ? `<button class="btn btn-accent btn-sm" data-adv="${o.id}" data-n="${sig}">Avanzar a ${ELABEL[sig]}</button>` : ''}</div></div>`;
     if (!window.KARTTA_PED_FILTER || window.KARTTA_PED_FILTER(o)) list.appendChild(el);
   });
   const act = async (patch, id, ok) => { const { error } = await sb.from('orders').update(patch).eq('id', id); if (error) return toast('No se pudo actualizar.'); if (ok) toast(ok); await cargarPedidos(); renderPedidos(); };

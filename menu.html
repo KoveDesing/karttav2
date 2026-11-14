@@ -516,6 +516,9 @@ html.thumb .cart-bar{display:none !important;}
         <div class="check"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1EA35A" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></div>
         <h3>¡Pedido enviado!</h3>
         <p id="successMsg">Tu pedido ya está en cocina. En un momento te lo traen.</p>
+        <p class="cerr" id="payErr"></p>
+        <button class="cbtn" id="btnPagarOnline" style="display:none;">Pagar en línea</button>
+        <p id="payNote" style="display:none;font-size:12px;opacity:.7;margin:6px 0 10px;">Pago seguro con Wompi (tarjeta, Nequi, PSE y más) directo al restaurante. Si prefieres, también puedes pagar en la mesa.</p>
         <button class="cbtn" id="btnCerrarExito" style="background:var(--black);">Listo</button>
       </div>
     </div>
@@ -1077,6 +1080,7 @@ document.getElementById('btnConfirmarPedido').addEventListener('click', async ()
     document.getElementById('cartView').style.display = 'none';
     document.getElementById('successView').style.display = 'block';
     cart = {}; renderCart();
+    prepararPagoOnline(data.order_id);
   } catch (e) {
     console.error(e);
     const msg = String(e?.message || '');
@@ -1093,6 +1097,43 @@ document.getElementById('btnConfirmarPedido').addEventListener('click', async ()
   }
 });
 document.getElementById('btnCerrarExito').addEventListener('click', () => closeSheet());
+
+/* ---------- Pago en línea (Wompi del propio restaurante) ----------
+ * El monto lo calcula el servidor desde el pedido; la firma de integridad se genera en el servidor.
+ * El pedido solo se marca como pagado cuando Wompi lo confirma al servidor (webhook firmado). */
+async function prepararPagoOnline(orderId) {
+  const btn = document.getElementById('btnPagarOnline'), note = document.getElementById('payNote'), err = document.getElementById('payErr');
+  if (!orderId || !btn) return;
+  try {
+    const { data } = await sb.rpc('get_public_payment_options', { p_slug: slug });
+    if (!data || !data.online) return;
+    btn.style.display = 'block'; note.style.display = 'block';
+    btn.onclick = () => pagarEnLinea(orderId, btn, err);
+    document.getElementById('successMsg').insertAdjacentHTML('beforeend', ' <b>Completa tu pago para confirmar.</b>');
+    pagarEnLinea(orderId, btn, err);   /* el restaurante tiene pasarela: se abre sola al hacer el pedido */
+  } catch (e) { /* sin pago en línea: el flujo normal no cambia */ }
+}
+function cargarWidgetWompi() {
+  return new Promise((ok, no) => {
+    if (window.WidgetCheckout) return ok();
+    const sc = document.createElement('script'); sc.src = 'https://checkout.wompi.co/widget.js'; sc.onload = ok; sc.onerror = () => no(new Error('widget')); document.head.appendChild(sc);
+  });
+}
+async function pagarEnLinea(orderId, btn, err) {
+  err.classList.remove('show'); btn.disabled = true; const t0 = btn.textContent; btn.textContent = 'Abriendo pago...';
+  const fail = (m) => { err.textContent = m; err.classList.add('show'); btn.disabled = false; btn.textContent = t0; };
+  try {
+    const r = await sb.functions.invoke('order-checkout', { body: { action: 'create', order_id: orderId } });
+    let d = r.data;
+    if (r.error) { let j = null; try { j = await r.error.context.json(); } catch (e) {} const c = j && j.error;
+      return fail(c === 'already_paid' ? 'Este pedido ya está pagado.' : c === 'order_cancelled' ? 'Este pedido fue cancelado.' : c === 'online_payments_disabled' ? 'Este restaurante no tiene pagos en línea activos.' : 'No pudimos iniciar el pago. Intenta de nuevo.'); }
+    if (d.state === 'pending') { location.href = '/pago/' + encodeURIComponent(d.reference); return; }
+    await cargarWidgetWompi();
+    const w = new WidgetCheckout(d.widget);
+    w.open((res) => { const tx = res && res.transaction; location.href = '/pago/' + encodeURIComponent(d.reference) + (tx && tx.id ? '?id=' + encodeURIComponent(tx.id) : ''); });
+    btn.disabled = false; btn.textContent = t0;
+  } catch (e) { console.error(e); fail('No pudimos abrir el pago. Revisa tu conexión e intenta de nuevo.'); }
+}
 
 cargarMenu();
 
