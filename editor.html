@@ -95,7 +95,7 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
 .lnk{font-size:12px;font-weight:700;color:var(--accent);padding:4px 6px;border-radius:6px}.lnk:hover{background:var(--accent-soft)}
 .rg{margin-bottom:12px}.rgh{display:flex;align-items:center;gap:8px;margin-bottom:6px}.rgh label{font-size:12.5px;font-weight:700;margin:0;flex:1;color:var(--strong)}.rgh output{font-size:12px;font-weight:800;color:var(--strong);min-width:42px;text-align:right}
 .segc{display:flex;flex-wrap:wrap;gap:4px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:3px}.segc button{flex:1;min-height:34px;padding:0 8px;border-radius:7px;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}.segc button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
-.cw .cwl{flex:1;min-width:0}.hx{width:84px;min-height:34px;padding:0 8px;border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--strong);font:12px ui-monospace,Menlo,monospace;text-transform:uppercase}.hx.bad{border-color:#E5484D;background:rgba(229,72,77,.08)}
+.cw .cwl{flex:1;min-width:0}.cw input.hx,.hx{flex:none;width:92px;height:auto;min-height:34px;padding:0 8px;border:1px solid var(--border);border-radius:8px;background:var(--panel);cursor:text;color:var(--strong);font:12px ui-monospace,Menlo,monospace;text-transform:uppercase}.hx.bad{border-color:#E5484D;background:rgba(229,72,77,.08)}
 .wb .warn{margin:4px 0}.rst{margin:10px 0 4px}
 .tgal{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}.tc{border:2px solid var(--border);border-radius:14px;background:var(--panel2);overflow:hidden;display:flex;flex-direction:column}.tc.cur{border-color:var(--accent)}
 .tcv{position:relative;width:100%;aspect-ratio:390/560;overflow:hidden;background:#fff;border-bottom:1px solid var(--border)}.tcv iframe{position:absolute;left:0;top:0;width:390px;height:560px;border:0;transform-origin:0 0;pointer-events:none}
@@ -136,6 +136,24 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
 .lyr .la{border:0;background:transparent;color:var(--muted);cursor:pointer;width:28px;height:28px;border-radius:8px;font-size:13px}.lyr .la:hover:not(:disabled){background:var(--panel2);color:inherit}.lyr .la:disabled{opacity:.3;cursor:default}
 .wd{border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:5px 9px;font:inherit;font-size:13px;cursor:pointer;color:inherit}.wd[aria-pressed=true]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--panel));box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}
 .wdc{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}.wdt{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.wdt input[type=color]{width:34px;height:32px;padding:0;border:1px solid var(--border);border-radius:8px;background:transparent}.wdt .btn{min-height:32px;padding:0 10px}.wde{margin:10px 0}
+
+/* Selector de color KARTTA (reemplaza el cuadro de color del navegador) */
+.kcs{width:36px;height:36px;flex:none;border-radius:9px;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--border);cursor:pointer;padding:0;position:relative;background-image:linear-gradient(45deg,#ccc 25%,transparent 25%,transparent 75%,#ccc 75%),linear-gradient(45deg,#ccc 25%,#fff 25%,#fff 75%,#ccc 75%);background-size:8px 8px;background-position:0 0,4px 4px}
+.kcs i{position:absolute;inset:0;border-radius:7px;background:var(--c,#fff)}
+.kcs:hover{box-shadow:0 0 0 2px var(--accent)}
+.kc-nat{position:absolute !important;width:1px !important;height:1px !important;opacity:0 !important;pointer-events:none !important;overflow:hidden}
+.kpop{position:fixed;z-index:1000;width:252px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:14px;box-shadow:0 18px 40px -12px rgba(0,0,0,.45);padding:12px;display:grid;gap:10px;touch-action:none;font-size:12px}
+.kpop .sv{position:relative;height:140px;border-radius:10px;cursor:crosshair;background:linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,hsl(var(--h,0) 100% 50%));touch-action:none}
+.kpop .sv b{position:absolute;width:16px;height:16px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 0 1.5px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.4);transform:translate(-50%,-50%);pointer-events:none}
+.kpop .hue{position:relative;height:14px;border-radius:99px;cursor:pointer;background:linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);touch-action:none}
+.kpop .hue b{position:absolute;top:50%;width:18px;height:18px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 0 1.5px rgba(0,0,0,.45);transform:translate(-50%,-50%);pointer-events:none}
+.kpop .row{display:flex;gap:8px;align-items:center}
+.kpop .kpv{width:34px;height:34px;border-radius:9px;box-shadow:0 0 0 1px var(--border);flex:none}
+.kpop input.kph{flex:1;min-width:0;min-height:34px;padding:0 10px;border:1px solid var(--border);border-radius:9px;background:var(--panel2);color:var(--strong);font:600 13px ui-monospace,Menlo,monospace;text-transform:uppercase}
+.kpop .sw{display:flex;flex-wrap:wrap;gap:6px}
+.kpop .sw button{width:22px;height:22px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--border);cursor:pointer;padding:0}
+.kpop .sw button:hover{transform:scale(1.15)}
+.kpop h6{margin:0;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 </style>
 <link rel="stylesheet" href="/kartta-fields.css?v=20261103">
 </head>
@@ -1040,6 +1058,54 @@ async function syncAccent(uid) {
 try { const bc = new BroadcastChannel('kartta-accent'); bc.onmessage = ev => { const d = ev.data || {}; if (d.uid && d.uid === accentUid) { paintAccent(d.accent); paintTheme(d.theme); } }; } catch {}
 document.addEventListener('visibilitychange', () => { if (!document.hidden && accentUid) syncAccent(accentUid); });
 addEventListener('focus', () => { if (accentUid) syncAccent(accentUid); });
+
+/* ---------- Selector de color propio: sustituye el cuadro de color del navegador sin tocar el resto del editor ---------- */
+(function(){
+  const HEX = /^#[0-9a-fA-F]{6}$/, PRESET = ['#FF3145','#F97316','#F59E0B','#EAB308','#22C55E','#14B8A6','#0EA5E9','#2563EB','#7C3AED','#DB2777','#8B5E3C','#0A0A0A','#374151','#9CA3AF','#E5E7EB','#FFFFFF'];
+  const natVal = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+  const rgb2hsv = (r, g, b) => { r /= 255; g /= 255; b /= 255; const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; let hh = 0; if (d) { if (mx === r) hh = ((g - b) / d) % 6; else if (mx === g) hh = (b - r) / d + 2; else hh = (r - g) / d + 4; hh *= 60; if (hh < 0) hh += 360; } return [hh, mx ? d / mx : 0, mx]; };
+  const hsv2rgb = (hh, s, v) => { const c = v * s, x = c * (1 - Math.abs((hh / 60) % 2 - 1)), m = v - c; let r = 0, g = 0, b = 0; if (hh < 60) [r, g, b] = [c, x, 0]; else if (hh < 120) [r, g, b] = [x, c, 0]; else if (hh < 180) [r, g, b] = [0, c, x]; else if (hh < 240) [r, g, b] = [0, x, c]; else if (hh < 300) [r, g, b] = [x, 0, c]; else [r, g, b] = [c, 0, x]; return [r + m, g + m, b + m].map(n => Math.round(n * 255)); };
+  const toHex = (r, g, b) => '#' + [r, g, b].map(n => n.toString(16).padStart(2, '0')).join('').toUpperCase();
+  const fromHex = (x) => [1, 3, 5].map(k => parseInt(x.slice(k, k + 2), 16));
+  const recent = () => { try { return JSON.parse(localStorage.getItem('kartta_recent_colors') || '[]').filter(c => HEX.test(c)).slice(0, 8); } catch { return []; } };
+  const pushRecent = (c) => { try { const l = [c].concat(recent().filter(x => x !== c)).slice(0, 8); localStorage.setItem('kartta_recent_colors', JSON.stringify(l)); } catch {} };
+  let open = null;
+  function closePop(){ if (!open) return; open.pop.remove(); document.removeEventListener('pointerdown', open.out, true); document.removeEventListener('keydown', open.key, true); if (open.last) pushRecent(open.last); open = null; }
+  function openPop(inp, sw){
+    closePop();
+    let [H, S, V] = rgb2hsv(...fromHex(HEX.test(natVal.get.call(inp)) ? natVal.get.call(inp) : '#FF3145'));
+    const pop = h('div', { class: 'kpop', role: 'dialog', 'aria-label': 'Elegir color' }), sv = h('div', { class: 'sv' }, h('b')), hue = h('div', { class: 'hue' }, h('b')), pv = h('span', { class: 'kpv' }),
+      hx = h('input', { class: 'kph', type: 'text', maxlength: 7, spellcheck: 'false', 'aria-label': 'Código hexadecimal' }), sws = h('div', { class: 'sw' });
+    pop.append(sv, hue, h('div', { class: 'row' }, pv, hx));
+    const rc = recent(); if (rc.length) pop.append(h('h6', {}, 'Recientes'), (() => { const w = h('div', { class: 'sw' }); rc.forEach(c => w.append(h('button', { type: 'button', style: 'background:' + c, 'aria-label': c, onclick: () => setHex(c, true) }))); return w; })());
+    pop.append(h('h6', {}, 'Colores rápidos')); PRESET.forEach(c => sws.append(h('button', { type: 'button', style: 'background:' + c, 'aria-label': c, onclick: () => setHex(c, true) }))); pop.append(sws);
+    document.body.append(pop);
+    const r = sw.getBoundingClientRect(), pw = 252, ph = pop.offsetHeight; let x = Math.min(innerWidth - pw - 8, Math.max(8, r.left)), y = r.bottom + 8; if (y + ph > innerHeight - 8) y = Math.max(8, r.top - ph - 8); pop.style.left = x + 'px'; pop.style.top = y + 'px';
+    const cur = () => toHex(...hsv2rgb(H, S, V));
+    function paint(fromText){ const hex = cur(); pop.style.setProperty('--h', Math.round(H)); sv.firstChild.style.left = (S * 100) + '%'; sv.firstChild.style.top = ((1 - V) * 100) + '%'; hue.firstChild.style.left = (H / 360 * 100) + '%'; pv.style.background = hex; if (!fromText) hx.value = hex; }
+    function emit(){ const hex = cur(); natVal.set.call(inp, hex.toLowerCase()); sw.style.setProperty('--c', hex); open.last = hex; inp.dispatchEvent(new Event('input', { bubbles: true })); }
+    function setHex(c, commit){ if (!HEX.test(c)) return; [H, S, V] = rgb2hsv(...fromHex(c)); paint(); emit(); if (commit) { inp.dispatchEvent(new Event('change', { bubbles: true })); } }
+    const drag = (el, fn) => { el.addEventListener('pointerdown', e => { e.preventDefault(); el.setPointerCapture(e.pointerId); fn(e); const mv = ev => fn(ev), up = () => { el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); inp.dispatchEvent(new Event('change', { bubbles: true })); }; el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); }); };
+    drag(sv, e => { const b = sv.getBoundingClientRect(); S = Math.min(1, Math.max(0, (e.clientX - b.left) / b.width)); V = 1 - Math.min(1, Math.max(0, (e.clientY - b.top) / b.height)); paint(); emit(); });
+    drag(hue, e => { const b = hue.getBoundingClientRect(); H = Math.min(359.9, Math.max(0, (e.clientX - b.left) / b.width * 360)); paint(); emit(); });
+    hx.addEventListener('input', () => { let v = hx.value.trim(); if (v && v[0] !== '#') v = '#' + v; if (HEX.test(v)) { [H, S, V] = rgb2hsv(...fromHex(v)); paint(true); emit(); } });
+    hx.addEventListener('keydown', e => { if (e.key === 'Enter') { inp.dispatchEvent(new Event('change', { bubbles: true })); closePop(); } });
+    open = { pop, last: null, out: e => { if (!pop.contains(e.target) && !sw.contains(e.target)) closePop(); }, key: e => { if (e.key === 'Escape') { e.stopPropagation(); closePop(); sw.focus(); } } };
+    document.addEventListener('pointerdown', open.out, true); document.addEventListener('keydown', open.key, true); paint();
+  }
+  function enhance(inp){
+    if (inp.__kc) return; inp.__kc = true; inp.classList.add('kc-nat'); inp.tabIndex = -1; inp.setAttribute('aria-hidden', 'true');
+    const sw = h('button', { type: 'button', class: 'kcs', 'aria-label': inp.getAttribute('aria-label') || 'Elegir color', 'aria-haspopup': 'dialog' }, h('i'));
+    const paintSw = () => sw.style.setProperty('--c', natVal.get.call(inp) || '#ffffff'); paintSw();
+    Object.defineProperty(inp, 'value', { configurable: true, get(){ return natVal.get.call(inp); }, set(v){ natVal.set.call(inp, v); paintSw(); } });
+    sw.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); if (open && open.pop && sw.__open) { closePop(); sw.__open = false; return; } openPop(inp, sw); sw.__open = true; });
+    inp.before(sw);
+  }
+  const scan = (root) => (root.querySelectorAll ? root.querySelectorAll('input[type=color]:not(.kc-nat)') : []).forEach(enhance);
+  new MutationObserver(ms => { ms.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) { if (n.matches && n.matches('input[type=color]:not(.kc-nat)')) enhance(n); scan(n); } })); }).observe(document.body, { childList: true, subtree: true });
+  scan(document);
+})();
+
 async function boot(user){
   try {
     accentUid = user.uid; await syncAccent(user.uid);   // antes de mostrar el editor
