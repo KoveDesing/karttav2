@@ -1,0 +1,25 @@
+# Seguridad: archivos internos que NO deben servirse públicamente (no los usa el navegador).
+# Verificado: ninguna página HTML/JS pública los referencia.
+*.md
+*.sql
+*.sh
+*.toml
+*.ts
+*.test.mjs
+env.example
+LEEME.txt
+LIMPIEZA_REPO.txt
+docs/
+supabase/
+# Código de Edge Functions copiado a la raíz (solo servidor)
+core.js
+core.mjs
+http.js
+wompi.js
+mailer.js
+email-templates.js
+pg-admin.mjs
+helpers.mjs
+# Duplicados de descarga "nombre (n).ext"
+* (*).*
+vercel (*).json
