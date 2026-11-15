@@ -165,3 +165,28 @@ h1{letter-spacing:-.03em}
 @media (max-width:900px){.ck-mgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:520px){.ck-banks{grid-template-columns:1fr}.ck-bgmark{font-size:34vw}.ck-mtile{min-height:138px}}
 @media (prefers-reduced-motion:reduce){.ck-bgmark{animation:none}.ck-hl::before{transform:none}}
+
+/* ---- ajustes v3: datos simples, formulario de tarjeta, iconos ---- */
+.ck-form{grid-template-columns:1fr 1fr}.ck-form .ck-span{grid-column:1/-1}.ck-form .ck-span label{display:grid;gap:5px}
+.ck-form input{min-height:52px;font-size:16px;padding:0 16px;background:var(--panel2);border:1.5px solid transparent;border-radius:14px}
+.ck-cardform{display:grid;grid-template-columns:1fr 1fr;gap:14px}.ck-cardform .ck-full{grid-column:1/-1}
+.ck-docrow{display:grid;grid-template-columns:110px 1fr;gap:12px;margin-top:16px}
+.ck-f select{min-height:52px;border-radius:14px;border:1.5px solid transparent;background:#fff;color:var(--strong);padding:0 12px;font:inherit;font-size:16px}
+.ck-f select:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 4px rgba(15,15,15,.07)}
+.ck-info{align-items:flex-start;line-height:1.5}.ck-info svg{flex:none;margin-top:2px;color:var(--ink)}.ck-info a{color:var(--ink);font-weight:700;text-decoration-color:var(--accent);text-underline-offset:3px}
+.ck-best svg{flex:none}
+.ck-ico svg{display:block}
+.ck-btn svg{flex:none}
+.ck-bank .bk img{width:22px;height:22px;object-fit:contain}
+.ck-card{background:rgba(255,255,255,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.ck-bgmark{font-size:min(36vw,640px);color:rgba(15,15,15,.07)}.ck-bgmark span{color:rgba(255,49,69,.16)}
+@media (max-width:520px){.ck-form,.ck-cardform{grid-template-columns:1fr}.ck-bgmark{font-size:40vw}}
+.ck-cardform>*,.ck-docrow>*,.ck-form>*{min-width:0}.ck-f input,.ck-f select{width:100%;box-sizing:border-box}
+.ck-hl{margin-right:-.06em}
+.ck-bgmark{font-size:min(50vw,900px);color:rgba(15,15,15,.085)}.ck-bgmark span{color:rgba(255,49,69,.2)}
+.ck-card{background:rgba(255,255,255,.74)}
+@media (max-width:520px){.ck-bgmark{font-size:58vw}}
+.ck-bgmark{display:flex;align-items:center;justify-content:center;font-size:min(30vw,520px)}
+@media (max-width:520px){.ck-bgmark{font-size:36vw}}
+.ck-bgmark{font-size:min(40vw,720px);color:rgba(15,15,15,.1)}.ck-bgmark span{color:rgba(255,49,69,.22)}
+@media (max-width:520px){.ck-bgmark{font-size:44vw}}

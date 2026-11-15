@@ -1,6 +1,6 @@
 /* KARTTA Payments — checkout nativo. El navegador NUNCA decide importes ni activa planes:
  * pide al servidor (billing-checkout) que cree el pago y firme la transacción; el plan solo se activa cuando el
- * servidor confirma con Wompi. Aquí no se manejan ni se guardan datos de tarjeta (los captura el widget de Wompi). */
+ * servidor confirma el pago. Los datos de tarjeta van directo al procesador de pagos desde el navegador: KARTTA nunca los recibe ni los guarda. */
 import { sb } from '/supabase-init.js';
 
 const $app = document.getElementById('app');
@@ -13,18 +13,19 @@ const ERR = {
   plan_not_available: 'Ese plan no está disponible.', price_not_configured: 'Ese plan aún no tiene precio configurado.',
   downgrade_not_allowed_until_period_end: 'Podrás cambiar a un plan menor cuando termine tu periodo actual.',
   too_many_open_payments: 'Tienes varios pagos sin completar. Espera unos minutos e inténtalo de nuevo.', restaurant_suspended: 'Tu cuenta está suspendida. Contacta a soporte.',
-  billing_profile_required: 'Completa tus datos de facturación.', wompi_unavailable: 'Wompi no responde en este momento. Inténtalo en unos minutos.',
+  billing_profile_required: 'Completa tus datos de facturación.', wompi_unavailable: 'El servicio de pagos no responde en este momento. Inténtalo en unos minutos.',
   app_url_not_configured: 'Pagos en configuración. Contacta a soporte.'
 };
 const errText = (c) => ERR[c] || 'No pudimos completar la operación. Inténtalo de nuevo.';
 
 let session = null, rid = null, ov = null;
-const st = { plan: null, cycle: 'monthly', busy: false, error: '', method: 'card', utype: 'natural', bank: '', bankQ: '', phone: '', terms: false, banks: null, banksErr: false, acc: null };
+const st = { plan: null, cycle: 'monthly', busy: false, error: '', method: 'card', utype: 'natural', bank: '', bankQ: '', phone: '', docType: 'CC', docNum: '', card: { num: '', name: '', exp: '', cvc: '' }, banks: null, banksErr: false, acc: null };
 const WOMPI_DEFAULT = { env: 'production', key: 'pub_prod_uu4XXPZRyMVlajaTlHBY66Lz7haBPZyF' };   // llave PÚBLICA (segura en el navegador): solo para mostrar bancos antes de crear el pago
 const apiBase = (env) => (env === 'sandbox' ? 'https://sandbox.wompi.co/v1' : 'https://production.wompi.co/v1');
 /* Logos: coloca los archivos oficiales en /img/pagos/<id>.png (o .svg). Si falta alguno se muestra el nombre. */
 const LOGO = { card: 'tarjetas', nequi: 'nequi', pse: 'pse', bancolombia: 'bancolombia', visa: 'visa', mastercard: 'mastercard', amex: 'amex' };
 const logo = (id, name, cls) => '<span class="ck-logo ' + (cls || '') + '"><img src="/img/pagos/' + esc(LOGO[id] || id) + '.png" alt="' + esc(name) + '" loading="lazy" onerror="this.parentNode.classList.add(\'nolg\');this.remove()"><em>' + esc(name) + '</em></span>';
+const bankLogo = (b) => { const ini = esc(b.name.replace(/^banco\s+(de\s+)?/i, '').trim().charAt(0).toUpperCase() || 'B'); return '<img src="/img/pagos/bancos/' + esc(b.code) + '.png" alt="" loading="lazy" onerror="this.replaceWith(document.createTextNode(\'' + ini + '\'))">'; };
 const METHODS = [
   { id: 'card', name: 'Tarjeta', d: 'Crédito o débito', ic: 'card', brands: ['visa', 'mastercard', 'amex'] },
   { id: 'nequi', name: 'Nequi', d: 'Aprueba desde tu app', ic: 'phone' },
@@ -102,6 +103,13 @@ const feats = (p) => {
 
 const setStep = (n) => document.querySelectorAll('#steps li').forEach((li) => { const k = +li.dataset.s; li.className = k < n ? 'done' : k === n ? 'on' : ''; });
 const payable = () => { const p = st.plan ? planOf(st.plan) : null; return !!p && !(st.cycle === 'annual' && !p.annual_available) && priceOf(p, st.cycle) > 0; };
+const ICO = {
+  lock: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  spark: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>',
+  check: '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  cross: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  clock: '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
+};
 const LOCK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 const MIC = {
   card: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/></svg>',
@@ -135,64 +143,73 @@ function draw() {
       '<span class="pr">' + (unavailable ? '—' : money(v)) + '<small>/ ' + (st.cycle === 'annual' ? 'año' : 'mes') + '</small></span></button>';
   }).join('') + '</div></section>';
 
-  h += '<section class="ck-card"><h2>Datos de facturación</h2><p class="ck-sub" style="margin-bottom:16px">Se usan para tu recibo. Puedes editarlos luego.</p><form id="pf" class="ck-form" novalidate>' +
-    fld('legal_name', 'Nombre o razón social', prof.legal_name, 'text', 'name', 'Como aparece en tu documento') +
-    '<label>Tipo de documento<select name="document_type">' + ['CC', 'CE', 'NIT', 'PP', 'TI', 'DNI', 'RG', 'OTHER'].map((t) => '<option' + ((prof.document_type || 'CC') === t ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label>' +
-    fld('document_number', 'Número de documento', prof.document_number, 'text', 'off', '1234567890') + fld('billing_email', 'Correo de facturación', prof.billing_email || session.user.email, 'email', 'email', 'tu@correo.com') +
-    fld('phone', 'Celular', prof.phone, 'tel', 'tel', '300 000 0000') + fld('city', 'Ciudad', prof.city, 'text', 'address-level2', 'Bogotá') + fld('address', 'Dirección (opcional)', prof.address, 'text', 'street-address', '') + '</form></section>';
-
-  h += '<section class="ck-card"><h2>¿Cómo quieres <span class="ck-hl">pagar</span>?</h2><p class="ck-sub" style="margin-bottom:16px">Elige tu método. Todo el proceso es seguro y lo procesa Wompi.</p>' +
+  h += '<section class="ck-card"><h2>Tus datos</h2><p class="ck-sub" style="margin-bottom:16px">Para enviarte el recibo.</p><form id="pf" class="ck-form" novalidate onsubmit="return false">' +
+    fld('legal_name', 'Nombre completo', prof.legal_name, 'text', 'name', 'Tu nombre') + fld('phone', 'Celular', prof.phone, 'tel', 'tel', '300 000 0000') +
+    '<div class="ck-span">' + fld('billing_email', 'Correo', prof.billing_email || session.user.email, 'email', 'email', 'tu@correo.com') + '</div></form></section>';
+  h += '<section class="ck-card"><h2>¿Cómo quieres <span class="ck-hl">pagar</span>?</h2><p class="ck-sub" style="margin-bottom:16px">Elige tu método y paga aquí mismo.</p>' +
     '<div class="ck-mgrid" role="radiogroup" aria-label="Método de pago">' + METHODS.map((m) => '<button type="button" role="radio" class="ck-mtile" data-method="' + m.id + '" aria-checked="' + (st.method === m.id) + '">' +
       '<span class="ck-mlogo">' + (m.id === 'card' ? '' : logo(m.id, m.name)) + '<span class="ic">' + MIC[m.ic] + '</span></span><span class="t">' + esc(m.name) + '</span><span class="d">' + esc(m.d) + '</span>' +
       (m.brands ? '<span class="ck-brands2">' + m.brands.map((x) => logo(x, { visa: 'Visa', mastercard: 'Mastercard', amex: 'Amex' }[x], 'sm')).join('') + '</span>' : '') + '<span class="ck-tick" aria-hidden="true"></span></button>').join('') + '</div>';
-  if (st.method === 'card') h += '<div class="ck-mpanel"><p class="ck-sub" style="margin:0">Se abre la ventana segura de Wompi para escribir los datos de tu tarjeta. KARTTA nunca ve ni guarda tu tarjeta. También verás allí otros métodos habilitados.</p></div>';
+  if (st.method === 'card') h += '<div class="ck-mpanel"><div class="ck-cardform"><label class="ck-f ck-full">Número de tarjeta<input id="ccNum" inputmode="numeric" autocomplete="cc-number" maxlength="23" placeholder="0000 0000 0000 0000" value="' + esc(st.card.num) + '"></label>' +
+    '<label class="ck-f ck-full">Nombre en la tarjeta<input id="ccName" autocomplete="cc-name" maxlength="60" placeholder="Como aparece en la tarjeta" value="' + esc(st.card.name) + '"></label>' +
+    '<label class="ck-f">Vencimiento<input id="ccExp" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/AA" value="' + esc(st.card.exp) + '"></label>' +
+    '<label class="ck-f">CVV<input id="ccCvc" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="123" value="' + esc(st.card.cvc) + '"></label></div></div>';
   if (st.method === 'nequi' && !st.phone) st.phone = String(prof.phone || '').replace(/\D/g, '').replace(/^57(?=\d{10}$)/, '');
-  if (st.method === 'nequi') h += '<div class="ck-mpanel"><label class="ck-f">Número de celular de tu cuenta Nequi<input id="nqPhone" inputmode="numeric" autocomplete="tel-national" maxlength="12" placeholder="300 000 0000" value="' + esc(st.phone || String(prof.phone || '').replace(/\D/g, '').replace(/^57(?=\d{10}$)/, '')) + '"></label><p class="ck-hint">Te llegará una notificación a la app de Nequi para aprobar el pago. Tienes unos minutos para hacerlo.</p></div>';
-  if (st.method === 'bancolombia') h += '<div class="ck-mpanel"><div class="ck-seg" role="radiogroup" aria-label="Tipo de persona"><button type="button" role="radio" data-ut="natural" aria-checked="' + (st.utype === 'natural') + '">Persona natural</button><button type="button" role="radio" data-ut="juridica" aria-checked="' + (st.utype === 'juridica') + '">Persona jurídica</button></div><p class="ck-hint">Te llevamos al botón de transferencia Bancolombia para autorizar el pago con tu cuenta.</p></div>';
+  if (st.method === 'nequi') h += '<div class="ck-mpanel"><label class="ck-f">Celular de tu cuenta Nequi<input id="nqPhone" inputmode="numeric" autocomplete="tel-national" maxlength="12" placeholder="300 000 0000" value="' + esc(st.phone) + '"></label><p class="ck-hint">Te llegará una notificación a la app de Nequi para aprobar el pago.</p></div>';
+  if (st.method === 'bancolombia') h += '<div class="ck-mpanel"><div class="ck-seg" role="radiogroup" aria-label="Tipo de persona"><button type="button" role="radio" data-ut="natural" aria-checked="' + (st.utype === 'natural') + '">Persona natural</button><button type="button" role="radio" data-ut="juridica" aria-checked="' + (st.utype === 'juridica') + '">Persona jurídica</button></div><p class="ck-hint">Te llevamos al botón de transferencia Bancolombia para autorizar el pago.</p></div>';
   if (st.method === 'pse') {
-    h += '<div class="ck-mpanel"><div class="ck-seg" role="radiogroup" aria-label="Tipo de persona"><button type="button" role="radio" data-ut="natural" aria-checked="' + (st.utype === 'natural') + '">Persona natural</button><button type="button" role="radio" data-ut="juridica" aria-checked="' + (st.utype === 'juridica') + '">Persona jurídica</button></div><div class="ck-lab" style="margin-top:16px">Tu banco</div>';
-    if (st.banksErr) h += '<p class="ck-err">No pudimos cargar la lista de bancos. Revisa tu conexión o usa “Tarjeta” para ver todos los métodos.</p>';
+    h += '<div class="ck-mpanel"><div class="ck-seg" role="radiogroup" aria-label="Tipo de persona"><button type="button" role="radio" data-ut="natural" aria-checked="' + (st.utype === 'natural') + '">Persona natural</button><button type="button" role="radio" data-ut="juridica" aria-checked="' + (st.utype === 'juridica') + '">Persona jurídica</button></div>' +
+      '<div class="ck-docrow"><label class="ck-f">Documento<select id="docType">' + ['CC', 'CE', 'NIT', 'TI', 'PP'].map((t) => '<option' + (st.docType === t ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></label><label class="ck-f">Número<input id="docNum" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="1234567890" value="' + esc(st.docNum) + '"></label></div><div class="ck-lab" style="margin-top:16px">Tu banco</div>';
+    if (st.banksErr) h += '<p class="ck-err">No pudimos cargar la lista de bancos. Revisa tu conexión e inténtalo de nuevo.</p>';
     else if (!st.banks) h += '<div class="ck-bankload"><span class="ck-spin sm"></span> Cargando bancos…</div>';
     else {
       const q = st.bankQ.trim().toLowerCase(), list = st.banks.filter((b) => !q || b.name.toLowerCase().includes(q));
       h += '<input class="ck-search" id="bankQ" type="search" placeholder="Buscar banco…" autocomplete="off" value="' + esc(st.bankQ) + '"><div class="ck-banks" role="radiogroup" aria-label="Bancos">' +
-        (list.length ? list.map((b) => '<button type="button" role="radio" class="ck-bank" data-bank="' + esc(b.code) + '" aria-checked="' + (st.bank === b.code) + '"><span class="bk">' + esc(b.name.replace(/^banco\s+(de\s+)?/i, '').trim().charAt(0).toUpperCase() || 'B') + '</span><span class="bn">' + esc(b.name) + '</span></button>').join('') : '<p class="ck-hint" style="padding:12px">No hay bancos con ese nombre.</p>') + '</div>';
+        (list.length ? list.map((b) => '<button type="button" role="radio" class="ck-bank" data-bank="' + esc(b.code) + '" aria-checked="' + (st.bank === b.code) + '"><span class="bk">' + bankLogo(b) + '</span><span class="bn">' + esc(b.name) + '</span></button>').join('') : '<p class="ck-hint" style="padding:12px">No hay bancos con ese nombre.</p>') + '</div>';
     }
     h += '</div>';
   }
-  if (st.method !== 'card') h += '<label class="ck-terms"><input type="checkbox" id="ckTerms"' + (st.terms ? ' checked' : '') + '><span>Acepto los <a href="' + esc((st.acc && st.acc.permalink) || 'https://wompi.com/es/co/') + '" target="_blank" rel="noopener">términos y condiciones</a> y la autorización de datos personales de Wompi.</span></label>';
-  h += '<div class="ck-info"><span aria-hidden="true">🔒</span><span>Pago procesado por Wompi (Bancolombia). KARTTA no almacena datos de tu tarjeta ni de tu cuenta.</span></div></section>';
+  h += '<div class="ck-info">' + ICO.lock + '<span>Pago seguro y cifrado. KARTTA no guarda los datos de tu tarjeta ni de tu cuenta. Al pagar aceptas los <a href="' + esc((st.acc && st.acc.permalink) || '/terminos.html') + '" target="_blank" rel="noopener">términos</a> y la política de datos del pago.</span></div></section>';
   h += '</div>';
 
   h += '<aside class="ck-aside" aria-label="Resumen del pedido"><section class="ck-card"><div class="ck-sumhead"><h2 style="margin:0">Resumen de tu pedido</h2></div>';
   if (ok) {
     h += '<div class="ck-sumplan"><div><div class="nm">Plan ' + esc(sel.name) + '</div><div class="ds">Suscripción ' + (st.cycle === 'annual' ? 'anual' : 'mensual') + '</div></div>' +
       '<div style="text-align:right">' + (old ? '<div class="ck-old">' + money(old) + '</div>' : '') + '<div style="font-weight:800;color:var(--strong)">' + money(pr) + '</div><div class="ds" style="font-size:12px;color:var(--muted)">/ ' + (st.cycle === 'annual' ? 'año' : 'mes') + '</div></div></div>';
-    if (save > 0) h += '<p class="ck-best">🎉 ¡Estás obteniendo el mejor precio! Ahorras ' + save + '% frente a pagar mes a mes.</p>';
+    if (save > 0) h += '<p class="ck-best">' + ICO.spark + '<span>Mejor precio: ahorras ' + save + '% frente a pagar mes a mes.</span></p>';
     const f = feats(sel); if (f.length) h += '<ul class="ck-ben">' + f.map((x) => '<li>' + esc(x) + '</li>').join('') + '</ul>';
-    h += '<dl class="ck-sum"><dt>Periodo</dt><dd>' + (st.cycle === 'annual' ? '12 meses' : '1 mes') + '</dd>' + (old ? '<dt>Descuento</dt><dd style="color:var(--ok)">− ' + money(old - pr) + '</dd>' : '') +
+    h += '<dl class="ck-sum"><dt>Periodo</dt><dd>' + (st.cycle === 'annual' ? '12 meses' : '1 mes') + '</dd>' + (old ? '<dt>Descuento</dt><dd style="color:var(--ok)">- ' + money(old - pr) + '</dd>' : '') +
       '<dt class="tot">Total a pagar</dt><dd class="tot">' + money(pr) + '</dd></dl>' +
-      '<p class="ck-renew">Es un pago único por el periodo elegido: no se renueva solo. Te avisaremos antes de que venza. El plan se activa cuando Wompi confirma el pago, y el importe final lo calcula nuestro servidor.</p>' +
-      '<button class="ck-btn block" id="pay" type="button"' + (st.busy ? ' disabled' : '') + '>' + (st.busy ? 'Preparando pago…' : LOCK + ' ' + payLabel() + ' →') + '</button><p class="ck-note">Pago seguro procesado por Wompi.</p>';
+      '<p class="ck-renew">Es un pago único por el periodo elegido: no se renueva solo. Te avisaremos antes de que venza. El plan se activa en cuanto se confirma el pago.</p>' +
+      '<button class="ck-btn block" id="pay" type="button"' + (st.busy ? ' disabled' : '') + '>' + (st.busy ? 'Preparando pago…' : LOCK + ' ' + payLabel() + ' →') + '</button><p class="ck-note">Pago seguro y cifrado.</p>';
   } else h += '<p class="ck-muted">Elige un plan disponible para continuar.</p>';
   h += '</section></aside></div>';
   $app.innerHTML = h;
   setTimeout(syncPay, 0);
 }
 const payLabel = () => ({ card: 'Pagar con tarjeta', nequi: 'Pagar con Nequi', pse: 'Pagar con PSE', bancolombia: 'Pagar con Bancolombia' }[st.method] || 'Pagar ahora');
-function methodReady() {
-  if (st.method === 'nequi') { const d = String(st.phone || '').replace(/\D/g, '').replace(/^57(?=\d{10}$)/, ''); return /^3\d{9}$/.test(d) && st.terms; }
-  if (st.method === 'pse') return !!st.bank && st.terms;
-  if (st.method === 'bancolombia') return st.terms;
-  return true;
+const digits = (v) => String(v || '').replace(/\D/g, '');
+const nequiPhone = () => digits(st.phone).replace(/^57(?=\d{10}$)/, '');
+function luhn(n) { let sum = 0, alt = false; for (let i = n.length - 1; i >= 0; i--) { let d = +n[i]; if (alt) { d *= 2; if (d > 9) d -= 9; } sum += d; alt = !alt; } return sum % 10 === 0; }
+function methodError() {
+  if (st.method === 'card') {
+    const c = st.card, num = digits(c.num), m = /^(\d{2})\/(\d{2})$/.exec(c.exp.trim());
+    if (num.length < 13 || num.length > 19 || !luhn(num)) return 'Revisa el número de tu tarjeta.';
+    if (c.name.trim().length < 3) return 'Escribe el nombre que aparece en la tarjeta.';
+    const mm = m ? +m[1] : 0, yy = m ? 2000 + +m[2] : 0, now = new Date();
+    if (!m || mm < 1 || mm > 12 || yy < now.getFullYear() || (yy === now.getFullYear() && mm < now.getMonth() + 1)) return 'Revisa la fecha de vencimiento.';
+    if (!/^\d{3,4}$/.test(c.cvc.trim())) return 'Revisa el código de seguridad (CVV).';
+  }
+  if (st.method === 'nequi' && !/^3\d{9}$/.test(nequiPhone())) return 'Escribe el celular de tu cuenta Nequi (10 dígitos).';
+  if (st.method === 'pse') {
+    if (!/^[A-Za-z0-9.-]{4,20}$/.test(st.docNum.trim())) return 'Escribe el número de documento del titular de la cuenta.';
+    if (!st.bank) return 'Elige tu banco.';
+  }
+  return '';
 }
-function syncPay() {
-  const b = document.getElementById('pay'), f = document.getElementById('pf'); if (!b || !f) return;
-  const v = (k) => String((f.elements[k] || {}).value || '').trim();
-  b.disabled = st.busy || !payable() || !methodReady() || !v('legal_name') || !v('document_number') || !v('billing_email');   // deshabilitado si faltan datos obligatorios
-}
+function syncPay() { const b = document.getElementById('pay'); if (b) b.disabled = st.busy || !payable(); }
 $app.addEventListener('input', (e) => { if (e.target.closest && e.target.closest('#pf')) syncPay(); });
-const fld = (n, l, v, t, ac, ph) => '<label>' + l + '<input name="' + n + '" type="' + t + '" autocomplete="' + ac + '" placeholder="' + esc(ph || '') + '" value="' + esc(v || '') + '"' + (n === 'address' || n === 'city' || n === 'phone' ? '' : ' required') + ' maxlength="120"></label>';
+const fld = (n, l, v, t, ac, ph) => '<label>' + l + '<input name="' + n + '" type="' + t + '" autocomplete="' + ac + '" placeholder="' + esc(ph || '') + '" value="' + esc(v || '') + '" maxlength="120"></label>';
 
 $app.addEventListener('click', (e) => {
   const c = e.target.closest('[data-cycle]'); if (c && !c.disabled) { st.cycle = c.dataset.cycle; st.error = ''; draw(); return; }
@@ -202,104 +219,93 @@ $app.addEventListener('click', (e) => {
   const bk = e.target.closest('[data-bank]'); if (bk) { keepForm(); st.bank = bk.dataset.bank; draw(); return; }
   if (e.target.closest('#pay')) pay();
 });
-function keepForm() { const f = document.getElementById('pf'); if (!f) return; ov.profile = { ...(ov.profile || {}), ...Object.fromEntries(['legal_name', 'document_type', 'document_number', 'phone', 'city', 'address'].map((k) => [k, f.elements[k] ? f.elements[k].value : ''])), billing_email: f.elements.billing_email ? f.elements.billing_email.value : '' }; }
+function keepForm() { const f = document.getElementById('pf'); if (!f) return; ov.profile = { ...(ov.profile || {}), legal_name: f.elements.legal_name.value, phone: f.elements.phone.value, billing_email: f.elements.billing_email.value }; }
 $app.addEventListener('input', (e) => {
-  if (e.target.id === 'nqPhone') { st.phone = e.target.value; syncPay(); }
-  if (e.target.id === 'bankQ') { st.bankQ = e.target.value; const pos = e.target.selectionStart; keepForm(); draw(); const i = document.getElementById('bankQ'); if (i) { i.focus(); try { i.setSelectionRange(pos, pos); } catch { /* ignorar */ } } }
+  const id = e.target.id;
+  if (id === 'nqPhone') st.phone = e.target.value;
+  else if (id === 'docNum') st.docNum = e.target.value;
+  else if (id === 'ccNum') { const d = digits(e.target.value).slice(0, 19); st.card.num = (/^3[47]/.test(d) ? d.replace(/^(\d{1,4})(\d{1,6})?(\d{1,5})?.*/, (_, a, b, c) => [a, b, c].filter(Boolean).join(' ')) : d.replace(/(.{4})/g, '$1 ').trim()); e.target.value = st.card.num; }
+  else if (id === 'ccName') st.card.name = e.target.value;
+  else if (id === 'ccExp') { let d = digits(e.target.value).slice(0, 4); if (d.length >= 3) d = d.slice(0, 2) + '/' + d.slice(2); st.card.exp = d; e.target.value = d; }
+  else if (id === 'ccCvc') { st.card.cvc = digits(e.target.value).slice(0, 4); e.target.value = st.card.cvc; }
+  else if (id === 'bankQ') { st.bankQ = e.target.value; const pos = e.target.selectionStart; keepForm(); draw(); const i = document.getElementById('bankQ'); if (i) { i.focus(); try { i.setSelectionRange(pos, pos); } catch { /* ignorar */ } } }
 });
-$app.addEventListener('change', (e) => { if (e.target.id === 'ckTerms') { st.terms = e.target.checked; syncPay(); } });
+$app.addEventListener('change', (e) => { if (e.target.id === 'docType') st.docType = e.target.value; });
 
 function readProfile() {
   const f = new FormData(document.getElementById('pf')), v = (k) => String(f.get(k) || '').trim();
-  const o = { legal_name: v('legal_name'), document_type: v('document_type'), document_number: v('document_number'), email: v('billing_email'), phone: v('phone'), city: v('city'), address: v('address') };
-  if (o.legal_name.length < 3) return { err: 'Escribe tu nombre o razón social.' };
-  if (!/^[A-Za-z0-9.\-\s]{4,20}$/.test(o.document_number)) return { err: 'Revisa el número de documento.' };
+  const o = { legal_name: v('legal_name'), email: v('billing_email'), phone: digits(v('phone')).replace(/^57(?=\d{10}$)/, '') };
+  if (o.legal_name.length < 3) return { err: 'Escribe tu nombre completo.' };
+  if (!/^3\d{9}$/.test(o.phone)) return { err: 'Escribe tu celular (10 dígitos, empieza por 3).' };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(o.email)) return { err: 'Escribe un correo válido.' };
-  if (o.phone && !/^[+\d\s()-]{7,16}$/.test(o.phone)) return { err: 'Revisa el número de celular.' };
   return { o };
 }
+function showErr(msg) { st.error = msg; draw(); const e = document.querySelector('.ck-err'); if (e) e.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
 
 async function pay() {
   if (st.busy) return;
-  const pr = readProfile(); if (pr.err) { st.error = pr.err; draw(); return; }
-  st.busy = true; st.error = ''; const keep = pr.o; draw(); fill(keep);
+  keepForm();
+  const pr = readProfile(); if (pr.err) return showErr(pr.err);
+  const me = methodError(); if (me) return showErr(me);
+  st.busy = true; st.error = ''; const o = pr.o; draw();
   try {
-    const o = keep;
-    const sp = await sb.rpc('billing_save_profile', { p_restaurant: rid, p_legal_name: o.legal_name, p_document_type: o.document_type, p_document_number: o.document_number, p_email: o.email, p_phone: o.phone, p_city: o.city, p_address: o.address });
+    const sp = await sb.rpc('billing_save_profile', { p_restaurant: rid, p_legal_name: o.legal_name, p_document_type: st.method === 'pse' ? st.docType : '', p_document_number: st.method === 'pse' ? st.docNum.trim() : '', p_email: o.email, p_phone: o.phone, p_city: '', p_address: '' });
     if (sp.error) { const e = new Error(sp.error.message); e.code = /forbidden/.test(sp.error.message) ? 'forbidden' : 'profile'; throw e; }
     const res = await api({ action: 'create', restaurant_id: rid, plan: st.plan, cycle: st.cycle });   // solo ids: el servidor fija el importe
     try { sessionStorage.removeItem('kartta_plan_choice'); } catch { /* ignorar */ }
-    try { if (window.KarttaTrack) KarttaTrack.event('checkout_start', { element: st.plan }); } catch { /* analítica opcional */ }
-    if (st.method === 'card') await openWidget(res); else await directPay(res, o);
+    await directPay(res, o);
   } catch (e) {
-    st.error = e.code === 'profile' ? 'No pudimos guardar tus datos de facturación. Revísalos.' : (e.msg || errText(e.code));
-    st.busy = false; draw(); fill(keep);
+    st.busy = false; showErr(e.code === 'profile' ? 'No pudimos guardar tus datos. Revísalos.' : (e.msg || errText(e.code)));
   }
 }
-function fill(o) { const f = document.getElementById('pf'); if (!f) return; for (const k of ['legal_name', 'document_type', 'document_number', 'phone', 'city', 'address']) if (f.elements[k]) f.elements[k].value = o[k]; if (f.elements.billing_email) f.elements.billing_email.value = o.email; syncPay(); }
 
-function loadWidget() {
-  return new Promise((ok, no) => {
-    if (window.WidgetCheckout) return ok();
-    const s = document.createElement('script'); s.src = 'https://checkout.wompi.co/widget.js'; s.onload = ok; s.onerror = () => no(Object.assign(new Error('widget'), { code: 'widget' }));
-    document.head.appendChild(s);
-  });
-}
-async function openWidget(res) {
-  await loadWidget();
-  const w = new window.WidgetCheckout(res.widget);
-  w.open((result) => {
-    const tx = result && result.transaction;
-    const q = tx && tx.id ? '?id=' + encodeURIComponent(tx.id) : '';
-    location.href = '/checkout/processing/' + res.reference + q;   // el estado real lo confirma el servidor
-  });
-  st.busy = false; draw();
-}
-
-
-/* ---------------- pago directo con Nequi / PSE / Bancolombia (API de Wompi con la llave pública) ---------------- */
+/* ---------------- pago directo: tarjeta / Nequi / PSE / Bancolombia (la llave pública solo permite crear pagos) ---------------- */
 const PSE_ID = ['CC', 'CE', 'NIT', 'TI', 'PP', 'RC', 'DE'];
 const fail = (msg) => Object.assign(new Error(msg), { code: 'direct', msg });
 async function directPay(res, o) {
   const w = res.widget, base = apiBase(res.environment), key = w.publicKey;
-  let m; try { m = await wGet(base + '/merchants/' + encodeURIComponent(key), key); } catch { throw fail('No pudimos conectar con Wompi. Inténtalo de nuevo.'); }
+  let m; try { m = await wGet(base + '/merchants/' + encodeURIComponent(key), key); } catch { throw fail('No pudimos conectar con el servicio de pagos. Inténtalo de nuevo.'); }
   const d = m.json && m.json.data, tok = d && d.presigned_acceptance && d.presigned_acceptance.acceptance_token, per = d && d.presigned_personal_data_auth && d.presigned_personal_data_auth.acceptance_token;
-  if (!tok) throw fail('Wompi no pudo iniciar el pago. Inténtalo de nuevo o usa “Tarjeta”.');
-  const cd = w.customerData || {}, phoneDigits = String(st.phone || '').replace(/\D/g, '').replace(/^57(?=\d{10}$)/, '');
+  if (!tok) throw fail('No pudimos iniciar el pago. Inténtalo de nuevo en un momento.');
+  const desc = (/^kartta/i.test(res.plan_name || '') ? res.plan_name : 'KARTTA ' + (res.plan_name || 'plan')).slice(0, 60);
   let pm;
-  if (st.method === 'nequi') pm = { type: 'NEQUI', phone_number: phoneDigits };
-  else if (st.method === 'pse') {
-    if (!PSE_ID.includes(o.document_type)) throw fail('Para PSE usa un documento tipo CC, CE, NIT, TI o PP.');
-    if (st.banks && !st.banks.some((b) => b.code === st.bank)) throw fail('Elige tu banco.');
-    pm = { type: 'PSE', user_type: st.utype === 'juridica' ? 1 : 0, user_legal_id_type: o.document_type, user_legal_id: String(o.document_number).replace(/[^A-Za-z0-9]/g, ''), financial_institution_code: st.bank, payment_description: ('KARTTA ' + (res.plan_name || 'plan')).slice(0, 60) };
-  } else pm = { type: 'BANCOLOMBIA_TRANSFER', user_type: st.utype === 'juridica' ? 'COMPANY' : 'PERSON', payment_description: ('KARTTA ' + (res.plan_name || 'plan')).slice(0, 60), ecommerce_url: w.redirectUrl };
-  const body = { acceptance_token: tok, ...(per ? { accept_personal_auth: per } : {}), amount_in_cents: w.amountInCents, currency: w.currency, signature: w.signature.integrity, customer_email: cd.email || o.email,
+  if (st.method === 'card') {
+    const c = st.card, mm = c.exp.split('/'); let t;
+    try { t = await fetch(base + '/tokens/cards', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key }, body: JSON.stringify({ number: digits(c.num), cvc: c.cvc.trim(), exp_month: mm[0], exp_year: mm[1], card_holder: c.name.trim() }) }); }
+    catch { throw fail('No pudimos conectar con el servicio de pagos. Inténtalo de nuevo.'); }
+    const tj = await t.json().catch(() => null);
+    st.card = { num: '', name: c.name, exp: '', cvc: '' };   // los datos de la tarjeta no se conservan
+    if (!t.ok || !tj || !tj.data || !tj.data.id) throw fail('No pudimos validar la tarjeta. Revisa los datos o usa otra.');
+    pm = { type: 'CARD', token: tj.data.id, installments: 1 };
+  } else if (st.method === 'nequi') pm = { type: 'NEQUI', phone_number: nequiPhone() };
+  else if (st.method === 'pse') pm = { type: 'PSE', user_type: st.utype === 'juridica' ? 1 : 0, user_legal_id_type: st.docType, user_legal_id: st.docNum.replace(/[^A-Za-z0-9]/g, ''), financial_institution_code: st.bank, payment_description: desc };
+  else pm = { type: 'BANCOLOMBIA_TRANSFER', user_type: st.utype === 'juridica' ? 'COMPANY' : 'PERSON', payment_description: desc, ecommerce_url: w.redirectUrl };
+  const body = { acceptance_token: tok, ...(per ? { accept_personal_auth: per } : {}), amount_in_cents: w.amountInCents, currency: w.currency, signature: w.signature.integrity, customer_email: o.email,
     reference: w.reference, expiration_time: w.expirationTime, redirect_url: w.redirectUrl, payment_method: pm,
-    customer_data: { phone_number: cd.phoneNumber ? cd.phoneNumber : (phoneDigits || undefined), full_name: cd.fullName || o.legal_name, legal_id: cd.legalId, legal_id_type: cd.legalIdType } };
-  let r, j; try { r = await fetch(base + '/transactions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key }, body: JSON.stringify(body) }); j = await r.json().catch(() => null); } catch { throw fail('No pudimos conectar con Wompi. Inténtalo de nuevo.'); }
+    customer_data: { phone_number: o.phone, full_name: o.legal_name, ...(st.method === 'pse' ? { legal_id: st.docNum.replace(/[^A-Za-z0-9]/g, ''), legal_id_type: st.docType } : {}) } };
+  let r, j; try { r = await fetch(base + '/transactions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key }, body: JSON.stringify(body) }); j = await r.json().catch(() => null); } catch { throw fail('No pudimos conectar con el servicio de pagos. Inténtalo de nuevo.'); }
   const tx = j && j.data;
   if (!r.ok || !tx || !tx.id) {
     const msgs = j && j.error && j.error.messages ? JSON.stringify(j.error.messages) : '';
-    console.warn('[checkout] wompi', r.status, msgs.slice(0, 200));
-    throw fail(/phone/i.test(msgs) ? 'Revisa el número de Nequi.' : 'Wompi no pudo crear el pago con ese método. Revisa los datos o prueba con otro método.');
+    console.warn('[checkout] pago', r.status, msgs.slice(0, 200));
+    throw fail(/phone/i.test(msgs) ? 'Revisa el número de celular.' : 'No pudimos crear el pago con ese método. Revisa los datos o prueba con otro.');
   }
-  try { sessionStorage.removeItem('kartta_plan_choice'); } catch { /* ignorar */ }
   try { if (window.KarttaTrack) KarttaTrack.event('checkout_start', { element: st.plan, method: st.method }); } catch { /* analítica opcional */ }
   const q = '?id=' + encodeURIComponent(tx.id);
   if (st.method === 'nequi') { location.href = '/checkout/processing/' + res.reference + q + '&m=nequi'; return; }
-  // PSE / Bancolombia: Wompi entrega la URL del banco unos segundos después de crear la transacción
-  $app.innerHTML = '<div class="ck-state"><div class="ck-spin" role="status"></div><h1>Conectando con tu banco…</h1><p class="ck-sub">Te estamos redirigiendo de forma segura.</p></div>';
-  const t0 = Date.now();
+  $app.innerHTML = '<div class="ck-state"><div class="ck-spin" role="status"></div><h1>' + (st.method === 'card' ? 'Procesando tu pago…' : 'Conectando con tu banco…') + '</h1><p class="ck-sub">No cierres esta ventana.</p></div>';
+  const t0 = Date.now(), limit = st.method === 'card' ? 12000 : 25000;
   for (;;) {
     const u = tx.payment_method && tx.payment_method.extra && tx.payment_method.extra.async_payment_url;
     if (u && /^https:\/\//.test(u)) { location.href = u; return; }
-    if (Date.now() - t0 > 25000) { location.href = '/checkout/processing/' + res.reference + q; return; }
+    if (st.method === 'card' && tx.status && tx.status !== 'PENDING') { location.href = '/checkout/processing/' + res.reference + q; return; }
+    if (Date.now() - t0 > limit) { location.href = '/checkout/processing/' + res.reference + q; return; }
     await new Promise((ok) => setTimeout(ok, 1500));
-    try { const g = await wGet(base + '/transactions/' + encodeURIComponent(tx.id), key); if (g.json && g.json.data) Object.assign(tx, g.json.data); if (tx.status && tx.status !== 'PENDING') { location.href = '/checkout/processing/' + res.reference + q; return; } } catch { /* reintenta */ }
+    try { const g = await wGet(base + '/transactions/' + encodeURIComponent(tx.id), key); if (g.json && g.json.data) Object.assign(tx, g.json.data); if (st.method !== 'card' && tx.status && tx.status !== 'PENDING') { location.href = '/checkout/processing/' + res.reference + q; return; } } catch { /* reintenta */ }
   }
 }
 
-/* ---------------- confirmación (servidor ↔ Wompi) ---------------- */
+/* ---------------- confirmación (el servidor verifica con el procesador) ---------------- */
 async function processing(ref) {
   if (!/^KT-[A-F0-9]{20}$/.test(ref)) { location.replace('/checkout'); return; }
   setStep(2);
@@ -332,13 +338,13 @@ async function result(state, ref) {
     setStep(4);
     const planName = d && d.plan_id ? ((planOf(d.plan_id) && planOf(d.plan_id).name) || d.plan_id) : null;
     const rows = [planName ? ['Plan', esc(planName)] : null, d && d.amount_in_cents ? ['Importe pagado', money(Number(d.amount_in_cents) / 100)] : null, ['Referencia', esc(ref)], ['Fecha de pago', esc(date((d && (d.paid_at || d.confirmed_at || d.applied_at)) || new Date().toISOString()))]].filter(Boolean);
-    $app.innerHTML = '<div class="ck-state">' + brand + '<div class="ck-ico ok" aria-hidden="true">✓</div><h1>¡Bienvenido a KARTTA!</h1><p class="ck-sub" style="margin:8px 0 0">Tu pago se ha procesado correctamente. Tu suscripción ya está lista.</p>' +
+    $app.innerHTML = '<div class="ck-state">' + brand + '<div class="ck-ico ok" aria-hidden="true">' + ICO.check + '</div><h1>¡Bienvenido a KARTTA!</h1><p class="ck-sub" style="margin:8px 0 0">Tu pago se ha procesado correctamente. Tu suscripción ya está lista.</p>' +
       '<div class="ck-det">' + rows.map((x) => '<div><span>' + x[0] + '</span><b>' + x[1] + '</b></div>').join('') + '</div><a class="ck-btn block" style="margin-top:0" href="/dashboard.html">Ir a mi dashboard →</a></div>';
     return;
   }
   const V = {
-    pending: { s: 3, c: 'wait', i: '…', t: 'Estamos verificando tu pago', d: 'Tu banco aún no confirma la transacción. Cuando Wompi la apruebe, activaremos tu plan automáticamente. No necesitas pagar de nuevo.', a: ['/dashboard.html', 'Ir a mi dashboard'] },
-    failed: { s: 2, c: 'bad', i: '×', t: 'El pago no se completó', d: 'No se hizo ningún cobro o fue rechazado. Puedes intentarlo de nuevo con otro medio de pago.', a: ['/checkout', 'Intentar de nuevo'] }
+    pending: { s: 3, c: 'wait', i: ICO.clock, t: 'Estamos verificando tu pago', d: 'Tu banco aún no confirma la transacción. Cuando se apruebe, activaremos tu plan automáticamente. No necesitas pagar de nuevo.', a: ['/dashboard.html', 'Ir a mi dashboard'] },
+    failed: { s: 2, c: 'bad', i: ICO.cross, t: 'El pago no se completó', d: 'No se hizo ningún cobro o fue rechazado. Puedes intentarlo de nuevo con otro medio de pago.', a: ['/checkout', 'Intentar de nuevo'] }
   }[state];
   if (!V) { location.replace('/checkout'); return; }
   setStep(V.s);
