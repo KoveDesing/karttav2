@@ -269,6 +269,43 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 .palx button[aria-pressed="true"]{border-color:var(--strong);box-shadow:0 0 0 2px var(--accent)}
 .drag-over{outline:2px dashed var(--accent);outline-offset:3px}
 .pcard[draggable="true"]{cursor:grab}.pcard.dragging{opacity:.4}
+
+/* ---- tarjeta de bienvenida / prueba ---- */
+.kw-bg{background:rgba(6,6,10,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.kw-card{width:100%;max-width:460px;max-height:94vh;overflow:auto;background:var(--panel);border:1px solid var(--border);border-radius:26px;box-shadow:0 40px 90px -24px rgba(0,0,0,.7);animation:kwIn .55s cubic-bezier(.16,1,.3,1) both}
+@keyframes kwIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+.kw-hero{position:relative;overflow:hidden;padding:34px 24px 26px;text-align:center;background:radial-gradient(120% 140% at 50% 0%,color-mix(in srgb,var(--accent) 90%,#000) 0%,color-mix(in srgb,var(--accent) 55%,#0b0b10) 70%,#0b0b10 100%)}
+.kw-glow{position:absolute;width:260px;height:260px;border-radius:50%;left:50%;top:-110px;transform:translateX(-50%);background:radial-gradient(circle,rgba(255,255,255,.34),transparent 68%);animation:kwPulse 4.5s ease-in-out infinite}
+@keyframes kwPulse{50%{transform:translateX(-50%) scale(1.18);opacity:.75}}
+.kw-logo{position:relative;font-family:'Mr Dafoe',cursive;font-size:56px;line-height:1.05;color:#fff;text-shadow:0 6px 28px rgba(0,0,0,.35)}
+.kw-logo span{color:#fff;opacity:.72}
+.kw-badge{position:relative;display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:7px 14px;border-radius:99px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;font-weight:800;font-size:12.5px;letter-spacing:.02em;backdrop-filter:blur(4px)}
+.kw-body{padding:24px 24px 22px}
+.kw-body h3{margin:0 0 8px;font-size:22px;line-height:1.2;color:var(--strong)}
+.kw-text{margin:0 0 16px;font-size:14.5px;line-height:1.6;color:var(--text)}
+.kw-cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}
+.kw-col{border:1px solid var(--border);background:var(--panel2);border-radius:16px;padding:12px 13px}
+.kw-col.on{border-color:var(--accent);background:var(--accent-soft)}
+.kw-col h4{margin:0 0 8px;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.kw-col.on h4{color:var(--accent)}
+.kw-col ul{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:12.5px;line-height:1.35;color:var(--strong)}
+.kw-col li{display:flex;gap:7px;align-items:flex-start}
+.kw-col li:before{content:"✓";flex:none;font-weight:900;color:var(--accent)}
+.kw-col.off li{color:var(--muted)}
+.kw-col.off li:before{content:"–";color:var(--muted)}
+.kw-meta{margin:0 0 16px;font-size:12.5px;color:var(--muted);text-align:center}
+.kw-actions{display:flex;gap:10px}
+.kw-actions .kw-go{flex:1;min-height:48px;font-size:15px;box-shadow:0 12px 28px -10px var(--accent);transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.kw-actions .kw-go:hover{transform:translateY(-2px)}
+.kw-actions .btn-ghost{min-height:48px}
+@media (max-width:480px){.kw-cmp{grid-template-columns:1fr}.kw-logo{font-size:48px}.kw-body{padding:20px 18px 18px}}
+@media (prefers-reduced-motion:reduce){.kw-card,.kw-glow{animation:none}}
+/* franja de prueba en el panel */
+.trial-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;padding:12px 16px;border-radius:16px;border:1px solid var(--accent);background:linear-gradient(100deg,var(--accent-soft),transparent);animation:kwIn .5s cubic-bezier(.16,1,.3,1) both}
+.trial-bar[hidden]{display:none}
+.trial-bar b{color:var(--strong)}.trial-bar .tb-t{flex:1;min-width:200px;font-size:13.5px;line-height:1.45;color:var(--text)}
+.trial-bar.urgent{background:linear-gradient(100deg,color-mix(in srgb,var(--accent) 26%,transparent),transparent)}
+.trial-bar .tb-d{font-weight:900;font-size:20px;color:var(--accent);min-width:34px;text-align:center}
 </style>
 <link rel="stylesheet" href="kartta-motion.css?v=20261112">
 <script src="kartta-motion.js?v=20261110" defer></script>
@@ -334,6 +371,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
   <div class="scrim" id="scrim"></div>
 
   <main id="main">
+    <div class="trial-bar" id="trialBar" hidden><span class="tb-d" id="tbDays">7</span><span class="tb-t" id="tbText"></span><a class="btn btn-accent btn-sm" href="/checkout" id="tbBtn">Mejorar plan</a></div>
     <div class="topbar"><button class="menu-btn" id="menuBtn" aria-label="Abrir menú"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></div>
 
     <!-- INICIO -->
@@ -575,13 +613,20 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 </div>
 
 <!-- modal producto -->
-<div class="modal-bg" id="tourWelcome" role="dialog" aria-modal="true" aria-labelledby="twTitle">
-  <div class="modal">
-    <h3 id="twTitle">¡Hola! Bienvenido a KARTTA</h3>
-    <p class="sub" id="twText">Vamos a preparar tu menú digital para que puedas compartirlo con tus clientes.</p>
-    <div class="bar" style="margin:0 0 6px"><i id="twBar" style="width:0%"></i></div>
-    <p class="sub" id="twMeta" style="margin:0 0 18px"></p>
-    <div class="row"><button class="btn btn-accent" id="twStart">Comenzar</button><button class="btn btn-ghost" id="twLater">Hacerlo más tarde</button></div>
+<div class="modal-bg kw-bg" id="tourWelcome" role="dialog" aria-modal="true" aria-labelledby="twTitle">
+  <div class="kw-card">
+    <div class="kw-hero">
+      <span class="kw-glow" aria-hidden="true"></span>
+      <div class="kw-logo" role="img" aria-label="Kartta">Kar<span>tt</span>a</div>
+      <span class="kw-badge" id="twBadge">7 días de KARTTA Pro gratis</span>
+    </div>
+    <div class="kw-body">
+      <h3 id="twTitle">¡Hola! Bienvenido a KARTTA</h3>
+      <p class="kw-text" id="twText"></p>
+      <div class="kw-cmp" id="twCmp"></div>
+      <p class="kw-meta" id="twMeta"></p>
+      <div class="kw-actions"><button class="btn btn-accent kw-go" id="twStart">Continuar</button><button class="btn btn-ghost" id="twLater">Cerrar</button></div>
+    </div>
   </div>
 </div>
 <div class="modal-bg" id="tagModal" role="dialog" aria-modal="true" aria-labelledby="tgTitle">
@@ -627,7 +672,7 @@ import { sb, imageUrl, takePlanChoice, SUBDOMAINS_LIVE, appOrigin } from "./supa
    ====================================================================== */
 const BUCKET = 'kartta-media';
 const PLAN_RANK = { trial:1, free:0, kartta:1, standard:1, pro:2, elite:2, custom:3 }; // ids de la BD: kartta = KARTTA Pro · pro = KARTTA Elite // ids antiguos (kartta/custom) se conservan por compatibilidad
-const PLAN_NAME = { trial:'Prueba gratis', free:'Free', kartta:'KARTTA Pro', standard:'KARTTA Pro', pro:'KARTTA Elite', elite:'KARTTA Elite', custom:'KARTTA Elite' };
+const PLAN_NAME = { trial:'Prueba KARTTA Pro', free:'Free', kartta:'KARTTA Pro', standard:'KARTTA Pro', pro:'KARTTA Elite', elite:'KARTTA Elite', custom:'KARTTA Elite' };
 const PLAN_PRICE = (function(){ const P = window.KARTTA_PLANS, o = { trial:'$0 COP / mes', free:'$0 COP / mes' }; ['kartta','pro','elite','custom'].forEach(id => { const pl = P.get(id); o[id] = P.fmt(pl.monthly) + ' / mes'; }); return o; })(); // solo para mostrar; el cobro y los límites los decide el servidor
 const PROD_LIMIT = [20, 500, 2000, 1000]; // respaldo; el valor real viene de plans.limits (servidor)
 const ACCENTS = { Rojo:'#FF3145', Azul:'#3B82F6', Verde:'#22C55E', Amarillo:'#EAB308', Morado:'#8B5CF6', Naranja:'#F97316' };
@@ -776,7 +821,7 @@ async function cargarNegocio(first){
   const [r, pr, su, dz] = await Promise.all([
     sb.from('restaurants').select('*').eq('id', rid).single(),
     sb.from('restaurant_private').select('*').eq('restaurant_id', rid).maybeSingle(),
-    sb.from('subscriptions').select('plan_id,status,current_period_end').eq('restaurant_id', rid).maybeSingle(),
+    sb.from('subscriptions').select('plan_id,status,current_period_end,trial_start,trial_end').eq('restaurant_id', rid).maybeSingle(),
     sb.from('menu_designs').select('config').eq('restaurant_id', rid).eq('status', 'draft').maybeSingle(),
   ]);
   if (r.error) throw r.error;
@@ -792,6 +837,7 @@ async function cargarNegocio(first){
     logoPath: x.logo_path, bannerPath: x.cover_path, logo: imageUrl(x.logo_path), banner: imageUrl(x.cover_path),
     plan: vigente ? s.plan_id : 'free',
     planReal: vigente ? s.plan_id : 'free',
+    subPlan: s ? s.plan_id : null, subStatus: s ? s.status : null, trialEnd: s && s.plan_id === 'trial' ? (s.trial_end || s.current_period_end || null) : null,
     rankDb: planLim && Number.isFinite(Number(planLim.rank)) ? Number(planLim.rank) : undefined,
     maxProducts: planLim && Number(planLim.max_products) > 0 ? Number(planLim.max_products) : undefined,
     menuConfigured: x.menu_configured, onboardingCompleted: x.onboarding_completed, publicado: x.is_published,
@@ -991,17 +1037,57 @@ function ktRender(){
 $('tourList').addEventListener('click', (e) => { const b = e.target.closest('[data-kt]'); if (b) ktStart(Number(b.dataset.kt)); });
 $('tourGo').onclick = () => ktStart(ktDone().every(Boolean) ? 0 : ktFirstPending());
 $('tourRestart').onclick = () => ktStart(0);
-$('twStart').onclick = () => ktStart(ktFirstPending());
-$('twLater').onclick = () => { $('tourWelcome').classList.remove('show'); ktSave({ x: 1 }); };
+let kwMode = 'welcome';
+const kwDays = () => negocio && negocio.trialEnd ? Math.max(0, Math.ceil((new Date(negocio.trialEnd) - Date.now()) / 86400000)) : null;
+const kwDaysTxt = (n) => n + (n === 1 ? ' día' : ' días');
+function kwCmp(){
+  const P = window.KARTTA_PLANS && KARTTA_PLANS.plans.kartta, lim = P ? P.limits : { products: 500, tables: 30 };
+  $('twCmp').innerHTML = '<div class="kw-col on"><h4>Ahora · KARTTA Pro</h4><ul><li>Hasta ' + lim.products + ' productos</li><li>Todas las plantillas</li><li>Logo y banner propios</li><li>' + lim.tables + ' mesas con QR</li></ul></div>'
+    + '<div class="kw-col off"><h4>Después · Free</h4><ul><li>Hasta 20 productos</li><li>Solo 2 plantillas</li><li>Sin logo ni banner propios</li><li>5 mesas con QR</li></ul></div>';
+}
+function kwOpen(mode){
+  kwMode = mode; let tries = 0;
+  const go = () => { if (document.getElementById('kckBanner') && tries++ < 150) return setTimeout(go, 400); // espera a que decidan las cookies para no taparse
+    $('tourWelcome').classList.add('show'); setTimeout(() => $('twStart').focus(), 80); };
+  go();
+}
+$('twStart').onclick = () => {
+  if (kwMode === 'end') { ktSave({ te: 1 }); location.href = '/checkout'; return; }
+  ktSave({ w: 1 }); ktStart(ktFirstPending());
+};
+$('twLater').onclick = () => { $('tourWelcome').classList.remove('show'); ktSave(kwMode === 'end' ? { te: 1 } : { w: 1, x: 1 }); };
+$('tourWelcome').addEventListener('keydown', (e) => { if (e.key === 'Escape') $('twLater').click(); });
+function trialBar(){
+  const bar = $('trialBar'); if (!bar || !negocio) return; const d = kwDays();
+  if (negocio.plan === 'trial' && d != null) {
+    bar.hidden = false; bar.classList.toggle('urgent', d <= 2); $('tbDays').textContent = d;
+    $('tbText').innerHTML = d <= 0 ? '<b>Tu prueba de KARTTA Pro termina hoy.</b> Elige un plan para conservar tus plantillas, logo, banner y todos tus productos.'
+      : '<b>' + (d === 1 ? 'Te queda 1 día' : 'Te quedan ' + d + ' días') + ' de KARTTA Pro.</b> ' + (d <= 3 ? 'Después pasas a Free (20 productos, 2 plantillas, sin logo ni banner). Mejora ahora y no pierdas nada.' : 'Aprovecha todo lo que incluye. Cuando termine, pasas a Free.');
+  } else if (negocio.plan === 'free' && negocio.subPlan === 'trial') {
+    bar.hidden = false; bar.classList.add('urgent'); $('tbDays').textContent = 'Free';
+    $('tbText').innerHTML = '<b>Tu prueba terminó y ahora estás en Free.</b> Recupera plantillas, logo, banner y más productos con KARTTA Pro.';
+  } else bar.hidden = true;
+}
 function ktInit(){
-  ktRender(); const d = ktDone(), n = d.filter(Boolean).length, st = ktState();
-  if (st.x || n >= 5) return; // ya la vio/pospuso, o ya tiene casi todo: solo se ofrece la lista de tareas
-  const nombre = (perfil.panel_name || perfil.full_name || 'por aquí').split(' ')[0], pend = KT_STEPS.length - n;
-  $('twTitle').textContent = '¡Hola, ' + nombre + '! Bienvenido a KARTTA';
-  $('twText').textContent = n ? 'Ya avanzaste ' + n + ' de ' + KT_STEPS.length + ' pasos. Te acompañamos con lo que falta para que puedas compartir tu menú con tus clientes.' : 'Vamos a preparar tu menú digital para que puedas compartirlo con tus clientes. Te guiamos paso a paso y puedes salir cuando quieras.';
-  $('twBar').style.width = Math.round(n / KT_STEPS.length * 100) + '%';
-  $('twMeta').textContent = pend + (pend === 1 ? ' paso pendiente' : ' pasos pendientes') + ' · unos ' + Math.max(2, pend) + ' minutos';
-  $('tourWelcome').classList.add('show'); setTimeout(() => $('twStart').focus(), 60);
+  ktRender(); trialBar(); const d = ktDone(), n = d.filter(Boolean).length, st = ktState(), days = kwDays();
+  const trialing = negocio.plan === 'trial' && days != null, ended = negocio.plan === 'free' && negocio.subPlan === 'trial';
+  const nombre = (perfil.panel_name || perfil.full_name || '').split(' ')[0];
+  if (ended && !st.te) { // la prueba terminó: se avisa una sola vez
+    $('twBadge').textContent = 'Tu prueba terminó'; $('twTitle').textContent = (nombre ? nombre + ', ' : '') + 'ahora estás en Free';
+    $('twText').textContent = 'Tu menú sigue funcionando. Para volver a usar todas las plantillas, tu logo, banner y hasta 500 productos, elige un plan.';
+    kwCmp(); $('twMeta').textContent = 'KARTTA Pro desde ' + KARTTA_PLANS.fmt(KARTTA_PLANS.plans.kartta.monthly) + ' al mes.';
+    $('twStart').textContent = 'Ver planes'; $('twLater').textContent = 'Seguir en Free'; kwOpen('end'); return;
+  }
+  if (st.w || st.x || n >= 5) return; // ya la vio o pospuso, o ya tiene casi todo
+  const pend = KT_STEPS.length - n;
+  $('twTitle').textContent = '¡Hola' + (nombre ? ', ' + nombre : '') + '! Bienvenido a KARTTA';
+  if (trialing) {
+    $('twBadge').textContent = days + ' días de KARTTA Pro gratis';
+    $('twText').textContent = 'Vas a tener ' + kwDaysTxt(days) + ' de prueba con todas las funciones de KARTTA Pro. Después pasarás al plan Free. ¡Aprovéchalos al máximo!';
+    kwCmp(); $('twCmp').hidden = false;
+  } else { $('twBadge').textContent = 'Menú digital listo en minutos'; $('twText').textContent = 'Vamos a preparar tu menú digital para que puedas compartirlo con tus clientes. Te guiamos paso a paso.'; $('twCmp').innerHTML = ''; }
+  $('twMeta').textContent = 'Ahora te mostramos una guía rápida · ' + pend + (pend === 1 ? ' paso' : ' pasos') + ' · unos ' + Math.max(2, pend) + ' minutos';
+  $('twStart').textContent = 'Continuar'; $('twLater').textContent = 'Cerrar'; kwOpen('welcome');
 }
 
 function adminBar(){
@@ -1075,7 +1161,7 @@ function hydrate(){
   $('lkIA').style.display = 'none'; // la IA está disponible en todos los planes (con cuota mensual según el plan)
   const pct = perfilPct(); $('sumPerfil').textContent = pct + '%'; $('sumPerfilBar').style.width = pct + '%';
   { const pid = negocio.plan || 'free', adv = pid === 'custom';
-    $('sbPlanName').textContent = 'Plan ' + (PLAN_NAME[pid] || 'Free'); $('sbPlanPrice').textContent = PLAN_PRICE[pid] || '';
+    $('sbPlanName').textContent = pid === 'trial' ? PLAN_NAME.trial : 'Plan ' + (PLAN_NAME[pid] || 'Free'); { const dd = kwDays(); $('sbPlanPrice').textContent = pid === 'trial' && dd != null ? (dd === 1 ? 'Queda 1 día' : 'Quedan ' + dd + ' días') : (PLAN_PRICE[pid] || ''); }
     $('sbUpgrade').hidden = !(pid === 'free' || pid === 'trial'); $('sbAdvisor').hidden = !adv;
     $('cfgPlanName').textContent = PLAN_NAME[pid] || 'Free'; $('cfgPlanPrice').textContent = PLAN_PRICE[pid] || 'Precio acordado con tu asesor';
     $('cfgUpgrade').hidden = !(pid === 'free' || pid === 'trial'); $('cfgAdvisor').hidden = !adv; }

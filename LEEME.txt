@@ -1,13 +1,3 @@
-ACTUALIZACION v2 — Planes Free / Standard / Pro, anual 50% (ETAPAS 1 y 2)
-Copia a la RAIZ del repo web (karttav2), reemplazando:
-  kartta-plans.js, index.html, dashboard.html, kartta-ai-chat.js, kartta-support-admin.js
-Agrega: 20261105_planes_free_standard_pro.sql  (documentacion; NO se aplica en Supabase hasta confirmar)
-Si ya subiste 20261105_planes_free_pro_elite.sql, BORRALO del repo (lo reemplaza este).
-git add . && git commit -m "Precios Standard/Pro con 50% anual" && git push
-
-ARQUITECTURA ENCONTRADA (para las etapas 3-9)
-- Web (karttav2): Supabase proyecto ifbvdjvukygvvgiyzgav. Tablas plans/subscriptions/payments/payment_events/coupons ya existen.
-  coupons hoy: 0 filas, sin tabla de redenciones/reservas; NO hay checkout ni funcion de pago desplegada (solo mp-connect).
-- Panel privado (panelkartta): proyecto Supabase aparte (rdsxnqqmpusakgrwxzqs). Habla con la web por Edge Functions
-  (admin-api, admin-ai, admin-support) que validan la sesion del panel y el correo en public.panel_bridge_admins.
-  CSP estricta (script-src 'self'). Nuevo modulo = nueva Edge Function admin-promos + RPC panel_promo_call + vista "Cupones" en app.js.
+Coloca aquí los logos OFICIALES (PNG con fondo transparente o SVG) con estos nombres:
+nequi.png, pse.png, bancolombia.png, visa.png, mastercard.png, amex.png
+Si un archivo no existe, el checkout muestra el nombre del método en su lugar.
