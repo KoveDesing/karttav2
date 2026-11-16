@@ -365,14 +365,14 @@ input.k-toggle:disabled{ opacity:.5; cursor:not-allowed; }
 .k-phone{
   position:relative; width:var(--k-pw,280px); aspect-ratio: 9/19; flex:none;
   padding:9px; border-radius:34px; background:#fff;
-  box-shadow: inset 0 1px 0 #fff, 0 40px 70px -24px rgba(16,16,32,.32), 0 8px 20px rgba(16,16,32,.1), -10px -10px 26px rgba(255,255,255,.7);
+  box-shadow: inset 0 1px 0 #fff, 0 40px 70px -24px rgba(12,12,12,.32), 0 8px 20px rgba(12,12,12,.1), -10px -10px 26px rgba(255,255,255,.7);
   transform: translate3d(var(--k-px,0),var(--k-py,0),0) rotate(var(--k-rot,0deg));
   will-change: transform;
 }
 .k-phone__screen{ position:relative; width:100%; height:100%; overflow:hidden; border-radius:28px; background:var(--k-bg); color:var(--k-ink); }
 .k-phone::before{
   content:""; position:absolute; z-index:3; top:18px; left:50%; width:30%; height:24px; transform:translateX(-50%);
-  border-radius:99px; background:#0C0C0D;
+  border-radius:99px; background:#0E0E0E;
 }
 .k-phone--back{ filter: blur(3px); opacity:.85; scale:.86; }
 .k-phone--float{ animation: k-float 7s ease-in-out infinite; }
@@ -562,8 +562,8 @@ html[data-kui="landing"] .kbar-avatar-btn{ background:transparent; border-radius
 html[data-kui="landing"] .kbar-cta{ border-radius:var(--k-r-pill); box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 12px 20px -8px rgba(255,49,69,.6); }
 html[data-kui="landing"] .kbar-sep{ background:rgba(255,255,255,.1); }
 /* modal de registro/login (usa estilos en línea: se sobreescribe con !important) */
-html[data-kui="landing"] #authModal{ background:rgba(16,16,24,.5) !important; }
-html[data-kui="landing"] #authModal > div{ border-radius:var(--k-r-card-lg) !important; box-shadow:0 40px 80px -24px rgba(16,16,32,.45), inset 0 1px 0 #fff !important; }
+html[data-kui="landing"] #authModal{ background:rgba(12,12,12,.5) !important; }
+html[data-kui="landing"] #authModal > div{ border-radius:var(--k-r-card-lg) !important; box-shadow:0 40px 80px -24px rgba(12,12,12,.45), inset 0 1px 0 #fff !important; }
 html[data-kui="landing"] #authModal input{ border:0 !important; border-radius:12px !important; background:#F8F8FA !important; box-shadow:var(--k-sh-inset) !important; min-height:46px; }
 html[data-kui="landing"] #authModal input:focus{ outline:none; background:#fff !important; box-shadow:var(--k-sh-inset), 0 0 0 3px #fff, 0 0 0 5px var(--red) !important; }
 html[data-kui="landing"] #authClose{ box-shadow:var(--k-sh-raised); background:#fff !important; }
@@ -766,25 +766,25 @@ html[data-kui="landing"] #authModal input::placeholder{ color:#9A9AA3; }
 
 /* ---------- MODALES: fondo se desenfoca con transición + entrada fluida ---------- */
 @keyframes k-scrim-in{
-  from{ -webkit-backdrop-filter:blur(0); backdrop-filter:blur(0); background-color:rgba(16,16,24,0); }
-  to{ -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); background-color:rgba(16,16,24,.38); }
+  from{ -webkit-backdrop-filter:blur(0); backdrop-filter:blur(0); background-color:rgba(12,12,12,0); }
+  to{ -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); background-color:rgba(12,12,12,.38); }
 }
 @keyframes k-modal-in{
   0%{ opacity:0; transform:translateY(26px) scale(.955); }
   60%{ opacity:1; }
   100%{ opacity:1; transform:none; }
 }
-html[data-kui="landing"] #authModal{ background:rgba(16,16,24,.38) !important; }
+html[data-kui="landing"] #authModal{ background:rgba(12,12,12,.38) !important; }
 html[data-kui="landing"] #authModal:not([style*="display:none"]):not([style*="display: none"]){
   -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
   animation:k-scrim-in .55s var(--k-ease) both;
 }
 html[data-kui="landing"] #authModal:not([style*="display:none"]):not([style*="display: none"]) > div{ animation:k-modal-in .7s var(--k-ease) both; }
-html[data-kui="landing"] #authModal > div{ border-radius:26px !important; box-shadow:0 40px 90px -30px rgba(16,16,32,.5), inset 0 1px 0 #fff !important; }
+html[data-kui="landing"] #authModal > div{ border-radius:26px !important; box-shadow:0 40px 90px -30px rgba(12,12,12,.5), inset 0 1px 0 #fff !important; }
 html[data-kui="landing"] #authClose{ border-radius:12px !important; box-shadow:var(--k-sh-soft); }
 @media (max-width:640px){ html[data-kui="landing"] #authModal > div{ border-radius:26px 26px 0 0 !important; } }
 html[data-kui="dash"] .modal-bg.show,html[data-kui="editor"] .modal-bg.show,html[data-kui="dash"] .kw-bg{
-  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); background:rgba(16,16,24,.38);
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); background:rgba(12,12,12,.38);
   animation:k-scrim-in .5s var(--k-ease) both;
 }
 html[data-kui="dash"] .modal-bg.show .modal{ border-radius:24px; animation:k-modal-in .65s var(--k-ease) both; }
@@ -856,7 +856,7 @@ html[data-kui="editor"] .btn{ border-radius:14px; }
 .k-sc .cur{ position:absolute; z-index:7; width:26px; height:26px; margin:-13px 0 0 -13px; border-radius:50%; background:rgba(17,17,19,.14); border:2px solid rgba(17,17,19,.55); pointer-events:none; left:50%; top:60%; opacity:0; }
 .k-sc .cur::after{ content:""; position:absolute; inset:-2px; border-radius:50%; border:2px solid var(--k-accent); opacity:0; }
 /* barra de carrito */
-.k-sc .cbar{ position:absolute; left:14px; right:14px; bottom:14px; height:46px; border-radius:15px; background:#0F0F11; color:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 14px; font-size:12px; font-weight:800; box-shadow:0 14px 24px -12px rgba(0,0,0,.6); animation:k-cbar 5s both; }
+.k-sc .cbar{ position:absolute; left:14px; right:14px; bottom:14px; height:46px; border-radius:15px; background:#111111; color:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 14px; font-size:12px; font-weight:800; box-shadow:0 14px 24px -12px rgba(0,0,0,.6); animation:k-cbar 5s both; }
 .k-sc .cbar span{ background:var(--k-accent); border-radius:9px; padding:5px 9px; font-size:11px; }
 @keyframes k-cbar{ 0%,56%{ opacity:0; transform:translateY(24px); } 64%,100%{ opacity:1; transform:none; } }
 /* escena 1: chips cambian y cursor */
@@ -866,7 +866,7 @@ html[data-kui="editor"] .btn{ border-radius:14px; }
 .sc1 .cur{ animation:k-cur1 5s both; }
 @keyframes k-cur1{ 0%{ opacity:0; left:70%; top:92%; } 8%{ opacity:1; } 22%{ left:42%; top:30%; } 28%{ left:42%; top:30%; transform:scale(.85); } 32%{ transform:none; } 52%{ left:86%; top:39%; transform:none; } 58%{ left:86%; top:39%; transform:scale(.8); } 64%{ transform:none; opacity:1; } 80%,100%{ left:86%; top:39%; opacity:0; } }
 /* escena 2: sheet de personalización */
-.sc2 .dim{ position:absolute; inset:0; background:rgba(16,16,24,.35); animation:k-fade .5s both; }
+.sc2 .dim{ position:absolute; inset:0; background:rgba(12,12,12,.35); animation:k-fade .5s both; }
 @keyframes k-fade{ from{ opacity:0; } to{ opacity:1; } }
 .sc2 .sheet{ position:absolute; left:0; right:0; bottom:0; padding:12px 14px 14px; border-radius:26px 26px 0 0; background:#fff; display:flex; flex-direction:column; gap:9px; box-shadow:0 -20px 40px -20px rgba(10,10,10,.4); animation:k-sheetup .8s var(--k-ease) both; }
 @keyframes k-sheetup{ from{ transform:translateY(100%); } to{ transform:none; } }
@@ -902,8 +902,8 @@ html[data-kui="editor"] .btn{ border-radius:14px; }
 .sc3 .sum{ padding:11px 12px; border-radius:16px; background:#fff; box-shadow:5px 5px 11px rgba(10,10,10,.07), -4px -4px 9px rgba(255,255,255,.95); display:flex; flex-direction:column; gap:6px; font-size:11px; font-weight:700; color:var(--k-ink-2); }
 .sc3 .sum div{ display:flex; justify-content:space-between; } .sc3 .sum .t{ color:var(--k-ink); font-size:14px; font-weight:800; border-top:1px dashed #E2E2E7; padding-top:7px; }
 .sc3 .pay{ display:flex; gap:6px; } .sc3 .pay .chip{ flex:1; justify-content:center; padding:0 4px; }
-.sc3 .order{ position:absolute; left:14px; right:14px; bottom:14px; height:46px; border-radius:15px; background:#0F0F11; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; animation:k-ordtap 5s both; }
-@keyframes k-ordtap{ 0%,52%{ transform:none; background:#0F0F11; } 56%{ transform:scale(.96); } 62%,100%{ transform:none; background:var(--k-accent); } }
+.sc3 .order{ position:absolute; left:14px; right:14px; bottom:14px; height:46px; border-radius:15px; background:#111111; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; animation:k-ordtap 5s both; }
+@keyframes k-ordtap{ 0%,52%{ transform:none; background:#111111; } 56%{ transform:scale(.96); } 62%,100%{ transform:none; background:var(--k-accent); } }
 .sc3 .ok{ position:absolute; inset:0; z-index:8; background:#F4F4F6; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center; animation:k-okin 5s both; }
 @keyframes k-okin{ 0%,64%{ opacity:0; pointer-events:none; } 72%,100%{ opacity:1; } }
 .sc3 .ok .ring{ width:76px; height:76px; border-radius:50%; background:var(--k-accent); display:grid; place-items:center; box-shadow:0 18px 30px -12px color-mix(in srgb,var(--k-accent) 70%, transparent); animation:k-ring 5s both; }
@@ -948,7 +948,7 @@ html[data-kui="editor"] .btn{ border-radius:14px; }
 .sc5 .sm{ padding:11px 12px; border-radius:16px; background:#fff; box-shadow:5px 5px 11px rgba(10,10,10,.07), -4px -4px 9px rgba(255,255,255,.95); animation:k-rowin .6s var(--k-ease) both; animation-delay:calc(var(--i)*140ms + 1.1s); }
 .sc5 .sm b{ display:block; font-size:19px; font-weight:800; letter-spacing:-.03em; } .sc5 .sm small{ font-size:9.5px; color:var(--k-muted); font-weight:700; }
 .sc5 .qr{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:16px; background:#fff; box-shadow:5px 5px 11px rgba(10,10,10,.07), -4px -4px 9px rgba(255,255,255,.95); font-size:11px; font-weight:800; animation:k-rowin .6s var(--k-ease) both; animation-delay:1.5s; }
-.sc5 .qr .q{ width:34px; height:34px; flex:none; border-radius:9px; background:#0F0F11; display:grid; place-items:center; } .sc5 .qr small{ display:block; font-size:9.5px; color:var(--k-muted); font-weight:600; }
+.sc5 .qr .q{ width:34px; height:34px; flex:none; border-radius:9px; background:#111111; display:grid; place-items:center; } .sc5 .qr small{ display:block; font-size:9.5px; color:var(--k-muted); font-weight:600; }
 
 /* tarjetas flotantes (neomorphism) */
 .k-hcard{ position:absolute; z-index:4; width:196px; display:flex; align-items:center; gap:11px; padding:11px 14px 11px 11px; border-radius:20px; background:#fff;
@@ -992,11 +992,11 @@ html[data-kui="editor"] .btn{ border-radius:14px; }
 html[data-kui="landing"] .hero-visual-real{ margin-right:0; margin-left:0; }
 @media (min-width:981px){ html[data-kui="landing"] .hero-visual-real{ margin-right:-2%; } }
 /* promo de lanzamiento: mismo desenfoque y entrada que el login */
-html[data-kui="landing"] #promoModal{ background:rgba(16,16,24,.38) !important; }
+html[data-kui="landing"] #promoModal{ background:rgba(12,12,12,.38) !important; }
 html[data-kui="landing"] #promoModal:not([style*="display:none"]):not([style*="display: none"]){
   -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); animation:k-scrim-in .55s var(--k-ease) both;
 }
-html[data-kui="landing"] #promoModal:not([style*="display:none"]):not([style*="display: none"]) > div{ animation:k-modal-in .7s var(--k-ease) both; border-radius:26px !important; box-shadow:0 40px 90px -30px rgba(16,16,32,.5) !important; }
+html[data-kui="landing"] #promoModal:not([style*="display:none"]):not([style*="display: none"]) > div{ animation:k-modal-in .7s var(--k-ease) both; border-radius:26px !important; box-shadow:0 40px 90px -30px rgba(12,12,12,.5) !important; }
 
 
 /* ==========================================================================
@@ -1009,13 +1009,13 @@ html[data-kui="landing"] #promoModal:not([style*="display:none"]):not([style*="d
 /* celular: marco titanio negro + sombra suave de contacto (sin relieve duro) */
 .k-hero__phone{ filter:drop-shadow(0 34px 38px rgba(10,10,10,.26)) drop-shadow(0 6px 10px rgba(10,10,10,.12)); }
 .k-hphone{ padding:8px; border-radius:46px;
-  background:linear-gradient(150deg,#3A3A3E 0%,#0C0C0D 34%,#1C1C1E 72%,#0A0A0B 100%);
+  background:linear-gradient(150deg,#3A3A3A 0%,#0E0E0E 34%,#1C1C1C 72%,#0A0A0A 100%);
   box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.18), inset 0 0 0 3.5px #050505, 0 0 0 1px rgba(0,0,0,.55); }
 .k-hphone::before{ top:17px; background:#000; box-shadow:0 0 0 1px rgba(255,255,255,.05); }
 .k-hscreen{ border-radius:39px; }
-.k-hphone::after{ content:""; position:absolute; left:-3px; top:112px; width:3px; height:46px; border-radius:3px 0 0 3px; background:#2A2A2D;
-  box-shadow:0 62px 0 #2A2A2D, 0 -44px 0 -1px #2A2A2D; }
-.k-hero__phone::after{ content:""; position:absolute; right:-3px; top:170px; width:3px; height:78px; border-radius:0 3px 3px 0; background:#2A2A2D; }
+.k-hphone::after{ content:""; position:absolute; left:-3px; top:112px; width:3px; height:46px; border-radius:3px 0 0 3px; background:#2A2A2A;
+  box-shadow:0 62px 0 #2A2A2A, 0 -44px 0 -1px #2A2A2A; }
+.k-hero__phone::after{ content:""; position:absolute; right:-3px; top:170px; width:3px; height:78px; border-radius:0 3px 3px 0; background:#2A2A2A; }
 .k-hero__stage::after{ content:""; position:absolute; left:50%; bottom:-4px; width:250px; height:26px; margin-left:-125px; border-radius:50%;
   background:radial-gradient(ellipse at center, rgba(10,10,10,.20), rgba(10,10,10,0) 70%); pointer-events:none; }
 /* dentro de la pantalla: sombras suaves en vez de neomorphism duro */
@@ -1026,12 +1026,12 @@ html[data-kui="landing"] #promoModal:not([style*="display:none"]):not([style*="d
 
 /* tarjetas flotantes: gris súper oscuro como la imagen anterior */
 .k-hcard{ width:226px; gap:12px; padding:12px 14px 12px 12px; border-radius:20px; color:#fff;
-  background:linear-gradient(150deg,#262628 0%,#151516 100%);
+  background:linear-gradient(150deg,#262626 0%,#151515 100%);
   box-shadow:0 22px 34px -16px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.07), inset 0 0 0 1px rgba(255,255,255,.04);
   animation-name:k-hc-in2; }
 .k-hcard--tl,.k-hcard--br{ animation-name:k-hc-in2,k-hbob; } .k-hcard--tr,.k-hcard--bl{ animation-name:k-hc-in2,k-hbob2; }
 @keyframes k-hc-in2{ from{ opacity:0; scale:.92; } to{ opacity:1; scale:1; } }
-.k-hcard .ic{ width:42px; height:42px; border-radius:50%; background:#2D2D30; color:#fff; box-shadow:inset 0 0 0 1px rgba(255,255,255,.08); }
+.k-hcard .ic{ width:42px; height:42px; border-radius:50%; background:#2D2D2D; color:#fff; box-shadow:inset 0 0 0 1px rgba(255,255,255,.08); }
 .k-hcard .ic svg{ width:20px; height:20px; }
 .k-hcard b{ color:#fff; font-size:12.5px; }
 .k-hcard small{ color:#A4A4AB; font-size:10.5px; line-height:1.35; margin-top:3px; }
@@ -1045,7 +1045,7 @@ html[data-kui="landing"] #promoModal:not([style*="display:none"]):not([style*="d
 
 /* tarjeta QR de mesa (como la imagen original) */
 .k-tent{ position:absolute; z-index:1; right:3%; bottom:5%; width:158px; padding:16px 12px 14px; border-radius:18px 18px 12px 12px; color:#fff; text-align:center;
-  background:linear-gradient(165deg,#242426,#0F0F10); box-shadow:0 26px 34px -16px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.07);
+  background:linear-gradient(165deg,#242424,#0F0F0F); box-shadow:0 26px 34px -16px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.07);
   transform:perspective(800px) rotateY(-22deg) rotate(2deg); transform-origin:left bottom; display:flex; flex-direction:column; align-items:center; gap:8px; }
 .k-tent .lg{ font-family:'Mr Dafoe',cursive; font-size:24px; line-height:1; } .k-tent .lg b{ color:var(--k-accent); font-weight:400; }
 .k-tent .qb{ width:94px; height:94px; border-radius:12px; background:#fff; padding:8px; } .k-tent .qb svg{ display:block; width:100%; height:100%; }

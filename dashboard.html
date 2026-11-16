@@ -301,11 +301,13 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
 @media (max-width:480px){.kw-cmp{grid-template-columns:1fr}.kw-logo{font-size:48px}.kw-body{padding:20px 18px 18px}}
 @media (prefers-reduced-motion:reduce){.kw-card,.kw-glow{animation:none}}
 /* franja de prueba en el panel */
-.trial-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;padding:12px 16px;border-radius:16px;border:1px solid var(--accent);background:linear-gradient(100deg,var(--accent-soft),transparent);animation:kwIn .5s cubic-bezier(.16,1,.3,1) both}
+.trial-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 16px;padding:12px 16px;border-radius:20px;border:0;background:linear-gradient(145deg,#2A2A2A,#1B1B1B);box-shadow:8px 8px 18px rgba(0,0,0,.38),-6px -6px 14px rgba(255,255,255,.55),inset 1px 1px 0 rgba(255,255,255,.07);animation:kwIn .5s cubic-bezier(.16,1,.3,1) both}
 .trial-bar[hidden]{display:none}
-.trial-bar b{color:var(--strong)}.trial-bar .tb-t{flex:1;min-width:200px;font-size:13.5px;line-height:1.45;color:var(--text)}
-.trial-bar.urgent{background:linear-gradient(100deg,color-mix(in srgb,var(--accent) 26%,transparent),transparent)}
-.trial-bar .tb-d{font-weight:900;font-size:20px;color:var(--accent);min-width:34px;text-align:center}
+.trial-bar b{color:#fff}.trial-bar .tb-t{flex:1;min-width:200px;font-size:13.5px;line-height:1.6;color:#C9C9C9}
+.trial-bar.urgent{background:linear-gradient(145deg,#2D2D2D,#1B1B1B)}
+.trial-bar .tb-d{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,#202020,#2A2A2A);box-shadow:inset 3px 3px 7px rgba(0,0,0,.5),inset -2px -2px 5px rgba(255,255,255,.06);font-family:'Mr Dafoe',cursive;font-weight:400;font-size:26px;line-height:1;color:#fff;padding-bottom:4px}
+:root[data-theme="dark"] .trial-bar{box-shadow:8px 8px 18px rgba(0,0,0,.5),-6px -6px 14px rgba(255,255,255,.04),inset 1px 1px 0 rgba(255,255,255,.07)}
+.trial-bar .hl{background:#FF3145;color:#fff;padding:2px 8px;border-radius:0;font-weight:800;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 </style>
 <link rel="stylesheet" href="kartta-motion.css?v=20261112">
 <script src="kartta-motion.js?v=20261110" defer></script>
@@ -373,7 +375,7 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
   <div class="scrim" id="scrim"></div>
 
   <main id="main">
-    <div class="trial-bar" id="trialBar" hidden><span class="tb-d" id="tbDays">7</span><span class="tb-t" id="tbText"></span><a class="btn btn-accent btn-sm" href="/checkout" id="tbBtn">Mejorar plan</a></div>
+    <div class="trial-bar" id="trialBar" hidden><span class="tb-d" id="tbDays" aria-hidden="true">tt</span><span class="tb-t" id="tbText"></span><a class="btn btn-accent btn-sm" href="/checkout" id="tbBtn">Mejorar plan</a></div>
     <div class="topbar"><button class="menu-btn" id="menuBtn" aria-label="Abrir menú"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></div>
 
     <!-- INICIO -->
@@ -548,7 +550,6 @@ input[type=color]{width:100%;height:44px;border:1px solid var(--border);border-r
       <div class="vhead"><h2>Dominio y enlaces</h2><p>Dónde vive tu negocio en internet.</p></div>
       <div class="three">
         <div class="card"><div class="row between"><h3>Mi menú</h3><span class="pill ok">Activo</span></div><p class="sub">Lo que ven tus clientes al escanear el QR.</p><div class="urlbox"><span id="urlMenu">—</span><button class="btn btn-ghost btn-sm" id="copyMenu">Copiar</button></div></div>
-        <div class="card"><div class="row between"><h3>Mi página</h3><span class="pill pend">Pendiente</span></div><p class="sub">Tu página web pública. Próximamente.</p></div>
         <div class="card"><div class="row between"><h3>Mi administración</h3><span class="pill ok">Activo</span></div><p class="sub">Este panel.</p><div class="urlbox"><span id="urlAdmin">—</span></div></div>
       </div>
       <div class="card">
@@ -1062,11 +1063,11 @@ $('tourWelcome').addEventListener('keydown', (e) => { if (e.key === 'Escape') $(
 function trialBar(){
   const bar = $('trialBar'); if (!bar || !negocio) return; const d = kwDays();
   if (negocio.plan === 'trial' && d != null) {
-    bar.hidden = false; bar.classList.toggle('urgent', d <= 2); $('tbDays').textContent = d;
+    bar.hidden = false; bar.classList.toggle('urgent', d <= 2);
     $('tbText').innerHTML = d <= 0 ? '<b>Tu prueba de KARTTA Pro termina hoy.</b> Elige un plan para conservar tus plantillas, logo, banner y todos tus productos.'
-      : '<b>' + (d === 1 ? 'Te queda 1 día' : 'Te quedan ' + d + ' días') + ' de KARTTA Pro.</b> ' + (d <= 3 ? 'Después pasas a Free (20 productos, 2 plantillas, sin logo ni banner). Mejora ahora y no pierdas nada.' : 'Aprovecha todo lo que incluye. Cuando termine, pasas a Free.');
+      : '<b>' + (d === 1 ? 'Te queda <span class="hl">1 día</span>' : 'Te quedan <span class="hl">' + d + ' días</span>') + ' de KARTTA Pro.</b> ' + (d <= 3 ? 'Después pasas a Free (20 productos, 2 plantillas, sin logo ni banner). Mejora ahora y no pierdas nada.' : 'Aprovecha todo lo que incluye. Cuando termine, pasas a Free.');
   } else if (negocio.plan === 'free' && negocio.subPlan === 'trial') {
-    bar.hidden = false; bar.classList.add('urgent'); $('tbDays').textContent = 'Free';
+    bar.hidden = false; bar.classList.add('urgent');
     $('tbText').innerHTML = '<b>Tu prueba terminó y ahora estás en Free.</b> Recupera plantillas, logo, banner y más productos con KARTTA Pro.';
   } else bar.hidden = true;
 }

@@ -16,7 +16,9 @@
 
   <script>/* motion: se activa solo si el visitante no pidió menos movimiento; si el JS no carga en 3,5 s, todo se muestra igual */
 (function(){var d=document.documentElement;try{
-if(!matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('kx');setTimeout(function(){if(!d.classList.contains('kx-ready'))d.classList.add('kx-failed');},7000);}
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('kx');
+/* modo ligero: mismas animaciones (movimiento y aparición) pero sin desenfoque animado, que es lo más caro de pintar en móviles y equipos modestos */
+var n=navigator,lite=(n.deviceMemory&&n.deviceMemory<=4)||(n.hardwareConcurrency&&n.hardwareConcurrency<=4)||(n.connection&&n.connection.saveData)||matchMedia('(max-width:767px)').matches;if(lite)d.classList.add('kx-lite');setTimeout(function(){if(!d.classList.contains('kx-ready'))d.classList.add('kx-failed');},7000);}
 for(var k in localStorage){if(/^sb-.+-auth-token$/.test(k)){d.classList.add('kx-maybe');break;}}
 }catch(e){}})();</script>
   <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
@@ -57,6 +59,7 @@ body{padding-top:var(--kx-ribbon-h)}
 .kx-ribbon-item{font-size:12px;font-weight:700;letter-spacing:.07em;white-space:nowrap;text-transform:uppercase;padding:0 22px}
 .kx-ribbon-sep{width:5px;height:5px;background:#fff;border-radius:1px;flex-shrink:0}
 @keyframes kx-marquee{to{transform:translate3d(-50%,0,0)}}</style>
+<link rel="preload" as="image" href="assets/landing-2.webp" type="image/webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Mr+Dafoe&display=swap" rel="stylesheet">
@@ -71,7 +74,7 @@ html.kboot #kBoot{display:flex;}html.kboot{overflow:hidden;}
 #kBoot.go span{opacity:1;filter:blur(0);transform:none;transition:opacity .9s var(--ease,cubic-bezier(.16,1,.3,1)),filter .9s var(--ease,cubic-bezier(.16,1,.3,1)),transform .9s var(--ease,cubic-bezier(.16,1,.3,1));}
 @media (prefers-reduced-motion:reduce){#kBoot span{filter:none;transform:none;}#kBoot.go span{transition:opacity .3s linear;}}</style>
 <script>
-/* Espera a que Inter y Mr Dafoe estén descargadas antes de mostrar la página (máx. 2,8 s; después se muestra igual). */
+/* Espera a que Inter y Mr Dafoe estén descargadas antes de mostrar la página (máx. 1,8 s; después se muestra igual). */
 (function(){var d=document,h=d.documentElement,seen=0,fin=0;
 try{seen=sessionStorage.getItem('kboot');}catch(e){}
 function fire(){if(window.__kxFonts)return;window.__kxFonts=1;try{d.dispatchEvent(new Event('kx:fonts'));}catch(e){}}   // las animaciones de la página esperan esta señal
@@ -85,7 +88,7 @@ function done(){if(fin)return;fin=1;
       try{sessionStorage.setItem('kboot','1');}catch(e){}
       setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},700);},seen?60:1100);});}
 Promise.all([d.fonts.load('400 1em "Mr Dafoe"'),d.fonts.load('400 1em Inter'),d.fonts.load('800 1em Inter')]).then(done,done);
-setTimeout(done,2800);setTimeout(fire,4200);})();
+setTimeout(done,1800);setTimeout(fire,2800);})();
 </script>
 <script type="application/ld+json">
 {
@@ -701,7 +704,7 @@ html{overflow-x:clip;}
 }
 
 </style>
-<link rel="stylesheet" href="kartta-landing.css?v=20261112">
+<link rel="stylesheet" href="kartta-landing.css?v=20261117">
 <script src="kartta-plans.js"></script>
 <script type="module" src="supabase-init.js"></script>
 <script src="cookies.js" defer></script>
@@ -716,8 +719,8 @@ html{overflow-x:clip;}
 </script>
 <script defer src="/kartta-tracker.js" data-scope="site"></script>
 <script>try{var __q=new URLSearchParams(location.search);if(__q.get('error_code')==='bad_oauth_state'){history.replaceState(null,'',location.pathname+location.hash);}}catch(e){}</script>
-<link rel="stylesheet" href="/kartta-ui.css">
-<script src="/kartta-ui.js" defer></script>
+<link rel="stylesheet" href="/kartta-ui.css?v=20261116">
+<script src="/kartta-ui.js?v=20261116" defer></script>
 </head>
 <body class="auth-loading">
 <div id="kBoot" aria-hidden="true"><span>Kar<b>tt</b>a</span></div>
@@ -815,12 +818,12 @@ html{overflow-x:clip;}
     </div>
   </div>
   <div class="hero-visual-real" data-fx="img" data-delay="80">
-    <img src="assets/landing-2.webp" width="900" height="573" decoding="async" loading="lazy" alt="KARTTA — menú digital, pedidos y QR en un restaurante">
+    <img src="assets/landing-2.webp" width="900" height="573" decoding="async" fetchpriority="high" alt="KARTTA — menú digital, pedidos y QR en un restaurante">
     <div class="k-hero" id="kHero" role="group" aria-label="Animación de demostración: cómo funciona KARTTA, desde el menú del cliente hasta el panel del restaurante">
       <div class="k-hero__stage">
         <div class="k-hcard k-hcard--tl" aria-hidden="true"></div><div class="k-hcard k-hcard--tr" aria-hidden="true"></div>
         <div class="k-hcard k-hcard--bl" aria-hidden="true"></div><div class="k-hcard k-hcard--br" aria-hidden="true"></div>
-        <div class="k-tent" aria-hidden="true"><span class="lg"><b>tt</b> Kar<b>tt</b>a</span><span class="qb"><svg viewBox="0 0 9 9" shape-rendering="crispEdges"><rect x="0" y="0" width="3" height="3" fill="none" stroke="#0F0F11" stroke-width=".6"/><rect x="1" y="1" width="1" height="1" fill="#0F0F11"/><rect x="6" y="0" width="3" height="3" fill="none" stroke="#0F0F11" stroke-width=".6"/><rect x="7" y="1" width="1" height="1" fill="#0F0F11"/><rect x="0" y="6" width="3" height="3" fill="none" stroke="#0F0F11" stroke-width=".6"/><rect x="1" y="7" width="1" height="1" fill="#0F0F11"/><rect x="3" y="0" width="1" height="1" fill="#0F0F11"/><rect x="4" y="0" width="1" height="1" fill="#0F0F11"/><rect x="3" y="1" width="1" height="1" fill="#0F0F11"/><rect x="5" y="1" width="1" height="1" fill="#0F0F11"/><rect x="3" y="2" width="1" height="1" fill="#0F0F11"/><rect x="5" y="2" width="1" height="1" fill="#0F0F11"/><rect x="0" y="3" width="1" height="1" fill="#0F0F11"/><rect x="1" y="3" width="1" height="1" fill="#0F0F11"/><rect x="2" y="3" width="1" height="1" fill="#0F0F11"/><rect x="3" y="3" width="1" height="1" fill="#0F0F11"/><rect x="5" y="3" width="1" height="1" fill="#0F0F11"/><rect x="6" y="3" width="1" height="1" fill="#0F0F11"/><rect x="1" y="4" width="1" height="1" fill="#0F0F11"/><rect x="3" y="4" width="1" height="1" fill="#0F0F11"/><rect x="5" y="4" width="1" height="1" fill="#0F0F11"/><rect x="6" y="4" width="1" height="1" fill="#0F0F11"/><rect x="7" y="4" width="1" height="1" fill="#0F0F11"/><rect x="8" y="4" width="1" height="1" fill="#0F0F11"/><rect x="1" y="5" width="1" height="1" fill="#0F0F11"/><rect x="4" y="5" width="1" height="1" fill="#0F0F11"/><rect x="6" y="5" width="1" height="1" fill="#0F0F11"/><rect x="7" y="5" width="1" height="1" fill="#0F0F11"/><rect x="8" y="5" width="1" height="1" fill="#0F0F11"/><rect x="4" y="6" width="1" height="1" fill="#0F0F11"/><rect x="5" y="6" width="1" height="1" fill="#0F0F11"/><rect x="7" y="6" width="1" height="1" fill="#0F0F11"/><rect x="8" y="6" width="1" height="1" fill="#0F0F11"/><rect x="5" y="7" width="1" height="1" fill="#0F0F11"/><rect x="4" y="8" width="1" height="1" fill="#0F0F11"/><rect x="6" y="8" width="1" height="1" fill="#0F0F11"/><rect x="7" y="8" width="1" height="1" fill="#0F0F11"/></svg></span><small>Escanea el código<br>y ve nuestro menú digital</small><span class="mz">Mesa <b>4</b></span></div>
+        <div class="k-tent" aria-hidden="true"><span class="lg"><b>tt</b> Kar<b>tt</b>a</span><span class="qb"><svg viewBox="0 0 9 9" shape-rendering="crispEdges"><rect x="0" y="0" width="3" height="3" fill="none" stroke="#111111" stroke-width=".6"/><rect x="1" y="1" width="1" height="1" fill="#111111"/><rect x="6" y="0" width="3" height="3" fill="none" stroke="#111111" stroke-width=".6"/><rect x="7" y="1" width="1" height="1" fill="#111111"/><rect x="0" y="6" width="3" height="3" fill="none" stroke="#111111" stroke-width=".6"/><rect x="1" y="7" width="1" height="1" fill="#111111"/><rect x="3" y="0" width="1" height="1" fill="#111111"/><rect x="4" y="0" width="1" height="1" fill="#111111"/><rect x="3" y="1" width="1" height="1" fill="#111111"/><rect x="5" y="1" width="1" height="1" fill="#111111"/><rect x="3" y="2" width="1" height="1" fill="#111111"/><rect x="5" y="2" width="1" height="1" fill="#111111"/><rect x="0" y="3" width="1" height="1" fill="#111111"/><rect x="1" y="3" width="1" height="1" fill="#111111"/><rect x="2" y="3" width="1" height="1" fill="#111111"/><rect x="3" y="3" width="1" height="1" fill="#111111"/><rect x="5" y="3" width="1" height="1" fill="#111111"/><rect x="6" y="3" width="1" height="1" fill="#111111"/><rect x="1" y="4" width="1" height="1" fill="#111111"/><rect x="3" y="4" width="1" height="1" fill="#111111"/><rect x="5" y="4" width="1" height="1" fill="#111111"/><rect x="6" y="4" width="1" height="1" fill="#111111"/><rect x="7" y="4" width="1" height="1" fill="#111111"/><rect x="8" y="4" width="1" height="1" fill="#111111"/><rect x="1" y="5" width="1" height="1" fill="#111111"/><rect x="4" y="5" width="1" height="1" fill="#111111"/><rect x="6" y="5" width="1" height="1" fill="#111111"/><rect x="7" y="5" width="1" height="1" fill="#111111"/><rect x="8" y="5" width="1" height="1" fill="#111111"/><rect x="4" y="6" width="1" height="1" fill="#111111"/><rect x="5" y="6" width="1" height="1" fill="#111111"/><rect x="7" y="6" width="1" height="1" fill="#111111"/><rect x="8" y="6" width="1" height="1" fill="#111111"/><rect x="5" y="7" width="1" height="1" fill="#111111"/><rect x="4" y="8" width="1" height="1" fill="#111111"/><rect x="6" y="8" width="1" height="1" fill="#111111"/><rect x="7" y="8" width="1" height="1" fill="#111111"/></svg></span><small>Escanea el código<br>y ve nuestro menú digital</small><span class="mz">Mesa <b>4</b></span></div>
         <div class="k-hero__phone" aria-hidden="true"><div class="k-hphone"><div class="k-hscreen">
           <div class="k-hs-status"><span>9:41</span><i>KARTTA</i></div>
 
@@ -925,9 +928,9 @@ html{overflow-x:clip;}
       <p>KARTTA conecta la experiencia del cliente con la operación de tu negocio.</p>
     </div>
     <div class="c3d" id="c3d">
-      <div class="c3d-card" data-i="0"><div class="visual" style="width:100%;height:210px;padding:0;"><img src="assets/landing-3.jpg" alt="Cliente escaneando el QR de KARTTA" style="width:100%;height:100%;object-fit:cover;border-radius:14px;"></div><span class="num">01</span><h4>Escanea el QR</h4><p>El cliente escanea el QR de su mesa.</p></div>
-      <div class="c3d-card" data-i="1"><div class="visual" style="width:100%;height:210px;padding:0;"><img src="assets/landing-4.jpg" alt="Menú digital en pantalla" style="width:100%;height:100%;object-fit:cover;border-radius:14px;"></div><span class="num">02</span><h4>Abre el menú</h4><p>Ve la carta completa del negocio al instante.</p></div>
-      <div class="c3d-card" data-i="2"><div class="visual" style="width:100%;height:210px;padding:0;"><img src="assets/landing-5.jpg" alt="Cliente seleccionando un producto en pantalla" style="width:100%;height:100%;object-fit:cover;border-radius:14px;"></div><span class="num">03</span><h4>Elige</h4><p>Selecciona productos y arma su pedido.</p></div>
+      <div class="c3d-card" data-i="0"><div class="visual" style="width:100%;height:210px;padding:0;"><img src="assets/landing-3.jpg" loading="lazy" decoding="async" alt="Cliente escaneando el QR de KARTTA" style="width:100%;height:100%;object-fit:cover;border-radius:14px;"></div><span class="num">01</span><h4>Escanea el QR</h4><p>El cliente escanea el QR de su mesa.</p></div>
+      <div class="c3d-card" data-i="1"><div class="visual" style="width:100%;height:210px;padding:0;"><img src="assets/landing-4.jpg" loading="lazy" decoding="async" alt="Menú digital en pantalla" style="width:100%;height:100%;object-fit:cover;border-radius:14px;"></div><span class="num">02</span><h4>Abre el menú</h4><p>Ve la carta completa del negocio al instante.</p></div>
+      <div class="c3d-card" data-i="2"><div class="visual" style="width:100%;height:210px;padding:0;"><img src="assets/landing-5.jpg" loading="lazy" decoding="async" alt="Cliente seleccionando un producto en pantalla" style="width:100%;height:100%;object-fit:cover;border-radius:14px;"></div><span class="num">03</span><h4>Elige</h4><p>Selecciona productos y arma su pedido.</p></div>
       <div class="c3d-card" data-i="3"><div class="visual" style="width:100%;padding:0;"><div style="width:100%;background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:0 16px 30px -18px rgba(10,10,10,.25);">
         <div style="font-size:11px;font-weight:700;color:var(--gray);letter-spacing:.04em;margin-bottom:10px;">RESUMEN DEL PEDIDO</div>
         <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);"><span>1x Hamburguesa KARTTA</span><span>$25.000</span></div>
@@ -1065,7 +1068,7 @@ html{overflow-x:clip;}
       </div>
     </div>
     <div class="own-mock" style="position:relative;overflow:hidden;">
-      <img src="assets/landing-6.jpg" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.10;">
+      <img src="assets/landing-6.jpg" loading="lazy" decoding="async" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.10;">
       <div class="top" style="position:relative;"><span class="dot"></span><strong style="font-size:13px;">Restaurante Central</strong></div>
       <div class="pv-item" style="position:relative;"><span>Menú</span><span>24 productos</span></div>
       <div class="pv-item" style="position:relative;"><span>Pedidos hoy</span><span>124</span></div>
@@ -1179,11 +1182,11 @@ html{overflow-x:clip;}
   <div class="wrap">
     <div class="k-show__head">
       <span class="k-eyebrow">POR DENTRO DE KARTTA</span>
-      <h2 class="k-h1 k-words" id="kShowTitle">Menú, pedidos y números en un solo panel</h2>
-      <p class="k-sub" style="margin-top:14px">Así se ve KARTTA cuando tus clientes piden desde la mesa y tú lo ves todo en tiempo real.</p>
+      <h2 class="k-h1" id="kShowTitle" data-fx="words">Menú, <span class="hl">pedidos</span> y <span class="hl">números</span> en un solo panel</h2>
+      <p class="k-sub" style="margin-top:14px">Así se ve KARTTA cuando tus clientes piden desde la mesa y tú lo ves todo en <span class="hl">tiempo real</span>.</p>
     </div>
     <div class="k-show__phones">
-      <div class="k-phone k-phone--back" style="--k-rot:-7deg;--k-pw:230px" aria-hidden="true"><div class="k-phone__screen"><div class="k-scr">
+      <div class="k-phone k-phone--back" style="--k-rot:-6deg" aria-hidden="true"><div class="k-phone__screen"><div class="k-scr">
         <h4>Menú digital</h4><small>Demostración</small>
         <div class="k-card"><div class="it">Hamburguesa clásica<i>$18.900</i></div></div>
         <div class="k-card"><div class="it">Papas cheddar<i>$12.900</i></div></div>
@@ -1196,11 +1199,14 @@ html{overflow-x:clip;}
         <div class="k-card ord" style="--i:2"><div class="it">Mesa 2 · 1 producto<span class="k-badge k-badge--ok">Listo</span></div></div>
         <div class="k-card ord" style="--i:3"><div class="it">Mesa 9 · 4 productos<span class="k-badge">Nuevo</span></div></div>
       </div></div></div>
-      <div class="k-phone k-phone--back" style="--k-rot:7deg;--k-pw:230px" aria-hidden="true"><div class="k-phone__screen"><div class="k-scr">
+      <div class="k-phone k-phone--back" style="--k-rot:6deg" aria-hidden="true"><div class="k-phone__screen"><div class="k-scr">
         <h4>Métricas</h4><small>Demostración</small>
         <div class="k-card"><small>Ventas de hoy</small><div class="k-num" style="font-size:22px;color:var(--k-ink)" data-k-count="842000" data-k-pre="$ ">$ 842.000</div></div>
         <div class="k-card"><div class="it">Lunes<i></i></div><div class="bar"><b style="--w:46%"></b></div><div class="it" style="margin-top:8px">Viernes<i></i></div><div class="bar"><b style="--w:88%"></b></div><div class="it" style="margin-top:8px">Sábado<i></i></div><div class="bar"><b style="--w:72%"></b></div></div>
       </div></div></div>
+    </div>
+    <div class="k-show__cta">
+      <div class="k-island"><a data-auth="signup" href="#" data-kt="demo-crear-kartta">Crear mi KARTTA<span aria-hidden="true">→</span></a></div>
     </div>
     <p class="k-show__demo">Pantallas de demostración con datos de ejemplo.</p>
     <div class="k-rise k-show__rise" aria-label="Funciones de KARTTA">
@@ -1210,9 +1216,6 @@ html{overflow-x:clip;}
       <div class="k-card"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg></span><h3 class="k-h3">Métricas claras</h3><p class="k-sub" style="font-size:14px">Ventas y productos que más se mueven, sin hojas de cálculo.</p></div>
       <div class="k-card"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/></svg></span><h3 class="k-h3">Fidelización</h3><p class="k-sub" style="font-size:14px">Tarjeta de puntos por cliente y premios para que vuelvan.</p></div>
       <div class="k-card"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg></span><h3 class="k-h3">KARTTA AI</h3><p class="k-sub" style="font-size:14px">Un asistente dentro de tu panel para ayudarte a operar.</p></div>
-    </div>
-    <div class="k-show__cta">
-      <div class="k-island"><a data-auth="signup" href="#" data-kt="demo-crear-kartta">Crear mi KARTTA<span aria-hidden="true">→</span></a></div>
     </div>
   </div>
 </section>
@@ -1304,7 +1307,7 @@ html{overflow-x:clip;}
   <div class="wrap">
     <div class="footer-top">
       <div class="footer-brand">
-        <img src="assets/landing-7.png" alt="KARTTA">
+        <img src="assets/landing-7.png" loading="lazy" decoding="async" alt="KARTTA">
         <p>El sistema digital que conecta la operación de tu restaurante.</p>
         <a data-auth="signup" href="#" class="btn btn-primary" style="margin-top:16px;">Crear mi KARTTA</a>
       </div>

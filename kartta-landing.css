@@ -270,3 +270,112 @@ html.kx:not(.kx-failed) .hero-visual-real[data-fx].kx-in:not(.kx-done){animation
 
 /* Rendimiento: las animaciones infinitas se pausan cuando su elemento no está en pantalla (lo gestiona kartta-landing.js) */
 .kx-off,.kx-off *,.kx-off::before,.kx-off::after{animation-play-state:paused !important;}
+
+
+/* =====================================================================
+   AJUSTES v2 — rendimiento, sección "Por dentro de KARTTA" y grises
+   (capa aditiva: no cambia ninguna función existente)
+   ===================================================================== */
+
+/* ---------- A. Rendimiento ---------- */
+/* El desenfoque animado solo se conserva en elementos pequeños (títulos por palabras, textos, píldoras, iconos).
+   En contenedores grandes (carruseles, gráficas, tarjetas de planes, imágenes) animar filter:blur obliga a repintar
+   media pantalla en cada frame: ahí la entrada sigue igual (opacidad + movimiento + escala) pero sin ese coste. */
+html.kx:not(.kx-failed) [data-fx="scale"].kx-in:not(.kx-done),
+html.kx:not(.kx-failed) [data-fx="card"].kx-in:not(.kx-done),
+html.kx:not(.kx-failed) [data-fx="img"].kx-in:not(.kx-done):not(.hero-visual-real),
+html.kx:not(.kx-failed) [data-fx="left"].kx-in:not(.kx-done),
+html.kx:not(.kx-failed) [data-fx="right"].kx-in:not(.kx-done){
+  animation:
+    kx-fade var(--kx-tf,.35s) ease-out var(--kx-delay,0ms) backwards,
+    kx-move var(--kx-t,.55s) var(--kx-ez,var(--kx-out)) var(--kx-delay,0ms) backwards,
+    kx-grow var(--kx-t,.55s) var(--kx-ez,var(--kx-out)) var(--kx-delay,0ms) backwards;
+}
+/* Modo ligero (móviles, equipos con poca memoria/CPU o "ahorro de datos"): mismas entradas, sin desenfoque animado ni parallax */
+html.kx-lite:not(.kx-failed) [data-fx]:not([data-fx="words"]).kx-in:not(.kx-done){
+  animation:
+    kx-fade var(--kx-tf,.35s) ease-out var(--kx-delay,0ms) backwards,
+    kx-move var(--kx-t,.55s) var(--kx-ez,var(--kx-out)) var(--kx-delay,0ms) backwards,
+    kx-grow var(--kx-t,.55s) var(--kx-ez,var(--kx-out)) var(--kx-delay,0ms) backwards;
+}
+html.kx-lite:not(.kx-failed) [data-fx="words"].kx-in:not(.kx-done) .kx-w{
+  animation:
+    kx-fade .32s ease-out calc(var(--kx-delay,0ms) + var(--i,0)*30ms) backwards,
+    kx-move .55s var(--kx-ez,var(--kx-spring-soft)) calc(var(--kx-delay,0ms) + var(--i,0)*30ms) backwards;
+}
+html.kx-lite:not(.kx-failed) .hero-visual-real[data-fx]:not(.kx-in){filter:none;}
+html.kx-lite:not(.kx-failed) .hero-visual-real[data-fx].kx-in:not(.kx-done){animation:
+  kx-move .65s var(--kx-spring) var(--kx-delay,0ms) backwards,
+  kx-grow .65s var(--kx-spring) var(--kx-delay,0ms) backwards;}
+html.kx-lite .hero-visual-real.kx-done{animation:none;}
+
+/* ---------- B. "Por dentro de KARTTA": 3 celulares grandes, cortados por la mitad ---------- */
+html[data-kui="landing"] .k-show{padding:clamp(48px,6.5vw,88px) 0 clamp(44px,6vw,80px);}
+html[data-kui="landing"] .k-show__head{margin-bottom:clamp(22px,3.4vw,42px);}
+html[data-kui="landing"] .k-show__phones{
+  --pc:clamp(250px,33vw,390px);            /* celular central */
+  --ps:clamp(216px,28vw,334px);            /* celulares laterales */
+  display:flex;justify-content:center;align-items:flex-start;gap:0;
+  min-height:0;height:calc(var(--pc) * 1.2 + 30px);   /* corte: se ve la mitad superior de cada celular */
+  padding-top:30px;overflow:hidden;
+}
+html[data-kui="landing"] .k-show__phones .k-phone{margin:0;--k-pw:var(--ps);}
+html[data-kui="landing"] .k-show__phones .k-phone:nth-child(2){--k-pw:var(--pc);margin:0;z-index:2;}
+html[data-kui="landing"] .k-show__phones .k-phone--back{
+  scale:.92;transform-origin:50% 0;margin-top:clamp(26px,3.6vw,46px);
+  filter:blur(1.5px);opacity:.92;
+}
+html[data-kui="landing"] .k-show__phones .k-phone:first-child{margin-right:calc(var(--ps) * .01);}
+html[data-kui="landing"] .k-show__phones .k-phone:last-child{margin-left:calc(var(--ps) * .01);}
+/* corte limpio, pegado a la base del bloque */
+html[data-kui="landing"] .k-show__phones .k-phone{border-bottom-left-radius:0;border-bottom-right-radius:0;}
+
+/* Contenido de cada pantalla: proporcional al ancho del celular (si el navegador no soporta cqw, queda el tamaño de antes) */
+@supports (width:1cqw){
+  html[data-kui="landing"] .k-show__phones .k-phone__screen{container-type:inline-size;}
+  html[data-kui="landing"] .k-show__phones .k-scr{--u:calc(100cqw / 212);padding:calc(46*var(--u)) calc(14*var(--u)) 0;gap:calc(10*var(--u));}
+  html[data-kui="landing"] .k-show__phones .k-scr h4{font-size:calc(15*var(--u));}
+  html[data-kui="landing"] .k-show__phones .k-scr small{font-size:calc(10.5*var(--u));}
+  html[data-kui="landing"] .k-show__phones .k-scr .k-card{padding:calc(12*var(--u)) calc(14*var(--u));border-radius:calc(12*var(--u));}
+  html[data-kui="landing"] .k-show__phones .k-scr .it{font-size:calc(12*var(--u));gap:calc(8*var(--u));}
+  html[data-kui="landing"] .k-show__phones .k-scr .k-badge{font-size:calc(10*var(--u));padding:calc(4*var(--u)) calc(8*var(--u));}
+  html[data-kui="landing"] .k-show__phones .k-scr .bar{height:calc(7*var(--u));}
+  html[data-kui="landing"] .k-show__phones .k-scr .k-num{font-size:calc(22*var(--u)) !important;}
+}
+
+/* Botón: justo debajo de los celulares, sobre la línea del corte */
+html[data-kui="landing"] .k-show__cta{position:relative;z-index:5;margin-top:calc(-1 * clamp(24px,3vw,32px));}
+html[data-kui="landing"] .k-show .k-island{min-height:54px;padding:0 30px;font-size:15px;}
+html[data-kui="landing"] .k-show__demo{margin-top:14px;}
+html[data-kui="landing"] .k-show__rise{margin-top:clamp(8px,1.6vw,20px);}
+html[data-kui="landing"] .k-show__rise.k-rise{padding-top:28px;padding-bottom:40px;}
+
+/* Móvil: los 3 celulares se ven (los laterales asoman detrás del central) */
+@media (max-width:700px){
+  html[data-kui="landing"] .k-show__phones{--pc:min(58vw,250px);--ps:min(46vw,204px);margin-inline:calc(50% - 50vw);}
+  html[data-kui="landing"] .k-show__phones .k-phone:not(:nth-child(2)){display:block;}
+  html[data-kui="landing"] .k-show__phones .k-phone:first-child{margin-right:calc(var(--ps) * -.34);}
+  html[data-kui="landing"] .k-show__phones .k-phone:last-child{margin-left:calc(var(--ps) * -.34);}
+  html[data-kui="landing"] .k-show__phones .k-phone:nth-child(2){margin:0;}
+}
+
+/* ---------- C. Grises KARTTA (sin tonos azulados) ---------- */
+/* Barra flotante inferior: gris oscuro neutro. Solo en el index; el dock del panel no cambia. */
+html[data-kui="landing"]{
+  --k-dock-bg:linear-gradient(180deg,#2B2B2B,#171717);
+  --k-dock-sh:inset 0 1px 0 rgba(255,255,255,.09),0 12px 24px -10px rgba(0,0,0,.5);
+  --k-btn-bg:linear-gradient(180deg,#2B2B2B,#101010);
+}
+html[data-kui="landing"] .kbar{background:linear-gradient(180deg,#2B2B2B,#171717);border:1px solid rgba(255,255,255,.07);}
+html[data-kui="landing"] .kbar-avatar-btn{background:transparent;}
+
+
+/* ---------- Sección "Por dentro de KARTTA": palabras con rectángulo coral y celulares con marco negro ---------- */
+#demo .k-h1 .hl{padding:.02em .2em;border-radius:0;}
+#demo .k-sub .hl{padding:.02em .35em;border-radius:0;font-weight:700;}
+html[data-kui="landing"] .k-show__phones .k-phone{
+  --k-rad:calc(var(--k-pw) * .15);
+  padding:10px;background:#111111;border-radius:var(--k-rad) var(--k-rad) 0 0;
+  box-shadow:inset 0 0 0 2px #2E2E2E,inset 0 0 0 4px #0A0A0A,0 40px 70px -24px rgba(12,12,12,.4),0 8px 20px rgba(12,12,12,.14);
+}
+html[data-kui="landing"] .k-show__phones .k-phone__screen{border-radius:calc(var(--k-rad) - 9px) calc(var(--k-rad) - 9px) 0 0;}

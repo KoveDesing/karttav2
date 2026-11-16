@@ -12,6 +12,7 @@
   /* 1. Pantalla de carga tipo app: primera visita de la sesión, ~1.3 s, sale con wipe */
   function loader() {
     if (RM || (kind !== 'landing' && kind !== 'dash')) return;
+    if (kind === 'landing' && (d.getElementById('kBoot') || window.__kxFonts)) return;   // el index ya tiene su propia pantalla de carga: no apilar una segunda
     var seen = false;
     try { seen = sessionStorage.getItem('k_ui_loader') === '1'; sessionStorage.setItem('k_ui_loader', '1'); } catch (e) {}
     if (seen) return;
@@ -114,8 +115,14 @@
     if (FINE) wrap.addEventListener('pointermove', function (e) {
       var r = wrap.getBoundingClientRect(); mx = (e.clientX - r.left) / r.width - .5; my = (e.clientY - r.top) / r.height - .5; sched();
     }, { passive: true });
+    var onScreen = true, sraf = 0;
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { onScreen = es[0].isIntersecting; }, { rootMargin: '120px 0px' }).observe(wrap);
     window.addEventListener('scroll', function () {
-      var r = wrap.getBoundingClientRect(); sy = Math.max(-1, Math.min(1, (r.top + r.height / 2 - innerHeight / 2) / innerHeight)); sched();
+      if (!onScreen || sraf) return;
+      sraf = requestAnimationFrame(function () {
+        sraf = 0;
+        var r = wrap.getBoundingClientRect(); sy = Math.max(-1, Math.min(1, (r.top + r.height / 2 - innerHeight / 2) / innerHeight)); sched();
+      });
     }, { passive: true });
   }
 
