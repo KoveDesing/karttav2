@@ -426,3 +426,27 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
+
+
+/* Flechas del carrusel de funciones (#demo): pasan a la card anterior / siguiente */
+(function () {
+  'use strict';
+  function init() {
+    var r = document.querySelector('.k-show__rise'), nav = document.querySelector('.k-show__nav');
+    if (!r || !nav) return;
+    var prev = nav.querySelector('[data-k-dir="-1"]'), next = nav.querySelector('[data-k-dir="1"]');
+    var kids = Array.prototype.slice.call(r.children);
+    function cur() { var i = kids.findIndex(function (k) { return k.classList.contains('is-active'); }); return i < 0 ? 0 : i; }
+    function go(d) {
+      var i = Math.max(0, Math.min(kids.length - 1, cur() + d)), k = kids[i];
+      var rm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      r.scrollTo({ left: k.offsetLeft - (r.clientWidth - k.offsetWidth) / 2, behavior: rm ? 'auto' : 'smooth' });
+    }
+    function sync() { var i = cur(); prev.disabled = i <= 0; next.disabled = i >= kids.length - 1; }
+    prev.addEventListener('click', function () { go(-1); });
+    next.addEventListener('click', function () { go(1); });
+    r.addEventListener('scroll', function () { requestAnimationFrame(sync); }, { passive: true });
+    setTimeout(sync, 300); sync();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();

@@ -382,3 +382,14 @@ html[data-kui="landing"] .k-show__phones .k-phone__screen{border-radius:calc(var
 
 /* Sin el brillo lavanda/azul de la esquina inferior derecha en "Por dentro de KARTTA" */
 #demo.k-blobs::after{display:none;}
+
+/* Flechas del carrusel de funciones: negro neomorphism */
+.k-show__nav{display:flex;justify-content:center;gap:16px;margin-top:4px;}
+.k-show__arrow{width:52px;height:52px;border:0;border-radius:16px;display:grid;place-items:center;cursor:pointer;color:#fff;
+  background:linear-gradient(145deg,#2B2B2B,#161616);
+  box-shadow:6px 6px 14px rgba(10,10,10,.35),-5px -5px 12px rgba(255,255,255,.85),inset 1px 1px 0 rgba(255,255,255,.08);
+  transition:transform .2s var(--kx-out),box-shadow .2s ease,opacity .2s ease;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+@media (hover:hover){.k-show__arrow:hover{transform:translateY(-2px);}}
+.k-show__arrow:active{transform:scale(.94);box-shadow:inset 4px 4px 9px rgba(0,0,0,.6),inset -2px -2px 6px rgba(255,255,255,.06);}
+.k-show__arrow:focus-visible{outline:2px solid var(--red);outline-offset:3px;}
+.k-show__arrow[disabled]{opacity:.35;cursor:default;transform:none;}
