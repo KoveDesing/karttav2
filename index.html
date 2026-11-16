@@ -721,6 +721,7 @@ html{overflow-x:clip;}
 <script>try{var __q=new URLSearchParams(location.search);if(__q.get('error_code')==='bad_oauth_state'){history.replaceState(null,'',location.pathname+location.hash);}}catch(e){}</script>
 <link rel="stylesheet" href="/kartta-ui.css?v=20261116">
 <script src="/kartta-ui.js?v=20261116" defer></script>
+<script src="/kartta-brand.js?v=20261120" defer></script>
 </head>
 <body class="auth-loading">
 <div id="kBoot" aria-hidden="true"><span>Kar<b>tt</b>a</span></div>
@@ -1881,34 +1882,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   }
 
-  // KARTTA siempre en rojo en cualquier texto visible
-  var tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-    acceptNode: function(node){
-      var p = node.parentNode;
-      if(!p || !node.nodeValue || node.nodeValue.indexOf('KARTTA') === -1) return NodeFilter.FILTER_REJECT;
-      var tag = p.nodeName;
-      if(tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TITLE') return NodeFilter.FILTER_REJECT;
-      if(p.closest && (p.closest('.nav-logo') || p.closest('.btn-primary') || p.closest('.hl') || p.closest('.kbar-cta') || p.closest('.no-kred'))) return NodeFilter.FILTER_REJECT;
-      return NodeFilter.FILTER_ACCEPT;
-    }
-  });
-  var textNodes = [];
-  var tn;
-  while(tn = tw.nextNode()){ textNodes.push(tn); }
-  textNodes.forEach(function(node){
-    var frag = document.createDocumentFragment();
-    node.nodeValue.split(/(KARTTA)/g).forEach(function(part){
-      if(part === 'KARTTA'){
-        var span = document.createElement('span');
-        span.style.color = '#FF3145';
-        span.textContent = part;
-        frag.appendChild(span);
-      } else if(part){
-        frag.appendChild(document.createTextNode(part));
-      }
-    });
-    node.parentNode.replaceChild(frag, node);
-  });
+  // La marca (Kartta en Mr Dafoe, tt en coral) la aplica kartta-brand.js en todo el texto visible
 })();
 });
 </script>
