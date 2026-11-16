@@ -171,6 +171,7 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
     <div class="seg" id="dev" role="group" aria-label="Tamaño de pantalla"><button data-d="mobile" aria-pressed="true">Móvil</button><button data-d="tablet" aria-pressed="false">Tablet</button><button data-d="desktop" aria-pressed="false">PC</button></div>
     <div id="saveState" role="status" aria-live="polite">—</div>
     <a class="btn" id="viewPub" href="#" target="_blank" rel="noopener" title="Abre tu menú tal como lo ven los clientes">Ver menú público ↗</a>
+    <button class="btn" id="recoverBtn" hidden title="Tu prueba de KARTTA Pro terminó: mira lo que puedes recuperar">Recuperar Pro</button>
     <button class="btn" id="discard" title="Volver al diseño que está publicado">Descartar</button>
     <button class="btn primary" id="publish">Publicar</button>
   </header>
@@ -189,6 +190,7 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
 <div id="toast" role="status"></div>
 <script src="/menu-design.js"></script>
 <script src="kartta-upsell.js?v=20261110" defer></script>
+<script src="kartta-trial-end.js?v=20261116" defer></script>
 <script type="module">
 import { sb, imageUrl, SUBDOMAINS_LIVE, appOrigin } from "/supabase-init.js";
 const D = window.KARTTA_DESIGN, $ = (id) => document.getElementById(id), BUCKET = 'kartta-media';
@@ -199,6 +201,18 @@ const CROWN = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColo
 const crown = (t) => h('span', { class: 'crown', title: t || 'Disponible desde KARTTA Pro', 'aria-label': t || 'Disponible desde KARTTA Pro', role: 'img', html: CROWN });
 const FEAT = { fontHeading: 'Tipografía de títulos', fontBody: 'Tipografía de textos', blocks: 'El orden de las secciones', announcement: 'El anuncio destacado', footerText: 'El texto del pie' };
 const upsell = (f) => window.KARTTA_UPSELL ? KARTTA_UPSELL.open({ plan: 'KARTTA Pro', feature: f }) : toast('Esta opción es de KARTTA Pro.');
+const PRO_OBJ = ['wa', 'btn', 'bgx', 'hbgx', 'tx', 'rt', 'els'];
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const proContent = (c) => D.ADVANCED.concat(PRO_OBJ).some(k => !same(c[k], D.DEFAULTS[k]));
+const toFree = (c) => { const o = { ...c }; D.ADVANCED.concat(PRO_OBJ).forEach(k => { o[k] = D.DEFAULTS[k]; }); return o; };
+function usedProFeatures(c){ const u = [], ch = (k) => !same(c[k], D.DEFAULTS[k]);
+  if (c.template && !FREE_TPL.includes(c.template)) u.push('templates');
+  if (ch('fontHeading') || ch('fontBody')) u.push('fonts');
+  if (ch('blocks') || ch('announcement') || ch('footerText')) u.push('layout');
+  if (ch('wa') || ch('btn')) u.push('whatsapp');
+  if (['bgx', 'hbgx', 'tx', 'rt', 'els'].some(ch)) u.push('tools');
+  return u; }
+let restoredPro = false, trialInfo = { ended: false, end: '', used: [] };
 const isLocked = () => rank < 1, money = (n) => '$' + Number(n || 0).toLocaleString('es-CO');
 function toast(t, ms){ const el = $('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), ms || 2800); }
 function h(tag, attrs, ...kids){ const e = document.createElement(tag); Object.entries(attrs || {}).forEach(([k, v]) => { if (k === 'class') e.className = v; else if (k === 'html') e.innerHTML = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v); }); kids.flat().forEach(c => { if (c != null) e.append(c.nodeType ? c : document.createTextNode(c)); }); return e; }
@@ -1108,24 +1122,41 @@ addEventListener('focus', () => { if (accentUid) syncAccent(accentUid); });
   scan(document);
 })();
 
+/* ---------- fin de la prueba Pro: pantalla de recuperación (una vez por prueba; se puede reabrir con «Recuperar Pro») ---------- */
+async function setupTrialEnd(){
+  const btn = $('recoverBtn'); if (!btn || !trialInfo.ended || rank >= 1) return;
+  const key = 'kartta_trial_end_seen_' + rid + '_' + trialInfo.end;
+  let price = null; try { const pr = await sb.from('plans').select('monthly_price_cop').eq('id', 'kartta').maybeSingle(); price = pr.data && Number(pr.data.monthly_price_cop) > 0 ? Number(pr.data.monthly_price_cop) : null; } catch {}
+  const show = () => window.KARTTA_TRIAL_END && KARTTA_TRIAL_END.open({ price, used: trialInfo.used, onClose: () => { try { localStorage.setItem(key, '1'); } catch {} } });
+  btn.hidden = false; btn.onclick = show;
+  let seen = false; try { seen = !!localStorage.getItem(key); } catch {}
+  if (!seen || location.hash === '#recuperar') show();
+}
 async function boot(user){
   try {
     accentUid = user.uid; await syncAccent(user.uid);   // antes de mostrar el editor
     const mem = await sb.from('restaurant_members').select('restaurant_id,role').eq('user_id', user.uid).order('created_at').limit(1);
     if (!mem.data || !mem.data.length) throw new Error('sin_negocio'); if (!['owner', 'admin'].includes(mem.data[0].role)) throw new Error('sin_permiso');
     rid = mem.data[0].restaurant_id;
-    const [r, sub, ds] = await Promise.all([sb.from('restaurants').select('name,slug,description,whatsapp,whatsapp_enabled,whatsapp_country_code,address,logo_path,cover_path,is_published').eq('id', rid).single(), sb.from('subscriptions').select('plan_id,status,current_period_end').eq('restaurant_id', rid).maybeSingle(), sb.from('menu_designs').select('status,config').eq('restaurant_id', rid)]);
+    const [r, sub, ds] = await Promise.all([sb.from('restaurants').select('name,slug,description,whatsapp,whatsapp_enabled,whatsapp_country_code,address,logo_path,cover_path,is_published').eq('id', rid).single(), sb.from('subscriptions').select('plan_id,status,current_period_end,trial_end').eq('restaurant_id', rid).maybeSingle(), sb.from('menu_designs').select('status,config,pro_backup').eq('restaurant_id', rid)]);
     if (r.error) throw r.error; restaurant = r.data; $('viewPub').href = SUBDOMAINS_LIVE ? 'https://' + restaurant.slug + '.kartta.food' : appOrigin() + '/m/' + encodeURIComponent(restaurant.slug); $('bizTitle').textContent = '· ' + (restaurant.name || '');
     const s = sub.data, vig = s && ['active', 'trialing'].includes(s.status) && (!s.current_period_end || new Date(s.current_period_end) > new Date());
     if (vig) { const p = await sb.from('plans').select('limits').eq('id', s.plan_id).maybeSingle(); rank = Number(p.data?.limits?.rank || 0); }
     const rows = ds.data || [], draft = rows.find(x => x.status === 'draft'), pub = rows.find(x => x.status === 'published');
     published = D.normalize(pub ? pub.config : {}); cfg = D.normalize(draft ? draft.config : (pub ? pub.config : {})); lastSaved = draft ? JSON.stringify(D.compact(draft.config)) : '';
+    /* Conservación del diseño Pro: la base guarda en pro_backup el último diseño hecho con Pro/prueba y no lo toca en Free. */
+    const bk = (draft && draft.pro_backup) || (pub && pub.pro_backup) || null, bkCfg = bk ? D.normalize(bk) : null;
+    if (rank < 1 && bkCfg && proContent(bkCfg)) { cfg = D.normalize(toFree(cfg)); lastSaved = JSON.stringify(D.compact(cfg)); }       // Free: se trabaja con la versión gratuita; el original queda en pro_backup
+    else if (rank >= 1 && bkCfg && proContent(bkCfg) && !proContent(cfg) && JSON.stringify(D.compact(bkCfg)) !== JSON.stringify(D.compact(cfg))) { cfg = bkCfg; restoredPro = true; }   // volvió a Pro: recupera su diseño
+    trialInfo = { ended: !!(s && s.plan_id === 'trial' && !vig), end: s ? (s.trial_end || s.current_period_end || '') : '', used: bkCfg ? usedProFeatures(bkCfg) : [] };
     await loadCatalog(); menuPublished = !!restaurant.is_published; $('pubBanner').classList.toggle('show', !menuPublished);
     const firstRun = !pub && !(draft && Object.keys(D.compact(draft.config)).length > 1);
     buildRail(); buildSearch(); hist = [JSON.stringify(cfg)]; hi = 0; booted = true;
     const want = (location.hash || '').slice(1); openTool(TOOLS.some(t => t[0] === want) ? want : (matchMedia('(max-width:900px)').matches ? null : 'design')); renderState();
     $('gate').classList.add('hidden'); $('app').classList.add('ready'); fit(); if (previewReady) sendData();
-    let seen = false; try { seen = !!localStorage.getItem('kartta_tpl_seen_' + rid); } catch {} if (firstRun && !seen) firstRunTemplates();
+    if (restoredPro) { scheduleSave(); toast('¡Bienvenido de vuelta a Pro! Recuperamos tu diseño tal como lo dejaste.', 5200); }
+    try { await setupTrialEnd(); } catch (e) { console.warn('[KARTTA] pantalla de fin de prueba', e); }
+    let seen = false; try { seen = !!localStorage.getItem('kartta_tpl_seen_' + rid); } catch {} if (firstRun && !seen && !trialInfo.ended) firstRunTemplates();
   } catch (e) { console.error(e); $('gateMsg').textContent = e.message === 'sin_permiso' ? 'Solo el dueño o un administrador puede usar el editor.' : e.message === 'sin_negocio' ? 'Tu cuenta no tiene un negocio asociado todavía.' : 'No pudimos cargar el editor. Revisa tu conexión.'; }
 }
 let started = false;

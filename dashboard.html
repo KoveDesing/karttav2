@@ -1069,7 +1069,7 @@ function trialBar(){
       : '<b>' + (d === 1 ? 'Te queda <span class="hl">1 día</span>' : 'Te quedan <span class="hl">' + d + ' días</span>') + ' de KARTTA Pro.</b> ' + (d <= 3 ? 'Después pasas a Free (20 productos, 2 plantillas, sin logo ni banner). Mejora ahora y no pierdas nada.' : 'Aprovecha todo lo que incluye. Cuando termine, pasas a Free.');
   } else if (negocio.plan === 'free' && negocio.subPlan === 'trial') {
     bar.hidden = false; bar.classList.add('urgent');
-    $('tbText').innerHTML = '<b>Tu prueba terminó y ahora estás en Free.</b> Recupera plantillas, logo, banner y más productos con KARTTA Pro.';
+    $('tbText').innerHTML = '<b>Tu prueba terminó y ahora estás en Free.</b> Recupera plantillas, logo, banner y más productos con KARTTA Pro. <a href="editor.html#recuperar" style="color:#fff;font-weight:800;text-decoration:underline">Ver lo que puedes recuperar</a>';
   } else bar.hidden = true;
 }
 function ktInit(){
