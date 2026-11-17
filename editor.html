@@ -154,6 +154,8 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
 .kpop .sw button{width:22px;height:22px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--border);cursor:pointer;padding:0}
 .kpop .sw button:hover{transform:scale(1.15)}
 .kpop h6{margin:0;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cvt{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:6px 0 10px}.cvt .btn{min-height:34px;font-size:12px;padding:0 8px;border-radius:10px;box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 2px 6px rgba(0,0,0,.12)}
+#recoverBtn[hidden]{display:none !important}
 </style>
 <link rel="stylesheet" href="/kartta-fields.css?v=20261103">
 <link rel="stylesheet" href="/kartta-ui.css">
@@ -552,7 +554,7 @@ const waDigits = () => { if (!restaurant.whatsapp_enabled) return null; const cc
 /* ---------- Fase 2: fondos con degradado, estilo por texto, elementos, capas, palabra por palabra ---------- */
 const txRank = (o) => { const v = Object.values(o || {}); return !v.length ? 0 : v.some(e => e.ts || e.ff) ? 2 : 1; };
 const gRank = (g) => !g || !g.c1 ? 0 : (g.t === 'radial' || g.c3 ? 2 : 1);
-const elsRank = (a) => !a.length ? 0 : (a.length > 6 || a.some(e => e.k === 'promo' || e.r || e.dx || e.dy)) ? 2 : 1;
+const elsRank = (a) => !a.length ? 0 : (a.length > 6 || a.some(e => e.k === 'promo' || e.r || e.dx || e.dy || e.rot || e.op || e.w || e.ls || e.lh || e.g)) ? 2 : 1;
 function commit(key, val, min, label, coalesce){ if (rank < min) { needPlan(min, label); syncAll(); return false; } set(key, val, coalesce); return true; }
 const gSet = (key, patch, label, coalesce) => { const cur = cfg[key] || {}, seed = cur.c1 ? {} : { t: 'linear', a: 180, c1: cfg.primary, c2: cfg.secondary }, n = { ...seed, ...cur, ...patch }; Object.keys(n).forEach(k => { if (n[k] == null || n[k] === '') delete n[k]; }); if (patch.t === 'none') return commit(key, {}, 0, label); return commit(key, n, gRank(n), label, coalesce); };
 const txSet = (slot, prop, val, label, coalesce) => { const o = JSON.parse(JSON.stringify(cfg.tx || {})); o[slot] = { ...(o[slot] || {}) }; if (val === false || val == null || val === '' || val === 0) delete o[slot][prop]; else o[slot][prop] = val; if (!Object.keys(o[slot]).length) delete o[slot]; commit('tx', o, txRank(o), label, coalesce); };
@@ -565,7 +567,7 @@ const newId = () => { let s; do { s = Math.random().toString(36).slice(2, 8); } 
 const elOf = (id) => (cfg.els || []).find(e => e.id === id);
 const reindex = (arr) => { EL_ANCH().forEach(a => { arr.filter(e => e.af === a).sort((x, y) => x.n - y.n).forEach((e, i) => { e.n = i; }); }); return arr; };
 const EL_ANCH = () => D.EL_ANCHORS;
-function setEls(arr, label, coalesce){ arr = reindex(arr.map(e => ({ ...e }))); const need = elsRank(arr); return commit('els', arr, need, need >= 2 && rank < 2 ? (arr.length > 6 ? 'Más de 6 elementos' : 'Las opciones avanzadas de elementos (tarjeta promo, arrastre libre y texto palabra por palabra)') : label, coalesce); }
+function setEls(arr, label, coalesce){ arr = reindex(arr.map(e => ({ ...e }))); const need = elsRank(arr); return commit('els', arr, need, need >= 2 && rank < 2 ? (arr.length > 6 ? 'Más de 6 elementos' : 'Las opciones avanzadas de elementos (tarjeta promo, arrastre libre, rotación, opacidad, ancho, espaciado, grupos y texto palabra por palabra)') : label, coalesce); }
 function updEl(id, patch, coalesce){ const arr = (cfg.els || []).map(e => { if (e.id !== id) return { ...e }; const n = { ...e, ...patch }; Object.keys(n).forEach(k => { if (n[k] === undefined || n[k] === '' || n[k] === null || n[k] === false && k !== 'off') delete n[k]; }); if (n.off === false) delete n.off; return n; }); return setEls(arr, 'Elementos', coalesce); }
 function addEl(kind){
   if (rank < 1) return needPlan(1, 'Elementos del menú'); if (kind === 'promo' && rank < 2) return needPlan(2, 'La tarjeta promo');
@@ -610,6 +612,13 @@ function wordEd(host, getText, getRuns, setRuns, label){
 function elEditor(host, e){
   const k = e.k, ch = (p, co) => updEl(e.id, p, co);
   host.append(h('div', { class: 'sec', style: 'display:flex;align-items:center;gap:8px' }, EL_LABEL[k], h('button', { type: 'button', class: 'lnk', style: 'margin-left:auto', onclick: () => { selEl = null; openTool('elements', true); } }, 'Cerrar edición')));
+  const tbr = h('div', { class: 'cvt', role: 'toolbar', 'aria-label': 'Herramientas del elemento' }), tbb = (lbl, tip, fn, cls) => h('button', { type: 'button', class: 'btn' + (cls ? ' ' + cls : ''), title: tip, onclick: fn }, lbl);
+  const lkBtn = tbb('', 'Bloquear o desbloquear (Ctrl+Mayús+L)', () => lockSel()); syncers.push(() => { lkBtn.textContent = elOf(e.id)?.lk ? '🔓 Desbloquear' : '🔒 Bloquear'; });
+  const grBtn = tbb('', 'Agrupar o desagrupar (Ctrl+G · Ctrl+Mayús+G)', () => groupSel(!elOf(e.id)?.g)); syncers.push(() => { grBtn.textContent = elOf(e.id)?.g ? 'Desagrupar' : 'Agrupar'; });
+  tbr.append(lkBtn, grBtn, tbb('Copiar', 'Copiar (Ctrl+C)', () => copySel()), tbb('Pegar', 'Pegar (Ctrl+V)', () => pasteSel()), tbb('Copiar estilo', 'Copiar estilo (Ctrl+Alt+C)', copyStyle), tbb('Pegar estilo', 'Pegar estilo (Ctrl+Alt+V)', pasteStyle));
+  host.append(tbr);
+  if (e.lk) { host.append(h('p', { class: 'note' }, 'Este elemento está bloqueado: no se puede mover, cambiar ni eliminar hasta que lo desbloquees.'), h('div', { class: 'two1' }, h('button', { type: 'button', class: 'btn', onclick: () => dupSel() }, 'Duplicar'), h('span'))); return; }
+  if ((selIds().length > 1)) host.append(h('p', { class: 'note' }, selIds().length + ' elementos seleccionados: los cambios de color, alineación, tamaño y formato se aplican a todos.'));
   if (k === 'sp') elRng(host, 'Alto del espacio', 8, 80, () => elOf(e.id)?.h, v => ch({ h: v }, true), 24);
   else if (k !== 'div') {
     elField(host, k === 'promo' ? 'Título de la promo' : k === 'btn' ? 'Texto del botón' : 'Texto', () => elOf(e.id)?.t, v => ch({ t: v }, true), { multi: k === 'p' || k === 'quote', max: k === 'btn' ? 40 : 200 });
@@ -625,6 +634,16 @@ function elEditor(host, e){
     if (k !== 'div') { const g = h('div', { class: 'segc', role: 'group', 'aria-label': 'Alineación' }); [['l', 'Izquierda'], ['c', 'Centro'], ['r', 'Derecha']].forEach(([v, t]) => g.append(h('button', { type: 'button', 'data-v': v, 'aria-pressed': 'false', onclick: () => ch({ al: v === 'l' ? '' : v }) }, t)));
       host.append(h('div', { class: 'fld' }, h('div', { class: 'rgh' }, h('label', {}, 'Alineación')), g)); syncers.push(() => g.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String((elOf(e.id)?.al || 'l') === b.dataset.v)))); }
   }
+  if (k !== 'sp' && k !== 'div') {
+    const fg = h('div', { class: 'segc', role: 'group', 'aria-label': 'Formato del texto' });
+    [['b', 'N', 'Negrita', 'font-weight:800'], ['i', 'K', 'Cursiva', 'font-style:italic'], ['ul', 'S', 'Subrayado', 'text-decoration:underline']].forEach(([key, t, ttl, st]) => fg.append(h('button', { type: 'button', 'data-v': key, title: ttl, 'aria-label': ttl, 'aria-pressed': 'false', style: st, onclick: () => ch({ [key]: !elOf(e.id)?.[key] }) }, key === 'b' ? 'B' : key === 'i' ? 'I' : 'U')));
+    host.append(h('div', { class: 'fld' }, h('div', { class: 'rgh' }, h('label', {}, 'Formato')), fg)); syncers.push(() => fg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(!!elOf(e.id)?.[b.dataset.v]))));
+    elRng(host, 'Espaciado entre letras', 0, 10, () => elOf(e.id)?.ls, v => ch({ ls: v }, true), 0, 'px', 2);
+    elRng(host, 'Interlineado (15 = 1,5)', 10, 25, () => elOf(e.id)?.lh, v => ch({ lh: v }, true), k === 'h' ? 12 : 15, '', 2);
+  }
+  if (k !== 'sp') { elRng(host, 'Opacidad', 10, 100, () => elOf(e.id)?.op, v => ch({ op: v >= 100 ? '' : v }, true), 100, '%', 2); elRng(host, 'Ancho', 20, 100, () => elOf(e.id)?.w, v => ch({ w: v >= 100 ? '' : v }, true), 100, '%', 2); }
+  if (k !== 'sp' && k !== 'div') elRng(host, 'Rotación', -180, 180, () => elOf(e.id)?.rot, v => ch({ rot: v }, true), 0, '°', 2);
+  host.append(h('div', { class: 'two1' }, h('button', { type: 'button', class: 'btn', onclick: () => { const x = elOf(e.id); if (x && (x.dx || x.rot)) { if (!updEl(e.id, { dx: '', rot: '' })) {} } else toast('Ya está centrado.'); } }, 'Centrar y enderezar'), h('span')));
   const an = h('select', { id: 'elAf', 'aria-label': 'Dónde se coloca', onchange: () => ch({ af: an.value, n: 99 }) }, ...D.EL_ANCHORS.map(a => h('option', { value: a }, 'Después de: ' + AN_LABEL[a])));
   host.append(h('div', { class: 'fld' }, h('label', { for: 'elAf' }, 'Posición en el menú'), an)); syncers.push(() => { an.value = elOf(e.id)?.af || 'items'; });
   host.append(h('div', { class: 'two1' }, h('button', { type: 'button', class: 'btn', onclick: () => moveEl(e.id, -1) }, '↑ Subir'), h('button', { type: 'button', class: 'btn', onclick: () => moveEl(e.id, 1) }, '↓ Bajar')));
@@ -635,6 +654,62 @@ function elEditor(host, e){
 function moveEl(id, dir){ const e = elOf(id); if (!e) return; const same = (cfg.els || []).filter(x => x.af === e.af).sort((a, b) => a.n - b.n), i = same.findIndex(x => x.id === id), j = i + dir; if (j < 0 || j >= same.length) return; const arr = (cfg.els || []).map(x => ({ ...x })); arr.find(x => x.id === same[i].id).n = same[j].n; arr.find(x => x.id === same[j].id).n = same[i].n; if (arr.find(x => x.id === same[i].id).n === arr.find(x => x.id === same[j].id).n) arr.find(x => x.id === same[i].id).n += dir; setEls(arr, 'Elementos'); }
 function delEl(id){ if (rank < 1) return; if (setEls((cfg.els || []).filter(e => e.id !== id), 'Elementos')) { if (selEl === id) selEl = null; openTool('elements', true); } }
 function dupEl(id){ const e = elOf(id); if (!e) return; if ((cfg.els || []).length >= (rank >= 2 ? D.EL_MAX : 6)) return toast('Llegaste al máximo de elementos de tu plan.'); const nid = newId(); if (setEls([...(cfg.els || []), { ...e, id: nid, n: (e.n || 0) + 1 }], 'Elementos')) { selEl = nid; openTool('elements', true); } }
+/* ---------- Editor tipo Canva: selección múltiple, portapapeles, bloqueo, grupos, alineación y atajos ---------- */
+let selMulti = [], elClip = null, styleClip = null;
+const STYLE_KEYS = ['c', 'bg', 'bg2', 'sz', 'al', 'b', 'i', 'ul', 'ls', 'lh', 'op'];
+const cleanEl = (n) => { Object.keys(n).forEach(k => { if (n[k] === undefined || n[k] === '' || n[k] === null || n[k] === 0 && k !== 'n' && k !== 'dx' && k !== 'dy' || n[k] === false) delete n[k]; }); return n; };
+const selIds = () => { if (!selEl || !elOf(selEl)) return []; if (selMulti.includes(selEl)) return selMulti.filter(id => elOf(id)); const g = elOf(selEl).g; return g ? (cfg.els || []).filter(x => x.g === g).map(x => x.id) : [selEl]; };
+function syncSel(){ if (previewReady) pv.contentWindow.postMessage({ type: 'kartta-select', els: selIds() }, location.origin); }
+function refreshSel(){ syncSel(); if (tool === 'elements' || tool === 'layers') openTool(tool, true); }
+function pickEl(id, add){ const e = elOf(id); if (!e) return; const ids = e.g ? (cfg.els || []).filter(x => x.g === e.g).map(x => x.id) : [id];
+  if (add) { const cur = selIds(), all = ids.every(i => cur.includes(i)); selMulti = all ? cur.filter(i => !ids.includes(i)) : [...new Set([...cur, ...ids])]; selEl = selMulti[selMulti.length - 1] || null; } else { selMulti = ids; selEl = id; } }
+/** Cambia propiedades de los elementos elegidos en un solo paso del historial. geo=true: ignora los bloqueados. */
+function patchSel(patch, geo, co){ const ids = selIds(); if (!ids.length) return false; let n = 0;
+  const arr = (cfg.els || []).map(e => { if (!ids.includes(e.id) || (geo && e.lk)) return { ...e }; n++; return cleanEl({ ...e, ...patch }); });
+  if (!n) { toast('Está bloqueado. Desbloquéalo para editarlo.'); return false; } return setEls(arr, 'Elementos', co); }
+const lockedAny = (ids) => ids.some(id => elOf(id)?.lk);
+function copySel(msg){ const ids = selIds(); if (!ids.length) return false; elClip = ids.map(id => ({ ...elOf(id) })); if (msg !== false) toast(ids.length > 1 ? ids.length + ' elementos copiados' : 'Elemento copiado'); return true; }
+function pasteSel(){
+  if (rank < 1) return needPlan(1, 'Elementos del menú'); if (!elClip || !elClip.length) return toast('No hay nada copiado.');
+  const cur = cfg.els || [], max = rank >= 2 ? D.EL_MAX : 6; if (cur.length + elClip.length > max) { toast('Tu plan permite hasta ' + max + ' elementos.'); if (rank < 2) needPlan(2, 'Más elementos'); return; }
+  const used = new Set(cur.map(e => e.id)), gm = {}, mk = (pre) => { let x; do { x = Math.random().toString(36).slice(2, 8); } while (x.length < 3 || used.has(x)); used.add(x); return x; };
+  const add = elClip.map(e => { const o = { ...e, id: mk() }; delete o.lk; if (o.g) { if (rank >= 2) { gm[o.g] = gm[o.g] || mk(); o.g = gm[o.g]; } else delete o.g; }
+    if (rank >= 2) { o.dx = Math.max(-40, Math.min(40, (o.dx || 0) + 3)); o.dy = Math.max(-80, Math.min(80, (o.dy || 0) + 12)); } o.n = (o.n || 0) + 1; return cleanEl(o); });
+  if (setEls([...cur, ...add], 'Elementos')) { selMulti = add.map(x => x.id); selEl = selMulti[selMulti.length - 1]; refreshSel(); toast(add.length > 1 ? add.length + ' elementos pegados' : 'Elemento pegado'); }
+}
+function dupSel(){ if (copySel(false)) pasteSel(); }
+function delSel(){ if (rank < 1) return; const ids = selIds(); if (!ids.length) return; if (lockedAny(ids)) return toast('Hay elementos bloqueados. Desbloquéalos para eliminarlos.');
+  if (setEls((cfg.els || []).filter(e => !ids.includes(e.id)), 'Elementos')) { selEl = null; selMulti = []; refreshSel(); } }
+function cutSel(){ const ids = selIds(); if (!ids.length) return; if (lockedAny(ids)) return toast('Hay elementos bloqueados. Desbloquéalos para cortarlos.'); copySel(false); delSel(); toast('Elemento cortado'); }
+function lockSel(){ const ids = selIds(); if (!ids.length) return; const all = ids.every(id => elOf(id)?.lk); if (patchSel({ lk: !all })) { toast(all ? 'Desbloqueado' : 'Bloqueado'); refreshSel(); } }
+function groupSel(on){ const ids = selIds(); if (on && ids.length < 2) return toast('Elige 2 o más elementos (Mayús + clic en la vista previa) para agruparlos.');
+  let gid = ''; if (on) { const used = new Set((cfg.els || []).map(e => e.g).filter(Boolean)); do { gid = Math.random().toString(36).slice(2, 8); } while (gid.length < 3 || used.has(gid)); }
+  if (patchSel({ g: on ? gid : '' })) { if (on) selMulti = ids; refreshSel(); toast(on ? 'Agrupados' : 'Desagrupados'); } }
+function copyStyle(){ const e = elOf(selEl); if (!e) return; styleClip = {}; STYLE_KEYS.forEach(k => { styleClip[k] = e[k] === undefined ? '' : e[k]; }); toast('Estilo copiado'); }
+function pasteStyle(){ if (!styleClip) return toast('Primero copia el estilo de un elemento.'); if (patchSel({ ...styleClip }, true)) toast('Estilo pegado'); }
+function nudge(dx, dy){ const ids = selIds(); if (!ids.length) return; if (lockedAny(ids) && ids.every(id => elOf(id)?.lk)) return toast('Está bloqueado.');
+  const arr = (cfg.els || []).map(e => ids.includes(e.id) && !e.lk ? cleanEl({ ...e, dx: Math.max(-40, Math.min(40, (e.dx || 0) + dx)), dy: Math.max(-80, Math.min(80, (e.dy || 0) + dy)) }) : { ...e }); setEls(arr, 'Elementos', true); }
+const typingTarget = (t) => { const tg = (t && t.tagName || '').toLowerCase(); return ['input', 'textarea', 'select'].includes(tg) || !!(t && t.isContentEditable); };
+/** Atajos (no actúan mientras escribes en un campo): Ctrl+C/X/V/D, Ctrl+Alt+C/V estilo, Ctrl+G/Mayús+G grupo, Ctrl+Mayús+L bloqueo, Supr, Esc, flechas. */
+function elKey(k, mod, shift, alt){
+  const key = String(k).toLowerCase(), has = selIds().length > 0;
+  if (mod) {
+    if (key === 'z') { shift ? redo() : undo(); return true; } if (key === 'y') { redo(); return true; }
+    if (key === 'v') { alt ? pasteStyle() : pasteSel(); return true; }
+    if (!has) return false;
+    if (key === 'c') { alt ? copyStyle() : copySel(); return true; } if (key === 'x') { cutSel(); return true; } if (key === 'd') { dupSel(); return true; }
+    if (key === 'g') { groupSel(!shift); return true; } if (key === 'l' && shift) { lockSel(); return true; } return false;
+  }
+  if (k === 'Escape') { if (selEl) { selEl = null; selMulti = []; refreshSel(); return true; } return false; }
+  if (!has) return false;
+  if (k === 'Delete' || k === 'Backspace') { delSel(); return true; }
+  const st = shift ? 10 : 1; if (k === 'ArrowLeft') { nudge(-st, 0); return true; } if (k === 'ArrowRight') { nudge(st, 0); return true; } if (k === 'ArrowUp') { nudge(0, -st); return true; } if (k === 'ArrowDown') { nudge(0, st); return true; }
+  return false;
+}
+addEventListener('keydown', (e) => { if (!booted || e.defaultPrevented || typingTarget(e.target) || e.target.closest && e.target.closest('[role="dialog"],.ov')) return;
+  if (e.ctrlKey || e.metaKey) { if (!'cxvdgl'.includes(e.key.toLowerCase()) || e.key.length > 1) return; } else if (!(e.key === 'Delete' || e.key === 'Backspace' || e.key === 'Escape' || e.key.startsWith('Arrow'))) return;
+  if (e.target.tagName === 'BUTTON' && e.key.startsWith('Arrow')) return;
+  if (elKey(e.key, e.ctrlKey || e.metaKey, e.shiftKey, e.altKey)) e.preventDefault(); });
 function blocksSet(arr){ set('blocks', arr); }
 function layerRow(label, o = {}){
   const r = h('div', { class: 'lyr' + (o.sel ? ' sel' : '') + (o.off ? ' off' : '') + (o.child ? ' child' : ''), draggable: o.drag ? 'true' : 'false', tabindex: 0 });
@@ -656,8 +731,8 @@ function buildLayers(host){
     const must = b === 'header' || b === 'items';
     host.append(layerRow(AN_LABEL[b], { icon: BI[b], drag: 'b:' + b, drop: dropOnBlock(b), open: () => openTool({ header: 'banner', announcement: 'sections', categories: 'nav', items: 'products', footer: 'sections' }[b]),
       actions: [[i > 0 ? '↑' : '', 'Subir', () => moveBlock(b, i - 1), i === 0], [i < bl.length - 1 ? '↓' : '', 'Bajar', () => moveBlock(b, i + 1), i === bl.length - 1], [must ? '' : '◉', 'Ocultar sección', () => blocksSet(bl.filter(x => x !== b)), must]] }));
-    els.filter(e => e.af === b).sort((x, y) => x.n - y.n).forEach(e => host.append(layerRow(EL_LABEL[e.k] + (e.t ? ': ' + e.t.slice(0, 22) : ''), { child: true, icon: EL_ICON[e.k], sel: selEl === e.id, off: !!e.off, drag: 'e:' + e.id, drop: dropOnEl(e), open: () => { selEl = e.id; openTool('elements'); },
-      actions: [[e.off ? '○' : '◉', e.off ? 'Mostrar' : 'Ocultar', () => updEl(e.id, { off: !e.off })], ['⧉', 'Duplicar', () => dupEl(e.id)], ['✕', 'Eliminar', () => delEl(e.id)]] })));
+    els.filter(e => e.af === b).sort((x, y) => x.n - y.n).forEach(e => host.append(layerRow(EL_LABEL[e.k] + (e.t ? ': ' + e.t.slice(0, 22) : '') + (e.g ? ' · grupo' : ''), { child: true, icon: EL_ICON[e.k], sel: selIds().includes(e.id), off: !!e.off, drag: 'e:' + e.id, drop: dropOnEl(e), open: () => { selEl = e.id; openTool('elements'); },
+      actions: [[e.lk ? '🔒' : '🔓', e.lk ? 'Desbloquear' : 'Bloquear', () => updEl(e.id, { lk: !e.lk })], [e.off ? '○' : '◉', e.off ? 'Mostrar' : 'Ocultar', () => updEl(e.id, { off: !e.off })], ['⧉', 'Duplicar', () => dupEl(e.id)], ['✕', 'Eliminar', () => delEl(e.id)]] })));
   });
   hidden.forEach(b => host.append(layerRow(AN_LABEL[b] + ' (oculto)', { off: true, icon: BI[b], actions: [['○', 'Mostrar sección', () => { const a = bl.slice(); const order = D.BLOCKS; let pos = a.findIndex(x => order.indexOf(x) > order.indexOf(b)); if (pos < 0) pos = a.length; a.splice(pos, 0, b); blocksSet(a); }]] })));
   els.filter(e => !bl.includes(e.af)).forEach(e => host.append(layerRow(EL_LABEL[e.k] + ' (en sección oculta)', { child: true, off: true, icon: EL_ICON[e.k], open: () => { selEl = e.id; openTool('elements'); } })));
@@ -819,7 +894,7 @@ const PANELS = {
     const g = h('div', { class: 'tiles' }); D.EL_KINDS.forEach(k => g.append(h('button', { type: 'button', class: 'tile', onclick: () => addEl(k) }, h('span', { html: '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + EL_ICON[k] + '</svg>' }), EL_LABEL[k], k === 'promo' && rank < 2 ? crown('Disponible en KARTTA Elite') : null)));
     b.append(sec('Biblioteca de elementos'), g);
     const list = h('div', { class: 'lyrs' }), ed = h('div'); b.append(sec('En tu menú'), list, ed);
-    syncers.push(() => { list.innerHTML = ''; const a = cfg.els || []; if (!a.length) list.append(h('p', { class: 'note' }, 'Todavía no añades elementos.')); a.forEach(e => list.append(layerRow(EL_LABEL[e.k] + (e.t ? ': ' + e.t.slice(0, 22) : ''), { icon: EL_ICON[e.k], sel: selEl === e.id, off: !!e.off, open: () => { selEl = e.id; openTool('elements', true); } }))); });
+    syncers.push(() => { list.innerHTML = ''; const a = cfg.els || []; if (!a.length) list.append(h('p', { class: 'note' }, 'Todavía no añades elementos.')); a.forEach(e => list.append(layerRow(EL_LABEL[e.k] + (e.t ? ': ' + e.t.slice(0, 22) : '') + (e.g ? ' · grupo' : ''), { icon: EL_ICON[e.k], sel: selIds().includes(e.id), off: !!e.off, open: () => { selEl = e.id; openTool('elements', true); } }))); });
     if (selEl && elOf(selEl)) elEditor(ed, elOf(selEl)); else selEl = null;
   },
   layers(b){
@@ -968,7 +1043,7 @@ function openTool(id, keep){
   const dr = $('drawer'); if (!id) { dr.classList.add('closed'); document.querySelectorAll('#rail button').forEach(b => b.setAttribute('aria-pressed', 'false')); fit(); return; }
   tool = id; dr.classList.remove('closed'); syncers.length = 0;
   $('dTitle').textContent = TOOLS.find(t => t[0] === id)[1]; const body = $('dBody'); const st0 = body.scrollTop; body.innerHTML = ''; thumbWins.clear(); PANELS[id](body); body.scrollTop = keep ? st0 : 0;
-  document.querySelectorAll('#rail button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === id))); syncAll(); fit();
+  document.querySelectorAll('#rail button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === id))); syncAll(); fit(); syncSel();
 }
 $('dClose').onclick = () => openTool(null);
 function syncAll(){ syncers.forEach(f => f()); $('undo').disabled = hi <= 0; $('redo').disabled = hi >= hist.length - 1; }
@@ -998,9 +1073,15 @@ function sendDesign(){ if (previewReady) pv.contentWindow.postMessage({ type: 'k
 addEventListener('message', e => { if (e.origin !== location.origin) return; const m = e.data || {};
   if (thumbWins.has(e.source)) { if (m.type === 'kartta-ready') e.source.postMessage({ type: 'kartta-data', menu: thumbMenu(thumbWins.get(e.source)) }, location.origin); return; }
   if (e.source !== pv.contentWindow) return;
-  if (m.type === 'kartta-ready') { previewReady = true; sendData(); pv.contentWindow.postMessage({ type: 'kartta-clean', on: $('clean').checked }, location.origin); fit(); }
-  else if (m.type === 'kartta-move') { if (typeof m.id === 'string' && Number.isInteger(m.dx) && Number.isInteger(m.dy) && elOf(m.id)) { selEl = m.id; if (!updEl(m.id, { dx: m.dx, dy: m.dy })) sendDesign(); } }
-  else if (m.type === 'kartta-click' && typeof m.el === 'string' && m.el.startsWith('el:')) { const id = m.el.slice(3); if (elOf(id)) { selEl = id; openTool('elements'); } }
+  if (m.type === 'kartta-ready') { previewReady = true; sendData(); setTimeout(syncSel, 60); pv.contentWindow.postMessage({ type: 'kartta-clean', on: $('clean').checked }, location.origin); fit(); }
+  else if (m.type === 'kartta-move') { if (typeof m.id === 'string' && Number.isInteger(m.dx) && Number.isInteger(m.dy) && elOf(m.id)) { if (elOf(m.id).lk) { sendDesign(); return; }
+    const mv = Array.isArray(m.moves) ? m.moves.filter(x => x && typeof x.id === 'string' && Number.isInteger(x.dx) && Number.isInteger(x.dy) && Math.abs(x.dx) <= 40 && Math.abs(x.dy) <= 80 && elOf(x.id) && !elOf(x.id).lk) : [{ id: m.id, dx: m.dx, dy: m.dy }];
+    const arr = (cfg.els || []).map(e => { const x = mv.find(z => z.id === e.id); return x ? cleanEl({ ...e, dx: x.dx, dy: x.dy }) : { ...e }; }); if (selMulti.includes(m.id) === false) { selMulti = []; } selEl = m.id; if (!setEls(arr, 'Elementos')) sendDesign(); refreshSel(); } }
+  else if (m.type === 'kartta-update') { const e0 = typeof m.id === 'string' && elOf(m.id), p = m.patch || {}; if (!e0 || e0.lk) { sendDesign(); return; } const patch = {};
+    if (Number.isInteger(p.rot) && p.rot >= -180 && p.rot <= 180) patch.rot = p.rot || ''; if (Number.isInteger(p.w) && (p.w === 0 || (p.w >= 20 && p.w <= 100))) patch.w = p.w || ''; selEl = m.id;
+    if (!Object.keys(patch).length || !updEl(m.id, patch)) sendDesign(); refreshSel(); }
+  else if (m.type === 'kartta-key') { if (typeof m.key === 'string' && m.key.length < 16) { if (!elKey(m.key, !!m.ctrl, !!m.shift, !!m.alt)) { /* nada */ } } }
+  else if (m.type === 'kartta-click' && typeof m.el === 'string' && m.el.startsWith('el:')) { const id = m.el.slice(3); if (elOf(id)) { pickEl(id, !!m.shift); openTool('elements', !!m.shift); } }
   else if (m.type === 'kartta-click') { const map = { header: 'banner', announcement: 'sections', categories: 'nav', items: 'products', footer: 'sections', social: 'social' }; openTool(map[m.el] || 'design'); pv.contentWindow.postMessage({ type: 'kartta-select', el: m.el }, location.origin); } });
 $('pvApply').onclick = () => { if (previewTpl) applyTpl(previewTpl); }; $('pvStop').onclick = stopPreview;
 $('clean').onchange = () => pv.contentWindow.postMessage({ type: 'kartta-clean', on: $('clean').checked }, location.origin);

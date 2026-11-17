@@ -171,6 +171,9 @@
       if (intIn(e.dx, -40, 40) && e.dx) o.dx = e.dx; if (intIn(e.dy, -80, 80) && e.dy) o.dy = e.dy;
       o.af = EL_ANCHORS.includes(e.af) ? e.af : 'items'; o.n = intIn(e.n, 0, 30) ? e.n : 0;
       if (e.off === true) o.off = true;
+      if (e.lk === true) o.lk = true; if (e.b === true) o.b = true; if (e.i === true) o.i = true; if (e.ul === true) o.ul = true;
+      if (intIn(e.rot, -180, 180) && e.rot) o.rot = e.rot; if (intIn(e.op, 10, 100) && e.op < 100) o.op = e.op; if (intIn(e.w, 20, 100) && e.w < 100) o.w = e.w;
+      if (intIn(e.ls, 1, 10)) o.ls = e.ls; if (intIn(e.lh, 10, 25)) o.lh = e.lh; if (typeof e.g === 'string' && /^[a-z0-9]{3,8}$/.test(e.g)) o.g = e.g;
       const r = normRuns(e.r); if (r.length && r.map(z => z.t).join('') === (o.t || '')) o.r = r;
       out.push(o);
     });
@@ -188,20 +191,24 @@
       });
     } else node.textContent = text;
   }
+  const elTransform = (e) => (e.dx || e.dy || e.rot) ? 'translate(' + (e.dx || 0) + '%,' + (e.dy || 0) + 'px)' + (e.rot ? ' rotate(' + e.rot + 'deg)' : '') : '';
   const elHref = (u) => (typeof u === 'string' && /^wa:[0-9]{7,15}$/.test(u) ? 'https://wa.me/' + u.slice(3) : URL_OK.test(u || '') ? u : '');
   /** Construye el nodo de un elemento (solo DOM seguro). */
   function renderEl(e) {
     const box = document.createElement('div'); box.className = 'kel'; box.dataset.id = e.id; box.dataset.k = e.k; box.dataset.el = 'el:' + e.id;
     if (e.al) box.style.textAlign = { l: 'left', c: 'center', r: 'right' }[e.al];
-    if (e.dx || e.dy) box.style.transform = 'translate(' + (e.dx || 0) + '%,' + (e.dy || 0) + 'px)';
-    const col = (n) => { if (e.c) n.style.color = e.c; if (e.sz) n.style.fontSize = e.sz + 'px'; return n; };
+    const tf = elTransform(e); if (tf) box.style.transform = tf;
+    if (e.op) box.style.opacity = String(e.op / 100);
+    if (e.w) { box.style.width = 'min(' + e.w + '%,560px)'; if (e.al === 'r') box.style.marginLeft = 'auto'; else if (e.al !== 'l') { box.style.marginLeft = 'auto'; box.style.marginRight = 'auto'; } }
+    if (e.lk) box.dataset.lk = '1';
+    const col = (n) => { if (e.c) n.style.color = e.c; if (e.sz) n.style.fontSize = e.sz + 'px'; if (e.b) n.style.fontWeight = '800'; if (e.i) n.style.fontStyle = 'italic'; if (e.ul) n.style.textDecoration = 'underline'; if (e.ls) n.style.letterSpacing = e.ls + 'px'; if (e.lh) n.style.lineHeight = String(e.lh / 10); return n; };
     const href = elHref(e.u);
     if (e.k === 'h' || e.k === 'p' || e.k === 'quote') {
       const n = col(document.createElement(e.k === 'h' ? 'h2' : e.k === 'p' ? 'p' : 'blockquote')); n.className = 'kel-' + e.k; renderRuns(n, e.t || '', e.r); box.appendChild(n);
     } else if (e.k === 'btn') {
       const a = document.createElement(href ? 'a' : 'span'); a.className = 'kel-btn'; a.textContent = e.t || 'Ver más';
       if (href) { a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; }
-      if (e.bg) a.style.background = e.bg; if (e.c) a.style.color = e.c; if (e.sz) a.style.fontSize = e.sz + 'px'; box.appendChild(a);
+      if (e.bg) a.style.background = e.bg; col(a); box.appendChild(a);
     } else if (e.k === 'div') {
       const hr = document.createElement('hr'); hr.className = 'kel-hr'; if (e.c) hr.style.borderColor = e.c; box.appendChild(hr);
     } else if (e.k === 'sp') {
@@ -416,5 +423,5 @@
   function mix(a, b, t) { const A = [1, 3, 5].map(i => parseInt(a.substr(i, 2), 16)), B = [1, 3, 5].map(i => parseInt(b.substr(i, 2), 16)); return '#' + A.map((v, i) => Math.round(v * t + B[i] * (1 - t)).toString(16).padStart(2, '0')).join('').toUpperCase(); }
 
   window.KARTTA_DESIGN = { validTag, tagEl, tagsRow, DEFAULTS, ENUM, INTS, WEIGHTS, HEXOPT, FONTS, BLOCKS, ADVANCED, TEMPLATES, RESET_ON_TEMPLATE, normalize, compact, apply, applyTemplate, radiusOf, contrast, effective, lum,
-    TX_SLOTS, TX_LABEL, TX_SEL, EL_KINDS, EL_ANCHORS, EL_MAX, gradCss, renderRuns, renderEl, elHref, SOCIAL_TYPES, SOCIAL_LABEL, SOCIAL_ICON, ALLERGENS, parseSocialInput, socialHref, socialVisible, renderSocial };
+    TX_SLOTS, TX_LABEL, TX_SEL, EL_KINDS, EL_ANCHORS, EL_MAX, gradCss, renderRuns, renderEl, elTransform, elHref, SOCIAL_TYPES, SOCIAL_LABEL, SOCIAL_ICON, ALLERGENS, parseSocialInput, socialHref, socialVisible, renderSocial };
 })();

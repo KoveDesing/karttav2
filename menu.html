@@ -413,6 +413,9 @@ html[data-hbgx] .mheader{background-image:var(--hbgx);}
 .kel-hr{border:0;border-top:1.5px solid var(--border);margin:0;}
 .kel-promo{display:flex;flex-direction:column;gap:4px;padding:18px 20px;border-radius:var(--rad);color:#fff;text-decoration:none;overflow-wrap:anywhere;}
 .kel-promo b{font-family:var(--fh);font-size:calc(18px*var(--fs));line-height:1.2;}.kel-promo span{font-size:13.5px;opacity:.92;}
+html.pv .kel.sel{outline:2px solid #2D7FF9;outline-offset:3px;border-radius:4px;}html.pv .kel.sel.locked{outline-style:dashed;cursor:not-allowed;}html.pv .kel[data-lk="1"]{cursor:not-allowed;}
+html.pv .kel .kh{position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #2D7FF9;box-shadow:0 1px 4px rgba(0,0,0,.3);z-index:30;touch-action:none;}
+html.pv .kel .kh-e{right:14px;top:50%;margin-top:-6px;cursor:ew-resize;}html.pv .kel .kh-w{left:14px;top:50%;margin-top:-6px;cursor:ew-resize;}html.pv .kel .kh-rot{left:50%;top:-22px;margin-left:-6px;cursor:grab;}html.pv .kel .kh-rot::after{content:"";position:absolute;left:3px;top:10px;width:2px;height:10px;background:#2D7FF9;}
 html.pv .kel{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;}html.pv .kel:hover{outline:2px dashed var(--red);outline-offset:3px;}html.pv .kel.drag{cursor:grabbing;outline:2px solid var(--red);z-index:20;}
 .fav.pop svg{animation:kPop .36s cubic-bezier(.3,1.6,.5,1);}
 @keyframes kPop{0%{transform:scale(1);}45%{transform:scale(1.38);}100%{transform:scale(1);}}
@@ -640,8 +643,9 @@ function applyDesign(raw){
   shell.querySelectorAll('.kel').forEach(n => n.remove());
   (MS.els || []).filter(e => !e.off).slice().sort((x, y) => x.n - y.n).forEach(e => {
     const n = window.KARTTA_DESIGN.renderEl(e), bi = MS.blocks.indexOf(e.af);
-    n.style.order = String(bi >= 0 ? bi + 1 : 98); n.dataset.base = (e.dx || 0) + ',' + (e.dy || 0); shell.appendChild(n);
+    n.style.order = String(bi >= 0 ? bi + 1 : 98); n.dataset.base = (e.dx || 0) + ',' + (e.dy || 0) + ',' + (e.rot || 0) + ',' + (e.w || 0); shell.appendChild(n);
   });
+  if (window.__kPaintSel) window.__kPaintSel();
 }
 
 function paint(menu){
@@ -849,32 +853,64 @@ function initPreview(){
     else if (m.type === 'kartta-clean') document.documentElement.classList.toggle('clean', !!m.on);
     else if (m.type === 'kartta-select') {
       document.querySelectorAll('[data-el].sel').forEach(n => n.classList.remove('sel'));
+      if (Array.isArray(m.els)) { SELIDS = m.els.filter(x => typeof x === 'string' && /^[a-z0-9]{3,8}$/.test(x)); paintSel(); return; }
       if (m.el) document.querySelectorAll('[data-el="' + String(m.el).replace(/[^a-z]/g, '') + '"]').forEach(n => n.classList.add('sel'));
     }
   });
-  // Arrastrar un elemento: se desplaza respecto a su lugar (en % del ancho y px de alto) para verse igual en cualquier pantalla
-  let dg = null, dragged = false;
+  // Editor tipo Canva (solo vista previa): seleccionar, mover, cambiar ancho, rotar, bloquear, grupos y atajos. Todo se envía al editor, que valida y guarda.
+  let dg = null, dragged = false, SELIDS = [];
+  const kelOf = (id) => document.querySelector('.kel[data-id="' + id + '"]');
+  const dataOf = (id) => ((MENU && MENU.design && MENU.design.els) || []).find(x => x.id === id) || {};
+  const tfOf = (dx, dy, rot) => 'translate(' + dx + '%,' + dy + 'px)' + (rot ? ' rotate(' + rot + 'deg)' : '');
+  const baseOf = (el) => { const b = (el.dataset.base || '0,0,0,0').split(',').map(Number); return { dx: b[0] || 0, dy: b[1] || 0, rot: b[2] || 0, w: b[3] || 0 }; };
+  const post = (m) => window.parent.postMessage(m, location.origin);
+  function paintSel(){
+    document.querySelectorAll('.kh').forEach(h => h.remove()); document.querySelectorAll('.kel.sel').forEach(n => n.classList.remove('sel', 'locked'));
+    SELIDS.forEach(id => { const n = kelOf(id); if (!n) return; n.classList.add('sel'); const lk = !!dataOf(id).lk; n.classList.toggle('locked', lk);
+      if (!lk && SELIDS.length === 1) ['rot', 'w', 'e'].forEach(k => { const h = document.createElement('i'); h.className = 'kh kh-' + k; h.dataset.h = k; n.appendChild(h); }); });
+  }
+  window.__kPaintSel = paintSel;
   document.addEventListener('pointerdown', (e) => {
     if (document.documentElement.classList.contains('clean') || e.button) return;
     const el = e.target.closest('.kel'); if (!el) return;
-    const b = (el.dataset.base || '0,0').split(',').map(Number), w = Math.max(200, document.getElementById('menuShell').getBoundingClientRect().width);
-    dg = { el, x: e.clientX, y: e.clientY, bx: b[0], by: b[1], w, mv: false, id: el.dataset.id }; try { el.setPointerCapture(e.pointerId); } catch (_) {}
+    const d0 = dataOf(el.dataset.id); if (d0.lk) return;
+    const hd = e.target.closest('.kh'), b = baseOf(el), shell = document.getElementById('menuShell').getBoundingClientRect(), w = Math.max(200, shell.width), r = el.getBoundingClientRect();
+    const grp = d0.g ? ((MENU.design.els || []).filter(x => x.g === d0.g && !x.lk && !x.off).map(x => x.id)) : [el.dataset.id];
+    dg = { el, x: e.clientX, y: e.clientY, bx: b.dx, by: b.dy, br: b.rot, w, mv: false, id: el.dataset.id, h: hd ? hd.dataset.h : '', cx: r.left + r.width / 2, cy: r.top + r.height / 2, left: r.left, right: r.right, shell, grp, al: d0.al || 'c' };
+    e.preventDefault(); try { el.setPointerCapture(e.pointerId); } catch (_) {}
   });
   document.addEventListener('pointermove', (e) => {
     if (!dg) return; const dx = e.clientX - dg.x, dy = e.clientY - dg.y;
-    if (!dg.mv && Math.abs(dx) + Math.abs(dy) < 5) return; dg.mv = true; dg.el.classList.add('drag');
+    if (!dg.mv && Math.abs(dx) + Math.abs(dy) < 4) return; dg.mv = true; dg.el.classList.add('drag');
+    if (dg.h === 'rot') { let a = Math.round(Math.atan2(e.clientY - dg.cy, e.clientX - dg.cx) * 180 / Math.PI + 90); if (a > 180) a -= 360; if (e.shiftKey || Math.abs(a % 15) < 4 || Math.abs(a % 15) > 11) a = Math.round(a / 15) * 15; a = Math.max(-180, Math.min(180, a)); dg.nr = a; dg.el.style.transform = tfOf(dg.bx, dg.by, a); return; }
+    if (dg.h === 'w' || dg.h === 'e') {
+      const px = dg.al === 'c' || !dg.al ? 2 * Math.abs(e.clientX - dg.cx) : dg.al === 'r' ? dg.right - e.clientX : e.clientX - dg.left;
+      dg.nw = Math.max(20, Math.min(100, Math.round(px / Math.min(560, dg.w) * 100))); dg.el.style.width = 'min(' + dg.nw + '%,560px)'; dg.el.style.marginLeft = dg.al === 'l' ? '' : 'auto'; dg.el.style.marginRight = dg.al === 'l' || dg.al === 'r' ? '' : 'auto'; return; }
     dg.nx = Math.max(-40, Math.min(40, Math.round(dg.bx + dx / dg.w * 100))); dg.ny = Math.max(-80, Math.min(80, Math.round(dg.by + dy)));
-    dg.el.style.transform = 'translate(' + dg.nx + '%,' + dg.ny + 'px)';
+    const ddx = dg.nx - dg.bx, ddy = dg.ny - dg.by;
+    dg.grp.forEach(id => { const n = kelOf(id); if (!n) return; const b = baseOf(n); n.style.transform = tfOf(Math.max(-40, Math.min(40, b.dx + ddx)), Math.max(-80, Math.min(80, b.dy + ddy)), b.rot); });
   });
-  const endDrag = () => { if (!dg) return; const d = dg; dg = null; d.el.classList.remove('drag'); if (d.mv) { dragged = true; setTimeout(() => { dragged = false; }, 60); window.parent.postMessage({ type: 'kartta-move', id: d.id, dx: d.nx, dy: d.ny }, location.origin); } };
+  const endDrag = () => { if (!dg) return; const d = dg; dg = null; d.el.classList.remove('drag');
+    if (!d.mv) return; dragged = true; setTimeout(() => { dragged = false; }, 60);
+    if (d.h === 'rot') post({ type: 'kartta-update', id: d.id, patch: { rot: d.nr || 0 } });
+    else if (d.h) post({ type: 'kartta-update', id: d.id, patch: { w: d.nw >= 100 ? 0 : d.nw } });
+    else { const ddx = d.nx - d.bx, ddy = d.ny - d.by; post({ type: 'kartta-move', id: d.id, dx: d.nx, dy: d.ny, moves: d.grp.map(id => { const b = baseOf(kelOf(id) || d.el); return { id, dx: Math.max(-40, Math.min(40, b.dx + ddx)), dy: Math.max(-80, Math.min(80, b.dy + ddy)) }; }) }); } };
   document.addEventListener('pointerup', endDrag); document.addEventListener('pointercancel', endDrag);
   document.addEventListener('click', (e) => {
     if (document.documentElement.classList.contains('clean')) return;
     if (dragged) { e.preventDefault(); e.stopPropagation(); return; }
     const t = e.target.closest('[data-el]'); if (!t) return;
     e.preventDefault(); e.stopPropagation();
-    window.parent.postMessage({ type: 'kartta-click', el: t.dataset.el }, location.origin);
+    post({ type: 'kartta-click', el: t.dataset.el, shift: !!e.shiftKey });
   }, true);
+  // Atajos con el foco dentro de la vista previa: se reenvían al editor (que ignora si estás escribiendo en un campo).
+  document.addEventListener('keydown', (e) => {
+    const tg = (e.target.tagName || '').toLowerCase(); if (['input', 'textarea', 'select'].includes(tg) || e.target.isContentEditable) return;
+    const k = e.key, mod = e.ctrlKey || e.metaKey;
+    if (!(k === 'Delete' || k === 'Backspace' || k === 'Escape' || k.startsWith('Arrow') || (mod && 'cxvdzygl'.includes(k.toLowerCase())))) return;
+    if (!SELIDS.length && k !== 'Escape' && !(mod && 'vzy'.includes(k.toLowerCase()))) return;
+    e.preventDefault(); post({ type: 'kartta-key', key: k, ctrl: mod, shift: e.shiftKey, alt: e.altKey });
+  });
   window.parent.postMessage({ type: 'kartta-ready' }, location.origin);
 }
 
