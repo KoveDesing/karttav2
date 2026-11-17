@@ -41,8 +41,22 @@ a{color:inherit}:focus-visible{outline:2px solid var(--accent);outline-offset:2p
 .dh{display:flex;align-items:center;padding:16px 18px 6px}.dh h2{font-size:17px;margin:0;color:var(--strong);font-weight:800}.dh .x{margin-left:auto;width:32px;height:32px;border-radius:8px;color:var(--muted)}.dh .x:hover{background:var(--panel2)}
 .db{padding:6px 18px 40px;overflow-y:auto;flex:1}
 .stage{flex:1;min-width:0;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:18px 12px;gap:10px;position:relative}
-.frame{background:#fff;border-radius:28px;box-shadow:0 18px 50px rgba(0,0,0,.25);border:8px solid #111;overflow:hidden;transform-origin:top center;flex-shrink:0}
-.frame iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+.frame{position:relative;box-sizing:border-box;background:#111;border-radius:28px;padding:8px;box-shadow:0 18px 50px rgba(0,0,0,.25);transform-origin:top center;flex-shrink:0}
+.frame iframe{position:absolute;border:0;display:block;background:#fff;border-radius:inherit}
+.frame .dc{position:absolute;pointer-events:none;z-index:3}
+.frame[data-m^="iphone"]{box-shadow:0 0 0 1.5px #3a3a3c inset,0 0 0 2px #1c1c1e,0 18px 50px rgba(0,0,0,.3)}
+.frame .dc-isl{top:20px;left:50%;width:112px;height:32px;margin-left:-56px;background:#000;border-radius:20px}
+.frame .dc-sb{left:0;right:0;top:20px;height:32px;display:flex;align-items:center;justify-content:space-between;padding:0 34px;color:#fff;mix-blend-mode:difference;font:600 15px/1 -apple-system,'Inter',sans-serif}
+.frame .dc-sb span{display:flex;gap:5px;align-items:center}
+.frame .dc-bar{left:50%;bottom:20px;width:130px;height:5px;margin-left:-65px;border-radius:3px;background:#fff;mix-blend-mode:difference;opacity:.85}
+.frame .dc-home{left:50%;bottom:8px;width:44px;height:44px;margin-left:-22px;border-radius:50%;border:2px solid #3a3a3c;box-sizing:border-box}
+.frame .dc-spk{left:50%;top:22px;width:56px;height:6px;margin-left:-28px;border-radius:3px;background:#2a2a2c}
+.frame .dc-cam{left:50%;top:6px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#1f2a3a;box-shadow:0 0 0 2px #0a0a0a}
+.frame .dc-notch{left:50%;top:0;width:110px;height:16px;margin-left:-55px;background:#111;border-radius:0 0 10px 10px}
+.frame .dc-base{left:-6%;right:-6%;bottom:-14px;height:14px;background:linear-gradient(#d7d8db,#9a9ca1);border-radius:0 0 18px 18px;box-shadow:0 10px 24px rgba(0,0,0,.3)}
+.frame .dc-base::before{content:"";position:absolute;left:50%;top:0;width:120px;height:6px;margin-left:-60px;background:#8c8e93;border-radius:0 0 8px 8px}
+.devsel{max-width:132px;min-height:36px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--strong);font-weight:700;font-size:12.5px;padding:0 8px}
+
 .hint{font-size:12.5px;color:var(--muted);margin:0;text-align:center}
 .tip{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:var(--strong);color:var(--bg);padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;display:flex;gap:10px;align-items:center;z-index:5;max-width:92%;box-shadow:0 8px 24px rgba(0,0,0,.25)}.tip button{font-weight:800;opacity:.8}
 .sec{margin:16px 0 8px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.sec:first-child{margin-top:6px}
@@ -87,7 +101,7 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
   .rail{position:fixed;left:0;right:0;bottom:0;width:auto;height:66px;flex-direction:row;padding:0;z-index:60;overflow-x:auto;justify-content:flex-start}
   .rail button{flex:1;min-width:70px;border-left:0;border-top:3px solid transparent;padding:8px 2px}.rail button[aria-pressed="true"]{border-left-color:transparent;border-top-color:var(--accent)}
   .drawer{position:fixed;left:0;right:0;bottom:66px;width:auto;max-height:42vh;z-index:55;border-right:0;border-top:1px solid var(--border);box-shadow:0 -10px 30px rgba(0,0,0,.18);border-radius:18px 18px 0 0}
-  .tip{display:none !important}.stage{padding:8px 8px 80px}.top{flex-wrap:wrap;padding:8px 10px;gap:6px}.top h1 small,#dev,.hint{display:none}#saveState{order:9;flex-basis:100%;font-size:12px}.clean{font-size:11.5px}
+  .tip{display:none !important}.stage{padding:8px 8px 80px}.top{flex-wrap:wrap;padding:8px 10px;gap:6px}.top h1 small,#dev,#devModel,#devZoom,.hint{display:none}#saveState{order:9;flex-basis:100%;font-size:12px}.clean{font-size:11.5px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 /* ===== v3: editor tipo Canva ===== */
@@ -171,6 +185,7 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
     <button class="ib" id="redo" aria-label="Rehacer (Ctrl+Shift+Z)" title="Rehacer (Ctrl+Shift+Z)" disabled><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
     <label class="clean" title="Oculta los recuadros azules para ver el menú exactamente como lo ve el cliente"><input type="checkbox" id="clean"><span>Vista del cliente</span></label>
     <div class="seg" id="dev" role="group" aria-label="Tamaño de pantalla"><button data-d="mobile" aria-pressed="true">Móvil</button><button data-d="tablet" aria-pressed="false">Tablet</button><button data-d="desktop" aria-pressed="false">PC</button></div>
+    <select class="devsel" id="devModel" aria-label="Modelo de dispositivo"></select><select class="devsel" id="devZoom" aria-label="Zoom de la vista previa"><option value="fit">Ajustar</option><option value="100">100%</option><option value="75">75%</option><option value="50">50%</option></select>
     <div id="saveState" role="status" aria-live="polite">—</div>
     <a class="btn" id="viewPub" href="#" target="_blank" rel="noopener" title="Abre tu menú tal como lo ven los clientes">Ver menú público ↗</a>
     <button class="btn" id="recoverBtn" hidden title="Tu prueba de KARTTA Pro terminó: mira lo que puedes recuperar">Recuperar Pro</button>
@@ -1073,7 +1088,7 @@ function sendDesign(){ if (previewReady) pv.contentWindow.postMessage({ type: 'k
 addEventListener('message', e => { if (e.origin !== location.origin) return; const m = e.data || {};
   if (thumbWins.has(e.source)) { if (m.type === 'kartta-ready') e.source.postMessage({ type: 'kartta-data', menu: thumbMenu(thumbWins.get(e.source)) }, location.origin); return; }
   if (e.source !== pv.contentWindow) return;
-  if (m.type === 'kartta-ready') { previewReady = true; sendData(); setTimeout(syncSel, 60); pv.contentWindow.postMessage({ type: 'kartta-clean', on: $('clean').checked }, location.origin); fit(); }
+  if (m.type === 'kartta-ready') { previewReady = true; sendData(); setTimeout(syncSel, 60); lastInset = -1; fit(); pv.contentWindow.postMessage({ type: 'kartta-clean', on: $('clean').checked }, location.origin); fit(); }
   else if (m.type === 'kartta-move') { if (typeof m.id === 'string' && Number.isInteger(m.dx) && Number.isInteger(m.dy) && elOf(m.id)) { if (elOf(m.id).lk) { sendDesign(); return; }
     const mv = Array.isArray(m.moves) ? m.moves.filter(x => x && typeof x.id === 'string' && Number.isInteger(x.dx) && Number.isInteger(x.dy) && Math.abs(x.dx) <= 40 && Math.abs(x.dy) <= 80 && elOf(x.id) && !elOf(x.id).lk) : [{ id: m.id, dx: m.dx, dy: m.dy }];
     const arr = (cfg.els || []).map(e => { const x = mv.find(z => z.id === e.id); return x ? cleanEl({ ...e, dx: x.dx, dy: x.dy }) : { ...e }; }); if (selMulti.includes(m.id) === false) { selMulti = []; } selEl = m.id; if (!setEls(arr, 'Elementos')) sendDesign(); refreshSel(); } }
@@ -1085,9 +1100,37 @@ addEventListener('message', e => { if (e.origin !== location.origin) return; con
   else if (m.type === 'kartta-click') { const map = { header: 'banner', announcement: 'sections', categories: 'nav', items: 'products', footer: 'sections', social: 'social' }; openTool(map[m.el] || 'design'); pv.contentWindow.postMessage({ type: 'kartta-select', el: m.el }, location.origin); } });
 $('pvApply').onclick = () => { if (previewTpl) applyTpl(previewTpl); }; $('pvStop').onclick = stopPreview;
 $('clean').onchange = () => pv.contentWindow.postMessage({ type: 'kartta-clean', on: $('clean').checked }, location.origin);
-const DEV = { mobile: [390, 780], tablet: [768, 900], desktop: [1100, 760] };
-function fit(){ const [w, hh] = DEV[device], st = $('stage'), fr = $('frame'), sc = Math.min(1, (st.clientWidth - 24) / (w + 16)); fr.style.width = (w + 16) + 'px'; fr.style.height = (hh + 16) + 'px'; fr.style.transform = 'scale(' + sc + ')'; fr.style.marginBottom = (-(hh + 16) * (1 - sc)) + 'px'; }
-$('dev').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; device = b.dataset.d; $('dev').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); fit(); });
+/* Simuladores de dispositivo: w/h = pantalla (px CSS), bz = marco [arriba, lados, abajo], r = radio, ch = detalles dibujados */
+const MODELS = {
+  mobile: [['iphone15', 'iPhone 15 Pro', 393, 852, [12, 12, 12], 55, ['isl', 'sb', 'bar']], ['iphone14', 'iPhone 14', 390, 844, [12, 12, 12], 50, ['notch', 'sb', 'bar']], ['iphonese', 'iPhone SE', 375, 667, [70, 14, 70], 36, ['spk', 'cam', 'home']], ['android', 'Android (Pixel)', 412, 915, [12, 12, 12], 36, ['isl', 'sb']], ['generic', 'Móvil genérico', 390, 780, [8, 8, 8], 28, []]],
+  tablet: [['ipadair', 'iPad Air', 820, 1180, [20, 20, 20], 34, []], ['ipadmini', 'iPad mini', 744, 1133, [20, 20, 20], 30, []], ['ipadland', 'iPad horizontal', 1180, 820, [20, 20, 20], 34, []]],
+  desktop: [['macbook', 'MacBook Pro 14"', 1512, 982, [14, 14, 0], 16, ['cam', 'base']], ['macair', 'MacBook Air 13"', 1280, 800, [14, 14, 0], 14, ['cam', 'base']], ['desk', 'Monitor / PC', 1100, 760, [8, 8, 8], 10, []]]
+};
+let model = { mobile: 'iphone15', tablet: 'ipadair', desktop: 'macbook' }, zoom = 'fit';
+try { const sv = JSON.parse(localStorage.getItem('kartta_dev_model') || '{}'); Object.keys(model).forEach(k => { if (MODELS[k].some(m => m[0] === sv[k])) model[k] = sv[k]; }); if (['fit', '100', '75', '50'].includes(sv.zoom)) zoom = sv.zoom; } catch (e) {}
+const curModel = () => MODELS[device].find(m => m[0] === model[device]) || MODELS[device][0];
+const SB_SVG = '<svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx=".6"/><rect x="4.5" y="5" width="3" height="6" rx=".6"/><rect x="9" y="2.5" width="3" height="8.5" rx=".6"/><rect x="13.5" y="0" width="3" height="11" rx=".6"/></svg><svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1 4a10 10 0 0 1 14 0M3.5 6.6a6.4 6.4 0 0 1 9 0M6 9.2a3 3 0 0 1 4 0"/></svg><svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x=".6" y=".6" width="22" height="10.8" rx="3.2" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="19" height="8" rx="2" fill="currentColor"/><path d="M24 4v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".5"/></svg>';
+let lastInset = -1;
+function sendInset(ch){ const t = ch.includes('sb') ? 30 : 0; if (previewReady && t !== lastInset) { lastInset = t; pv.contentWindow.postMessage({ type: 'kartta-inset', top: t }, location.origin); } }
+function drawModel(){
+  const m = curModel(), fr = $('frame'), pv = $('pv'); fr.dataset.m = m[0]; fr.querySelectorAll('.dc').forEach(n => n.remove());
+  const [, , w, hh, bz, r, ch] = m, mk = (c, html) => { const n = document.createElement('div'); n.className = 'dc dc-' + c; if (html) n.innerHTML = html; fr.appendChild(n); };
+  ch.forEach(c => { if (c === 'sb') mk('sb', '<b style="font-weight:600">9:41</b><span>' + SB_SVG + '</span>'); else mk(c); });
+  const base = ch.includes('base') ? 14 : 0, W = w + bz[1] * 2, H = hh + bz[0] + bz[2];
+  fr.style.width = W + 'px'; fr.style.height = H + 'px'; fr.style.borderRadius = r + 'px'; if (base) fr.style.borderRadius = r + 'px ' + r + 'px 0 0';
+  pv.style.left = bz[1] + 'px'; pv.style.top = bz[0] + 'px'; pv.style.width = w + 'px'; pv.style.height = hh + 'px'; pv.style.borderRadius = Math.max(0, r - Math.min(bz[1], 14)) + 'px';
+  fr.dataset.extra = String(base); sendInset(ch); return { W, H, base };
+}
+function fit(){
+  const st = $('stage'), fr = $('frame'), { W, H, base } = drawModel(), avail = Math.max(120, st.clientWidth - 24), sc = zoom === 'fit' ? Math.min(1, avail / (W + (base ? W * .12 : 0))) : Math.min(Number(zoom) / 100, Math.max(.2, avail / W));
+  fr.style.transform = 'scale(' + sc + ')'; fr.style.marginBottom = (-(H + base) * (1 - sc) + base * sc) + 'px';
+}
+function fillModels(){ const sel = $('devModel'); sel.innerHTML = ''; MODELS[device].forEach(m => { const o = document.createElement('option'); o.value = m[0]; o.textContent = m[1]; sel.appendChild(o); }); sel.value = model[device]; $('devZoom').value = zoom; }
+const saveModel = () => { try { localStorage.setItem('kartta_dev_model', JSON.stringify({ ...model, zoom })); } catch (e) {} };
+$('devModel').addEventListener('change', e => { model[device] = e.target.value; saveModel(); fit(); });
+$('devZoom').addEventListener('change', e => { zoom = e.target.value; saveModel(); fit(); });
+fillModels();
+$('dev').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; device = b.dataset.d; $('dev').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); fillModels(); fit(); });
 addEventListener('resize', fit);
 $('tipX').onclick = () => { $('tip').style.display = 'none'; try { localStorage.setItem('kartta_editor_tip', '1'); } catch {} };
 try { if (localStorage.getItem('kartta_editor_tip')) $('tip').style.display = 'none'; } catch {}
