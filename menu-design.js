@@ -6,7 +6,33 @@
  */
 (function () {
   const HEX = /^#[0-9a-fA-F]{6}$/;
-  const FONTS = ['Inter', 'Poppins', 'DM Sans', 'Playfair Display', 'Lora', 'Space Grotesk'];
+  /* Tipografías de Google: [nombre, categoría, pesos]. Pesos '' = una sola (no se pide eje wght). Las 6 primeras son las de siempre. */
+  const FONT_CATS = { sans: 'Sans serif', serif: 'Serif', display: 'Display', script: 'Manuscritas', mono: 'Monoespaciadas' };
+  const FONT_META = [
+    ['Inter', 'sans', '400;600;700;800'], ['Poppins', 'sans', '400;600;700;800'], ['DM Sans', 'sans', '400;600;700;800'], ['Playfair Display', 'serif', '400;600;700;800'], ['Lora', 'serif', '400;600;700'], ['Space Grotesk', 'sans', '400;600;700'],
+    ['Montserrat', 'sans', '400;600;700;800'], ['Roboto', 'sans', '400;500;700'], ['Open Sans', 'sans', '400;600;700;800'], ['Lato', 'sans', '400;700'], ['Nunito', 'sans', '400;600;700;800'], ['Raleway', 'sans', '400;600;700;800'], ['Work Sans', 'sans', '400;600;700;800'],
+    ['Manrope', 'sans', '400;600;700;800'], ['Outfit', 'sans', '400;600;700;800'], ['Plus Jakarta Sans', 'sans', '400;600;700;800'], ['Sora', 'sans', '400;600;700;800'], ['Rubik', 'sans', '400;600;700;800'], ['Karla', 'sans', '400;600;700;800'],
+    ['Quicksand', 'sans', '400;600;700'], ['Barlow', 'sans', '400;600;700;800'], ['Mulish', 'sans', '400;600;700;800'], ['Figtree', 'sans', '400;600;700;800'], ['Urbanist', 'sans', '400;600;700;800'], ['Lexend', 'sans', '400;600;700;800'],
+    ['Merriweather', 'serif', '400;700'], ['Cormorant Garamond', 'serif', '400;600;700'], ['Libre Baskerville', 'serif', '400;700'], ['DM Serif Display', 'serif', ''], ['Crimson Text', 'serif', '400;600;700'], ['EB Garamond', 'serif', '400;600;700;800'],
+    ['Bitter', 'serif', '400;600;700;800'], ['Source Serif 4', 'serif', '400;600;700;800'], ['Fraunces', 'serif', '400;600;700;800'], ['Abril Fatface', 'serif', ''],
+    ['Bebas Neue', 'display', ''], ['Oswald', 'display', '400;600;700'], ['Anton', 'display', ''], ['Archivo Black', 'display', ''], ['Righteous', 'display', ''], ['Fredoka', 'display', '400;600;700'], ['Alfa Slab One', 'display', ''], ['Bowlby One', 'display', ''],
+    ['Pacifico', 'script', ''], ['Dancing Script', 'script', '400;600;700'], ['Great Vibes', 'script', ''], ['Satisfy', 'script', ''], ['Caveat', 'script', '400;600;700'], ['Shadows Into Light', 'script', ''], ['Sacramento', 'script', ''], ['Kaushan Script', 'script', ''], ['Lobster', 'script', ''], ['Permanent Marker', 'script', ''],
+    ['Space Mono', 'mono', '400;700'], ['JetBrains Mono', 'mono', '400;600;700;800'], ['IBM Plex Mono', 'mono', '400;600;700']
+  ];
+  const FONTS = FONT_META.map(f => f[0]);
+  /** Parejas recomendadas [nombre, títulos, textos] */
+  const FONT_PAIRS = [['Clásica elegante', 'Playfair Display', 'Lato'], ['Moderna limpia', 'Poppins', 'Inter'], ['Editorial', 'DM Serif Display', 'DM Sans'], ['Boutique', 'Cormorant Garamond', 'Montserrat'], ['Urbana', 'Bebas Neue', 'Roboto'], ['Artesanal', 'Fraunces', 'Nunito'], ['Divertida', 'Fredoka', 'Quicksand'], ['Tech', 'Space Grotesk', 'JetBrains Mono']];
+  /* Tipografías propias (subidas por el negocio): se guardan en el diseño como cfonts:[{id,n,p,f}] y se usan como 'cf:<id>'. */
+  const CF_RE = /^cf:[a-z0-9]{8}$/, CF_PATH = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[a-z0-9]{8}\.(ttf|otf|woff2?)$/;
+  const CF_BASE = 'https://ifbvdjvukygvvgiyzgav.supabase.co/storage/v1/object/public/kartta-fonts/';
+  const isCf = (f) => typeof f === 'string' && CF_RE.test(f);
+  function normCfonts(a) {
+    const out = [], ids = new Set(); if (!Array.isArray(a)) return out;
+    a.forEach(e => { if (out.length >= 5 || !e || typeof e !== 'object' || typeof e.id !== 'string' || !/^[a-z0-9]{8}$/.test(e.id) || ids.has(e.id) || typeof e.p !== 'string' || !CF_PATH.test(e.p) || e.p.split('/')[1].split('.')[0] !== e.id) return;
+      const n = String(e.n || '').replace(/[\u0000-\u001f<>"'&]/g, '').trim().slice(0, 40); if (!n) return; ids.add(e.id); out.push({ id: e.id, n, p: e.p, f: e.p.split('.').pop() }); });
+    return out;
+  }
+  const famCss = (f) => isCf(f) ? 'KCF ' + f.slice(3) : f;
   const BLOCKS = ['header', 'announcement', 'categories', 'items', 'footer'];
   const ENUM = {
     cardStyle: ['round', 'soft', 'square'], buttonStyle: ['solid', 'outline'], size: ['s', 'm', 'l'],
@@ -37,7 +63,7 @@
     tagline: '', showImages: true, showDescriptions: true, showPrices: true, showCategoriesNav: true, showAddress: true, showTags: true, showSearch: true, showNav: true, showHighlights: true,
     cardStyle: 'round', buttonStyle: 'solid', size: 'm', headerStyle: 'banner', navStyle: 'pills',
     itemLayout: 'list', imageShape: 'rounded', imagePosition: 'left', tagPosition: 'inline', density: 'normal', radius: null,
-    fontHeading: 'Inter', fontBody: 'Inter', blocks: BLOCKS.slice(), announcement: '', footerText: '',
+    fontHeading: 'Inter', fontBody: 'Inter', blocks: BLOCKS.slice(), announcement: '', footerText: '', cfonts: [],
     // v3 (todo opcional; los valores por defecto reproducen exactamente el diseño anterior)
     template: '', style: 'flat', anim: 'subtle', bannerTitle: '', showAbout: false,
     hAlign: 'auto', hVert: 'center', bannerH: 'auto', imgRatio: 'auto', imgFit: 'cover', imgPos: 'center', shadow: 'auto',
@@ -62,8 +88,9 @@
     ['showImages', 'showDescriptions', 'showPrices', 'showCategoriesNav', 'showAddress', 'showTags', 'showSearch', 'showNav', 'showHighlights'].forEach(k => { o[k] = bool(c[k], DEFAULTS[k]); });
     Object.keys(ENUM).forEach(k => { o[k] = ENUM[k].includes(c[k]) ? c[k] : DEFAULTS[k]; });
     o.radius = Number.isInteger(c.radius) && c.radius >= 0 && c.radius <= 28 ? c.radius : null;
-    o.fontHeading = FONTS.includes(c.fontHeading) ? c.fontHeading : 'Inter';
-    o.fontBody = FONTS.includes(c.fontBody) ? c.fontBody : 'Inter';
+    o.cfonts = normCfonts(c.cfonts); const fok = (f) => FONTS.includes(f) || (isCf(f) && o.cfonts.some(x => x.id === f.slice(3)));
+    o.fontHeading = fok(c.fontHeading) ? c.fontHeading : 'Inter';
+    o.fontBody = fok(c.fontBody) ? c.fontBody : 'Inter';
     if (Array.isArray(c.blocks)) {
       const seen = c.blocks.filter((b, i, a) => BLOCKS.includes(b) && a.indexOf(b) === i);
       if (seen.includes('header') && seen.includes('items') && seen.length >= 2) o.blocks = seen;
@@ -138,7 +165,7 @@
     TX_SLOTS.forEach(k => {
       const e = c[k]; if (!e || typeof e !== 'object') return; const o = {};
       if (e.it === true) o.it = true; if (e.up === true) o.up = true; if (intIn(e.ls, 1, 8)) o.ls = e.ls;
-      if (inEnum(e.al, ['left', 'center', 'right'])) o.al = e.al; if (inEnum(e.ts, ['soft', 'strong'])) o.ts = e.ts; if (FONTS.includes(e.ff)) o.ff = e.ff;
+      if (inEnum(e.al, ['left', 'center', 'right'])) o.al = e.al; if (inEnum(e.ts, ['soft', 'strong'])) o.ts = e.ts; if (FONTS.includes(e.ff) || isCf(e.ff)) o.ff = e.ff;
       if (Object.keys(o).length) out[k] = o;
     });
     return out;
@@ -230,7 +257,7 @@
       const e = tx && tx[k]; if (!e) return; const r = [];
       if (e.it) r.push('font-style:italic'); if (e.up) r.push('text-transform:uppercase'); if (e.ls) r.push('letter-spacing:' + (e.ls * 0.5) + 'px');
       if (e.al) r.push('text-align:' + e.al); if (e.ts) r.push('text-shadow:' + (e.ts === 'soft' ? '0 1px 3px rgba(0,0,0,.35)' : '0 2px 8px rgba(0,0,0,.6)'));
-      if (e.ff) r.push("font-family:'" + e.ff + "',-apple-system,sans-serif"); if (r.length) css += 'html ' + TX_SEL[k] + '{' + r.join(';') + '}';
+      if (e.ff) r.push("font-family:'" + famCss(e.ff) + "',-apple-system,sans-serif"); if (r.length) css += 'html ' + TX_SEL[k] + '{' + r.join(';') + '}';
     });
     return css;
   }
@@ -320,8 +347,8 @@
     s.setProperty('--rad', radiusOf(c) + 'px'); s.setProperty('--fs', { s: .9, m: 1, l: 1.12 }[c.size]);
     s.setProperty('--backdrop', lum(c.background) < .25 ? '#08080A' : 'color-mix(in srgb, ' + c.primary + ' 9%, #E9E9EC)');
     s.setProperty('--dn', { compact: .7, normal: 1, airy: 1.4 }[c.density]);
-    const headFont = c.style === 'editorial' && c.fontHeading === 'Inter' ? "Georgia, 'Times New Roman', serif" : `'${c.fontHeading}', -apple-system, sans-serif`;
-    s.setProperty('--fh', headFont); s.setProperty('--fb', `'${c.fontBody}', -apple-system, sans-serif`);
+    const headFont = c.style === 'editorial' && c.fontHeading === 'Inter' ? "Georgia, 'Times New Roman', serif" : `'${famCss(c.fontHeading)}', -apple-system, sans-serif`;
+    s.setProperty('--fh', headFont); s.setProperty('--fb', `'${famCss(c.fontBody)}', -apple-system, sans-serif`);
     // v3 — cada variable solo existe si el dueño la definió; si no, el CSS usa su valor de siempre
     const px = (k) => (c[k] == null ? null : c[k] + 'px');
     setVar(s, '--nm-sz', c.nameSize == null ? null : fluid(c.nameSize)); setVar(s, '--bt-sz', c.titleSize == null ? null : fluid(c.titleSize)); setVar(s, '--sb-sz', c.subSize == null ? null : fluid(c.subSize));
@@ -348,13 +375,19 @@
     loadFonts(c);
     return c;
   }
+  const gfUrl = (names) => 'https://fonts.googleapis.com/css2?' + names.map(f => { const m = FONT_META.find(x => x[0] === f); return 'family=' + encodeURIComponent(f).replace(/%20/g, '+') + (m && m[2] ? ':wght@' + m[2] : ''); }).join('&') + '&display=swap';
+  const cfFaceCss = (cf) => (cf || []).map(x => "@font-face{font-family:'KCF " + x.id + "';src:url('" + CF_BASE + x.p + "') format('" + ({ ttf: 'truetype', otf: 'opentype', woff: 'woff', woff2: 'woff2' }[x.f]) + "');font-weight:100 900;font-display:swap}").join('\n');
   function loadFonts(c) {
-    const need = [...new Set([c.fontHeading, c.fontBody].concat(Object.values(c.tx || {}).map(e => e.ff).filter(Boolean)))].filter(f => f !== 'Inter');
+    const used = [...new Set([c.fontHeading, c.fontBody].concat(Object.values(c.tx || {}).map(e => e.ff).filter(Boolean)))];
+    const need = used.filter(f => f !== 'Inter' && !isCf(f) && FONTS.includes(f)), cf = (c.cfonts || []).filter(x => used.includes('cf:' + x.id));
     let el = document.getElementById('kdFonts');
-    if (!need.length) { if (el) el.remove(); return; }
-    const href = 'https://fonts.googleapis.com/css2?' + need.map(f => 'family=' + encodeURIComponent(f).replace(/%20/g, '+') + ':wght@400;600;700;800').join('&') + '&display=swap';
-    if (!el) { el = document.createElement('link'); el.id = 'kdFonts'; el.rel = 'stylesheet'; document.head.appendChild(el); }
-    if (el.href !== href) el.href = href;
+    if (!need.length) { if (el) el.remove(); } else {
+      const href = gfUrl(need); if (!el) { el = document.createElement('link'); el.id = 'kdFonts'; el.rel = 'stylesheet'; document.head.appendChild(el); } if (el.href !== href) el.href = href;
+    }
+    let st = document.getElementById('kdCFonts');
+    if (!cf.length) { if (st) st.remove(); return; }
+    const css = cfFaceCss(cf);
+    if (!st) { st = document.createElement('style'); st.id = 'kdCFonts'; document.head.appendChild(st); } if (st.textContent !== css) st.textContent = css;
   }
 
 
@@ -422,6 +455,6 @@
   }
   function mix(a, b, t) { const A = [1, 3, 5].map(i => parseInt(a.substr(i, 2), 16)), B = [1, 3, 5].map(i => parseInt(b.substr(i, 2), 16)); return '#' + A.map((v, i) => Math.round(v * t + B[i] * (1 - t)).toString(16).padStart(2, '0')).join('').toUpperCase(); }
 
-  window.KARTTA_DESIGN = { validTag, tagEl, tagsRow, DEFAULTS, ENUM, INTS, WEIGHTS, HEXOPT, FONTS, BLOCKS, ADVANCED, TEMPLATES, RESET_ON_TEMPLATE, normalize, compact, apply, applyTemplate, radiusOf, contrast, effective, lum,
+  window.KARTTA_DESIGN = { validTag, tagEl, tagsRow, DEFAULTS, ENUM, INTS, WEIGHTS, HEXOPT, FONTS, FONT_META, FONT_CATS, FONT_PAIRS, CF_BASE, CF_PATH, isCf, famCss, gfUrl, cfFaceCss, normCfonts, BLOCKS, ADVANCED, TEMPLATES, RESET_ON_TEMPLATE, normalize, compact, apply, applyTemplate, radiusOf, contrast, effective, lum,
     TX_SLOTS, TX_LABEL, TX_SEL, EL_KINDS, EL_ANCHORS, EL_MAX, gradCss, renderRuns, renderEl, elTransform, elHref, SOCIAL_TYPES, SOCIAL_LABEL, SOCIAL_ICON, ALLERGENS, parseSocialInput, socialHref, socialVisible, renderSocial };
 })();

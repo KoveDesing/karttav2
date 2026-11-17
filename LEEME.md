@@ -1,19 +1,17 @@
-# Editor tipo Canva — Fase 1 (elementos)
+# Tipografías (56 + subida propia) y biblioteca de plantillas (48)
 
-Archivos: editor.html, menu.html, menu-design.js, 20261117_editor_canva.sql
+Orden de instalación:
+1. En Supabase ejecuta, en este orden y mejor en una rama: `20261117_editor_canva.sql` (si aún no lo hiciste) y `20261118_tipografias.sql`.
+2. Sube a GitHub: editor.html, menu.html, menu-design.js, kartta-templates.js (nuevo), vercel.json.
 
-1. Ejecuta primero `20261117_editor_canva.sql` en Supabase (idempotente, no borra datos; pruébalo en una rama).
-2. Sube los 3 archivos al repo.
+## Tipografías
+- 56 tipografías de Google en 5 categorías (Sans, Serif, Display, Manuscritas, Monoespaciadas), con buscador, texto de prueba, 8 combinaciones recomendadas y combinaciones propias guardadas (en este navegador).
+- Subida de fuentes propias (.ttf .otf .woff .woff2): máx. 1,5 MB y 5 por restaurante, planes Pro y Elite. Se valida la extensión, la firma del archivo y que el navegador pueda leerla. Se guardan en el bucket público `kartta-fonts` (carpeta = id del restaurante). Solo dueño/admin con Pro puede subir o borrar (RLS). El menú público las carga solas.
+- El servidor valida: lista de fuentes, máx. 5 fuentes propias, rutas solo dentro de la carpeta del propio restaurante y plan. En Free el menú público ignora las fuentes propias y al volver a Pro se restauran.
+- Al quitar una fuente del diseño NO se borra el archivo (el menú publicado podría seguir usándola hasta publicar).
+- vercel.json: `font-src` ahora permite `https://*.supabase.co`.
 
-Qué trae (sobre los elementos del menú):
-- Selección con borde y manijas en la vista previa: ancho (laterales) y rotación (arriba, con ajuste cada 15°; Mayús lo fuerza).
-- Mayús + clic: selección múltiple. Agrupar / desagrupar (los grupos se mueven juntos).
-- Bloquear / desbloquear (también desde Capas con el candado). Un elemento bloqueado no se mueve, edita ni elimina.
-- Copiar, cortar, pegar, duplicar; copiar y pegar estilo.
-- Formato: negrita, cursiva, subrayado, espaciado de letras, interlineado, opacidad, ancho, rotación, "Centrar y enderezar".
-- Atajos: Ctrl+C / X / V / D, Ctrl+Alt+C / V (estilo), Ctrl+G / Ctrl+Mayús+G, Ctrl+Mayús+L, Supr, Esc, flechas (Mayús = ×10), Ctrl+Z / Ctrl+Mayús+Z / Ctrl+Y. No actúan mientras escribes en un campo y también funcionan con el foco dentro de la vista previa.
-- Planes: bloqueo y negrita/cursiva/subrayado desde Pro; rotación, opacidad, ancho, espaciado, interlineado y grupos en Elite (igual que el arrastre libre). El servidor lo valida.
-- Corregido: el botón "Recuperar Pro" se veía siempre (el CSS ignoraba `hidden`).
-
-Nota: la propiedad de subrayado se llama `ul` (la `u` ya es el enlace).
-Siguiente: simuladores iPhone/iPad/MacBook, 50 tipografías + subida de fuentes, biblioteca de plantillas.
+## Plantillas
+- 48 plantillas en 14 categorías, con filtro por categoría, plan (Gratis / Pro / Elite) y buscador. Vista previa antes de aplicar. Aplicar no toca productos, textos, redes ni opciones avanzadas.
+- Gratis solo usan opciones que el plan Gratis ya permite; Elite usan degradados (el servidor lo valida).
+- Las miniaturas se montan y desmontan al hacer scroll para no sobrecargar.

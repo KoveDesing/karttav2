@@ -170,6 +170,13 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
 .kpop h6{margin:0;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .cvt{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin:6px 0 10px}.cvt .btn{min-height:34px;font-size:12px;padding:0 8px;border-radius:10px;box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 2px 6px rgba(0,0,0,.12)}
 #recoverBtn[hidden]{display:none !important}
+.fpairs{display:grid;grid-template-columns:1fr 1fr;gap:6px}.fpair{position:relative;text-align:left;padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);display:flex;flex-direction:column;gap:2px;min-width:0}.fpair b{font-size:14px;color:var(--strong)}.fpair small{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fpx{position:absolute;right:6px;top:4px;font-size:11px;color:var(--muted)}
+.fpf{display:grid;grid-template-columns:1fr auto;gap:6px;margin-bottom:8px}.fpf input,.fpf select{min-height:36px;border-radius:10px;border:1px solid var(--border);background:var(--panel2);color:var(--strong);padding:0 10px}
+.fplist{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow:auto;padding:2px}.fpi{text-align:left;padding:8px 12px;border-radius:12px;border:1px solid var(--border);background:var(--panel2);display:flex;flex-direction:column;gap:2px}.fpi[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}
+.fpn{font-size:11px;font-weight:700;color:var(--muted);display:flex;gap:6px;align-items:center}.fpn em{font-style:normal;background:var(--accent);color:var(--on-accent);border-radius:6px;padding:1px 6px;font-size:10px}.fsm{font-size:22px;line-height:1.25;color:var(--strong);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fmine{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.tchips{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;margin-bottom:2px;scrollbar-width:thin}.tchip{flex:0 0 auto;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--border);background:var(--panel2);color:var(--strong);font-size:12px;font-weight:700;white-space:nowrap}.tchip[aria-selected="true"]{background:var(--strong);color:var(--panel);border-color:var(--strong)}
+.tcm em.tier{background:var(--panel);color:var(--muted);border:1px solid var(--border)}.tcm em.tier.t1{color:#B45309;border-color:#F59E0B66}.tcm em.tier.t2{color:#7C3AED;border-color:#8B5CF666}
+.tcb{display:flex;gap:6px;padding:6px 8px 8px}.tcb .btn{flex:1 1 0;min-width:0;padding:0 6px;font-size:12px;white-space:nowrap}
 </style>
 <link rel="stylesheet" href="/kartta-fields.css?v=20261103">
 <link rel="stylesheet" href="/kartta-ui.css">
@@ -206,6 +213,7 @@ ul.bl li .mv button{width:30px;height:30px;border-radius:8px;border:1px solid va
 </div>
 <div id="toast" role="status"></div>
 <script src="/menu-design.js"></script>
+<script src="/kartta-templates.js?v=20261117"></script>
 <script src="kartta-upsell.js?v=20261110" defer></script>
 <script src="kartta-trial-end.js?v=20261116" defer></script>
 <script type="module">
@@ -218,16 +226,16 @@ const CROWN = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColo
 const crown = (t) => h('span', { class: 'crown', title: t || 'Disponible desde KARTTA Pro', 'aria-label': t || 'Disponible desde KARTTA Pro', role: 'img', html: CROWN });
 const FEAT = { fontHeading: 'Tipografía de títulos', fontBody: 'Tipografía de textos', blocks: 'El orden de las secciones', announcement: 'El anuncio destacado', footerText: 'El texto del pie' };
 const upsell = (f) => window.KARTTA_UPSELL ? KARTTA_UPSELL.open({ plan: 'KARTTA Pro', feature: f }) : toast('Esta opción es de KARTTA Pro.');
-const PRO_OBJ = ['wa', 'btn', 'bgx', 'hbgx', 'tx', 'rt', 'els'];
+const PRO_OBJ = ['wa', 'btn', 'bgx', 'hbgx', 'tx', 'rt', 'els', 'cfonts'];
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const proContent = (c) => D.ADVANCED.concat(PRO_OBJ).some(k => !same(c[k], D.DEFAULTS[k]));
 const toFree = (c) => { const o = { ...c }; D.ADVANCED.concat(PRO_OBJ).forEach(k => { o[k] = D.DEFAULTS[k]; }); return o; };
 function usedProFeatures(c){ const u = [], ch = (k) => !same(c[k], D.DEFAULTS[k]);
-  if (c.template && !FREE_TPL.includes(c.template)) u.push('templates');
+  if (c.template && (D.TEMPLATES.find(t => t.id === c.template) || {}).tier !== 0 && !FREE_TPL.includes(c.template)) u.push('templates');
   if (ch('fontHeading') || ch('fontBody')) u.push('fonts');
   if (ch('blocks') || ch('announcement') || ch('footerText')) u.push('layout');
   if (ch('wa') || ch('btn')) u.push('whatsapp');
-  if (['bgx', 'hbgx', 'tx', 'rt', 'els'].some(ch)) u.push('tools');
+  if (['bgx', 'hbgx', 'tx', 'rt', 'els'].some(ch)) u.push('tools'); if (ch('cfonts')) u.push('fonts');
   return u; }
 let restoredPro = false, trialInfo = { ended: false, end: '', used: [] };
 const isLocked = () => rank < 1, money = (n) => '$' + Number(n || 0).toLocaleString('es-CO');
@@ -364,8 +372,9 @@ const shownCfg = () => (previewTpl ? D.applyTemplate(cfg, previewTpl) : cfg);
 function startPreview(t){ previewTpl = t; $('pvName').textContent = t.name; $('pvBar').hidden = false; sendDesign(); }
 function stopPreview(){ if (!previewTpl) return; previewTpl = null; $('pvBar').hidden = true; sendDesign(); }
 const FREE_TPL = ['clasico', 'oscuro'];
-const tplLocked = (t) => isLocked() && !FREE_TPL.includes(t.id);
-function applyTpl(t){ if (tplLocked(t)) { stopPreview(); upsell('La plantilla «' + t.name + '»'); return false; } stopPreview(); replace(D.applyTemplate(cfg, t)); toast('Plantilla “' + t.name + '” aplicada. Se restablecieron ' + D.RESET_ON_TEMPLATE + '; se conservaron tus textos, redes y opciones. Puedes deshacer con Ctrl+Z.', 6500); }
+const tplTier = (t) => t.tier != null ? t.tier : (FREE_TPL.includes(t.id) ? 0 : 1);
+const tplLocked = (t) => rank < tplTier(t);
+function applyTpl(t){ if (tplLocked(t)) { stopPreview(); if (tplTier(t) >= 2) needPlan(2, 'La plantilla «' + t.name + '»'); else upsell('La plantilla «' + t.name + '»'); return false; } stopPreview(); replace(D.applyTemplate(cfg, t)); toast('Plantilla “' + t.name + '” aplicada. Se restablecieron ' + D.RESET_ON_TEMPLATE + '; se conservaron tus textos, redes y opciones. Puedes deshacer con Ctrl+Z.', 6500); }
 const SAMPLE = { categories: [{ id: 's1', name: 'Entradas', tags: [] }, { id: 's2', name: 'Platos fuertes', tags: [] }], products: [
   { id: 'x1', category_id: 's1', name: 'Nachos de la casa', description: 'Con queso fundido y guacamole.', price: 18900, discount_percent: 0, image_path: null, is_available: true, tags: [{ id: 'xt', name: 'Nuevo', bg: '#FF3145', fg: '#FFFFFF', style: 'solid' }] },
   { id: 'x2', category_id: 's1', name: 'Ensalada fresca', description: 'Hojas verdes y vinagreta.', price: 14500, discount_percent: 0, image_path: null, is_available: true, tags: [] },
@@ -381,17 +390,29 @@ function mountThumb(host, t){
   const sc = () => { fr.style.transform = 'scale(' + (host.clientWidth / 390) + ')'; }; sc(); requestAnimationFrame(sc); thumbWins.set(fr.contentWindow, t);
 }
 function tplCard(t, onApply){
-  const host = h('div', { class: 'tcv' }), card = h('div', { class: 'tc' }, host, h('div', { class: 'tcm' }, h('b', { style: 'display:flex;align-items:center;gap:6px' }, t.name, tplLocked(t) ? crown('Disponible desde KARTTA Pro') : null, t.recommended ? h('em', {}, 'Recomendada') : null), h('span', { class: 'tcd' }, t.desc)),
+  const host = h('div', { class: 'tcv' }), card = h('div', { class: 'tc' }, host, h('div', { class: 'tcm' }, h('b', { style: 'display:flex;align-items:center;gap:6px' }, t.name, tplTier(t) ? h('em', { class: 'tier t' + tplTier(t) }, D.TEMPLATE_TIERS ? D.TEMPLATE_TIERS[tplTier(t)] : 'Pro') : h('em', { class: 'tier t0' }, 'Gratis'), tplLocked(t) ? crown(tplTier(t) >= 2 ? 'Disponible en KARTTA Elite' : 'Disponible desde KARTTA Pro') : null, t.recommended ? h('em', {}, 'Recomendada') : null), h('span', { class: 'tcd' }, t.desc)),
     h('div', { class: 'tcb' }, h('button', { type: 'button', class: 'btn', 'aria-label': 'Previsualizar la plantilla ' + t.name, onclick: () => { if (onApply) onApply(false); startPreview(t); } }, 'Vista previa'), h('button', { type: 'button', class: 'btn primary', 'aria-label': 'Usar la plantilla ' + t.name, onclick: () => { if (applyTpl(t) !== false && onApply) onApply(true); } }, 'Usar')));
   const mark = () => card.classList.toggle('cur', cfg.template === t.id); mark(); syncers.push(mark);
-  const io = new IntersectionObserver((es) => { if (es.some(e => e.isIntersecting)) { io.disconnect(); mountThumb(host, t); } }, { root: null, rootMargin: '200px' }); io.observe(host);
+  const io = new IntersectionObserver((es) => { es.forEach(e => { if (e.isIntersecting) { if (!host.firstChild) mountThumb(host, t); } else if (host.firstChild) { thumbWins.forEach((v, k) => { if (v === t && host.contains(k.frameElement)) thumbWins.delete(k); }); host.textContent = ''; } }); }, { root: null, rootMargin: '500px' }); io.observe(host);
   return card;
 }
+const TG = { cat: 'todas', tier: 'all', q: '' };
 function tplGallery(host, onApply){
   host.append(note('Elige un punto de partida: cada plantilla cambia estilo, encabezado, tarjetas y barra inferior (no solo colores). Previsualiza antes de aplicar; puedes cambiar después sin perder productos, textos ni redes.'));
   if (usingSample()) host.append(note('Las miniaturas usan productos de ejemplo hasta que tengas al menos 3 productos disponibles.'));
-  [['Plantillas profesionales', 'pro'], ['Clásicas', 'classic']].forEach(([title, g]) => { host.append(sec(title)); const gl = h('div', { class: 'tgal' }); host.append(gl); D.TEMPLATES.filter(t => t.group === g).forEach(t => gl.append(tplCard(t, onApply))); });
-  host.append(note('Al aplicar una plantilla se restablecen: ' + D.RESET_ON_TEMPLATE + '. Se conservan: textos, redes sociales, qué se muestra u oculta y tus opciones avanzadas del plan.'));
+  const q = h('input', { type: 'search', placeholder: 'Buscar plantilla…', 'aria-label': 'Buscar plantilla', value: TG.q, oninput: () => { TG.q = q.value.trim().toLowerCase(); draw(); } });
+  const tr = h('select', { 'aria-label': 'Plan', onchange: () => { TG.tier = tr.value; draw(); } }, h('option', { value: 'all' }, 'Todos los planes'), h('option', { value: '0' }, 'Gratis'), h('option', { value: '1' }, 'Pro'), h('option', { value: '2' }, 'Elite')); tr.value = TG.tier;
+  const chips = h('div', { class: 'tchips', role: 'tablist', 'aria-label': 'Categorías' }), cnt = h('p', { class: 'note' }), gl = h('div', { class: 'tgal' });
+  host.append(h('div', { class: 'fpf' }, q, tr), chips, cnt, gl);
+  function draw(){
+    chips.innerHTML = ''; (D.TEMPLATE_CATS || [['todas', 'Todas']]).forEach(([k, n]) => chips.append(h('button', { type: 'button', role: 'tab', 'aria-selected': String(TG.cat === k), class: 'tchip', onclick: () => { TG.cat = k; draw(); } }, n)));
+    gl.innerHTML = ''; thumbWins.clear();
+    const list = D.TEMPLATES.filter(t => (TG.cat === 'todas' || t.cat === TG.cat) && (TG.tier === 'all' || String(tplTier(t)) === TG.tier) && (!TG.q || (t.name + ' ' + t.desc).toLowerCase().includes(TG.q)));
+    cnt.textContent = list.length + (list.length === 1 ? ' plantilla' : ' plantillas'); if (!list.length) gl.append(note('No hay plantillas con esos filtros.'));
+    list.forEach(t => gl.append(tplCard(t, onApply)));
+  }
+  draw();
+  host.append(note('Al aplicar una plantilla se restablecen: ' + D.RESET_ON_TEMPLATE + '. Se conservan: textos, redes sociales, qué se muestra u oculta, tus productos y tus opciones avanzadas del plan.'));
 }
 function firstRunTemplates(){
   const rec = D.TEMPLATES.find(t => t.recommended);
@@ -669,6 +690,82 @@ function elEditor(host, e){
 function moveEl(id, dir){ const e = elOf(id); if (!e) return; const same = (cfg.els || []).filter(x => x.af === e.af).sort((a, b) => a.n - b.n), i = same.findIndex(x => x.id === id), j = i + dir; if (j < 0 || j >= same.length) return; const arr = (cfg.els || []).map(x => ({ ...x })); arr.find(x => x.id === same[i].id).n = same[j].n; arr.find(x => x.id === same[j].id).n = same[i].n; if (arr.find(x => x.id === same[i].id).n === arr.find(x => x.id === same[j].id).n) arr.find(x => x.id === same[i].id).n += dir; setEls(arr, 'Elementos'); }
 function delEl(id){ if (rank < 1) return; if (setEls((cfg.els || []).filter(e => e.id !== id), 'Elementos')) { if (selEl === id) selEl = null; openTool('elements', true); } }
 function dupEl(id){ const e = elOf(id); if (!e) return; if ((cfg.els || []).length >= (rank >= 2 ? D.EL_MAX : 6)) return toast('Llegaste al máximo de elementos de tu plan.'); const nid = newId(); if (setEls([...(cfg.els || []), { ...e, id: nid, n: (e.n || 0) + 1 }], 'Elementos')) { selEl = nid; openTool('elements', true); } }
+/* ---------- Tipografías: 56 de Google por categorías + subida de fuentes propias ---------- */
+const FP = { slot: 'fontHeading', cat: 'all', q: '', sample: 'Hamburguesa artesanal', loaded: false };
+const FP_SAVED = 'kartta_font_pairs';
+const fpPairs = () => { try { const a = JSON.parse(localStorage.getItem(FP_SAVED) || '[]'); return Array.isArray(a) ? a.filter(x => x && D.FONTS.includes(x[1]) && D.FONTS.includes(x[2])).slice(0, 8) : []; } catch (e) { return []; } };
+function fpLoadCss(){
+  if (FP.loaded) return; FP.loaded = true; const names = D.FONTS.filter(f => f !== 'Inter');
+  for (let i = 0; i < names.length; i += 12) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = D.gfUrl(names.slice(i, i + 12)); document.head.appendChild(l); }
+}
+function fpCfCss(){ let st = document.getElementById('kfpCF'); if (!st) { st = document.createElement('style'); st.id = 'kfpCF'; document.head.appendChild(st); } st.textContent = D.cfFaceCss(cfg.cfonts); }
+const fpFam = (f) => "'" + D.famCss(f) + "',sans-serif";
+function fontPicker(b){
+  fpLoadCss(); fpCfCss();
+  const slotSeg = h('div', { class: 'segc', role: 'group', 'aria-label': 'Aplicar a' });
+  [['fontHeading', 'Títulos'], ['fontBody', 'Textos']].forEach(([k, t]) => slotSeg.append(h('button', { type: 'button', 'data-v': k, 'aria-pressed': 'false', onclick: () => { FP.slot = k; syncAll(); } }, t)));
+  b.append(h('div', { class: 'fld' }, h('div', { class: 'rgh' }, h('label', {}, 'Aplicar la tipografía a')), slotSeg));
+  const cur = h('p', { class: 'note', style: 'margin:0 0 8px' }); b.append(cur);
+  // parejas
+  b.append(h('p', { class: 'note', style: 'margin:10px 0 6px;font-weight:700;color:var(--text)' }, 'Combinaciones recomendadas'));
+  const pr = h('div', { class: 'fpairs' }); b.append(pr);
+  const drawPairs = () => { pr.innerHTML = ''; const all = D.FONT_PAIRS.map(x => [x[0], x[1], x[2], false]).concat(fpPairs().map((x, i) => [x[0], x[1], x[2], i]));
+    all.forEach(([n, a, c, sv]) => { const bt = h('button', { type: 'button', class: 'fpair', title: a + ' + ' + c, onclick: () => { set('fontHeading', a); set('fontBody', c); } }, h('b', { style: 'font-family:' + fpFam(a) }, n), h('small', { style: 'font-family:' + fpFam(c) }, a + ' + ' + c));
+      if (sv !== false) bt.append(h('span', { class: 'fpx', role: 'button', 'aria-label': 'Quitar combinación', onclick: (ev) => { ev.stopPropagation(); const a2 = fpPairs(); a2.splice(sv, 1); try { localStorage.setItem(FP_SAVED, JSON.stringify(a2)); } catch (e) {} drawPairs(); } }, '✕')); pr.append(bt); }); };
+  drawPairs();
+  b.append(h('button', { type: 'button', class: 'btn', style: 'margin:6px 0 10px', onclick: () => { if (cfg.fontHeading.startsWith('cf:') || cfg.fontBody.startsWith('cf:')) return toast('Las combinaciones guardadas solo admiten tipografías de la lista.'); const a = fpPairs(); if (a.length >= 8) return toast('Puedes guardar hasta 8 combinaciones.'); a.push(['Mi combinación ' + (a.length + 1), cfg.fontHeading, cfg.fontBody]); try { localStorage.setItem(FP_SAVED, JSON.stringify(a)); } catch (e) {} drawPairs(); toast('Combinación guardada en este navegador'); } }, 'Guardar mi combinación actual'));
+  // filtros
+  const q = h('input', { type: 'search', placeholder: 'Buscar tipografía…', 'aria-label': 'Buscar tipografía', oninput: () => { FP.q = q.value.trim().toLowerCase(); drawList(); } });
+  const cat = h('select', { 'aria-label': 'Categoría', onchange: () => { FP.cat = cat.value; drawList(); } }, h('option', { value: 'all' }, 'Todas (' + D.FONTS.length + ')'), ...Object.entries(D.FONT_CATS).map(([k, t]) => h('option', { value: k }, t)), h('option', { value: 'mine' }, 'Mis tipografías'));
+  const smp = h('input', { type: 'text', maxlength: 40, value: FP.sample, 'aria-label': 'Texto de prueba', oninput: () => { FP.sample = smp.value || 'Aa'; list.querySelectorAll('.fsm').forEach(n => { n.textContent = FP.sample; }); } });
+  b.append(h('div', { class: 'fpf' }, q, cat), h('div', { class: 'fld' }, h('div', { class: 'rgh' }, h('label', {}, 'Texto de prueba')), smp));
+  const list = h('div', { class: 'fplist', role: 'listbox', 'aria-label': 'Tipografías' }); b.append(list);
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.querySelectorAll('[data-ff]').forEach(n => { n.style.fontFamily = fpFam(n.dataset.ff); }); io.unobserve(e.target); } }), { root: null, rootMargin: '200px' }) : null;
+  function drawList(){
+    list.innerHTML = ''; const meta = Object.fromEntries(D.FONT_META.map(m => [m[0], m[1]]));
+    let items = (FP.cat === 'mine' ? [] : D.FONTS.filter(f => FP.cat === 'all' || meta[f] === FP.cat)).map(f => ({ id: f, n: f, c: meta[f] }));
+    if (FP.cat === 'all' || FP.cat === 'mine') items = (FP.cat === 'mine' ? [] : items).concat((cfg.cfonts || []).map(x => ({ id: 'cf:' + x.id, n: x.n, c: 'mine' })));
+    if (FP.cat === 'all') items.sort((a, c) => (c.c === 'mine') - (a.c === 'mine'));
+    items = items.filter(x => !FP.q || x.n.toLowerCase().includes(FP.q));
+    if (!items.length) list.append(h('p', { class: 'note' }, FP.cat === 'mine' ? 'Todavía no has subido tipografías.' : 'No encontramos esa tipografía.'));
+    items.forEach(x => { const bt = h('button', { type: 'button', role: 'option', class: 'fpi', 'data-f': x.id, 'aria-pressed': 'false', onclick: () => set(FP.slot, x.id) }, h('span', { class: 'fpn' }, x.n, x.c === 'mine' ? h('em', {}, 'Tuya') : null, isLocked() && x.id !== 'Inter' ? crown() : null), h('span', { class: 'fsm', 'data-ff': x.id }, FP.sample)); list.append(bt); if (io) io.observe(bt); else bt.querySelector('.fsm').style.fontFamily = fpFam(x.id); });
+    syncAll();
+  }
+  syncers.push(() => { slotSeg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === FP.slot)));
+    const nm = (f) => f.startsWith('cf:') ? ((cfg.cfonts || []).find(c => c.id === f.slice(3)) || {}).n || 'Tuya' : f; cur.textContent = 'Títulos: ' + nm(cfg.fontHeading) + ' · Textos: ' + nm(cfg.fontBody);
+    list.querySelectorAll('.fpi').forEach(x => x.setAttribute('aria-pressed', String(cfg[FP.slot] === x.dataset.f))); fpCfCss(); });
+  drawList();
+  // subida
+  b.append(h('div', { class: 'sec' }, 'Sube tu propia tipografía', rank < 1 ? crown('Disponible desde KARTTA Pro') : null));
+  b.append(h('p', { class: 'note' }, 'Formatos .ttf, .otf, .woff y .woff2, hasta 1,5 MB. Hasta 5 tipografías. Sube solo fuentes cuya licencia permita su uso en páginas web.'));
+  const file = h('input', { type: 'file', accept: '.ttf,.otf,.woff,.woff2', hidden: true, onchange: async () => { const f = file.files && file.files[0]; file.value = ''; if (f) { up.disabled = true; try { await uploadFont(f); } finally { up.disabled = false; } drawList(); drawMine(); } } });
+  const up = h('button', { type: 'button', class: 'btn block', onclick: () => { if (rank < 1) return needPlan(1, 'Subir tus propias tipografías'); file.click(); } }, 'Subir tipografía');
+  const mine = h('div', { class: 'fmine' });
+  const drawMine = () => { mine.innerHTML = ''; (cfg.cfonts || []).forEach(x => mine.append(h('div', { class: 'lyr' }, h('span', { class: 'll', style: 'font-family:' + fpFam('cf:' + x.id) }, x.n + ' · .' + x.f), h('button', { type: 'button', class: 'lnk', onclick: () => delFont(x.id) }, 'Quitar')))); };
+  b.append(up, file, mine); drawMine();
+}
+async function uploadFont(file){
+  const cur = cfg.cfonts || [], m = /\.(ttf|otf|woff2?)$/i.exec(file.name || '');
+  if (rank < 1) return needPlan(1, 'Subir tus propias tipografías');
+  if (cur.length >= 5) return toast('Puedes subir hasta 5 tipografías. Quita una para añadir otra.');
+  if (!m) return toast('Formato no permitido. Usa .ttf, .otf, .woff o .woff2.');
+  if (file.size > 1.5 * 1024 * 1024) return toast('La tipografía pesa más de 1,5 MB.'); if (file.size < 1024) return toast('El archivo está vacío o dañado.');
+  const ext = m[1].toLowerCase(); let buf; try { buf = await file.arrayBuffer(); } catch (e) { return toast('No pudimos leer el archivo.'); }
+  const sig = String.fromCharCode(...new Uint8Array(buf, 0, 4)), okSig = ext === 'woff' ? sig === 'wOFF' : ext === 'woff2' ? sig === 'wOF2' : (sig === '\u0000\u0001\u0000\u0000' || sig === 'true' || sig === 'OTTO');
+  if (!okSig) return toast('El archivo no parece una tipografía ' + ext.toUpperCase() + ' válida.');
+  try { const ff = new FontFace('kchk', buf.slice(0)); await ff.load(); } catch (e) { return toast('No pudimos leer esa tipografía: el archivo está dañado o no es compatible.'); }
+  const used = new Set(cur.map(x => x.id)); let id; do { id = Math.random().toString(36).slice(2, 10); } while (id.length !== 8 || used.has(id));
+  const path = rid + '/' + id + '.' + ext, type = { ttf: 'font/ttf', otf: 'font/otf', woff: 'font/woff', woff2: 'font/woff2' }[ext];
+  const up = await sb.storage.from('kartta-fonts').upload(path, new Blob([buf], { type }), { contentType: type, upsert: false, cacheControl: '31536000' });
+  if (up.error) { console.error(up.error); return toast('No pudimos subir la tipografía. Revisa tu conexión e inténtalo de nuevo.'); }
+  const name = (file.name.replace(/\.[^.]+$/, '').replace(/[\u0000-\u001f<>"'&_]+/g, ' ').replace(/\s+/g, ' ').trim() || 'Mi tipografía').slice(0, 40);
+  set('cfonts', [...cur, { id, n: name, p: path, f: ext }]); fpCfCss(); set(FP.slot, 'cf:' + id); toast('Tipografía «' + name + '» lista y aplicada a ' + (FP.slot === 'fontHeading' ? 'los títulos' : 'los textos'));
+}
+function delFont(id){
+  const code = 'cf:' + id; if (cfg.fontHeading === code) set('fontHeading', 'Inter'); if (cfg.fontBody === code) set('fontBody', 'Inter');
+  const tx = JSON.parse(JSON.stringify(cfg.tx || {})); let ch = false; Object.keys(tx).forEach(k => { if (tx[k].ff === code) { delete tx[k].ff; ch = true; if (!Object.keys(tx[k]).length) delete tx[k]; } }); if (ch) set('tx', tx);
+  set('cfonts', (cfg.cfonts || []).filter(x => x.id !== id)); fpCfCss(); if (tool === 'text') openTool('text', true); toast('Tipografía quitada del diseño');
+}
 /* ---------- Editor tipo Canva: selección múltiple, portapapeles, bloqueo, grupos, alineación y atajos ---------- */
 let selMulti = [], elClip = null, styleClip = null;
 const STYLE_KEYS = ['c', 'bg', 'bg2', 'sz', 'al', 'b', 'i', 'ul', 'ls', 'lh', 'op'];
@@ -804,11 +901,7 @@ const PANELS = {
     warnBox(b, contrastWarns);
     resetBtn(b, 'Restablecer tipografía recomendada', ['nameSize', 'nameWeight', 'nameColor', 'titleSize', 'titleWeight', 'bTitleColor', 'subSize', 'bSubColor', 'catSize', 'catWeight', 'prodNameSize', 'prodNameWeight', 'titleColor', 'prodDescSize', 'descColor', 'priceSize', 'priceWeight', 'priceColor', 'size']);
     b.append(secPro('Tipo de letra')); lockNote(b);
-    [['fontHeading', 'Títulos'], ['fontBody', 'Textos']].forEach(([k, n]) => {
-      b.append(h('p', { class: 'note', style: 'margin:8px 0 6px;font-weight:700;color:var(--text)' }, n)); const f = h('div', { class: 'fonts' }); b.append(f);
-      D.FONTS.forEach(ft => f.append(h('button', { type: 'button', style: "font-family:'" + ft + "',sans-serif", 'data-f': ft, onclick: () => set(k, ft) }, ft, h('small', {}, isLocked() && ft !== 'Inter' ? crown() : ''))));
-      syncers.push(() => f.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(cfg[k] === x.dataset.f))));
-    });
+    fontPicker(b);
   },
   cards(b){
     b.append(sec('Qué mostrar')); swt('showImages', b); swt('showDescriptions', b); swt('showPrices', b); swt('showTags', b); tiles('tagPosition', b);
@@ -896,7 +989,7 @@ const PANELS = {
         bd.append(h('div', { class: 'fld' }, h('div', { class: 'rgh' }, h('label', {}, label, rank < min ? crown(min >= 2 ? 'Disponible en KARTTA Elite' : 'Disponible desde KARTTA Pro') : null)), g)); syncers.push(() => g.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(((cfg.tx && cfg.tx[slot] && cfg.tx[slot][prop]) || '') === x.dataset.v)))); };
       sg('al', 'Alineación', [['', 'Auto'], ['left', 'Izquierda'], ['center', 'Centro'], ['right', 'Derecha']], 1);
       sg('ts', 'Sombra del texto', [['', 'Ninguna'], ['soft', 'Suave'], ['strong', 'Fuerte']], 2);
-      const ff = h('select', { 'aria-label': 'Tipografía de este texto', onchange: () => txSet(slot, 'ff', ff.value, 'Tipografía por texto') }, h('option', { value: '' }, 'Según el diseño'), ...D.FONTS.map(f => h('option', { value: f }, f)));
+      const ff = h('select', { 'aria-label': 'Tipografía de este texto', onchange: () => txSet(slot, 'ff', ff.value, 'Tipografía por texto') }, h('option', { value: '' }, 'Según el diseño'), ...(cfg.cfonts || []).map(x => h('option', { value: 'cf:' + x.id }, x.n + ' (tuya)')), ...D.FONTS.map(f => h('option', { value: f }, f)));
       bd.append(h('div', { class: 'fld' }, h('div', { class: 'rgh' }, h('label', {}, 'Tipografía de este texto', rank < 2 ? crown('Disponible en KARTTA Elite') : null)), ff)); syncers.push(() => { ff.value = (cfg.tx && cfg.tx[slot] && cfg.tx[slot].ff) || ''; });
       if (slot === 'tag') wordEd(bd, () => cfg.tagline, () => cfg.rt && cfg.rt.tag, runs => rtSet('tag', runs, 'Texto palabra por palabra'), 'Subtítulo palabra por palabra (escríbelo en “Texto”)');
       if (slot === 'btitle') wordEd(bd, () => cfg.bannerTitle, () => cfg.rt && cfg.rt.bt, runs => rtSet('bt', runs, 'Texto palabra por palabra'), 'Título del banner palabra por palabra');
