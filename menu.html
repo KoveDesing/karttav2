@@ -29,7 +29,7 @@ img{max-width:100%;display:block;}
 /* ---- shell del menú ---- */
 #menuShell{display:none;max-width:560px;margin:0 auto;padding-bottom:60px;}
 
-.mheader{background:var(--black);color:#fff;padding:calc(26px + var(--sat,0px)) 20px 22px;position:sticky;top:0;z-index:10;}
+.mheader{background:var(--black);color:#fff;padding:26px 20px 22px;position:sticky;top:0;z-index:10;}
 .mheader .row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
 .mheader h1{font-size:19px;font-weight:800;margin:0;}
 .mheader .mesa{font-size:11px;font-weight:700;background:var(--red);padding:5px 11px;border-radius:999px;flex-shrink:0;}
@@ -851,7 +851,6 @@ function initPreview(){
     if (m.type === 'kartta-data' && m.menu) { mostrarMenu(); paint(m.menu); }
     else if (m.type === 'kartta-design' && MENU) { MENU.design = m.design; paint(MENU); }
     else if (m.type === 'kartta-clean') document.documentElement.classList.toggle('clean', !!m.on);
-    else if (m.type === 'kartta-inset') document.documentElement.style.setProperty('--sat', (Number.isInteger(m.top) && m.top >= 0 && m.top <= 60 ? m.top : 0) + 'px');
     else if (m.type === 'kartta-select') {
       document.querySelectorAll('[data-el].sel').forEach(n => n.classList.remove('sel'));
       if (Array.isArray(m.els)) { SELIDS = m.els.filter(x => typeof x === 'string' && /^[a-z0-9]{3,8}$/.test(x)); paintSel(); return; }
